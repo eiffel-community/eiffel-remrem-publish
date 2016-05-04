@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
     private static final int CHANNEL_COUNT = 100;
     private static final Random random = new Random();
     @Value("${rabbitmq.host}") private String host;
-    @Value("${rabbitmq.exchagne.name}") private String exchangeName;
+    @Value("${rabbitmq.exchange.name}") private String exchangeName;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
 
