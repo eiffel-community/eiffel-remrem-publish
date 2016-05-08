@@ -15,3 +15,7 @@ gradle-app.setting
 
 .idea/
 producer.iml
+
+gradle/
+gradlew
+gradlew.bat
