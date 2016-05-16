@@ -12,6 +12,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'war'
+    id 'maven'
 }
 
 war {
@@ -26,6 +27,9 @@ configurations {
     providedRuntime
     provided
 }
+
+install.dependsOn assemble
+
 
 // In this section you declare where to find the dependencies of your project
 repositories {
