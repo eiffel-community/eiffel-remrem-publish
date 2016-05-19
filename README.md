@@ -1,6 +1,7 @@
 # RemRem Produce
 
 [![Build Status](https://travis-ci.org/Ericsson/eiffel-remrem-produce.svg?branch=master)](https://travis-ci.org/Ericsson/eiffel-remrem-produce)
+[![Coverage Status](https://coveralls.io/repos/github/Ericsson/eiffel-remrem-produce/badge.svg?branch=master)](https://coveralls.io/github/Ericsson/eiffel-remrem-produce?branch=master)
 [![](https://jitpack.io/v/Ericsson/eiffel-remrem-produce.svg)](https://jitpack.io/#Ericsson/eiffel-remrem-produce)
 
 
