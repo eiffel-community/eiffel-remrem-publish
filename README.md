@@ -1,4 +1,7 @@
 # RemRem Produce
+
+[![Build Status](https://travis-ci.org/Ericsson/eiffel-remrem-produce.svg?branch=master)](https://travis-ci.org/Ericsson/eiffel-remrem-produce)
+
 RemRem Produce is a microservice allowing sending of messages to a topic based exchange on a RabbitMQ Server. It has an endPoint that must be called 
 [a relative link](producer/msg)
 
