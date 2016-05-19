@@ -1,0 +1,17 @@
+sudo: required
+
+services:
+  - docker
+
+language: java
+
+jdk:
+  - oraclejdk8
+
+before_install:
+  - docker run -d --hostname my-rabbit --name some-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3.6.1-management
+  - sleep 10
+  - curl -i -u guest:guest -H "content-type:application/json"     -XPUT -d'{"type":"topic","durable":true}'     http://127.0.0.1:15672/api/exchanges/%2f/eiffel.test
+
+script:
+  - ./gradlew test integrationTest
