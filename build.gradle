@@ -23,9 +23,22 @@ war {
 apply plugin: 'spring-boot'
 
 configurations {
-    runtime.exclude module: 'spring-boot-starter-tomcat'
     providedRuntime
     provided
+
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
 }
 
 install.dependsOn assemble
@@ -48,6 +61,12 @@ ext {
 task wrapper(type: Wrapper) {
   gradleVersion = '2.12'
   distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -74,4 +93,15 @@ dependencies {
     testCompile 'org.assertj:assertj-core:3.4.1'
     testCompile "org.springframework.boot:spring-boot-starter-test:$sprintBootVersion"
     testCompile 'com.jayway.jsonpath:json-path-assert:2.2.0'
+
+    //Cloud is enabled via dependency but disabled via config
+    compile('org.springframework.cloud:spring-cloud-starter-consul-all:1.0.0.RELEASE') {
+        exclude group: 'io.reactivex', module: 'rxjava'
+    }
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.1.5'
+
+    // In order to get embedded app container to work
+    integrationTestRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+    integrationTestCompile group: 'com.jayway.restassured', name: 'rest-assured', version: '2.9.0'
+
 }

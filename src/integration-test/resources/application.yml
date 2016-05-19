@@ -1,0 +1,7 @@
+rabbitmq:
+  host: 127.0.0.1
+  exchange:
+    name: eiffel.test
+spring:
+  http.converters:
+    preferred-json-mapper: gson
