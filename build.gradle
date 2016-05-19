@@ -13,6 +13,8 @@ plugins {
     id 'idea'
     id 'war'
     id 'maven'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
 }
 
 war {
@@ -21,6 +23,14 @@ war {
 }
 
 apply plugin: 'spring-boot'
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+        html.destination "${buildDir}/jacocoHtml"
+    }
+}
 
 configurations {
     providedRuntime
@@ -73,7 +83,9 @@ task integrationTest(type: Test) {
 dependencies {
     // The production code uses the SLF4J logging API at compile time
     compile 'org.slf4j:slf4j-api:1.7.18'
-    compile "org.springframework.boot:spring-boot-starter-web:$sprintBootVersion"
+    compile("org.springframework.boot:spring-boot-starter-web:$sprintBootVersion") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
     compile "org.springframework.boot:spring-boot-starter-actuator:$sprintBootVersion"
     compile 'com.rabbitmq:amqp-client:3.5.7'
     compile 'com.google.code.gson:gson:2.6.2'
