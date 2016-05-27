@@ -3,11 +3,12 @@ package com.ericsson.eiffel.remrem.producer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Arrays;
 
-@SpringBootApplication @Slf4j public class App {
+@SpringBootApplication @Slf4j public class App extends SpringBootServletInitializer {
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(App.class, args);
 
