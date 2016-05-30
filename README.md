@@ -6,4 +6,4 @@
 
 
 ## Documentation
-[Here](http://ericsson.github.io/eiffel-remrem-publish/): To be updated.
+Further documentation is provided at the following link: [http://ericsson.github.io/eiffel-remrem-publish/](http://ericsson.github.io/eiffel-remrem-publish/).
