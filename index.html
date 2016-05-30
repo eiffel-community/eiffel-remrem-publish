@@ -37,6 +37,8 @@
 <p>RemRem Publish is a microservice allowing sending of messages to a topic based exchange on a RabbitMQ Server. It has an endPoint that must be called 
 <a href="producer/msg">a relative link</a></p>
 
+<hr>
+
 <h2>
 <a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compatibility</h2>
 
@@ -45,6 +47,8 @@
 <li>Tomcat 7</li>
 </ul>
 
+<hr>
+
 <h2>
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
@@ -52,6 +56,8 @@
 <a href="https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/0.1.2/eiffel-remrem-publish-0.1.2.war">Latest Version Binary</a></p>
 
 <p>RemRem Publish microservice in this repository are licensed under the <a href="./LICENSE">Apache License 2.0</a>.</p>
+
+<hr>
 
 <h2>
 <a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to use?</h2>
@@ -63,19 +69,35 @@
 <li>rabbitmq.host (String)</li>
 </ul>
 
-<p>For stand-alone deployment, it can be utilized like this:
-<code>java -Drabbitmq.host=127.0.0.1 -Drabbitmq.exchange.name=eiffel.poc -jar eiffel-remrem*</code></p>
+<p>For <strong>stand-alone</strong> deployment, the library can be utilized like this:</p>
 
-<p>Binary comes in War format which allows easy deployment in application servers such as Tomcat. In that case, these parameters must be provided to java process running tomcat.</p>
+<p><code>java -Drabbitmq.host=127.0.0.1 -Drabbitmq.exchange.name=eiffel.poc -jar eiffel-remrem*</code></p>
+
+<p>Binary comes in War format which allows easy deployment in application servers such as Tomcat. In that case, these parameters must be provided to java process running tomcat. You can also provide them in the <code>WEB-INF/classes/application.yml</code> file.</p>
+
+<hr>
 
 <h2>
 <a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
 
-<p><strong>Request:</strong>
-<code>curl -H "Content-Type: application/json" -X POST -d '[ "message1", "message2" ]' http://localhost:8080/producer/msg?rk=x</code></p>
+<p>You can use command-line tools like <a href="https://en.wikipedia.org/wiki/CURL">curl</a> or some plugin for your favorite browser. For example:</p>
 
-<p><strong>Response:</strong>
-<code>["succeed","succeed"]</code></p>
+<ul>
+<li>
+<a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">Postman</a> for Chrome/Chromium</li>
+<li>
+<a href="https://addons.mozilla.org/en-US/firefox/addon/httprequester/">HttpRequester</a> for Firefox</li>
+</ul>
+
+<p>A few examples with <code>curl</code>:</p>
+
+<p><strong>Request:</strong></p>
+
+<p><code>curl -H "Content-Type: application/json" -X POST -d '[ "message1", "message2" ]' http://localhost:8080/producer/msg?rk=x</code></p>
+
+<p><strong>Response:</strong></p>
+
+<p><code>["succeed","succeed"]</code></p>
 
 <p>Now you can check your RabbitMQ to see these messages in a queue.</p>
       </section>
