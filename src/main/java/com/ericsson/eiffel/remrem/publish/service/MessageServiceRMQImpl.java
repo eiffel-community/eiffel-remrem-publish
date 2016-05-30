@@ -1,6 +1,6 @@
-package com.ericsson.eiffel.remrem.producer.service;
+package com.ericsson.eiffel.remrem.publish.service;
 
-import com.ericsson.eiffel.remrem.producer.helper.RMQHelper;
+import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

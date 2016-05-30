@@ -1,6 +1,6 @@
-package com.ericsson.eiffel.remrem.producer.helper;
+package com.ericsson.eiffel.remrem.publish.helper;
 
-import com.ericsson.eiffel.remrem.producer.service.SendResult;
+import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 

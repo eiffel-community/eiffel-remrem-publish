@@ -1,4 +1,4 @@
-package com.ericsson.eiffel.remrem.producer.helper;
+package com.ericsson.eiffel.remrem.publish.helper;
 
 
 import com.rabbitmq.client.Channel;

@@ -1,8 +1,8 @@
-package com.ericsson.eiffel.remrem.producer.controller;
+package com.ericsson.eiffel.remrem.publish.controller;
 
-import com.ericsson.eiffel.remrem.producer.helper.ResponseHelper;
-import com.ericsson.eiffel.remrem.producer.service.MessageService;
-import com.ericsson.eiffel.remrem.producer.service.SendResult;
+import com.ericsson.eiffel.remrem.publish.helper.ResponseHelper;
+import com.ericsson.eiffel.remrem.publish.service.MessageService;
+import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import lombok.extern.slf4j.Slf4j;
