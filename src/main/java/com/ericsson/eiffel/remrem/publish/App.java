@@ -1,4 +1,4 @@
-package com.ericsson.eiffel.remrem.producer;
+package com.ericsson.eiffel.remrem.publish;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;

@@ -1,4 +1,4 @@
-package com.ericsson.eiffel.remrem.producer.service;
+package com.ericsson.eiffel.remrem.publish.service;
 
 import lombok.Getter;
 

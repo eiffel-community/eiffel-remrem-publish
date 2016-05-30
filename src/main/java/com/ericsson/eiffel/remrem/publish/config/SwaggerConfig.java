@@ -1,4 +1,4 @@
-package com.ericsson.eiffel.remrem.producer.config;
+package com.ericsson.eiffel.remrem.publish.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
