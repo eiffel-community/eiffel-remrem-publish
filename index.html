@@ -34,7 +34,7 @@
         <h1>
 <a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RemRem Publish</h1>
 
-<p>RemRem Publish is a microservice allowing for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called <a href="producer/msg">a relative link</a>.</p>
+<p>RemRem Publish is a microservice allowing for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called a relative link <code>producer/msg</code>.</p>
 
 <hr>
 
@@ -42,7 +42,7 @@
 <a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compatibility</h2>
 
 <ul>
-<li>JDK8</li>
+<li>JDK 8</li>
 <li>Tomcat 7</li>
 </ul>
 
@@ -56,7 +56,7 @@
 
 <p>Other versions are also available on the <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack page</a>.</p>
 
-<p>RemRem Publish microservice in this repository are licensed under the <a href="https://raw.githubusercontent.com/ericsson/eiffel-remrem-publish/master/LICENSE">Apache License 2.0</a>.</p>
+<p>RemRem Publish microservice in this repository is licensed under the <a href="https://raw.githubusercontent.com/ericsson/eiffel-remrem-publish/master/LICENSE">Apache License 2.0</a>.</p>
 
 <hr>
 
@@ -77,7 +77,7 @@
 
 <p>For <strong>stand-alone</strong> deployment, the library can be utilized like this:</p>
 
-<pre><code>java -Drabbitmq.host=127.0.0.1 -Drabbitmq.exchange.name=eiffel.poc -jar eiffel-remrem*
+<pre><code>$ java -Drabbitmq.host=localhost -Drabbitmq.exchange.name=EXCHANGE_NAME -jar eiffel-remrem*
 </code></pre>
 
 <p>Binary comes in War format which allows easy deployment in application servers such as Tomcat. In that case, these parameters must be provided to java process running tomcat. You can also provide them in the <code>WEB-INF/classes/application.yml</code> file.</p>
@@ -120,6 +120,14 @@
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"key":"value1"}, {"key":"value2"}]' http://localhost:8080/producer/msg?rk=test
 
 ["succeed","succeed"]
+</code></pre>
+
+<p><strong>Reading data from a file:</strong></p>
+
+<pre><code>$ echo '["msg1", "msg2", "msg3" ]' &gt; test.data
+$ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/producer/msg?rk=test
+
+["succeed","succeed","succeed"]
 </code></pre>
 
 <p><strong>Malformed input:</strong></p>
