@@ -1,8 +1,10 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 
+import org.springframework.util.concurrent.ListenableFuture;
+
 import java.util.List;
 
 public interface MessageService {
-    List<SendResult> send(String routingKey, List<String> msgs);
+    ListenableFuture<List<SendResult>> send(String routingKey, List<String> msgs);
 }

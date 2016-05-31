@@ -4,8 +4,10 @@ import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +18,14 @@ import java.util.List;
     private static final String SUCCEED = "succeed";
     @Autowired @Qualifier("rmqHelper") RMQHelper rmqHelper;
 
-    @Override public List<SendResult> send(String routingKey, List<String> msgs) {
+    @Override public ListenableFuture<List<SendResult>> send(String routingKey, List<String> msgs) {
         List<SendResult> results = new ArrayList<>();
         if (!CollectionUtils.isEmpty(msgs)) {
             for (String msg : msgs) {
                 results.add(send(routingKey, msg));
             }
         }
-        return results;
+        return new AsyncResult<List<SendResult>>(results);
     }
 
     private SendResult send(String routingKey, String msg) {
