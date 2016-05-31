@@ -50,8 +50,8 @@ class BasicSimulation extends Simulation {
   setUp(
     scn.inject(
       //atOnceUsers(1)
-      //rampUsersPerSec(10) to(500) during(3 seconds),
-      constantUsersPerSec(100) during(60 seconds) randomized
+      rampUsersPerSec(10) to(500) during(10 seconds),
+      constantUsersPerSec(500) during(60 seconds) randomized
     )
   ).protocols(httpConf)
 }

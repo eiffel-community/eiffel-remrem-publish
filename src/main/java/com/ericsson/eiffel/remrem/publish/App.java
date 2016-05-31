@@ -5,10 +5,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.scheduling.annotation.EnableAsync;
+
 
 import java.util.Arrays;
 
-@SpringBootApplication @Slf4j public class App extends SpringBootServletInitializer {
+@SpringBootApplication @EnableAsync @Slf4j public class App extends SpringBootServletInitializer {
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(App.class, args);
 
