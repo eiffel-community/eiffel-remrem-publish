@@ -34,8 +34,7 @@
         <h1>
 <a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RemRem Publish</h1>
 
-<p>RemRem Publish is a microservice allowing sending of messages to a topic based exchange on a RabbitMQ Server. It has an endPoint that must be called 
-<a href="producer/msg">a relative link</a></p>
+<p>RemRem Publish is a microservice allowing for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called <a href="producer/msg">a relative link</a>.</p>
 
 <hr>
 
@@ -53,7 +52,9 @@
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
 <p>Binary is relased via jitPack and latest version can be accessed via 
-<a href="https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/0.1.2/eiffel-remrem-publish-0.1.2.war">Latest Version Binary</a></p>
+<a href="https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/0.1.2/eiffel-remrem-publish-0.1.2.war">Latest Version Binary</a>.</p>
+
+<p>Other versions are also available on the <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack page</a>.</p>
 
 <p>RemRem Publish microservice in this repository are licensed under the <a href="https://raw.githubusercontent.com/ericsson/eiffel-remrem-publish/master/LICENSE">Apache License 2.0</a>.</p>
 
@@ -68,9 +69,11 @@
 <p>Two parameters need to be provided to start the service:</p>
 
 <ul>
-<li>rabbitmq.exchange.name (String)</li>
 <li>rabbitmq.host (String)</li>
+<li>rabbitmq.exchange.name (String)</li>
 </ul>
+
+<p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
 
 <p>For <strong>stand-alone</strong> deployment, the library can be utilized like this:</p>
 
@@ -97,7 +100,7 @@
 
 <ul>
 <li>
-<a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">Postman</a> for Chromium based browsers</li>
+<a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">Postman</a> for Chromium-based browsers</li>
 <li>
 <a href="https://addons.mozilla.org/en-US/firefox/addon/httprequester/">HttpRequester</a> for Firefox</li>
 </ul>
@@ -109,14 +112,21 @@
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["test"]' http://localhost:8080/producer/msg?rk=test
 
-Result: ["succeed"]
+["succeed"]
 </code></pre>
 
 <p><strong>Two messages/objects:</strong></p>
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"key":"value1"}, {"key":"value2"}]' http://localhost:8080/producer/msg?rk=test
 
-Result: ["succeed","succeed"]
+["succeed","succeed"]
+</code></pre>
+
+<p><strong>Malformed input:</strong></p>
+
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d 'SOMETHING' http://localhost:8080/producer/msg?rk=test
+
+{"timestamp":"May 31, 2016 9:14:17 AM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: Expected a com.google.gson.JsonArray but was com.google.gson.JsonPrimitive; nested exception is com.google.gson.JsonSyntaxException: Expected a com.google.gson.JsonArray but was com.google.gson.JsonPrimitive","path":"/producer/msg"}
 </code></pre>
 
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
