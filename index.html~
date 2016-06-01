@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Eiffel RemRem Publish Service : ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Eiffel RemRem Publish Service</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
+
+          <h1 id="project_title">Eiffel RemRem Publish Service</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RemRem Publish</h1>
+
+<p>RemRem Publish is a microservice allowing for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called using a relative link <code>producer/msg</code>.</p>
+
+<hr>
+
+<h2>
+<a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compatibility</h2>
+
+<ul>
+<li>JDK 8</li>
+<li>Tomcat 7</li>
+</ul>
+
+<hr>
+
+<h2>
+<a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
+
+<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack</a> and latest version can be accessed via 
+<a href="https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/0.1.2/eiffel-remrem-publish-0.1.2.war">Latest Version Binary</a>.</p>
+
+<p>Other versions are also available on the <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack page</a>.</p>
+
+<p>RemRem Publish microservice in this repository is licensed under the <a href="https://raw.githubusercontent.com/ericsson/eiffel-remrem-publish/master/LICENSE">Apache License 2.0</a>.</p>
+
+<hr>
+
+<h2>
+<a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to use?</h2>
+
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>Two parameters need to be provided to start the service:</p>
+
+<ul>
+<li>rabbitmq.host (String)</li>
+<li>rabbitmq.exchange.name (String)</li>
+</ul>
+
+<p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
+
+<p>For <strong>stand-alone</strong> deployment, the library can be utilized like this:</p>
+
+<pre><code>$ java -Drabbitmq.host=localhost -Drabbitmq.exchange.name=EXCHANGE_NAME -jar eiffel-remrem*
+</code></pre>
+
+<p>Binary comes in War format which allows easy deployment in application servers such as Tomcat. In that case, these parameters must be provided to java process running tomcat. You can also provide them in the <code>WEB-INF/classes/application.yml</code> file.</p>
+
+<h3>
+<a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST methods</h3>
+
+<p>The service works on the relative link <code>producer/msg</code> and supports POST requests.</p>
+
+<p>You have to specify a <a href="https://www.rabbitmq.com/tutorials/tutorial-four-java.html">routing key</a> using <code>rk</code> URL parameter.</p>
+
+<p>The request's body must contain a <strong>JSON Array</strong> with the messages.</p>
+
+<hr>
+
+<h2>
+<a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
+
+<p>You can use command-line tools like <a href="https://en.wikipedia.org/wiki/CURL">curl</a> or some plugin for your favorite browser. For example:</p>
+
+<ul>
+<li>
+<a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">Postman</a> for Chromium-based browsers</li>
+<li>
+<a href="https://addons.mozilla.org/en-US/firefox/addon/httprequester/">HttpRequester</a> for Firefox</li>
+</ul>
+
+<h3>
+<a id="a-few-examples-with-curl" class="anchor" href="#a-few-examples-with-curl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A few examples with <code>curl</code>:</h3>
+
+<p><strong>One message:</strong></p>
+
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["test"]' http://localhost:8080/producer/msg?rk=test
+
+["succeed"]
+</code></pre>
+
+<p><strong>Two messages/objects:</strong></p>
+
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"key":"value1"}, {"key":"value2"}]' http://localhost:8080/producer/msg?rk=test
+
+["succeed","succeed"]
+</code></pre>
+
+<p><strong>Reading data from a file:</strong></p>
+
+<pre><code>$ echo '["msg1", "msg2", "msg3"]' &gt; test.data
+$ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/producer/msg?rk=test
+
+["succeed","succeed","succeed"]
+</code></pre>
+
+<p><strong>Malformed input:</strong></p>
+
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d 'SOMETHING' http://localhost:8080/producer/msg?rk=test
+
+{"timestamp":"May 31, 2016 9:14:17 AM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: Expected a com.google.gson.JsonArray but was com.google.gson.JsonPrimitive; nested exception is com.google.gson.JsonSyntaxException: Expected a com.google.gson.JsonArray but was com.google.gson.JsonPrimitive","path":"/producer/msg"}
+</code></pre>
+
+<p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
+<hr>
+<h2>
+<a id="performance" class="anchor" href="#performance" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Performance</h2>
+
+<h4><a class="anchor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>400 requests per sec</h4>
+<p>Two clients making 200 requests per second run concurrently</p> 
+<h5><a class="anchor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client 1</h5>
+<img src="images/1.png">
+<img src="images/2.png">
+<h4><a class="anchor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client 2</h4>
+<img src="images/3.png">
+<img src="images/4.png">
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Eiffel RemRem Publish Service maintained by <a href="https://github.com/Ericsson">Ericsson</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+    
+
+  </body>
+</html>
