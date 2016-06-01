@@ -138,18 +138,23 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </code></pre>
 
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
+
+<hr>
+<h2>
+<a id="exception" class="anchor" href="#exception" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Exception</h2>
+<ul>
+<li>Invalid Input Json</li>
+<li>Invalid Routing Key</li>
+</ul>
+
 <hr>
 <h2>
 <a id="performance" class="anchor" href="#performance" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Performance</h2>
 
-<h4><a class="anchor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>400 requests per sec</h4>
-<p>Two clients making 200 requests per second run concurrently</p> 
-<h5><a class="anchor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client 1</h5>
-<img src="images/1.png">
-<img src="images/2.png">
-<h4><a class="anchor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client 2</h4>
-<img src="images/3.png">
-<img src="images/4.png">
+<h4><a class="anchor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>500 requests per sec</h4>
+<p>The service can respond to 500 requests per second</p>
+<img src="images/500req.png">
+
       </section>
     </div>
 
