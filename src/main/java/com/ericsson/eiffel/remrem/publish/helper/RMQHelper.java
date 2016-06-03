@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,17 @@ import java.util.concurrent.TimeoutException;
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
+        }
+    }
+
+    @PreDestroy
+    public void cleanUp() throws IOException {
+        log.info("RMQHelper cleanUp ...");
+        if (rabbitConnection!=null){
+            rabbitConnection.close();
+            rabbitConnection = null;
+        } else {
+            log.warn("rabbitConnection is null when cleanUp");
         }
     }
 
