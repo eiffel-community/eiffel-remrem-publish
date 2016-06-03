@@ -24,6 +24,7 @@ Architecture of remrem is based on Microservice and API design principles utiliz
 - Publish (Microservice): Can be used to publish Eiffel messages. [Publish Github Repo](https://github.com/Ericsson/eiffel-remrem-publish)
 - Subscribe (Microservice): Can be used to subscribe to Eiffel messages. [Subscribe Github Repo](https://github.com/Ericsson/eiffel-remrem-subscribe)
 - Semantics (Library): Injectable library used with Generate Microservice to enable generation of new Eiffel messages. [Subscribe Github Repo](https://github.com/Ericsson/eiffel-remrem-semantics)
+- Shared (Library): Interface information used in injecting message libraries. Utilized by Semantics and Eifel3Messaging innersource projects [Shared Github Repo](https://github.com/Ericsson/eiffel-remrem-shared)
 
 ##  Announcements
 __Eiffel, RemRem and the examples in this repository are licensed under the Apache License 2.0.__
