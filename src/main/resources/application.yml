@@ -10,6 +10,12 @@ logging:
 # must exist
 #rabbitmq.exchange.name=eiffel.poc
 
+rabbitmq:
+  #host: 127.0.0.1
+  host: mb101-eiffel010.lmera.ericsson.se
+  exchange:
+    name: eiffel.poc
+
 spring:
   http.converters:
     preferred-json-mapper: gson

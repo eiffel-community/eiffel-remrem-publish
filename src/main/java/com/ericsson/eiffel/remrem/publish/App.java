@@ -6,18 +6,28 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import com.ericsson.eiffel.remrem.publish.cli.CLI;
+
 import java.util.Arrays;
 
-@SpringBootApplication @Slf4j public class App extends SpringBootServletInitializer {
+@SpringBootApplication 
+@Slf4j 
+public class App extends SpringBootServletInitializer {
     public static void main(String[] args) {
-        ConfigurableApplicationContext ctx = SpringApplication.run(App.class, args);
+    	
+    	CLI cli = new CLI();
+    	boolean startService = cli.parse(args);
 
-        log.info("Let's inspect the beans provided by Spring Boot:");
+    	if (startService) {
+    		ConfigurableApplicationContext ctx = SpringApplication.run(App.class, args);
 
-        String[] beanNames = ctx.getBeanDefinitionNames();
-        Arrays.sort(beanNames);
-        for (String beanName : beanNames) {
-            log.info(beanName);
-        }
+    		log.info("Let's inspect the beans provided by Spring Boot:");
+
+    		String[] beanNames = ctx.getBeanDefinitionNames();
+    		Arrays.sort(beanNames);
+    		for (String beanName : beanNames) {
+    			log.info(beanName);
+    		}
+    	}
     }
 }
