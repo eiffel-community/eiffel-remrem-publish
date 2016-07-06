@@ -54,26 +54,26 @@ import java.util.concurrent.TimeoutException;
     }
 
     private void initCli() {
-    	if (host == null) {
-    		Yaml yaml = new Yaml();
-    		try {
-    			String fileName = "application.yml";
-    			ClassLoader classLoader = getClass().getClassLoader(); 
-    			URL url = classLoader.getResource(fileName);
-    			File file = new File(url.getFile());
-    			InputStream ios = new FileInputStream(file);
+        if (host == null) {
+            Yaml yaml = new Yaml();
+            try {
+                String fileName = "application.yml";
+                ClassLoader classLoader = getClass().getClassLoader(); 
+                URL url = classLoader.getResource(fileName);
+                File file = new File(url.getFile());
+                InputStream ios = new FileInputStream(file);
 
-    			// Parse the YAML file and return the output as a series of Maps and Lists
-    			Map<String,Object> result = (Map<String,Object>)yaml.load(ios);
-    			Map<String,Object> rmq = (Map<String,Object>)result.get("rabbitmq");
-    			host = (String)rmq.get("host");
-    			Map<String,Object> rmqExchange = (Map<String,Object>)rmq.get("exchange");
-    			exchangeName = (String)rmqExchange.get("name");
-    			int i = 2;
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}    		
-    	}
+                // Parse the YAML file and return the output as a series of Maps and Lists
+                Map<String,Object> result = (Map<String,Object>)yaml.load(ios);
+                Map<String,Object> rmq = (Map<String,Object>)result.get("rabbitmq");
+                host = (String)rmq.get("host");
+                Map<String,Object> rmqExchange = (Map<String,Object>)rmq.get("exchange");
+                exchangeName = (String)rmqExchange.get("name");
+                int i = 2;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }            
+        }
     }
     
     @PreDestroy

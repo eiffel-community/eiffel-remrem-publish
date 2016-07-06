@@ -91,8 +91,8 @@ task integrationTest(type: Test) {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-	compile('com.jayway.restassured:rest-assured:2.3.2')
-	compile('org.yaml:snakeyaml:1.8')
+    compile('com.jayway.restassured:rest-assured:2.3.2')
+    compile('org.yaml:snakeyaml:1.8')
     // The production code uses the SLF4J logging API at compile time
     compile 'org.slf4j:slf4j-api:1.7.18'
     compile("org.springframework.boot:spring-boot-starter-web:$sprintBootVersion") {

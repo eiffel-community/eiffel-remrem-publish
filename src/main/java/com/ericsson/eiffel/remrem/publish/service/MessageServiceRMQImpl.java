@@ -40,19 +40,19 @@ import java.util.List;
     }
     
     private void instatiateRmqHelper() {
-    	if (rmqHelper == null) {
-    		rmqHelper = new RMQHelper();
-    		rmqHelper.init();
-    	}
+        if (rmqHelper == null) {
+            rmqHelper = new RMQHelper();
+            rmqHelper.init();
+        }
     }
     
     public void cleanUp() {
-    	if (rmqHelper != null)
-			try {
-				rmqHelper.cleanUp();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+        if (rmqHelper != null)
+            try {
+                rmqHelper.cleanUp();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     }
 }
