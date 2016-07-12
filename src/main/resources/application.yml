@@ -6,7 +6,7 @@ logging:
     com.ericsson.eiffel.remrem.producer: ERROR
 
 # need to be updated according to the test env.
-#rabbitmq.host=127.0.0.1
+#rabbitmq.host=mb101-eiffel010.lmera.ericsson.se
 # must exist
 #rabbitmq.exchange.name=eiffel.poc
 

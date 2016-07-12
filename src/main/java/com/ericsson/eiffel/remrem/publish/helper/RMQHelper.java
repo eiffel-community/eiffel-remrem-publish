@@ -8,19 +8,14 @@ import com.rabbitmq.client.MessageProperties;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +31,23 @@ import java.util.concurrent.TimeoutException;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
 
-    @PostConstruct public void init() {
+    public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getExchangeName() {
+		return exchangeName;
+	}
+
+	public void setExchangeName(String exchangeName) {
+		this.exchangeName = exchangeName;
+	}
+
+	@PostConstruct public void init() {
         log.info("RMQHelper init ...");
         initCli();
         try {
@@ -59,9 +70,7 @@ import java.util.concurrent.TimeoutException;
             try {
                 String fileName = "application.yml";
                 ClassLoader classLoader = getClass().getClassLoader(); 
-                URL url = classLoader.getResource(fileName);
-                File file = new File(url.getFile());
-                InputStream ios = new FileInputStream(file);
+                InputStream ios = classLoader.getResourceAsStream(fileName);
 
                 // Parse the YAML file and return the output as a series of Maps and Lists
                 Map<String,Object> result = (Map<String,Object>)yaml.load(ios);

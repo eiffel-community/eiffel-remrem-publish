@@ -20,6 +20,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+/**
+ * Class for interpreting the passed arguments from command line.
+ * Parse method returns true, meaning we need to start the service afterwards, if no argument
+ * is given. The same method returns false, meaning we do not start the service afterwards, if any
+ * argument is given. If an argument is given that it is not recognized we print help
+ * @author evasiba
+ *
+ */
 public class CLI {
     private Options options=null;
 
@@ -62,20 +70,26 @@ public class CLI {
             Option[] existingOptions = commandLine.getOptions(); 
             if (existingOptions.length > 0) {
                 startService = false;
-            }
-
-            if (commandLine.hasOption("h")) {
-                help(options);
-            }
-            
-            if (commandLine.hasOption("f")) {
-                String filePath = commandLine.getOptionValue("f");
-                handleContentFile(filePath);
+                handleOptions(commandLine);
             }
         } catch (Exception e) {
+        	e.printStackTrace();
             help(options);
         }
         return startService;
+    }
+    
+    /**
+     * Delegates actions depending on the passed arguments
+     * @param commandLine command line arguments
+     */
+    private void handleOptions(CommandLine commandLine) {
+        if (commandLine.hasOption("f")) {
+            String filePath = commandLine.getOptionValue("f");
+            handleContentFile(filePath);
+        } else {
+        	help(options);
+        }    
     }
 
     /**
