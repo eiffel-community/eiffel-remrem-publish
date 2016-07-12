@@ -29,17 +29,18 @@ import java.util.List;
 
     private SendResult send(String routingKey, String msg) {
         String resultMsg = SUCCEED;
-        instatiateRmqHelper();
+        instantiateRmqHelper();
         try {
             rmqHelper.send(routingKey, msg);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            resultMsg = e.getStackTrace().toString();
+            resultMsg = "Failed to send message:" + msg + 
+            		"\n"+ e.getMessage();
         }
         return new SendResult(resultMsg);
     }
     
-    private void instatiateRmqHelper() {
+    private void instantiateRmqHelper() {
         if (rmqHelper == null) {
             rmqHelper = new RMQHelper();
             rmqHelper.init();

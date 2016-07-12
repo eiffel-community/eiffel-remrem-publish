@@ -108,6 +108,8 @@ public class CLI {
             }
             MessageService msgService = new MessageServiceRMQImpl();
             List<SendResult> results = msgService.send("test", msgs);
+            for(SendResult result : results)
+            	System.out.println(result.getMsg());
             msgService.cleanUp();
         } catch (IOException e) {
             // TODO Auto-generated catch block
