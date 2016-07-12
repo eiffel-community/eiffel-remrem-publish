@@ -34,8 +34,7 @@ import java.util.List;
             rmqHelper.send(routingKey, msg);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            resultMsg = "Failed to send message:" + msg + 
-            		"\n"+ e.getMessage();
+            resultMsg = "Failed to send message:" + msg;
         }
         return new SendResult(resultMsg);
     }
