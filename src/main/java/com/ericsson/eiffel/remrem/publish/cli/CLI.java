@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,6 +14,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
@@ -25,6 +28,10 @@ import com.google.gson.JsonParser;
  * Parse method returns true, meaning we need to start the service afterwards, if no argument
  * is given. The same method returns false, meaning we do not start the service afterwards, if any
  * argument is given. If an argument is given that it is not recognized we print help
+ * 
+ * This class also uses System Properties to pass some arguments to underlying service. It is important to
+ * choose properties names that are difficult to be matched by the system
+ * 
  * @author evasiba
  *
  */
@@ -43,6 +50,8 @@ public class CLI {
         Options options = new Options();
         options.addOption("h", "help", false, "show help.");
         options.addOption("f", "content_file", true, "event content file");
+        options.addOption("mb", "message_bus", true, "host of message bus to use");
+        options.addOption("en", "exchange_name", true, "exchange name");
         return options;
     }
     
@@ -84,12 +93,32 @@ public class CLI {
      * @param commandLine command line arguments
      */
     private void handleOptions(CommandLine commandLine) {
+    	handleMessageBusOptions(commandLine);
         if (commandLine.hasOption("f")) {
             String filePath = commandLine.getOptionValue("f");
             handleContentFile(filePath);
         } else {
         	help(options);
         }    
+    }
+    
+    /**
+     * Sets the system properties with values passed for 
+     * message bus host and exchange name
+     * @param commandLine command line arguments
+     */
+    private void handleMessageBusOptions(CommandLine commandLine){
+    	if (commandLine.hasOption("mb")) {
+    		String messageBusHost = commandLine.getOptionValue("mb");
+    		String key = PropertiesConfig.MESSAGE_BUSS_HOST;
+    		System.setProperty(key, messageBusHost);
+    	}
+    	
+    	if (commandLine.hasOption("en")) {
+    		String exchangeName = commandLine.getOptionValue("en");
+    		String key = PropertiesConfig.EXCHANGE_NAME;
+    		System.setProperty(key, exchangeName);
+    	}
     }
 
     /**
@@ -108,13 +137,24 @@ public class CLI {
             }
             MessageService msgService = new MessageServiceRMQImpl();
             List<SendResult> results = msgService.send("test", msgs);
+            msgService.cleanUp();
+            clearSystemProperties();
             for(SendResult result : results)
             	System.out.println(result.getMsg());
-            msgService.cleanUp();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * Remove the system properties add by this application 
+     */
+    private void clearSystemProperties() {
+    	String key = PropertiesConfig.MESSAGE_BUSS_HOST;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.EXCHANGE_NAME;
+    	System.clearProperty(key);
     }
 
 }

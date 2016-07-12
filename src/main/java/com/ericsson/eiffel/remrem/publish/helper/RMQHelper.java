@@ -1,6 +1,7 @@
 package com.ericsson.eiffel.remrem.publish.helper;
 
 
+import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -65,7 +66,9 @@ import java.util.concurrent.TimeoutException;
     }
 
     private void initCli() {
-        if (host == null) {
+    	host = System.getProperty(PropertiesConfig.MESSAGE_BUSS_HOST);
+    	exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
+        if (host == null || exchangeName == null) {
             Yaml yaml = new Yaml();
             try {
                 String fileName = "application.yml";
@@ -75,9 +78,11 @@ import java.util.concurrent.TimeoutException;
                 // Parse the YAML file and return the output as a series of Maps and Lists
                 Map<String,Object> result = (Map<String,Object>)yaml.load(ios);
                 Map<String,Object> rmq = (Map<String,Object>)result.get("rabbitmq");
-                host = (String)rmq.get("host");
+                if (host == null)
+                	host = (String)rmq.get("host");
                 Map<String,Object> rmqExchange = (Map<String,Object>)rmq.get("exchange");
-                exchangeName = (String)rmqExchange.get("name");
+                if (exchangeName == null)
+                	exchangeName = (String)rmqExchange.get("name");
                 int i = 2;
             } catch (Exception e) {
                 e.printStackTrace();
