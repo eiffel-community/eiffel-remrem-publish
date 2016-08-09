@@ -6,6 +6,9 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -102,8 +105,24 @@ import java.util.concurrent.TimeoutException;
     }
 
     public void send(String routingKey, String msg) throws IOException {
-        giveMeRandomChannel()
-            .basicPublish(exchangeName, routingKey, MessageProperties.BASIC, msg.getBytes());
+    	try {
+    		Channel channel = giveMeRandomChannel();
+    		channel.addShutdownListener(new ShutdownListener() {
+                public void shutdownCompleted(ShutdownSignalException cause) {
+                    // Beware that proper synchronization is needed here                   
+                    if (cause.isInitiatedByApplication()) {
+                        log.debug("Shutdown is initiated by application. Ignoring it.");
+                    } else {                    	
+                        log.error("Shutdown is NOT initiated by application.");
+                        log.error(cause.getMessage());
+                    }
+                }
+            });
+            channel.basicPublish(exchangeName, routingKey, MessageProperties.BASIC, msg.getBytes());
+		} catch (Exception e) {
+			// TODO: handle exception
+			int i = 0;
+		}
     }
 
 

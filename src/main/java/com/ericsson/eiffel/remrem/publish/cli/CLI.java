@@ -94,7 +94,10 @@ public class CLI {
      */
     private void handleOptions(CommandLine commandLine) {
     	handleMessageBusOptions(commandLine);
-        if (commandLine.hasOption("f")) {
+    	if (commandLine.hasOption("h")) {
+    		System.out.println("You passed help flag.");
+    		help(options);
+    	} else if (commandLine.hasOption("f")) {
             String filePath = commandLine.getOptionValue("f");
             handleContentFile(filePath);
         } else {
