@@ -115,13 +115,13 @@ import java.util.concurrent.TimeoutException;
                     } else {                    	
                         log.error("Shutdown is NOT initiated by application.");
                         log.error(cause.getMessage());
+                        System.exit(-3);                   
                     }
                 }
             });
             channel.basicPublish(exchangeName, routingKey, MessageProperties.BASIC, msg.getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
-			int i = 0;
 		}
     }
 

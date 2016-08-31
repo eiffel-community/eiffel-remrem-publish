@@ -63,7 +63,7 @@ public class CLI {
         // This prints out some help
         HelpFormatter formater = new HelpFormatter();
         formater.printHelp("java -jar", options);
-        System.exit(0);
+        System.exit(1);
     }
     
     /**
@@ -144,9 +144,10 @@ public class CLI {
             clearSystemProperties();
             for(SendResult result : results)
             	System.out.println(result.getMsg());
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            System.exit(-1);
         }
     }
     
