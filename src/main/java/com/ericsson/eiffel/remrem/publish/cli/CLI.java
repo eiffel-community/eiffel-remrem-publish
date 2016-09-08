@@ -49,9 +49,10 @@ public class CLI {
     private static Options createCLIOptions() {
         Options options = new Options();
         options.addOption("h", "help", false, "show help.");
-        options.addOption("f", "content_file", true, "event content file");
-        options.addOption("mb", "message_bus", true, "host of message bus to use");
-        options.addOption("en", "exchange_name", true, "exchange name");
+        options.addOption("f", "content_file", true, "event content file, mandatory");
+        options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
+        options.addOption("en", "exchange_name", true, "exchange name, default is eiffel.poc");
+        options.addOption("rk", "routing_key", true, "routing key, mandatory");
         return options;
     }
     
@@ -96,11 +97,16 @@ public class CLI {
     	handleMessageBusOptions(commandLine);
     	if (commandLine.hasOption("h")) {
     		System.out.println("You passed help flag.");
+    		clearSystemProperties();
     		help(options);
-    	} else if (commandLine.hasOption("f")) {
+    	} else if (commandLine.hasOption("f") && commandLine.hasOption("rk")) {
             String filePath = commandLine.getOptionValue("f");
-            handleContentFile(filePath);
+            String routingKey = commandLine.getOptionValue("rk");
+            handleContentFile(filePath, routingKey);
         } else {
+        	System.out.println("Missing arguments, please review your arguments" + 
+        						" and check if any mandatory argument is missing");
+        	clearSystemProperties();
         	help(options);
         }    
     }
@@ -128,7 +134,7 @@ public class CLI {
      * Handle event from file
      * @param filePath the path of the file where the messages reside
      */
-    public void handleContentFile(String filePath) {
+    public void handleContentFile(String filePath, String routingKey) {
         JsonParser parser = new JsonParser();
         try {
             byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
@@ -139,7 +145,7 @@ public class CLI {
                 msgs.add(obj.toString());
             }
             MessageService msgService = new MessageServiceRMQImpl();
-            List<SendResult> results = msgService.send("test", msgs);
+            List<SendResult> results = msgService.send(routingKey, msgs);
             msgService.cleanUp();
             clearSystemProperties();
             for(SendResult result : results)
