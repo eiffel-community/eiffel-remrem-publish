@@ -2,6 +2,7 @@ package com.ericsson.eiffel.remrem.publish.helper;
 
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeoutException;
     private static final Random random = new Random();
     @Value("${rabbitmq.host}") private String host;
     @Value("${rabbitmq.exchange.name}") private String exchangeName;
+    private boolean usePersitance = false;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
 
@@ -71,6 +73,7 @@ import java.util.concurrent.TimeoutException;
     private void initCli() {
     	host = System.getProperty(PropertiesConfig.MESSAGE_BUSS_HOST);
     	exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
+    	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
         if (host == null || exchangeName == null) {
             Yaml yaml = new Yaml();
             try {
@@ -119,7 +122,12 @@ import java.util.concurrent.TimeoutException;
                     }
                 }
             });
-            channel.basicPublish(exchangeName, routingKey, MessageProperties.BASIC, msg.getBytes());
+    		
+    		BasicProperties msgProps = MessageProperties.BASIC;
+    		if (usePersitance)
+    			msgProps = MessageProperties.PERSISTENT_BASIC;
+
+            channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

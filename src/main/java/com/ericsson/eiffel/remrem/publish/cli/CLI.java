@@ -53,6 +53,8 @@ public class CLI {
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
         options.addOption("en", "exchange_name", true, "exchange name, default is eiffel.poc");
         options.addOption("rk", "routing_key", true, "routing key, mandatory");
+        options.addOption("np", "non_persistent", false, "remove persistence from message sending");
+        
         return options;
     }
     
@@ -128,6 +130,13 @@ public class CLI {
     		String key = PropertiesConfig.EXCHANGE_NAME;
     		System.setProperty(key, exchangeName);
     	}
+    	
+    	String usePersistance = "true";
+    	if (commandLine.hasOption("np")) {
+    		usePersistance = "false";    		
+    	}
+    	String key = PropertiesConfig.USE_PERSISTENCE;
+		System.setProperty(key, usePersistance);
     }
 
     /**
