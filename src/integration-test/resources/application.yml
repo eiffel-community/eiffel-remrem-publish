@@ -1,5 +1,5 @@
 rabbitmq:
-  host: 127.0.0.1
+  host: 150.132.35.5
   exchange:
     name: eiffel.test
 spring:

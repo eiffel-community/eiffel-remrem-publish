@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +29,30 @@ import java.util.List;
 
     private SendResult send(String routingKey, String msg) {
         String resultMsg = SUCCEED;
+        instantiateRmqHelper();
         try {
             rmqHelper.send(routingKey, msg);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            resultMsg = e.getStackTrace().toString();
+            resultMsg = "Failed to send message:" + msg;
         }
         return new SendResult(resultMsg);
+    }
+    
+    private void instantiateRmqHelper() {
+        if (rmqHelper == null) {
+            rmqHelper = new RMQHelper();
+            rmqHelper.init();
+        }
+    }
+    
+    public void cleanUp() {
+        if (rmqHelper != null)
+            try {
+                rmqHelper.cleanUp();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     }
 }
