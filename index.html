@@ -60,18 +60,26 @@
 <h2>
 <a id="usage-cli-command-line-interface" class="anchor" href="#usage-cli-command-line-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage CLI (Command Line Interface)</h2>
 
-<p>$ java -jar publish.war -h
-You passed help flag.
-usage: java -jar
- -en,--exchange_name    exchange name, default is eiffel.poc
- -f,--content_file      event content file, mandatory
- -h,--help                   show help.
- -mb,--message_bus      host of message bus to use, default is
-                             127.0.0.1
- -np,--non_persistent        remove persistence from message sending
- -rk,--routing_key      routing key, mandatory</p>
+<p>$ java -jar publish.war -h</p>
 
-<p>For publish we have input only from file. </p>
+<p>You passed help flag.</p>
+
+<p>usage: java -jar</p>
+
+<p>-en,--exchange_name    exchange name, default is eiffel.poc</p>
+
+<p>-f,--content_file      event content file, mandatory</p>
+
+<p>-h,--help                   show help.</p>
+
+<p>-mb,--message_bus      host of message bus to use, default is
+                             127.0.0.1</p>
+
+<p>-np,--non_persistent        remove persistence from message sending</p>
+
+<p>-rk,--routing_key      routing key, mandatory</p>
+
+<p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
 <p><strong>Publish on a given host, a given exchange and given routing key:</strong>                    </p>
 
