@@ -16,14 +16,14 @@
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
+          <a id="forkme_banner" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish">View on GitHub</a>
 
           <h1 id="project_title">Eiffel RemRem Publish Service</h1>
           <h2 id="project_tagline"></h2>
 
             <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
+              <a class="zip_download_link" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
             </section>
         </header>
     </div>
@@ -31,10 +31,10 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>
-<a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RemRem Publish</h1>
+        <p>REMReM (REST Mailbox for Registered Messages) is a set of tools that can be used to generate validated Eiffel messages and publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a></p>
 
-<p>RemRem Publish is a microservice allowing for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called using a relative link <code>producer/msg</code>.</p>
+<h1>
+<a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RemRem Publish</h1>
 
 <hr>
 
@@ -51,17 +51,50 @@
 <h2>
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
-<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack</a> and latest version can be accessed via 
-<a href="https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/0.1.2/eiffel-remrem-publish-0.1.2.war">Latest Version Binary</a>.</p>
+<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack</a></p>
 
-<p>Other versions are also available on the <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack page</a>.</p>
-
-<p>RemRem Publish microservice in this repository is licensed under the <a href="https://raw.githubusercontent.com/ericsson/eiffel-remrem-publish/master/LICENSE">Apache License 2.0</a>.</p>
+<p>RemRem Publish in this repository is licensed under the <a href="https://raw.githubusercontent.com/ericsson/eiffel-remrem-publish/master/LICENSE">Apache License 2.0</a>.</p>
 
 <hr>
 
 <h2>
-<a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to use?</h2>
+<a id="usage-cli-command-line-interface" class="anchor" href="#usage-cli-command-line-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage CLI (Command Line Interface)</h2>
+
+<p>$ java -jar publish.war -h</p>
+
+<p>You passed help flag.</p>
+
+<p>usage: java -jar</p>
+
+<p>-en,--exchange_name    exchange name, default is eiffel.poc</p>
+
+<p>-f,--content_file      event content file, mandatory</p>
+
+<p>-h,--help                   show help.</p>
+
+<p>-mb,--message_bus      host of message bus to use, default is
+                             127.0.0.1</p>
+
+<p>-np,--non_persistent        remove persistence from message sending</p>
+
+<p>-rk,--routing_key      routing key, mandatory</p>
+
+<p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
+
+<p><strong>Publish on a given host, a given exchange and given routing key:</strong>                    </p>
+
+<pre><code> $ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test
+</code></pre>
+
+<p><strong>If you want to have the message non persistent add np flag:</strong></p>
+
+<pre><code> $ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test -np
+</code></pre>
+
+<h2>
+<a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
+
+<p>RemRem Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called using a relative link <code>producer/msg</code>.</p>
 
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
@@ -138,30 +171,17 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </code></pre>
 
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
-
-<hr>
-<h2>
-<a id="exception" class="anchor" href="#exception" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Exception</h2>
-<ul>
-<li>Invalid Input Json</li>
-<li>Invalid Routing Key</li>
-</ul>
-
-<hr>
-<h2>
-<a id="performance" class="anchor" href="#performance" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Performance</h2>
-<p>Please refer to <a href="https://github.com/Ericsson/eiffel-remrem-publish/wiki/perf.md">performance</a> </p>
-
       </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">Eiffel RemRem Publish Service maintained by <a href="https://github.com/Ericsson">Ericsson</a></p>
+        <p class="copyright">Eiffel RemRem Publish Service maintained by <a href="https://github.com/evasiba-ericsson">evasiba-ericsson</a></p>
         <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
+
     
 
   </body>
