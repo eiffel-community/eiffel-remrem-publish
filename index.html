@@ -1,37 +1,25 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Eiffel RemRem Publish Service : ">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Eiffel RemRem Publish Service</title>
+    <meta charset="UTF-8">
+    <title>Eiffel RemRem Publish Service by evasiba-ericsson</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Eiffel RemRem Publish Service</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/evasiba-ericsson/eiffel-remrem-publish" class="btn">View on GitHub</a>
+      <a href="https://github.com/evasiba-ericsson/eiffel-remrem-publish/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/evasiba-ericsson/eiffel-remrem-publish/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish">View on GitHub</a>
-
-          <h1 id="project_title">Eiffel RemRem Publish Service</h1>
-          <h2 id="project_tagline"></h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <p>REMReM (REST Mailbox for Registered Messages) is a set of tools that can be used to generate validated Eiffel messages and publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a></p>
+    <section class="main-content">
+      <p>REMReM (REST Mailbox for Registered Messages) is a set of tools that can be used to generate validated Eiffel messages and publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a></p>
 
 <h1>
 <a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RemRem Publish</h1>
@@ -78,8 +66,10 @@ usage: java -jar
 <pre><code> $ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test
 </code></pre>
 
-<p><strong>If you want to have the message non persistent add np flag</strong>
-     $ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test -np</p>
+<p><strong>If you want to have the message non persistent add np flag:</strong></p>
+
+<pre><code> $ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test -np
+</code></pre>
 
 <h2>
 <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
@@ -161,18 +151,15 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </code></pre>
 
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Eiffel RemRem Publish Service maintained by <a href="https://github.com/evasiba-ericsson">evasiba-ericsson</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/evasiba-ericsson/eiffel-remrem-publish">Eiffel RemRem Publish Service</a> is maintained by <a href="https://github.com/evasiba-ericsson">evasiba-ericsson</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-    
+    </section>
 
+  
   </body>
 </html>
