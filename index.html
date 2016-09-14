@@ -60,6 +60,26 @@
 <h2>
 <a id="usage-cli-command-line-interface" class="anchor" href="#usage-cli-command-line-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage CLI (Command Line Interface)</h2>
 
+<p>$ java -jar publish.war -h
+You passed help flag.
+usage: java -jar
+ -en,--exchange_name    exchange name, default is eiffel.poc
+ -f,--content_file      event content file, mandatory
+ -h,--help                   show help.
+ -mb,--message_bus      host of message bus to use, default is
+                             127.0.0.1
+ -np,--non_persistent        remove persistence from message sending
+ -rk,--routing_key      routing key, mandatory</p>
+
+<p>For publish we have input only from file. </p>
+
+<p>Publish on a given host, a given exchange and given routing key:                       </p>
+
+<p>$ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test</p>
+
+<p>If you want to have the message non persistent add np flag
+$ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test -np</p>
+
 <h2>
 <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service?</h2>
 
