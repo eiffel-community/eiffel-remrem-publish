@@ -71,7 +71,7 @@ import java.util.concurrent.TimeoutException;
     }
 
     private void initCli() {
-    	host = System.getProperty(PropertiesConfig.MESSAGE_BUSS_HOST);
+    	host = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
     	exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
     	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
         if (host == null || exchangeName == null) {
@@ -118,7 +118,10 @@ import java.util.concurrent.TimeoutException;
                     } else {                    	
                         log.error("Shutdown is NOT initiated by application.");
                         log.error(cause.getMessage());
-                        System.exit(-3);                   
+                        boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+                        if (cliMode) {
+                        	System.exit(-3);
+                        }
                     }
                 }
             });

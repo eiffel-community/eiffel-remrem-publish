@@ -2,7 +2,6 @@ package com.ericsson.eiffel.remrem.publish.cli;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,9 +19,6 @@ import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 /**
  * Class for interpreting the passed arguments from command line.
@@ -124,7 +120,7 @@ public class CLI implements CommandLineRunner{
     private void handleMessageBusOptions(CommandLine commandLine){
     	if (commandLine.hasOption("mb")) {
     		String messageBusHost = commandLine.getOptionValue("mb");
-    		String key = PropertiesConfig.MESSAGE_BUSS_HOST;
+    		String key = PropertiesConfig.MESSAGE_BUS_HOST;
     		System.setProperty(key, messageBusHost);
     	}
     	
@@ -140,6 +136,8 @@ public class CLI implements CommandLineRunner{
     	}
     	String key = PropertiesConfig.USE_PERSISTENCE;
 		System.setProperty(key, usePersistance);
+		key = PropertiesConfig.CLI_MODE;
+		System.setProperty(key, "true");
     }
 
     /**
@@ -147,21 +145,16 @@ public class CLI implements CommandLineRunner{
      * @param filePath the path of the file where the messages reside
      */
     public void handleContentFile(String filePath, String routingKey) {
-        JsonParser parser = new JsonParser();
         try {
             byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
             String fileContent = new String(fileBytes);
-            JsonArray bodyJson = parser.parse(fileContent).getAsJsonArray();
-            List<String> msgs = new ArrayList<>();
-            for (JsonElement obj : bodyJson) {
-                msgs.add(obj.toString());
-            }
             MessageService msgService = new MessageServiceRMQImpl();
-            List<SendResult> results = msgService.send(routingKey, msgs);
-            msgService.cleanUp();
-            clearSystemProperties();
+            
+            List<SendResult> results = msgService.send(fileContent, routingKey);
             for(SendResult result : results)
             	System.out.println(result.getMsg());
+            msgService.cleanUp();
+            clearSystemProperties();
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -173,9 +166,13 @@ public class CLI implements CommandLineRunner{
      * Remove the system properties add by this application 
      */
     private void clearSystemProperties() {
-    	String key = PropertiesConfig.MESSAGE_BUSS_HOST;
+    	String key = PropertiesConfig.MESSAGE_BUS_HOST;
     	System.clearProperty(key);
     	key = PropertiesConfig.EXCHANGE_NAME;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.USE_PERSISTENCE;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.CLI_MODE;
     	System.clearProperty(key);
     }
 
