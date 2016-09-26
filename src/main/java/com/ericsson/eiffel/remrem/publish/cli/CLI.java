@@ -1,11 +1,10 @@
 package com.ericsson.eiffel.remrem.publish.cli;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,9 +12,11 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
@@ -35,7 +36,9 @@ import com.google.gson.JsonParser;
  * @author evasiba
  *
  */
-public class CLI {
+@Component
+@ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
+public class CLI implements CommandLineRunner{
     private Options options=null;
 
     public CLI() {
@@ -175,5 +178,10 @@ public class CLI {
     	key = PropertiesConfig.EXCHANGE_NAME;
     	System.clearProperty(key);
     }
+
+	@Override
+	public void run(String... args) throws Exception {
+		parse(args);		
+	}
 
 }
