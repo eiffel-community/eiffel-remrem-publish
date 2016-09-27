@@ -58,7 +58,9 @@ import java.util.concurrent.TimeoutException;
         initCli();
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(host);         
+            factory.setHost(host);   
+            log.info("Host adress: " + host);
+            log.info("Exchange is: " + exchangeName);
             rabbitConnection = factory.newConnection();
             rabbitChannels = new ArrayList<>();
 
@@ -71,8 +73,12 @@ import java.util.concurrent.TimeoutException;
     }
 
     private void initCli() {
-    	host = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
-    	exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
+    	if (host == null) {
+    		host = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
+    	}
+    	if (exchangeName == null) {
+    		exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
+    	}
     	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
         if (host == null || exchangeName == null) {
             Yaml yaml = new Yaml();

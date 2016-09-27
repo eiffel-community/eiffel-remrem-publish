@@ -1,5 +1,7 @@
 package com.ericsson.eiffel.remrem.publish.cli;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -48,7 +50,8 @@ public class CLI implements CommandLineRunner{
     private static Options createCLIOptions() {
         Options options = new Options();
         options.addOption("h", "help", false, "show help.");
-        options.addOption("f", "content_file", true, "event content file, mandatory");
+        options.addOption("f", "content_file", true, "event content file");
+        options.addOption("json", "json_content", true, "event content in json string");
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
         options.addOption("en", "exchange_name", true, "exchange name, default is eiffel.poc");
         options.addOption("rk", "routing_key", true, "routing key, mandatory");
@@ -104,12 +107,33 @@ public class CLI implements CommandLineRunner{
             String filePath = commandLine.getOptionValue("f");
             String routingKey = commandLine.getOptionValue("rk");
             handleContentFile(filePath, routingKey);
+        } else if (commandLine.hasOption("json") && commandLine.hasOption("rk")) {
+            String content = getJsonString(commandLine);
+            String routingKey = commandLine.getOptionValue("rk");
+            handleContent(content, routingKey);
         } else {
         	System.out.println("Missing arguments, please review your arguments" + 
         						" and check if any mandatory argument is missing");
         	clearSystemProperties();
         	help(options);
         }    
+    }
+    
+    private String getJsonString(CommandLine commandLine) {
+    	String jsonContent = commandLine.getOptionValue("json");
+    	
+    	if (jsonContent.equals("-")) {
+    		try {
+    			InputStreamReader isReader = new InputStreamReader(System.in);
+    			BufferedReader bufReader = new BufferedReader(isReader);
+    			jsonContent =  bufReader.readLine();
+    		} catch (Exception e) {
+    			  e.printStackTrace();
+    	          System.exit(-5);
+    		}
+    		
+    	}
+    	return jsonContent;
     }
     
     /**
@@ -148,9 +172,23 @@ public class CLI implements CommandLineRunner{
         try {
             byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
             String fileContent = new String(fileBytes);
+            handleContent(fileContent, routingKey);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+    
+    /**
+     * Handle event from file
+     * @param filePath the path of the file where the messages reside
+     */
+    public void handleContent(String content, String routingKey) {
+        try {
             MessageService msgService = new MessageServiceRMQImpl();
             
-            List<SendResult> results = msgService.send(fileContent, routingKey);
+            List<SendResult> results = msgService.send(content, routingKey);
             for(SendResult result : results)
             	System.out.println(result.getMsg());
             msgService.cleanUp();
@@ -178,7 +216,8 @@ public class CLI implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		parse(args);		
+		parse(args);
+		System.exit(0);
 	}
 
 }
