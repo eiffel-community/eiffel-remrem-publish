@@ -56,6 +56,7 @@ public class CLI implements CommandLineRunner{
         options.addOption("en", "exchange_name", true, "exchange name, default is eiffel.poc");
         options.addOption("rk", "routing_key", true, "routing key, mandatory");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
+        options.addOption("port", "port", true, "port to connect to message bus");
         
         return options;
     }
@@ -154,6 +155,12 @@ public class CLI implements CommandLineRunner{
     		System.setProperty(key, exchangeName);
     	}
     	
+    	if (commandLine.hasOption("port")) {
+    		String exchangeName = commandLine.getOptionValue("port");
+    		String key = PropertiesConfig.MESSAGE_BUS_PORT;
+    		System.setProperty(key, exchangeName);
+    	}
+    	
     	String usePersistance = "true";
     	if (commandLine.hasOption("np")) {
     		usePersistance = "false";    		
@@ -211,6 +218,8 @@ public class CLI implements CommandLineRunner{
     	key = PropertiesConfig.USE_PERSISTENCE;
     	System.clearProperty(key);
     	key = PropertiesConfig.CLI_MODE;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.MESSAGE_BUS_PORT;
     	System.clearProperty(key);
     }
 

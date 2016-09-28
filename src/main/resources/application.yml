@@ -12,6 +12,7 @@ logging:
 
 rabbitmq:
   host: 127.0.0.1
+  port:
   #host: mb101-eiffel010.lmera.ericsson.se
   exchange:
     name: eiffel.poc

@@ -21,6 +21,8 @@ import javax.annotation.PreDestroy;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ import java.util.concurrent.TimeoutException;
     private static final Random random = new Random();
     @Value("${rabbitmq.host}") private String host;
     @Value("${rabbitmq.exchange.name}") private String exchangeName;
+    @Value("${rabbitmq.port}") private Integer port;
     private boolean usePersitance = false;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
@@ -59,28 +62,35 @@ import java.util.concurrent.TimeoutException;
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(host);   
+            if (port != null) {
+            	factory.setPort(port);
+            	log.info("Port is: " + port);
+            } else {
+            	log.info("Using default rabbit mq port.");
+            }
+            //factory.useSslProtocol();
             log.info("Host adress: " + host);
             log.info("Exchange is: " + exchangeName);
             rabbitConnection = factory.newConnection();
-            rabbitChannels = new ArrayList<>();
-
+            rabbitChannels = new ArrayList<>();            
+            
             for (int i = 0; i < CHANNEL_COUNT; i++) {
                 rabbitChannels.add(rabbitConnection.createChannel());
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
-        }
+//        } catch (KeyManagementException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (NoSuchAlgorithmException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+		}
     }
 
     private void initCli() {
-    	if (host == null) {
-    		host = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
-    	}
-    	if (exchangeName == null) {
-    		exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
-    	}
-    	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
-        if (host == null || exchangeName == null) {
+    	setValues();
+        if (host == null || exchangeName == null || port == null) {
             Yaml yaml = new Yaml();
             try {
                 String fileName = "application.yml";
@@ -92,6 +102,8 @@ import java.util.concurrent.TimeoutException;
                 Map<String,Object> rmq = (Map<String,Object>)result.get("rabbitmq");
                 if (host == null)
                 	host = (String)rmq.get("host");
+                if (port == null)
+                	port = (Integer)rmq.get("port");
                 Map<String,Object> rmqExchange = (Map<String,Object>)rmq.get("exchange");
                 if (exchangeName == null)
                 	exchangeName = (String)rmqExchange.get("name");
@@ -100,6 +112,19 @@ import java.util.concurrent.TimeoutException;
                 e.printStackTrace();
             }            
         }
+    }
+    
+    private void setValues() {
+    	if (host == null) {
+    		host = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
+    	}
+    	if (port == null) {
+    		port = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
+    	}
+    	if (exchangeName == null) {
+    		exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
+    	}
+    	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
     }
     
     @PreDestroy
