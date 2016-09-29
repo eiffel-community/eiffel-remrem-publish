@@ -37,73 +37,18 @@ import com.ericsson.eiffel.remrem.publish.service.SendResult;
 @Component
 @ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
 public class CLI implements CommandLineRunner{
-    private Options options=null;
-
-    public CLI() {
-        options = createCLIOptions();
-    }
-
-    /**
-     * Creates the options needed by command line interface
-     * @return the options this CLI can handle
-     */
-    private static Options createCLIOptions() {
-        Options options = new Options();
-        options.addOption("h", "help", false, "show help.");
-        options.addOption("f", "content_file", true, "event content file");
-        options.addOption("json", "json_content", true, "event content in json string");
-        options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
-        options.addOption("en", "exchange_name", true, "exchange name, default is eiffel.poc");
-        options.addOption("rk", "routing_key", true, "routing key, mandatory");
-        options.addOption("np", "non_persistent", false, "remove persistence from message sending");
-        options.addOption("port", "port", true, "port to connect to message bus");
-        
-        return options;
-    }
-    
-    /**
-     * Prints the help for this application and exits.
-     * @param options the options to print usage help for
-     */
-    private static void help(Options options) {
-        // This prints out some help
-        HelpFormatter formater = new HelpFormatter();
-        formater.printHelp("java -jar", options);
-        System.exit(1);
-    }
-    
-    /**
-     * Parse the given arguments and act on them
-     * @param args command line arguments
-     * @return if the service should start or not
-     */
-    public boolean parse(String[] args) {
-        CommandLineParser parser = new DefaultParser(); 
-        boolean startService = true;
-        try {
-            CommandLine commandLine = parser.parse(options, args);
-            Option[] existingOptions = commandLine.getOptions(); 
-            if (existingOptions.length > 0) {
-                startService = false;
-                handleOptions(commandLine);
-            }
-        } catch (Exception e) {
-        	e.printStackTrace();
-            help(options);
-        }
-        return startService;
-    }
     
     /**
      * Delegates actions depending on the passed arguments
      * @param commandLine command line arguments
      */
-    private void handleOptions(CommandLine commandLine) {
+    private void handleOptions() {
+    	CommandLine commandLine = CliOptions.getCommandLine();
     	handleMessageBusOptions(commandLine);
     	if (commandLine.hasOption("h")) {
     		System.out.println("You passed help flag.");
     		clearSystemProperties();
-    		help(options);
+    		CliOptions.help();
     	} else if (commandLine.hasOption("f") && commandLine.hasOption("rk")) {
             String filePath = commandLine.getOptionValue("f");
             String routingKey = commandLine.getOptionValue("rk");
@@ -116,7 +61,7 @@ public class CLI implements CommandLineRunner{
         	System.out.println("Missing arguments, please review your arguments" + 
         						" and check if any mandatory argument is missing");
         	clearSystemProperties();
-        	help(options);
+        	CliOptions.help();
         }    
     }
     
@@ -225,7 +170,8 @@ public class CLI implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		parse(args);
+		if (CliOptions.hasParsedOptions())
+			handleOptions();
 		System.exit(0);
 	}
 

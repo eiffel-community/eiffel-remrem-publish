@@ -7,6 +7,7 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.ericsson.eiffel.remrem.publish.cli.CliOptions;
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
 @SpringBootApplication  
@@ -17,12 +18,13 @@ public class App extends SpringBootServletInitializer {
 	    }
 	    
 	    private static void startService(String[] args) {	
+	    	CliOptions.parse(args);
 	    	SpringApplication application = new SpringApplication(App.class);
 	    	application.addInitializers(new SpringLoggingInitializer());
 	    	application.setBannerMode(Banner.Mode.OFF);
 	    	application.setLogStartupInfo(false);
 	    	// We do not start web service if any arguments are passed
-	    	if (args.length > 0)
+	    	if (CliOptions.hasParsedOptions())
 	    		application.setWebEnvironment(false);
 	        ApplicationContext ctx = application.run(args);
 	    }
