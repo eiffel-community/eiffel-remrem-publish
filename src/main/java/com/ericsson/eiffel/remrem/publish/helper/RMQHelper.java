@@ -14,18 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
@@ -36,7 +33,9 @@ import java.util.concurrent.TimeoutException;
     @Value("${rabbitmq.host}") private String host;
     @Value("${rabbitmq.exchange.name}") private String exchangeName;
     @Value("${rabbitmq.port}") private Integer port;
-    private boolean usePersitance = false;
+    @Value("${rabbitmq.user}") private String user;
+    @Value("${rabbitmq.password}") private String password;
+    private boolean usePersitance = true;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
 
@@ -90,39 +89,22 @@ import java.util.concurrent.TimeoutException;
 
     private void initCli() {
     	setValues();
-        if (host == null || exchangeName == null || port == null) {
-            Yaml yaml = new Yaml();
-            try {
-                String fileName = "application.yml";
-                ClassLoader classLoader = getClass().getClassLoader(); 
-                InputStream ios = classLoader.getResourceAsStream(fileName);
-
-                // Parse the YAML file and return the output as a series of Maps and Lists
-                Map<String,Object> result = (Map<String,Object>)yaml.load(ios);
-                Map<String,Object> rmq = (Map<String,Object>)result.get("rabbitmq");
-                if (host == null)
-                	host = (String)rmq.get("host");
-                if (port == null)
-                	port = (Integer)rmq.get("port");
-                Map<String,Object> rmqExchange = (Map<String,Object>)rmq.get("exchange");
-                if (exchangeName == null)
-                	exchangeName = (String)rmqExchange.get("name");
-                int i = 2;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }            
-        }
     }
     
     private void setValues() {
-    	if (host == null) {
-    		host = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
+    	String passedHost = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST); 
+    	if (passedHost != null) {
+    		host = passedHost;
     	}
-    	if (port == null) {
-    		port = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
+    	
+    	Integer passedPort = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT); 
+    	if (passedPort != null) {
+    		port = passedPort;
     	}
-    	if (exchangeName == null) {
-    		exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
+    	
+    	String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME); 
+    	if (passedExchange != null) {
+    		exchangeName = passedExchange;
     	}
     	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
     }

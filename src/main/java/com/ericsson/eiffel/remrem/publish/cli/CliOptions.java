@@ -7,6 +7,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+
 public class CliOptions {
 	static private Options options=null;
 	static private CommandLine commandLine;
@@ -40,13 +42,19 @@ public class CliOptions {
     	createCLIOptions();
         CommandLineParser parser = new DefaultParser(); 
         try {
-            commandLine = parser.parse(options, args); 
+            commandLine = parser.parse(options, args, true); 
+            CliOptions.handleMessageBusOptions();
         } catch (Exception e) {
         	e.printStackTrace();
             help();
         }
-    }
+    }    
     
+    /**
+     * Checks if any options that CLI can handle have been passed
+     * @return true if any valid options have been 
+     * 			passed as arguments otherwise false
+     */
     public static boolean hasParsedOptions() {
     	if (commandLine == null)
     		return false;
@@ -64,5 +72,55 @@ public class CliOptions {
         HelpFormatter formater = new HelpFormatter();
         formater.printHelp("java -jar", options);
         System.exit(1);
+    }
+    
+    /**
+     * Sets the system properties with values passed for 
+     * message bus host and exchange name
+     * @param commandLine command line arguments
+     */
+    public static void handleMessageBusOptions(){
+    	if (commandLine.hasOption("mb")) {
+    		String messageBusHost = commandLine.getOptionValue("mb");
+    		String key = PropertiesConfig.MESSAGE_BUS_HOST;
+    		System.setProperty(key, messageBusHost);
+    	}
+    	
+    	if (commandLine.hasOption("en")) {
+    		String exchangeName = commandLine.getOptionValue("en");
+    		String key = PropertiesConfig.EXCHANGE_NAME;
+    		System.setProperty(key, exchangeName);
+    	}
+    	
+    	if (commandLine.hasOption("port")) {
+    		String exchangeName = commandLine.getOptionValue("port");
+    		String key = PropertiesConfig.MESSAGE_BUS_PORT;
+    		System.setProperty(key, exchangeName);
+    	}
+    	
+    	String usePersistance = "true";
+    	if (commandLine.hasOption("np")) {
+    		usePersistance = "false";    		
+    	}
+    	String key = PropertiesConfig.USE_PERSISTENCE;
+		System.setProperty(key, usePersistance);
+		key = PropertiesConfig.CLI_MODE;
+		System.setProperty(key, "true");
+    }
+    
+    /**
+     * Remove the system properties added by this application 
+     */
+    public static void clearSystemProperties() {
+    	String key = PropertiesConfig.MESSAGE_BUS_HOST;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.EXCHANGE_NAME;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.USE_PERSISTENCE;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.CLI_MODE;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.MESSAGE_BUS_PORT;
+    	System.clearProperty(key);
     }
 }

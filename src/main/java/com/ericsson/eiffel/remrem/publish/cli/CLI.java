@@ -8,18 +8,13 @@ import java.util.List;
 
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
-import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
-import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 
 /**
@@ -38,16 +33,17 @@ import com.ericsson.eiffel.remrem.publish.service.SendResult;
 @ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
 public class CLI implements CommandLineRunner{
     
+	@Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
+	
     /**
      * Delegates actions depending on the passed arguments
      * @param commandLine command line arguments
      */
     private void handleOptions() {
-    	CommandLine commandLine = CliOptions.getCommandLine();
-    	handleMessageBusOptions(commandLine);
+    	CommandLine commandLine = CliOptions.getCommandLine();    	
     	if (commandLine.hasOption("h")) {
     		System.out.println("You passed help flag.");
-    		clearSystemProperties();
+    		CliOptions.clearSystemProperties();
     		CliOptions.help();
     	} else if (commandLine.hasOption("f") && commandLine.hasOption("rk")) {
             String filePath = commandLine.getOptionValue("f");
@@ -60,7 +56,7 @@ public class CLI implements CommandLineRunner{
         } else {
         	System.out.println("Missing arguments, please review your arguments" + 
         						" and check if any mandatory argument is missing");
-        	clearSystemProperties();
+        	CliOptions.clearSystemProperties();
         	CliOptions.help();
         }    
     }
@@ -82,39 +78,6 @@ public class CLI implements CommandLineRunner{
     	return jsonContent;
     }
     
-    /**
-     * Sets the system properties with values passed for 
-     * message bus host and exchange name
-     * @param commandLine command line arguments
-     */
-    private void handleMessageBusOptions(CommandLine commandLine){
-    	if (commandLine.hasOption("mb")) {
-    		String messageBusHost = commandLine.getOptionValue("mb");
-    		String key = PropertiesConfig.MESSAGE_BUS_HOST;
-    		System.setProperty(key, messageBusHost);
-    	}
-    	
-    	if (commandLine.hasOption("en")) {
-    		String exchangeName = commandLine.getOptionValue("en");
-    		String key = PropertiesConfig.EXCHANGE_NAME;
-    		System.setProperty(key, exchangeName);
-    	}
-    	
-    	if (commandLine.hasOption("port")) {
-    		String exchangeName = commandLine.getOptionValue("port");
-    		String key = PropertiesConfig.MESSAGE_BUS_PORT;
-    		System.setProperty(key, exchangeName);
-    	}
-    	
-    	String usePersistance = "true";
-    	if (commandLine.hasOption("np")) {
-    		usePersistance = "false";    		
-    	}
-    	String key = PropertiesConfig.USE_PERSISTENCE;
-		System.setProperty(key, usePersistance);
-		key = PropertiesConfig.CLI_MODE;
-		System.setProperty(key, "true");
-    }
 
     /**
      * Handle event from file
@@ -138,35 +101,17 @@ public class CLI implements CommandLineRunner{
      */
     public void handleContent(String content, String routingKey) {
         try {
-            MessageService msgService = new MessageServiceRMQImpl();
-            
-            List<SendResult> results = msgService.send(content, routingKey);
+            List<SendResult> results = messageService.send(content, routingKey);
             for(SendResult result : results)
             	System.out.println(result.getMsg());
-            msgService.cleanUp();
-            clearSystemProperties();
+            messageService.cleanUp();
+            CliOptions.clearSystemProperties();
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             System.exit(-1);
         }
-    }
-    
-    /**
-     * Remove the system properties add by this application 
-     */
-    private void clearSystemProperties() {
-    	String key = PropertiesConfig.MESSAGE_BUS_HOST;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.EXCHANGE_NAME;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.USE_PERSISTENCE;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.CLI_MODE;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.MESSAGE_BUS_PORT;
-    	System.clearProperty(key);
-    }
+    }      
 
 	@Override
 	public void run(String... args) throws Exception {

@@ -21,6 +21,9 @@ import java.util.List;
     private static final String SUCCEED = "succeed";
     @Autowired @Qualifier("rmqHelper") RMQHelper rmqHelper;
 
+    /* (non-Javadoc)
+     * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.lang.String, java.util.List)
+     */
     @Override public List<SendResult> send(String routingKey, List<String> msgs) {
         List<SendResult> results = new ArrayList<>();
         if (!CollectionUtils.isEmpty(msgs)) {
@@ -31,13 +34,19 @@ import java.util.List;
         return results;
     }
 
-    public List<SendResult> send(String jsonContent, String routingKey) {
+    /* (non-Javadoc)
+     * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.lang.String, java.lang.String)
+     */
+    @Override public List<SendResult> send(String jsonContent, String routingKey) {
     	JsonParser parser = new JsonParser();
     	JsonElement json = parser.parse(jsonContent);
     	return send(routingKey, json);
     }
     
-    public List<SendResult> send(String routingKey, JsonElement json) {
+    /* (non-Javadoc)
+     * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.lang.String, com.google.gson.JsonElement)
+     */
+    @Override public List<SendResult> send(String routingKey, JsonElement json) {
     	List<String> msgs = new ArrayList<>();
     	
     	if (json == null) {    		
