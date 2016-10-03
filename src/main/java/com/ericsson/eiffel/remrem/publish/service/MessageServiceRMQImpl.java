@@ -37,7 +37,7 @@ import java.util.List;
     /* (non-Javadoc)
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.lang.String, java.lang.String)
      */
-    @Override public List<SendResult> send(String jsonContent, String routingKey) {
+    @Override public List<SendResult> send(String routingKey, String jsonContent) {
     	JsonParser parser = new JsonParser();
     	JsonElement json = parser.parse(jsonContent);
     	return send(routingKey, json);
