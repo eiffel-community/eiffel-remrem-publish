@@ -45,14 +45,12 @@ public class CLI implements CommandLineRunner{
     		System.out.println("You passed help flag.");
     		CliOptions.clearSystemProperties();
     		CliOptions.help();
-    	} else if (commandLine.hasOption("f") && commandLine.hasOption("rk")) {
+    	} else if (commandLine.hasOption("f")) {
             String filePath = commandLine.getOptionValue("f");
-            String routingKey = commandLine.getOptionValue("rk");
-            handleContentFile(filePath, routingKey);
-        } else if (commandLine.hasOption("json") && commandLine.hasOption("rk")) {
+            handleContentFile(filePath);
+        } else if (commandLine.hasOption("json")) {
             String content = getJsonString(commandLine);
-            String routingKey = commandLine.getOptionValue("rk");
-            handleContent(content, routingKey);
+            handleContent(content);
         } else {
         	System.out.println("Missing arguments, please review your arguments" + 
         						" and check if any mandatory argument is missing");
@@ -78,16 +76,15 @@ public class CLI implements CommandLineRunner{
     	return jsonContent;
     }
     
-
     /**
      * Handle event from file
      * @param filePath the path of the file where the messages reside
      */
-    public void handleContentFile(String filePath, String routingKey) {
+    public void handleContentFile(String filePath) {
         try {
             byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
             String fileContent = new String(fileBytes);
-            handleContent(fileContent, routingKey);
+            handleContent(fileContent);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -99,8 +96,9 @@ public class CLI implements CommandLineRunner{
      * Handle event from file
      * @param filePath the path of the file where the messages reside
      */
-    public void handleContent(String content, String routingKey) {
+    public void handleContent(String content) {
         try {
+        	String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
             List<SendResult> results = messageService.send(content, routingKey);
             for(SendResult result : results)
             	System.out.println(result.getMsg());

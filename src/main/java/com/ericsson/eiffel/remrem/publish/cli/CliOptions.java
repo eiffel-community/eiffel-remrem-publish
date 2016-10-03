@@ -5,6 +5,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
@@ -24,13 +25,39 @@ public class CliOptions {
     public static void createCLIOptions() {
         options = new Options();
         options.addOption("h", "help", false, "show help.");
-        options.addOption("f", "content_file", true, "event content file");
-        options.addOption("json", "json_content", true, "event content in json string");
+        options.addOptionGroup(createContentGroup());
+        options.addOptionGroup(createRoutingKeyGroup());
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
         options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
-        options.addOption("rk", "routing_key", true, "routing key, mandatory");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus");
+    }
+  
+    private static Option createJsonOption() {
+    	return new Option("json", "json_content", true, "event content in json string. The value can also be a dash(-) and the json will be read from the output of other programs if piped.");
+    }
+    
+    private static Option createFileOption() {
+    	return new Option("f", "content_file", true, "event content file");
+    }
+    
+    private static Option createRoutingKeyOption() {
+    	return new Option("rk", "routing_key", true, "routing key, mandatory");
+    }
+    
+    private static OptionGroup createContentGroup() {
+    	OptionGroup group = new OptionGroup();
+    	group.addOption(createFileOption());
+    	group.addOption(createJsonOption());
+    	group.setRequired(true);
+    	return group;
+    }
+    
+    private static OptionGroup createRoutingKeyGroup() {
+    	OptionGroup group = new OptionGroup();
+    	group.addOption(createRoutingKeyOption());
+    	group.setRequired(true);
+    	return group;
     }
     
     /**

@@ -6,13 +6,12 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.ericsson.eiffel.remrem.publish.cli.CliOptions;
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
-
 
 @SpringBootApplication  
 @ComponentScan("com.ericsson.eiffel.remrem")
@@ -28,8 +27,8 @@ public class App extends SpringBootServletInitializer {
 	    	application.setBannerMode(Banner.Mode.OFF);
 	    	application.setLogStartupInfo(false);
 	    	// We do not start web service if any CLI arguments are passed
-	    	if (!CliOptions.hasParsedOptions())
-	    		application.setWebEnvironment(false);
+	    	if (CliOptions.hasParsedOptions())
+	    		application.setWebEnvironment(false);	 
 	        ApplicationContext ctx = application.run(args);
 	    }
 	    
@@ -39,7 +38,8 @@ public class App extends SpringBootServletInitializer {
 	    	List<String> nonOptions = springARgs.getNonOptionArgs();
 	    	String[] nonSpringArgs = nonOptions.toArray(new String[0]);
 	    	// We need to parse the cLI options before Spring starts since we need the available when
-	    	// Spring instantiate autowired components needing argument values 
-	    	CliOptions.parse(nonSpringArgs);
+	    	// Spring instantiate autowired components needing argument values
+	    	if (nonSpringArgs.length > 0)
+	    		CliOptions.parse(nonSpringArgs);
 	    }
 }

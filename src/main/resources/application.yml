@@ -13,6 +13,8 @@ logging:
 rabbitmq:
   host: 127.0.0.1
   port:
+  user:
+  password:
   #host: mb101-eiffel010.lmera.ericsson.se
   exchange:
     name: amq.direct
