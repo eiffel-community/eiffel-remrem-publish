@@ -28,7 +28,7 @@ public class App extends SpringBootServletInitializer {
 	    	application.setBannerMode(Banner.Mode.OFF);
 	    	application.setLogStartupInfo(false);
 	    	// We do not start web service if any CLI arguments are passed
-	    	if (CliOptions.hasParsedOptions())
+	    	if (!CliOptions.hasParsedOptions())
 	    		application.setWebEnvironment(false);
 	        ApplicationContext ctx = application.run(args);
 	    }

@@ -15,7 +15,7 @@ rabbitmq:
   port:
   #host: mb101-eiffel010.lmera.ericsson.se
   exchange:
-    name: eiffel.poc
+    name: amq.direct
 
 spring:
   http.converters:
