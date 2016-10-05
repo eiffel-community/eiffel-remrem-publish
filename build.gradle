@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.3.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
         classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:0.8.2'
     }
 }
@@ -21,7 +21,7 @@ plugins {
 
 war {
     baseName = 'remrem-publish'
-    version =  '0.1.5'
+    version =  '0.1.6'
 }
 
 apply plugin: 'spring-boot'
@@ -70,7 +70,7 @@ repositories {
 }
 
 ext {
-    sprintBootVersion = "1.3.5.RELEASE"
+    sprintBootVersion = "1.4.1.RELEASE"
 }
 
 task wrapper(type: Wrapper) {
@@ -99,6 +99,7 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
     compile "org.springframework.boot:spring-boot-starter-actuator:$sprintBootVersion"
+    compile "org.springframework.boot:spring-boot:$sprintBootVersion"
     compile 'com.rabbitmq:amqp-client:3.5.7'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'org.projectlombok:lombok:1.16.8'

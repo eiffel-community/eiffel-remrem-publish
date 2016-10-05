@@ -14,16 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
@@ -33,7 +32,10 @@ import java.util.concurrent.TimeoutException;
     private static final Random random = new Random();
     @Value("${rabbitmq.host}") private String host;
     @Value("${rabbitmq.exchange.name}") private String exchangeName;
-    private boolean usePersitance = false;
+    @Value("${rabbitmq.port}") private Integer port;
+    @Value("${rabbitmq.user}") private String user;
+    @Value("${rabbitmq.password}") private String password;
+    private boolean usePersitance = true;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
 
@@ -58,42 +60,53 @@ import java.util.concurrent.TimeoutException;
         initCli();
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(host);         
+            factory.setHost(host);   
+            if (port != null) {
+            	factory.setPort(port);
+            	log.info("Port is: " + port);
+            } else {
+            	log.info("Using default rabbit mq port.");
+            }
+            //factory.useSslProtocol();
+            log.info("Host adress: " + host);
+            log.info("Exchange is: " + exchangeName);
             rabbitConnection = factory.newConnection();
-            rabbitChannels = new ArrayList<>();
-
+            rabbitChannels = new ArrayList<>();            
+            
             for (int i = 0; i < CHANNEL_COUNT; i++) {
                 rabbitChannels.add(rabbitConnection.createChannel());
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
-        }
+//        } catch (KeyManagementException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (NoSuchAlgorithmException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+		}
     }
 
     private void initCli() {
-    	host = System.getProperty(PropertiesConfig.MESSAGE_BUSS_HOST);
-    	exchangeName = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
+    	setValues();
+    }
+    
+    private void setValues() {
+    	String passedHost = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST); 
+    	if (passedHost != null) {
+    		host = passedHost;
+    	}
+    	
+    	Integer passedPort = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT); 
+    	if (passedPort != null) {
+    		port = passedPort;
+    	}
+    	
+    	String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME); 
+    	if (passedExchange != null) {
+    		exchangeName = passedExchange;
+    	}
     	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
-        if (host == null || exchangeName == null) {
-            Yaml yaml = new Yaml();
-            try {
-                String fileName = "application.yml";
-                ClassLoader classLoader = getClass().getClassLoader(); 
-                InputStream ios = classLoader.getResourceAsStream(fileName);
-
-                // Parse the YAML file and return the output as a series of Maps and Lists
-                Map<String,Object> result = (Map<String,Object>)yaml.load(ios);
-                Map<String,Object> rmq = (Map<String,Object>)result.get("rabbitmq");
-                if (host == null)
-                	host = (String)rmq.get("host");
-                Map<String,Object> rmqExchange = (Map<String,Object>)rmq.get("exchange");
-                if (exchangeName == null)
-                	exchangeName = (String)rmqExchange.get("name");
-                int i = 2;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }            
-        }
     }
     
     @PreDestroy
@@ -118,7 +131,10 @@ import java.util.concurrent.TimeoutException;
                     } else {                    	
                         log.error("Shutdown is NOT initiated by application.");
                         log.error(cause.getMessage());
-                        System.exit(-3);                   
+                        boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+                        if (cliMode) {
+                        	System.exit(-3);
+                        }
                     }
                 }
             });
