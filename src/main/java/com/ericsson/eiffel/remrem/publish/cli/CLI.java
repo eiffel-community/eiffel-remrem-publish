@@ -14,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 
@@ -115,7 +116,8 @@ public class CLI implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		if (CliOptions.hasParsedOptions())
 			handleOptions();
-		System.exit(0);
+		boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+        if (cliMode) 
+        	CliOptions.help();
 	}
-
 }
