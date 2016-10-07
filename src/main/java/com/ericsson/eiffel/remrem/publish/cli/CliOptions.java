@@ -95,7 +95,8 @@ public class CliOptions {
      * @param options the options to print usage help for
      */
     public static void help() {
-        // This prints out some help
+    	CliOptions.clearSystemProperties();
+        // This prints out some help    	
         HelpFormatter formater = new HelpFormatter();
         formater.printHelp("java -jar", options);
         System.exit(1);

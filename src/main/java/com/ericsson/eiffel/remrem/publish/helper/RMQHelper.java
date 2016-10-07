@@ -60,7 +60,8 @@ import java.util.concurrent.TimeoutException;
         initCli();
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(host);   
+            factory.setHost(host);  
+            
             if (port != null) {
             	factory.setPort(port);
             	log.info("Port is: " + port);
@@ -144,8 +145,9 @@ import java.util.concurrent.TimeoutException;
     			msgProps = MessageProperties.PERSISTENT_BASIC;
 
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
+            log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length, exchangeName, routingKey);
 		} catch (Exception e) {
-			// TODO: handle exception
+			 log.error("REMREM Publish: Failed to send message: " + e.getMessage(), e);
 		}
     }
 
