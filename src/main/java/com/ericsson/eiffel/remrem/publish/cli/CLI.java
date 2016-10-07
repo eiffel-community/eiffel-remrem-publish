@@ -44,7 +44,6 @@ public class CLI implements CommandLineRunner{
     	CommandLine commandLine = CliOptions.getCommandLine();    	
     	if (commandLine.hasOption("h")) {
     		System.out.println("You passed help flag.");
-    		CliOptions.clearSystemProperties();
     		CliOptions.help();
     	} else if (commandLine.hasOption("f")) {
             String filePath = commandLine.getOptionValue("f");
@@ -54,8 +53,7 @@ public class CLI implements CommandLineRunner{
             handleContent(content);
         } else {
         	System.out.println("Missing arguments, please review your arguments" + 
-        						" and check if any mandatory argument is missing");
-        	CliOptions.clearSystemProperties();
+        						" and check if any mandatory argument is missing");        	
         	CliOptions.help();
         }    
     }
@@ -100,7 +98,7 @@ public class CLI implements CommandLineRunner{
     public void handleContent(String content) {
         try {
         	String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
-            List<SendResult> results = messageService.send(content, routingKey);
+            List<SendResult> results = messageService.send(routingKey, content);
             for(SendResult result : results)
             	System.out.println(result.getMsg());
             messageService.cleanUp();
