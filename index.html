@@ -16,14 +16,14 @@
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish">View on GitHub</a>
+          <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
 
           <h1 id="project_title">Eiffel RemRem Publish Service</h1>
           <h2 id="project_tagline"></h2>
 
             <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/evasiba-ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
+              <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
             </section>
         </header>
     </div>
@@ -60,35 +60,31 @@
 <h2>
 <a id="usage-cli-command-line-interface" class="anchor" href="#usage-cli-command-line-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage CLI (Command Line Interface)</h2>
 
-<p>$ java -jar publish.war -h</p>
-
-<p>You passed help flag.</p>
-
-<p>usage: java -jar</p>
-
-<p>-en,--exchange_name    exchange name, default is eiffel.poc</p>
-
-<p>-f,--content_file      event content file, mandatory</p>
-
-<p>-h,--help                   show help.</p>
-
-<p>-mb,--message_bus      host of message bus to use, default is
-                             127.0.0.1</p>
-
-<p>-np,--non_persistent        remove persistence from message sending</p>
-
-<p>-rk,--routing_key      routing key, mandatory</p>
+<pre>$ java -jar publish.war -h
+You passed help flag.
+usage: java -jar
+ -en,--exchange_name &lt;arg&gt;    exchange name, default is amq.direct
+ -f,--content_file &lt;arg&gt;      event content file
+ -h,--help                    show help.
+ -json,--json_content &lt;arg&gt;   event content in json string. The value can
+                              also be a dash(-) and the json will be read
+                              from the output of other programs if piped.
+ -mb,--message_bus &lt;arg&gt;      host of message bus to use, default is
+                              127.0.0.1
+ -np,--non_persistent         remove persistence from message sending
+ -port,--port &lt;arg&gt;           port to connect to message bus
+ -rk,--routing_key &lt;arg&gt;      routing key, mandatory</pre>
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
-<p><strong>Publish on a given host, a given exchange and given routing key:</strong>                    </p>
+<p><strong>Publish on a given host, a given exchange and given routing key:</strong></p>
 
-<pre><code> $ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test
+<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb101 -rk test
 </code></pre>
 
 <p><strong>If you want to have the message non persistent add np flag:</strong></p>
 
-<pre><code> $ java -jar publish.war -f publishMessages.json -en mb123-eiffelesusedl912 -mb mb123-eiffelesusedl912.docker.ericsson.com -rk test -np
+<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb123 -rk test -np
 </code></pre>
 
 <h2>
@@ -99,10 +95,11 @@
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
 
-<p>Two parameters need to be provided to start the service:</p>
+<p>Parameters need to be provided to start the service:</p>
 
 <ul>
 <li><code>rabbitmq.host (String)</code></li>
+<li><code>rabbitmq.port (Optional)</code></li>
 <li><code>rabbitmq.exchange.name (String)</code></li>
 </ul>
 
