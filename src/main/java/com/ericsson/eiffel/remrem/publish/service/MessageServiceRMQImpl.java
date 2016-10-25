@@ -4,6 +4,7 @@ import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,19 @@ import java.util.List;
      */
     @Override public List<SendResult> send(String routingKey, String jsonContent) {
     	JsonParser parser = new JsonParser();
+    	try {
     	JsonElement json = parser.parse(jsonContent);
-    	return send(routingKey, json);
+        return send(routingKey, json);
+    	} catch (final JsonSyntaxException e){
+            String resultMsg = "Could not parse JSON.";
+            if (e.getCause() != null) {
+                resultMsg = resultMsg + " Cause: " + e.getCause().getMessage();
+            }
+            log.error(resultMsg, e.getMessage());
+            List<SendResult> results = new ArrayList<>();
+            results.add(new SendResult(resultMsg));
+            return results;
+    	}
     }
     
     /* (non-Javadoc)
@@ -67,8 +79,7 @@ import java.util.List;
     		msgs.add(json.toString());
     	}
     	
-        List<SendResult> results = send(routingKey, msgs);
-    	return results;
+        return send(routingKey, msgs);
     }
     
     private SendResult sendMessage(String routingKey, String msg) {
@@ -90,13 +101,12 @@ import java.util.List;
         }
     }
     
-    public void cleanUp() {
+    @Override public void cleanUp() {
         if (rmqHelper != null)
             try {
                 rmqHelper.cleanUp();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
     }
 }
