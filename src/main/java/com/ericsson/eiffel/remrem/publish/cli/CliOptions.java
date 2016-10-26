@@ -7,6 +7,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
+import org.apache.commons.lang3.StringUtils;
+import java.lang.Exception;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 
@@ -31,6 +33,7 @@ public class CliOptions {
         options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus");
+        options.addOption("tls", "tls", true, "use tls, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
     }
   
     private static Option createJsonOption() {
@@ -107,7 +110,7 @@ public class CliOptions {
      * message bus host and exchange name
      * @param commandLine command line arguments
      */
-    public static void handleMessageBusOptions(){
+    public static void handleMessageBusOptions() throws Exception {
     	if (commandLine.hasOption("mb")) {
     		String messageBusHost = commandLine.getOptionValue("mb");
     		String key = PropertiesConfig.MESSAGE_BUS_HOST;
@@ -124,6 +127,20 @@ public class CliOptions {
     		String exchangeName = commandLine.getOptionValue("port");
     		String key = PropertiesConfig.MESSAGE_BUS_PORT;
     		System.setProperty(key, exchangeName);
+    	}
+  
+    	if (commandLine.hasOption("tls")) {
+    		String tls_ver = commandLine.getOptionValue("tls");
+    		if (tls_ver == null) {
+    			tls_ver = "NULL";
+    		}
+    		String[] validTlsVersions = new String[]{"1", "1.1", "1.2", "default"};
+    		if (StringUtils.indexOfAny(tls_ver, validTlsVersions) == -1) {
+    			throw new Exception("Specified TLS version is not valid! Specify a valid TLS version!");
+    		}
+    		String key = PropertiesConfig.TLS;
+    		System.setProperty(key, tls_ver);
+    		
     	}
     	
     	String usePersistance = "true";
@@ -149,6 +166,8 @@ public class CliOptions {
     	key = PropertiesConfig.CLI_MODE;
     	System.clearProperty(key);
     	key = PropertiesConfig.MESSAGE_BUS_PORT;
+    	System.clearProperty(key);
+    	key = PropertiesConfig.TLS;
     	System.clearProperty(key);
     }
 }
