@@ -21,7 +21,7 @@ plugins {
 
 war {
     baseName = 'remrem-publish'
-    version =  '0.1.7'
+    version =  '0.1.8'
 }
 
 apply plugin: 'spring-boot'
@@ -74,7 +74,7 @@ ext {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.13'
+  gradleVersion = '3.1'
   distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
@@ -91,7 +91,7 @@ task integrationTest(type: Test) {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile('com.jayway.restassured:rest-assured:2.3.2')
+    compile('com.jayway.restassured:rest-assured:2.9.0')
     compile('org.yaml:snakeyaml:1.8')
     // The production code uses the SLF4J logging API at compile time
     compile 'org.slf4j:slf4j-api:1.7.18'
@@ -126,6 +126,6 @@ dependencies {
     testCompile 'com.jayway.jsonpath:json-path-assert:2.2.0'
 
     // In order to get embedded app container to work
-    integrationTestRuntime("org.springframework.boot:spring-boot-starter-tomcat")
-    integrationTestCompile group: 'com.jayway.restassured', name: 'rest-assured', version: '2.9.0'
+//    integrationTestRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+//    integrationTestCompile group: 'com.jayway.restassured', name: 'rest-assured', version: '2.9.0'
 }

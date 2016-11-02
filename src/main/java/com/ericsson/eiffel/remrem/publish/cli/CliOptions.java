@@ -24,7 +24,6 @@ public class CliOptions {
      */
     public static void createCLIOptions() {
         options = new Options();
-        options.addOption("h", "help", false, "show help.");
         options.addOptionGroup(createContentGroup());
         options.addOptionGroup(createRoutingKeyGroup());
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
@@ -45,8 +44,13 @@ public class CliOptions {
     	return new Option("rk", "routing_key", true, "routing key, mandatory");
     }
     
+    private static Option createHelpOption() {
+    	return new Option("h", "help", false, "show help");
+    }
+    
     private static OptionGroup createContentGroup() {
     	OptionGroup group = new OptionGroup();
+    	group.addOption(createHelpOption());
     	group.addOption(createFileOption());
     	group.addOption(createJsonOption());
     	group.setRequired(true);
@@ -55,7 +59,8 @@ public class CliOptions {
     
     private static OptionGroup createRoutingKeyGroup() {
     	OptionGroup group = new OptionGroup();
-    	group.addOption(createRoutingKeyOption());
+    	group.addOption(createHelpOption());
+    	group.addOption(createRoutingKeyOption());    	
     	group.setRequired(true);
     	return group;
     }

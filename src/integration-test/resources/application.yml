@@ -2,6 +2,9 @@ rabbitmq:
   host: 150.132.35.5
   exchange:
     name: eiffel.test
+  port:
+  user:
+  password:
 spring:
   http.converters:
     preferred-json-mapper: gson
