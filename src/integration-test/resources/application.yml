@@ -5,6 +5,7 @@ rabbitmq:
   port:
   user:
   password:
+  tls:
 spring:
   http.converters:
     preferred-json-mapper: gson

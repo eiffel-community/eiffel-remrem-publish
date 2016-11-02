@@ -33,6 +33,7 @@ import java.util.concurrent.TimeoutException;
     @Value("${rabbitmq.host}") private String host;
     @Value("${rabbitmq.exchange.name}") private String exchangeName;
     @Value("${rabbitmq.port}") private Integer port;
+    @Value("${rabbitmq.tls}") private String tls_ver;
     @Value("${rabbitmq.user}") private String user;
     @Value("${rabbitmq.password}") private String password;
     private boolean usePersitance = true;
@@ -45,6 +46,14 @@ import java.util.concurrent.TimeoutException;
 
 	public void setHost(String host) {
 		this.host = host;
+	}
+	
+  public String getTlsVer() {
+		return tls_ver;
+	}
+
+	public void setTlsVer(String tls_ver) {
+		this.tls_ver = tls_ver;
 	}
 
 	public String getExchangeName() {
@@ -61,16 +70,31 @@ import java.util.concurrent.TimeoutException;
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(host);  
-            
+
             if (port != null) {
             	factory.setPort(port);
             	log.info("Port is: " + port);
             } else {
             	log.info("Using default rabbit mq port.");
             }
-            //factory.useSslProtocol();
+            
             log.info("Host adress: " + host);
             log.info("Exchange is: " + exchangeName);
+            // "TLSv1.2"
+            if (tls_ver != null && !tls_ver.isEmpty()) {
+            	if (tls_ver.contains("default")) {
+            		log.info("Using default TLS version connection to RabbitMq.");
+            		factory.useSslProtocol();
+            	}
+            	else {
+               		log.info("Using TLS version " + tls_ver + " connection to RabbitMq.");
+            		factory.useSslProtocol("TLSv" + tls_ver);
+            	}
+            }
+            else{
+            	log.info("Using standard connection method to RabbitMq.");
+            }
+
             rabbitConnection = factory.newConnection();
             rabbitChannels = new ArrayList<>();            
             
@@ -79,13 +103,9 @@ import java.util.concurrent.TimeoutException;
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
-//        } catch (KeyManagementException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (NoSuchAlgorithmException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-		}
+        } catch (KeyManagementException e) {
+        	log.error(e.getMessage(), e);
+        }
     }
 
     private void initCli() {
@@ -102,8 +122,13 @@ import java.util.concurrent.TimeoutException;
     	if (passedPort != null) {
     		port = passedPort;
     	}
+
+    	String passedTlsVer = System.getProperty(PropertiesConfig.TLS); 
+    	if (passedTlsVer != null) {
+    		tls_ver = passedTlsVer;
+    	}
     	
-    	String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME); 
+    	String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
     	if (passedExchange != null) {
     		exchangeName = passedExchange;
     	}
