@@ -105,7 +105,10 @@ import java.util.concurrent.TimeoutException;
             log.error(e.getMessage(), e);
         } catch (KeyManagementException e) {
         	log.error(e.getMessage(), e);
-        }
+        } catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     private void initCli() {
