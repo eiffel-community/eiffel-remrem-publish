@@ -38,6 +38,7 @@ public class ProducerControllerIntegrationTest {
             when().
             post("/producer/msg?rk=test").
             then().
+            
             statusCode(HttpStatus.SC_OK).
             body("[0]", Matchers.equalToIgnoringCase("succeed")).
             body("[1]", Matchers.equalToIgnoringCase("succeed")).

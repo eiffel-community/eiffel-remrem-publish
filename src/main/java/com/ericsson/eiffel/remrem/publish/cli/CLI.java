@@ -73,7 +73,7 @@ public class CLI implements CommandLineRunner{
     			jsonContent =  bufReader.readLine();
     		} catch (Exception e) {
     			  e.printStackTrace();
-    	          System.exit(-5);
+    	          CliOptions.exit(CLIExitCodes.READ_JSON_FROM_CONSOLE_FAILED);
     		}
     		
     	}
@@ -92,10 +92,10 @@ public class CLI implements CommandLineRunner{
         } catch (final NoSuchFileException e) {
             log.debug("NoSuchFileException", e);
             System.err.println("File not found: " + e.getMessage());
-            System.exit(-1);        
+            CliOptions.exit(CLIExitCodes.HANDLE_CONTENT_FILE_NOT_FOUND_FAILED);        
         } catch (Exception e) {
             System.err.println("Could not read content file. Cause: " + e.getMessage());
-            System.exit(-1);
+            CliOptions.exit(CLIExitCodes.HANDLE_CONTENT_FILE_COULD_NOT_READ_FAILED);
         }
     }
     
@@ -115,7 +115,7 @@ public class CLI implements CommandLineRunner{
         } catch (Exception e) {
             log.debug("Exception: ", e);
             System.err.println("Exception: " + e.getMessage());
-            System.exit(-1);
+            CliOptions.exit(CLIExitCodes.HANDLE_CONTENT_FAILED);
         }
     }      
 

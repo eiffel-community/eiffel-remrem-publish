@@ -7,4 +7,5 @@ public class PropertiesConfig {
 	public static final String EXCHANGE_NAME = "com.ericsson.eiffel.remrem.publish.exchange.name";
 	public static final String USE_PERSISTENCE = "com.ericsson.eiffel.remrem.publish.use.persistence";
 	public static final String CLI_MODE = "com.ericsson.eiffel.remrem.publish.cli.mode";
+	public static final String TEST_MODE = "com.ericsson.eiffel.remrem.publish.cli.test.mode";
 }

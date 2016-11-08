@@ -9,12 +9,29 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import java.lang.Exception;
+import java.util.ArrayList;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 
 public class CliOptions {
 	static private Options options=null;
 	static private CommandLine commandLine;
+
+    //Used for testing purposes
+    private static ArrayList<Integer> testErrorCodes = new ArrayList<>();
+
+    public static ArrayList getErrorCodes() {
+    return testErrorCodes;
+    }
+
+	public static void addErrorCode(int errorCode) {
+		testErrorCodes.add(errorCode);
+	}
+
+	public static void cleanErrorCodes() {
+		testErrorCodes.clear();
+	}
+
 	
 	public static CommandLine getCommandLine() {
 		return commandLine;
@@ -193,5 +210,17 @@ public class CliOptions {
         System.clearProperty(key);
         key = PropertiesConfig.TLS;
         System.clearProperty(key);
+    }
+    
+    /**
+     * Wrapper to call system exit making class easier to test.
+     * @param errorCode
+     */
+    public static void exit(int errorCode) {
+      boolean testMode = Boolean.getBoolean(PropertiesConfig.TEST_MODE);
+      if (testMode)
+        addErrorCode(errorCode);
+      else
+        System.exit(errorCode);
     }
 }
