@@ -4,6 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
@@ -32,6 +33,9 @@ public class CliOptions {
 		testErrorCodes.clear();
 	}
 
+    private static OptionGroup contentGroup = null;
+    private static OptionGroup routingKeyGroup = null;
+
 	
 	public static CommandLine getCommandLine() {
 		return commandLine;
@@ -49,13 +53,16 @@ public class CliOptions {
      */
     public static void createCLIOptions() {
         options = new Options();
-        options.addOptionGroup(createRoutingKeyGroup());
+        routingKeyGroup = createRoutingKeyGroup();
+        options.addOptionGroup(routingKeyGroup);
+        options.addOption(createHelpOption());
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
         options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus");
         options.addOption("tls", "tls", true, "use tls, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
-        options.addOptionGroup(createContentGroup());
+        contentGroup = createContentGroup();
+        options.addOptionGroup(contentGroup);
     }
   
     private static Option createJsonOption() {
@@ -76,30 +83,15 @@ public class CliOptions {
     
     private static OptionGroup createContentGroup() {
     	OptionGroup group = new OptionGroup();
-//    	group.addOption(createHelpOption());
     	group.addOption(createFileOption());
-    	group.addOption(createJsonOption());
-    	group.setRequired(true);
+    	group.addOption(createJsonOption());    	
     	return group;
     }
     
     private static OptionGroup createRoutingKeyGroup() {
     	OptionGroup group = new OptionGroup();
-    	group.addOption(createRoutingKeyOption());
-//    	group.addOption(createHelpOption());
-    	group.setRequired(true);
+    	group.addOption(createRoutingKeyOption());    	
     	return group;
-    }
-    
-    public static void parseHelp(String[] args) {
-    	Options hOptions = createHelpOptions();
-    	CommandLineParser parser = new DefaultParser(); 
-        try {
-            commandLine = parser.parse(hOptions, args); 
-        } catch (Exception e) {
-        	e.printStackTrace();
-            help();
-        }
     }
     
     /**
@@ -108,19 +100,43 @@ public class CliOptions {
      * @return if the service should start or not
      */
     public static void parse(String[] args) {
-        parseHelp(args);
-        if (!commandLine.hasOption("h")) {
     	    createCLIOptions();
     	    CommandLineParser parser = new DefaultParser(); 
     	    try {
     		    commandLine = parser.parse(options, args); 
-    		    CliOptions.handleMessageBusOptions();
+    		    afterParseChecks();
+    		    handleMessageBusOptions();
     	    } catch (Exception e) {
-    	    	e.printStackTrace();
+    	    	System.out.println(e.getMessage());
     	    	help();
-    	    }
-        }
+    	    }        
     }    
+    
+    public static void afterParseChecks() throws MissingOptionException {
+        if (commandLine.hasOption("h")) {
+    	    System.out.println("You passed help flag.");
+    	    help();
+        } else {
+            checkRequiredOptions();
+        }
+    }
+    
+    public static void checkRequiredOptions() throws MissingOptionException {
+        OptionGroup[] groups = {routingKeyGroup, contentGroup};
+        for(OptionGroup group : groups) {
+            ArrayList<Option> groupOptions = new ArrayList<Option>(group.getOptions());
+            boolean groupIsGiven = false;
+            for (Option option : groupOptions){
+                if (commandLine.hasOption(option.getOpt())) {
+                    groupIsGiven = true;
+                    break;
+                }
+            }
+            if (!groupIsGiven){
+                throw new MissingOptionException(groupOptions);
+            }
+        }
+    }
     
     /**
      * Checks if any options that CLI can handle have been passed
@@ -128,11 +144,11 @@ public class CliOptions {
      * 			passed as arguments otherwise false
      */
     public static boolean hasParsedOptions() {
-    	if (commandLine == null)
-    		return false;
-    	
-    	Option[] existingOptions = commandLine.getOptions(); 
-    	return existingOptions.length > 0;
+        if (commandLine == null)
+    	    return false;
+
+        Option[] existingOptions = commandLine.getOptions(); 
+        return existingOptions.length > 0;
     }
 
     /**
