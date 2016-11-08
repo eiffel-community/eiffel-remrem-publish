@@ -20,19 +20,25 @@ public class CliOptions {
 		return commandLine;
 	}
 
+	public static Options createHelpOptions() {
+		Options hOptions = new Options();
+		hOptions.addOption(createHelpOption());
+		return hOptions;
+	}
+	
 	/**
      * Creates the options needed by command line interface
      * @return the options this CLI can handle
      */
     public static void createCLIOptions() {
         options = new Options();
-        options.addOptionGroup(createContentGroup());
         options.addOptionGroup(createRoutingKeyGroup());
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
         options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus");
         options.addOption("tls", "tls", true, "use tls, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
+        options.addOptionGroup(createContentGroup());
     }
   
     private static Option createJsonOption() {
@@ -53,7 +59,7 @@ public class CliOptions {
     
     private static OptionGroup createContentGroup() {
     	OptionGroup group = new OptionGroup();
-    	group.addOption(createHelpOption());
+//    	group.addOption(createHelpOption());
     	group.addOption(createFileOption());
     	group.addOption(createJsonOption());
     	group.setRequired(true);
@@ -62,10 +68,21 @@ public class CliOptions {
     
     private static OptionGroup createRoutingKeyGroup() {
     	OptionGroup group = new OptionGroup();
-    	group.addOption(createHelpOption());
-    	group.addOption(createRoutingKeyOption());    	
+    	group.addOption(createRoutingKeyOption());
+//    	group.addOption(createHelpOption());
     	group.setRequired(true);
     	return group;
+    }
+    
+    public static void parseHelp(String[] args) {
+    	Options hOptions = createHelpOptions();
+    	CommandLineParser parser = new DefaultParser(); 
+        try {
+            commandLine = parser.parse(hOptions, args); 
+        } catch (Exception e) {
+        	e.printStackTrace();
+            help();
+        }
     }
     
     /**
@@ -74,14 +91,17 @@ public class CliOptions {
      * @return if the service should start or not
      */
     public static void parse(String[] args) {
-    	createCLIOptions();
-        CommandLineParser parser = new DefaultParser(); 
-        try {
-            commandLine = parser.parse(options, args, true); 
-            CliOptions.handleMessageBusOptions();
-        } catch (Exception e) {
-        	e.printStackTrace();
-            help();
+        parseHelp(args);
+        if (!commandLine.hasOption("h")) {
+    	    createCLIOptions();
+    	    CommandLineParser parser = new DefaultParser(); 
+    	    try {
+    		    commandLine = parser.parse(options, args); 
+    		    CliOptions.handleMessageBusOptions();
+    	    } catch (Exception e) {
+    	    	e.printStackTrace();
+    	    	help();
+    	    }
         }
     }    
     
@@ -116,63 +136,62 @@ public class CliOptions {
      * @param commandLine command line arguments
      */
     public static void handleMessageBusOptions() throws Exception {
-    	if (commandLine.hasOption("mb")) {
-    		String messageBusHost = commandLine.getOptionValue("mb");
-    		String key = PropertiesConfig.MESSAGE_BUS_HOST;
-    		System.setProperty(key, messageBusHost);
+        if (commandLine.hasOption("mb")) {
+            String messageBusHost = commandLine.getOptionValue("mb");
+            String key = PropertiesConfig.MESSAGE_BUS_HOST;
+            System.setProperty(key, messageBusHost);
+        }
+
+        if (commandLine.hasOption("en")) {
+            String exchangeName = commandLine.getOptionValue("en");
+            String key = PropertiesConfig.EXCHANGE_NAME;
+            System.setProperty(key, exchangeName);
+        }
+
+        if (commandLine.hasOption("port")) {
+            String exchangeName = commandLine.getOptionValue("port");
+            String key = PropertiesConfig.MESSAGE_BUS_PORT;
+            System.setProperty(key, exchangeName);
+        }
+
+        if (commandLine.hasOption("tls")) {
+            String tls_ver = commandLine.getOptionValue("tls");
+            if (tls_ver == null) {
+            	tls_ver = "NULL";
+            }
+            String[] validTlsVersions = new String[]{"1", "1.1", "1.2", "default"};
+            if (StringUtils.indexOfAny(tls_ver, validTlsVersions) == -1) {
+            	throw new Exception("Specified TLS version is not valid! Specify a valid TLS version!");
+            }
+            String key = PropertiesConfig.TLS;
+            System.setProperty(key, tls_ver);	
     	}
     	
-    	if (commandLine.hasOption("en")) {
-    		String exchangeName = commandLine.getOptionValue("en");
-    		String key = PropertiesConfig.EXCHANGE_NAME;
-    		System.setProperty(key, exchangeName);
-    	}
-    	
-    	if (commandLine.hasOption("port")) {
-    		String exchangeName = commandLine.getOptionValue("port");
-    		String key = PropertiesConfig.MESSAGE_BUS_PORT;
-    		System.setProperty(key, exchangeName);
-    	}
-  
-    	if (commandLine.hasOption("tls")) {
-    		String tls_ver = commandLine.getOptionValue("tls");
-    		if (tls_ver == null) {
-    			tls_ver = "NULL";
-    		}
-    		String[] validTlsVersions = new String[]{"1", "1.1", "1.2", "default"};
-    		if (StringUtils.indexOfAny(tls_ver, validTlsVersions) == -1) {
-    			throw new Exception("Specified TLS version is not valid! Specify a valid TLS version!");
-    		}
-    		String key = PropertiesConfig.TLS;
-    		System.setProperty(key, tls_ver);
-    		
-    	}
-    	
-    	String usePersistance = "true";
-    	if (commandLine.hasOption("np")) {
-    		usePersistance = "false";    		
-    	}
-    	String key = PropertiesConfig.USE_PERSISTENCE;
-		System.setProperty(key, usePersistance);
-		key = PropertiesConfig.CLI_MODE;
-		System.setProperty(key, "true");
+        String usePersistance = "true";
+        if (commandLine.hasOption("np")) {
+            usePersistance = "false";    		
+        }
+        String key = PropertiesConfig.USE_PERSISTENCE;
+        System.setProperty(key, usePersistance);
+        key = PropertiesConfig.CLI_MODE;
+        System.setProperty(key, "true");
     }
     
     /**
      * Remove the system properties added by this application 
      */
     public static void clearSystemProperties() {
-    	String key = PropertiesConfig.MESSAGE_BUS_HOST;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.EXCHANGE_NAME;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.USE_PERSISTENCE;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.CLI_MODE;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.MESSAGE_BUS_PORT;
-    	System.clearProperty(key);
-    	key = PropertiesConfig.TLS;
-    	System.clearProperty(key);
+        String key = PropertiesConfig.MESSAGE_BUS_HOST;
+        System.clearProperty(key);
+        key = PropertiesConfig.EXCHANGE_NAME;
+        System.clearProperty(key);
+        key = PropertiesConfig.USE_PERSISTENCE;
+        System.clearProperty(key);
+        key = PropertiesConfig.CLI_MODE;
+        System.clearProperty(key);
+        key = PropertiesConfig.MESSAGE_BUS_PORT;
+        System.clearProperty(key);
+        key = PropertiesConfig.TLS;
+        System.clearProperty(key);
     }
 }

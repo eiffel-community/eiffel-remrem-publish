@@ -124,8 +124,4 @@ dependencies {
     testCompile 'org.assertj:assertj-core:3.4.1'
     testCompile "org.springframework.boot:spring-boot-starter-test:$sprintBootVersion"
     testCompile 'com.jayway.jsonpath:json-path-assert:2.2.0'
-
-    // In order to get embedded app container to work
-//    integrationTestRuntime("org.springframework.boot:spring-boot-starter-tomcat")
-//    integrationTestCompile group: 'com.jayway.restassured', name: 'rest-assured', version: '2.9.0'
 }
