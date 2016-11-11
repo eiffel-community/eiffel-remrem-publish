@@ -1,7 +1,24 @@
 package com.ericsson.eiffel.remrem.publish.helper;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.google.gson.JsonElement;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -12,23 +29,10 @@ import com.rabbitmq.client.ShutdownSignalException;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeoutException;
-
 @Component("rmqHelper") @Slf4j public class RMQHelper {
 
-    private static final int CHANNEL_COUNT = 100;
+    
+	private static final int CHANNEL_COUNT = 100;
     private static final Random random = new Random();
     @Value("${rabbitmq.host}") private String host;
     @Value("${rabbitmq.exchange.name}") private String exchangeName;
@@ -155,4 +159,22 @@ import java.util.concurrent.TimeoutException;
     private Channel giveMeRandomChannel() {
         return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
     }
+    
+    public String getEventId(JsonElement json){
+    	// Eiffel 1.0
+    	if (json.getAsJsonObject().has(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS) && json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet().size()>0){
+    	        Set<Entry<String, JsonElement>> entrySet = json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet();
+    	        for(Map.Entry<String,JsonElement> entry : entrySet){
+    	        	if(json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).getAsJsonObject(entry.getKey()).has(PropertiesConfig.EVENT_ID))
+    	        	return json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).getAsJsonObject(entry.getKey()).get(PropertiesConfig.EVENT_ID).getAsString();
+    	        }
+		}
+    	
+    	// Eiffel 2.0
+    	if (json.getAsJsonObject().has(PropertiesConfig.META) && json.getAsJsonObject().getAsJsonObject(PropertiesConfig.META).has(PropertiesConfig.ID)){
+    		return json.getAsJsonObject().getAsJsonObject(PropertiesConfig.META).get(PropertiesConfig.ID).getAsString();
+		}
+		return null;
+    }
+    
 }

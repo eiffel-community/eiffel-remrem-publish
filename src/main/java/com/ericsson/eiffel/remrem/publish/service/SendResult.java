@@ -1,14 +1,22 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
-import lombok.Getter;
+import java.util.List;
 
 public class SendResult {
-    @Getter private String msg;
+    private List<ResultEvent> events;
 
-    public SendResult(String msg) {
-        this.msg = msg;
+    public SendResult(List<ResultEvent> msg) {
+        this.events = msg;
     }
 
     public SendResult() {
     }
+
+	public void setEvents(List<ResultEvent> events) {
+		this.events = events;
+	}
+
+	public List<ResultEvent> getEvents() {
+		return events;
+	}
 }

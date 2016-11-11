@@ -1,7 +1,7 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 
-import java.util.List;
+import java.util.Map;
 
 import com.google.gson.JsonElement;
 
@@ -11,7 +11,7 @@ public interface MessageService {
      * @param msgs the list with messages to be sent
      * @return list of results containing send response messages after sending the messages 
      */
-    List<SendResult> send(String routingKey, List<String> msgs);
+    SendResult send(String routingKey, Map<String, String> map);
     
     /**
      * @param routingKey
@@ -21,14 +21,14 @@ public interface MessageService {
      * 
      * @return list of results containing send response messages after sending the messages in jsonContent
      */
-    List<SendResult> send(String routingKey, String jsonContent);
+    SendResult send(String routingKey, String jsonContent);
     
     /**
      * @param routingKey
      * @param jsonContent a json object containing the messages to be send
      * @return list of results containing send response messages after sending the messages in jsonContent
      */
-    List<SendResult> send(String routingKey, JsonElement jsonContent);
+    SendResult send(String routingKey, JsonElement jsonContent);
     
     /**
      * Does the cleanup like closing open connections

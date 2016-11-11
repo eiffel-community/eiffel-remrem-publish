@@ -22,12 +22,10 @@ import java.util.List;
     @Autowired @Qualifier("responseHelper") ResponseHelper responseHelper;
 
     @RequestMapping(value = "/msg", method = RequestMethod.POST) @ResponseBody
-    public List<String> send(@RequestParam(value = "rk", required = true) String routingKey,
+    public SendResult send(@RequestParam(value = "rk", required = true) String routingKey,
         @RequestBody JsonElement body) {
         log.debug("routingKey: " + routingKey);
         log.debug("body: " + body);
-
-        List<SendResult> results = messageService.send(routingKey, body);
-        return responseHelper.convert(results);
+        return messageService.send(routingKey, body);
     }
 }
