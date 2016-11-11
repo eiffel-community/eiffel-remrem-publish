@@ -2,7 +2,6 @@ package com.ericsson.eiffel.remrem.publish.service;
 
 
 import java.util.Map;
-
 import com.google.gson.JsonElement;
 
 public interface MessageService {

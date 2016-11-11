@@ -6,21 +6,17 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.List;
-
-
 import org.apache.commons.cli.CommandLine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
-
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
-import com.ericsson.eiffel.remrem.publish.service.ResultEvent;
+import com.ericsson.eiffel.remrem.publish.service.PublishResult;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -108,7 +104,7 @@ public class CLI implements CommandLineRunner{
         try {
         	String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
             SendResult results = messageService.send(routingKey, content);
-            for(ResultEvent result : results.getEvents()) {
+            for(PublishResult result : results.getEvents()) {
             	System.out.println(result);
             }
             messageService.cleanUp();
