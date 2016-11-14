@@ -116,7 +116,6 @@ import lombok.extern.slf4j.Slf4j;
 		}
 		else{
 			SendResult result = new SendResult();
-			createFailureResult(events);
 			result.setEvents(events);
 			return result;
 		}
