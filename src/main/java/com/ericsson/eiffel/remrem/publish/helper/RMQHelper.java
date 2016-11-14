@@ -162,7 +162,7 @@ import lombok.extern.slf4j.Slf4j;
     
     public String getEventId(JsonElement json){
     	// Eiffel 1.0
-    	if (json.getAsJsonObject().has(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS) && json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet().size()>0){
+    	if (json.isJsonObject() && json.getAsJsonObject().has(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS) && json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet().size()>0){
     	        Set<Entry<String, JsonElement>> entrySet = json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet();
     	        for(Map.Entry<String,JsonElement> entry : entrySet){
     	        	if(json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).getAsJsonObject(entry.getKey()).has(PropertiesConfig.EVENT_ID))
@@ -171,7 +171,7 @@ import lombok.extern.slf4j.Slf4j;
 		}
     	
     	// Eiffel 2.0
-    	if (json.getAsJsonObject().has(PropertiesConfig.META) && json.getAsJsonObject().getAsJsonObject(PropertiesConfig.META).has(PropertiesConfig.ID)){
+    	if (json.isJsonObject() && json.getAsJsonObject().has(PropertiesConfig.META) && json.getAsJsonObject().getAsJsonObject(PropertiesConfig.META).has(PropertiesConfig.ID)){
     		return json.getAsJsonObject().getAsJsonObject(PropertiesConfig.META).get(PropertiesConfig.ID).getAsString();
 		}
 		return null;
