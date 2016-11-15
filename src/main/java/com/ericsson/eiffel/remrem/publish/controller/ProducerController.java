@@ -14,13 +14,19 @@ import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonElement;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j @RestController @RequestMapping("/producer") public class ProducerController {
+@Slf4j
+@RestController
+@RequestMapping("/producer")
+public class ProducerController {
 
-    @Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
+    @Autowired
+    @Qualifier("messageServiceRMQImpl")
+    MessageService messageService;
 
-    @RequestMapping(value = "/msg", method = RequestMethod.POST) @ResponseBody
+    @RequestMapping(value = "/msg", method = RequestMethod.POST)
+    @ResponseBody
     public SendResult send(@RequestParam(value = "rk", required = true) String routingKey,
-        @RequestBody JsonElement body) {
+            @RequestBody JsonElement body) {
         log.debug("routingKey: " + routingKey);
         log.debug("body: " + body);
         return messageService.send(routingKey, body);

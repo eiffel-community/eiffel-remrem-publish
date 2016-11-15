@@ -7,23 +7,19 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import com.ericsson.eiffel.remrem.publish.App;
-import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
-import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
 import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = App.class)
 @WebIntegrationTest({ "server.port=0", "management.port=0" })
 public class ProducerControllerIntegrationTest {
-    
+
     @Value("${local.server.port}")
     int port;
 

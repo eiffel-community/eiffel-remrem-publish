@@ -36,16 +36,16 @@ public class MessageServiceRMQImpl implements MessageService {
      */
     @Override
     public SendResult send(String routingKey, Map<String, String> msgs) {
-        List<PublishResult> results = new ArrayList<>();
+        List<PublishResultItem> results = new ArrayList<>();
         SendResult sendResult = null;
-        PublishResult event = null;
+        PublishResultItem event = null;
         if (!CollectionUtils.isEmpty(msgs)) {
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
                 String message = sendMessage(routingKey, entry.getValue());
                 if (PropertiesConfig.SUCCEED.equals(message)) {
-                    event = new PublishResult(entry.getKey(), 200, PropertiesConfig.SUCCESS, null);
+                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, null);
                 } else {
-                    event = new PublishResult(entry.getKey(), 200, PropertiesConfig.INVALID_MESSAGE,
+                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.INVALID_MESSAGE,
                             PropertiesConfig.INVALID_EVENT_CONTENT);
                 }
                 results.add(event);
@@ -53,7 +53,7 @@ public class MessageServiceRMQImpl implements MessageService {
             sendResult = new SendResult(results);
         }
         return sendResult;
-	}
+    }
 
     /*
      * (non-Javadoc)
@@ -72,19 +72,18 @@ public class MessageServiceRMQImpl implements MessageService {
             if (eventId != null) {
                 map.put(eventId, json.toString());
             } else {
-                List<PublishResult> events = new ArrayList<>();
+                List<PublishResultItem> events = new ArrayList<>();
                 createFailureResult(events);
                 return new SendResult(events);
             }
             return send(routingKey, map);
-        return send(routingKey, map);
         } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
             if (e.getCause() != null) {
                 resultMsg = resultMsg + " Cause: " + e.getCause().getMessage();
             }
             log.error(resultMsg, e.getMessage());
-            List<PublishResult> events = new ArrayList<>();
+            List<PublishResultItem> events = new ArrayList<>();
             createFailureResult(events);
             return new SendResult(events);
         }
@@ -100,7 +99,7 @@ public class MessageServiceRMQImpl implements MessageService {
     @Override
     public SendResult send(String routingKey, JsonElement json) {
         Map<String, String> map = new HashMap<>();
-        List<PublishResult> events = new ArrayList<>();
+        List<PublishResultItem> events = new ArrayList<>();
         if (json == null) {
             createFailureResult(events);
         }
@@ -132,13 +131,12 @@ public class MessageServiceRMQImpl implements MessageService {
             SendResult result = new SendResult();
             result.setEvents(events);
             return result;
-			return result;
         }
 
     }
 
-    private void createFailureResult(List<PublishResult> events) {
-        PublishResult event = new PublishResult(null, 400, PropertiesConfig.INVALID_MESSAGE,
+    private void createFailureResult(List<PublishResultItem> events) {
+        PublishResultItem event = new PublishResultItem(null, 400, PropertiesConfig.INVALID_MESSAGE,
                 PropertiesConfig.INVALID_EVENT_CONTENT);
         events.add(event);
     }

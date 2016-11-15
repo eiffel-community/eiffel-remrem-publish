@@ -15,18 +15,20 @@ import org.springframework.stereotype.Component;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
-import com.ericsson.eiffel.remrem.publish.service.PublishResult;
+import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Class for interpreting the passed arguments from command line.
- * Parse method returns true, meaning we need to start the service afterwards, if no argument
- * is given. The same method returns false, meaning we do not start the service afterwards, if any
- * argument is given. If an argument is given that it is not recognized we print help
+ * Class for interpreting the passed arguments from command line. Parse method
+ * returns true, meaning we need to start the service afterwards, if no argument
+ * is given. The same method returns false, meaning we do not start the service
+ * afterwards, if any argument is given. If an argument is given that it is not
+ * recognized we print help
  * 
- * This class also uses System Properties to pass some arguments to underlying service. It is important to
- * choose properties names that are difficult to be matched by the system
+ * This class also uses System Properties to pass some arguments to underlying
+ * service. It is important to choose properties names that are difficult to be
+ * matched by the system
  * 
  * @author evasiba
  *
@@ -34,52 +36,58 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
 @Slf4j
-public class CLI implements CommandLineRunner{
-    
-	@Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
-	
+public class CLI implements CommandLineRunner {
+
+    @Autowired
+    @Qualifier("messageServiceRMQImpl")
+    MessageService messageService;
+
     /**
      * Delegates actions depending on the passed arguments
-     * @param commandLine command line arguments
+     * 
+     * @param commandLine
+     *            command line arguments
      */
     private void handleOptions() {
-    	CommandLine commandLine = CliOptions.getCommandLine();    	
-    	if (commandLine.hasOption("h")) {
-    		System.out.println("You passed help flag.");
-    		CliOptions.help();
-    	} else if (commandLine.hasOption("f")) {
+        CommandLine commandLine = CliOptions.getCommandLine();
+        if (commandLine.hasOption("h")) {
+            System.out.println("You passed help flag.");
+            CliOptions.help();
+        } else if (commandLine.hasOption("f")) {
             String filePath = commandLine.getOptionValue("f");
             handleContentFile(filePath);
         } else if (commandLine.hasOption("json")) {
             String content = getJsonString(commandLine);
             handleContent(content);
         } else {
-        	System.out.println("Missing arguments, please review your arguments" + 
-        						" and check if any mandatory argument is missing");        	
-        	CliOptions.help();
-        }    
+            System.out.println("Missing arguments, please review your arguments"
+                    + " and check if any mandatory argument is missing");
+            CliOptions.help();
+        }
     }
-    
+
     private String getJsonString(CommandLine commandLine) {
-    	String jsonContent = commandLine.getOptionValue("json");
-    	
-    	if (jsonContent.equals("-")) {
-    		try {
-    			InputStreamReader isReader = new InputStreamReader(System.in);
-    			BufferedReader bufReader = new BufferedReader(isReader);
-    			jsonContent =  bufReader.readLine();
-    		} catch (Exception e) {
-    			  e.printStackTrace();
-    	          System.exit(-5);
-    		}
-    		
-    	}
-    	return jsonContent;
+        String jsonContent = commandLine.getOptionValue("json");
+
+        if (jsonContent.equals("-")) {
+            try {
+                InputStreamReader isReader = new InputStreamReader(System.in);
+                BufferedReader bufReader = new BufferedReader(isReader);
+                jsonContent = bufReader.readLine();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(-5);
+            }
+
+        }
+        return jsonContent;
     }
-    
+
     /**
      * Handle event from file
-     * @param filePath the path of the file where the messages reside
+     * 
+     * @param filePath
+     *            the path of the file where the messages reside
      */
     public void handleContentFile(String filePath) {
         try {
@@ -89,23 +97,25 @@ public class CLI implements CommandLineRunner{
         } catch (final NoSuchFileException e) {
             log.debug("NoSuchFileException", e);
             System.err.println("File not found: " + e.getMessage());
-            System.exit(-1);        
+            System.exit(-1);
         } catch (Exception e) {
             System.err.println("Could not read content file. Cause: " + e.getMessage());
             System.exit(-1);
         }
     }
-    
+
     /**
      * Handle event from file
-     * @param filePath the path of the file where the messages reside
+     * 
+     * @param filePath
+     *            the path of the file where the messages reside
      */
     public void handleContent(String content) {
         try {
-        	String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
+            String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
             SendResult results = messageService.send(routingKey, content);
-            for(PublishResult result : results.getEvents()) {
-            	System.out.println(result);
+            for (PublishResultItem result : results.getEvents()) {
+                System.out.println(result);
             }
             messageService.cleanUp();
             CliOptions.clearSystemProperties();
@@ -114,14 +124,14 @@ public class CLI implements CommandLineRunner{
             System.err.println("Exception: " + e.getMessage());
             System.exit(-1);
         }
-    }      
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		if (CliOptions.hasParsedOptions())
-			handleOptions();
-		boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
-        if (cliMode) 
-        	CliOptions.help();
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        if (CliOptions.hasParsedOptions())
+            handleOptions();
+        boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+        if (cliMode)
+            CliOptions.help();
+    }
 }

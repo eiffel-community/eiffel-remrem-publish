@@ -3,27 +3,20 @@ package com.ericsson.eiffel.remrem.publish.service;
 import java.util.List;
 
 public class SendResult {
-    private List<PublishResult> events;
+    private List<PublishResultItem> events;
 
-    public SendResult(List<PublishResult> msg) {
+    public SendResult(List<PublishResultItem> msg) {
         this.events = msg;
     }
 
     public SendResult() {
     }
 
-    public void setEvents(List<PublishResult> events) {
+    public void setEvents(List<PublishResultItem> events) {
         this.events = events;
     }
-    public List<PublishResult> getEvents() {
+
+    public List<PublishResultItem> getEvents() {
         return events;
     }
-
-	public void setEvents(List<ResultEvent> events) {
-		this.events = events;
-	}
-
-	public List<ResultEvent> getEvents() {
-		return events;
-	}
 }

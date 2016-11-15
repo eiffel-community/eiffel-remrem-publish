@@ -2,20 +2,6 @@ package com.ericsson.eiffel.remrem.publish.helper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,8 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RMQHelper {
 
-    
-	private static final int CHANNEL_COUNT = 100;
+    private static final int CHANNEL_COUNT = 100;
     private static final Random random = new Random();
     @Value("${rabbitmq.host}")
     private String host;

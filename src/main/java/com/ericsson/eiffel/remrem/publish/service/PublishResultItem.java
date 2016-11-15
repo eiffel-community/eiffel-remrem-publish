@@ -1,13 +1,13 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
-public class PublishResult {
+public class PublishResultItem {
 
     private String id;
     private int status_code;
     private String result;
     private String message;
 
-    public PublishResult(String id, int status_code, String result, String message) {
+    public PublishResultItem(String id, int status_code, String result, String message) {
         super();
         this.id = id;
         this.status_code = status_code;
