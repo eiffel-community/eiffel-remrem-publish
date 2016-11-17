@@ -3,6 +3,7 @@ package com.ericsson.eiffel.remrem.publish.cli;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -16,7 +17,10 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
+import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Class for interpreting the passed arguments from command line.
@@ -32,6 +36,7 @@ import com.ericsson.eiffel.remrem.publish.service.SendResult;
  */
 @Component
 @ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
+@Slf4j
 public class CLI implements CommandLineRunner{
     
 	@Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
@@ -84,9 +89,12 @@ public class CLI implements CommandLineRunner{
             byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
             String fileContent = new String(fileBytes);
             handleContent(fileContent);
+        } catch (final NoSuchFileException e) {
+            log.debug("NoSuchFileException", e);
+            System.err.println("File not found: " + e.getMessage());
+            System.exit(-1);        
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.err.println("Could not read content file. Cause: " + e.getMessage());
             System.exit(-1);
         }
     }
@@ -99,13 +107,14 @@ public class CLI implements CommandLineRunner{
         try {
         	String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
             List<SendResult> results = messageService.send(routingKey, content);
-            for(SendResult result : results)
+            for(SendResult result : results) {
             	System.out.println(result.getMsg());
+            }
             messageService.cleanUp();
             CliOptions.clearSystemProperties();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.debug("Exception: ", e);
+            System.err.println("Exception: " + e.getMessage());
             System.exit(-1);
         }
     }      
