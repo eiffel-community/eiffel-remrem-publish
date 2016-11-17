@@ -1,7 +1,22 @@
 package com.ericsson.eiffel.remrem.publish.helper;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.google.gson.JsonElement;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -12,108 +27,102 @@ import com.rabbitmq.client.ShutdownSignalException;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeoutException;
-
-@Component("rmqHelper") @Slf4j public class RMQHelper {
+@Component("rmqHelper")
+@Slf4j
+public class RMQHelper {
 
     private static final int CHANNEL_COUNT = 100;
     private static final Random random = new Random();
-    @Value("${rabbitmq.host}") private String host;
-    @Value("${rabbitmq.exchange.name}") private String exchangeName;
-    @Value("${rabbitmq.port}") private Integer port;
-    @Value("${rabbitmq.user}") private String user;
-    @Value("${rabbitmq.password}") private String password;
+    @Value("${rabbitmq.host}")
+    private String host;
+    @Value("${rabbitmq.exchange.name}")
+    private String exchangeName;
+    @Value("${rabbitmq.port}")
+    private Integer port;
+    @Value("${rabbitmq.user}")
+    private String user;
+    @Value("${rabbitmq.password}")
+    private String password;
     private boolean usePersitance = true;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
 
     public String getHost() {
-		return host;
-	}
+        return host;
+    }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-	public String getExchangeName() {
-		return exchangeName;
-	}
+    public String getExchangeName() {
+        return exchangeName;
+    }
 
-	public void setExchangeName(String exchangeName) {
-		this.exchangeName = exchangeName;
-	}
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = exchangeName;
+    }
 
-	@PostConstruct public void init() {
+    @PostConstruct
+    public void init() {
         log.info("RMQHelper init ...");
         initCli();
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(host);  
-            
+            factory.setHost(host);
+
             if (port != null) {
-            	factory.setPort(port);
-            	log.info("Port is: " + port);
+                factory.setPort(port);
+                log.info("Port is: " + port);
             } else {
-            	log.info("Using default rabbit mq port.");
+                log.info("Using default rabbit mq port.");
             }
-            //factory.useSslProtocol();
+            // factory.useSslProtocol();
             log.info("Host adress: " + host);
             log.info("Exchange is: " + exchangeName);
             rabbitConnection = factory.newConnection();
-            rabbitChannels = new ArrayList<>();            
-            
+            rabbitChannels = new ArrayList<>();
+
             for (int i = 0; i < CHANNEL_COUNT; i++) {
                 rabbitChannels.add(rabbitConnection.createChannel());
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
-//        } catch (KeyManagementException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (NoSuchAlgorithmException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-		}
+            // } catch (KeyManagementException e) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // } catch (NoSuchAlgorithmException e) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+        }
     }
 
     private void initCli() {
-    	setValues();
+        setValues();
     }
-    
+
     private void setValues() {
-    	String passedHost = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST); 
-    	if (passedHost != null) {
-    		host = passedHost;
-    	}
-    	
-    	Integer passedPort = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT); 
-    	if (passedPort != null) {
-    		port = passedPort;
-    	}
-    	
-    	String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME); 
-    	if (passedExchange != null) {
-    		exchangeName = passedExchange;
-    	}
-    	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
+        String passedHost = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
+        if (passedHost != null) {
+            host = passedHost;
+        }
+
+        Integer passedPort = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
+        if (passedPort != null) {
+            port = passedPort;
+        }
+
+        String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
+        if (passedExchange != null) {
+            exchangeName = passedExchange;
+        }
+        usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
     }
-    
+
     @PreDestroy
     public void cleanUp() throws IOException {
         log.info("RMQHelper cleanUp ...");
-        if (rabbitConnection!=null){
+        if (rabbitConnection != null) {
             rabbitConnection.close();
             rabbitConnection = null;
         } else {
@@ -122,37 +131,60 @@ import java.util.concurrent.TimeoutException;
     }
 
     public void send(String routingKey, String msg) throws IOException {
-    	try {
-    		Channel channel = giveMeRandomChannel();
-    		channel.addShutdownListener(new ShutdownListener() {
+        try {
+            Channel channel = giveMeRandomChannel();
+            channel.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
-                    // Beware that proper synchronization is needed here                   
+                    // Beware that proper synchronization is needed here
                     if (cause.isInitiatedByApplication()) {
                         log.debug("Shutdown is initiated by application. Ignoring it.");
-                    } else {                    	
+                    } else {
                         log.error("Shutdown is NOT initiated by application.");
                         log.error(cause.getMessage());
                         boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
                         if (cliMode) {
-                        	System.exit(-3);
+                            System.exit(-3);
                         }
                     }
                 }
             });
-    		
-    		BasicProperties msgProps = MessageProperties.BASIC;
-    		if (usePersitance)
-    			msgProps = MessageProperties.PERSISTENT_BASIC;
+
+            BasicProperties msgProps = MessageProperties.BASIC;
+            if (usePersitance)
+                msgProps = MessageProperties.PERSISTENT_BASIC;
 
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
-            log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length, exchangeName, routingKey);
-		} catch (Exception e) {
-			 log.error("REMREM Publish: Failed to send message: " + e.getMessage(), e);
-		}
+            log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'",
+                    msg.getBytes().length, exchangeName, routingKey);
+        } catch (Exception e) {
+            log.error("REMREM Publish: Failed to send message: " + e.getMessage(), e);
+        }
     }
-
 
     private Channel giveMeRandomChannel() {
         return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
     }
+
+    public String getEventId(JsonElement json) {
+        // Eiffel 1.0
+        if (json.isJsonObject() && json.getAsJsonObject().has(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS) && json
+                .getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet().size() > 0) {
+            Set<Entry<String, JsonElement>> entrySet = json.getAsJsonObject()
+                    .getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet();
+            for (Map.Entry<String, JsonElement> entry : entrySet) {
+                if (json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS)
+                        .getAsJsonObject(entry.getKey()).has(PropertiesConfig.EVENT_ID))
+                    return json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS)
+                            .getAsJsonObject(entry.getKey()).get(PropertiesConfig.EVENT_ID).getAsString();
+            }
+        }
+
+        // Eiffel 2.0
+        if (json.isJsonObject() && json.getAsJsonObject().has(PropertiesConfig.META)
+                && json.getAsJsonObject().getAsJsonObject(PropertiesConfig.META).has(PropertiesConfig.ID)) {
+            return json.getAsJsonObject().getAsJsonObject(PropertiesConfig.META).get(PropertiesConfig.ID).getAsString();
+        }
+        return null;
+    }
+
 }
