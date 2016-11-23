@@ -102,8 +102,8 @@
 <p>Two parameters need to be provided to start the service:</p>
 
 <ul>
-<li>rabbitmq.host (String)</li>
-<li>rabbitmq.exchange.name (String)</li>
+<li><code>rabbitmq.host (String)</code></li>
+<li><code>rabbitmq.exchange.name (String)</code></li>
 </ul>
 
 <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
@@ -115,6 +115,24 @@
 
 <p>Binary comes in War format which allows easy deployment in application servers such as Tomcat. In that case, these parameters must be provided to java process running tomcat. You can also provide them in the <code>WEB-INF/classes/application.yml</code> file.</p>
 
+<p>Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property <code>activedirectory.enabled=true</code>. The necessary configuration properties for Active Directory are</p> 
+
+<ul>
+  <li><code>activedirectory.domain=&lt;the domain name, may be empty&gt;</code></li>
+  <li><code>activedirectory.url=&lt;LDAP url&gt;</code></li>
+</ul>
+
+<p>Each HTTP request must then include an Authorization header with value <code>Basic &lt;Base64 encoded username:password&gt;</code>.</p>
+
+<p>Example Active Directory configuration</p>
+
+<pre>activedirectory:
+  enabled: true
+  domain: "mycompany.com"
+  url: "ldap://ad.mycompany.com:389"</pre>
+
+<p>To authenticate a user with username "user" and password "secret" the HTTP header <code>Authorization: Basic dXNlcjpzZWNyZXQ=</code> must be included in the request. Where dXNlcjpzZWNyZXQ= is the string user:secret Base64 encoded.</p>
+
 <h3>
 <a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST methods</h3>
 
@@ -123,12 +141,6 @@
 <p>You have to specify a <a href="https://www.rabbitmq.com/tutorials/tutorial-four-java.html">routing key</a> using <code>rk</code> URL parameter.</p>
 
 <p>The request's body must contain a <strong>JSON Array</strong> with the messages.</p>
-
-<h3>
-<a id="authentication" class="anchor" href="#authentication" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authentication</h3>
-
-<p>Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property <code>activedirectory.enabled=true</code>. The necessary configuration properties for Active Directory are <code>activedirectory.domain=&lt;the domain name, may be empty&gt;</code> and <code>activedirectory.url=&lt;LDAP url&gt;</code>.
-To authenticate each HTTP request must include an Authorization header with value <code>Basic &lt;Base64 encoded username:password&gt;</code>.</p>
 
 <hr>
 
