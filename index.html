@@ -124,6 +124,12 @@
 
 <p>The request's body must contain a <strong>JSON Array</strong> with the messages.</p>
 
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authentication</h3>
+
+<p>Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property <code>activedirectory.enabled=true</code>. The necessary configuration properties for Active Directory are <code>activedirectory.domain=&lt;the domain name, may be empty&gt;</code> and <code>activedirectory.url=&lt;LDAP url&gt;</code>.
+To authenticate each HTTP request must include an Authorization header with value <code>Basic &lt;Base64 encoded username:password&gt;</code>.</p>
+
 <hr>
 
 <h2>
