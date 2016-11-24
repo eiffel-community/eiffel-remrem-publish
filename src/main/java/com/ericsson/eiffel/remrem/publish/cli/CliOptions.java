@@ -1,5 +1,7 @@
 package com.ericsson.eiffel.remrem.publish.cli;
 
+import java.util.ArrayList;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -9,11 +11,26 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.helper.RemremJarHelper;
 
 public class CliOptions {
 	static private Options options=null;
 	static private CommandLine commandLine;
 	
+    // Used for testing purposes
+    private static ArrayList<Integer> testErrorCodes = new ArrayList<>();
+
+    public static ArrayList<Integer> getErrorCodes() {
+        return testErrorCodes;
+    }
+
+    public static void addErrorCode(int errorCode) {
+        testErrorCodes.add(errorCode);
+    }
+
+    public static void cleanErrorCodes() {
+        testErrorCodes.clear();
+    }
 	public static CommandLine getCommandLine() {
 		return commandLine;
 	}
@@ -44,15 +61,32 @@ public class CliOptions {
     private static Option createRoutingKeyOption() {
     	return new Option("rk", "routing_key", true, "routing key, mandatory");
     }
-    
+
+    private static Option createJarPathOption() {
+        return new Option("jp", "jar_path", true,
+                "path to find protocol definition jar files, e.g. C:/Users/xyz/Desktop/eiffel3messaging.jar");
+    }
     private static OptionGroup createContentGroup() {
     	OptionGroup group = new OptionGroup();
     	group.addOption(createFileOption());
     	group.addOption(createJsonOption());
+    	group.addOption(createJarPathOption());
     	group.setRequired(true);
     	return group;
     }
-    
+
+    public static void handleJarPath(){
+        if (commandLine.hasOption("jp")) {
+            String jarPath = commandLine.getOptionValue("jp");
+            System.out.println("JarPath :: " +jarPath);
+            try {
+                RemremJarHelper.addJarsToClassPath(jarPath);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error while loading jars from the path mentioned, MESSAGE :: " + e.getMessage());
+            }
+        }
+    }
     private static OptionGroup createRoutingKeyGroup() {
     	OptionGroup group = new OptionGroup();
     	group.addOption(createRoutingKeyOption());
