@@ -39,45 +39,46 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CLI implements CommandLineRunner{
     
-	@Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
-	
+    @Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
+    
     /**
      * Delegates actions depending on the passed arguments
      * @param commandLine command line arguments
      */
     private void handleOptions() {
-    	CommandLine commandLine = CliOptions.getCommandLine();    	
-    	if (commandLine.hasOption("h")) {
-    		System.out.println("You passed help flag.");
-    		CliOptions.help();
-    	} else if (commandLine.hasOption("f")) {
+        CommandLine commandLine = CliOptions.getCommandLine(); 
+        CliOptions.handleJarPath();
+        if (commandLine.hasOption("h")) {
+            System.out.println("You passed help flag.");
+            CliOptions.help();
+        } else if (commandLine.hasOption("f")) {
             String filePath = commandLine.getOptionValue("f");
             handleContentFile(filePath);
         } else if (commandLine.hasOption("json")) {
             String content = getJsonString(commandLine);
             handleContent(content);
         } else {
-        	System.out.println("Missing arguments, please review your arguments" + 
-        						" and check if any mandatory argument is missing");        	
-        	CliOptions.help();
+            System.out.println("Missing arguments, please review your arguments" + 
+                                " and check if any mandatory argument is missing");         
+            CliOptions.help();
         }    
     }
     
     private String getJsonString(CommandLine commandLine) {
-    	String jsonContent = commandLine.getOptionValue("json");
-    	
-    	if (jsonContent.equals("-")) {
-    		try {
-    			InputStreamReader isReader = new InputStreamReader(System.in);
-    			BufferedReader bufReader = new BufferedReader(isReader);
-    			jsonContent =  bufReader.readLine();
-    		} catch (Exception e) {
-    			  e.printStackTrace();
-    	          System.exit(-5);
-    		}
-    		
-    	}
-    	return jsonContent;
+        String jsonContent = commandLine.getOptionValue("json");
+        
+        if (jsonContent.equals("-")) {
+            try {
+                InputStreamReader isReader = new InputStreamReader(System.in);
+                BufferedReader bufReader = new BufferedReader(isReader);
+                jsonContent =  bufReader.readLine();
+            } catch (Exception e) {
+                  e.printStackTrace();
+                  System.exit(-5);
+            }
+            
+        }
+        return jsonContent;
     }
     
     /**
@@ -105,10 +106,10 @@ public class CLI implements CommandLineRunner{
      */
     public void handleContent(String content) {
         try {
-        	String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
+            String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
             List<SendResult> results = messageService.send(routingKey, content);
             for(SendResult result : results) {
-            	System.out.println(result.getMsg());
+                System.out.println(result.getMsg());
             }
             messageService.cleanUp();
             CliOptions.clearSystemProperties();
@@ -119,12 +120,12 @@ public class CLI implements CommandLineRunner{
         }
     }      
 
-	@Override
-	public void run(String... args) throws Exception {
-		if (CliOptions.hasParsedOptions())
-			handleOptions();
-		boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+    @Override
+    public void run(String... args) throws Exception {
+        if (CliOptions.hasParsedOptions())
+            handleOptions();
+        boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
         if (cliMode) 
-        	CliOptions.help();
-	}
+            CliOptions.help();
+    }
 }
