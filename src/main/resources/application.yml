@@ -27,7 +27,3 @@ activedirectory:
   enabled: false
   domain:
   url:
-  
-jar:
-  path:
-
