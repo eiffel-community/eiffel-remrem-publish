@@ -112,8 +112,6 @@ usage: java -jar
 <pre><code>$ java -Drabbitmq.host=localhost -Drabbitmq.exchange.name=EXCHANGE_NAME -jar eiffel-remrem*
 </code></pre>
 
-<p>Binary comes in War format which allows easy deployment in application servers such as Tomcat. In that case, these parameters must be provided to java process running tomcat. You can also provide them in the <code>WEB-INF/classes/application.yml</code> file.</p>
-
 <p>Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property <code>activedirectory.enabled=true</code>. The necessary configuration properties for Active Directory are</p> 
 
 <ul>
@@ -125,12 +123,12 @@ usage: java -jar
 
 <p>Example Active Directory configuration</p>
 
-<pre>activedirectory:
-  enabled: true
-  domain: "mycompany.com"
-  url: "ldap://ad.mycompany.com:389"</pre>
+<pre><code>$ java -Drabbitmq.host=localhost -Drabbitmq.exchange.name=EXCHANGE_NAME -Dactivedirectory.enabled=true -Dactivedirectory.domain=mycompany -Dactivedirectory.url=ldap://ad.mycompany.com:389 -jar eiffel-remrem*
+</code></pre>
 
 <p>To authenticate a user with username "user" and password "secret" the HTTP header <code>Authorization: Basic dXNlcjpzZWNyZXQ=</code> must be included in the request. Where dXNlcjpzZWNyZXQ= is the string user:secret Base64 encoded.</p>
+
+<p>Binary comes in War format which allows easy deployment in application servers such as Tomcat. In that case, these parameters must be provided to java process running tomcat. You can also provide them in the <code>WEB-INF/classes/application.yml</code> file.</p>
 
 <h3>
 <a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST methods</h3>
