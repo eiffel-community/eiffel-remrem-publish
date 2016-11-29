@@ -9,6 +9,7 @@ import java.util.List;
 
 
 import org.apache.commons.cli.CommandLine;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -17,10 +18,9 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
-import com.ericsson.eiffel.remrem.publish.service.MessageServiceRMQImpl;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 
-import lombok.extern.slf4j.Slf4j;
+import ch.qos.logback.classic.Logger;
 
 /**
  * Class for interpreting the passed arguments from command line.
@@ -36,10 +36,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
-@Slf4j
 public class CLI implements CommandLineRunner{
     
 	@Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
+	Logger log = (Logger) LoggerFactory.getLogger(CLI.class);
 	
     /**
      * Delegates actions depending on the passed arguments
@@ -49,7 +49,7 @@ public class CLI implements CommandLineRunner{
     	CommandLine commandLine = CliOptions.getCommandLine();    	
     	if (commandLine.hasOption("h")) {
     		System.out.println("You passed help flag.");
-    		CliOptions.help();
+    		CliOptions.help(0);
     	} else if (commandLine.hasOption("f")) {
             String filePath = commandLine.getOptionValue("f");
             handleContentFile(filePath);
@@ -59,7 +59,7 @@ public class CLI implements CommandLineRunner{
         } else {
         	System.out.println("Missing arguments, please review your arguments" + 
         						" and check if any mandatory argument is missing");        	
-        	CliOptions.help();
+        	CliOptions.help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
         }    
     }
     
@@ -125,6 +125,6 @@ public class CLI implements CommandLineRunner{
 			handleOptions();
 		boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
         if (cliMode) 
-        	CliOptions.help();
+        	CliOptions.help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
 	}
 }

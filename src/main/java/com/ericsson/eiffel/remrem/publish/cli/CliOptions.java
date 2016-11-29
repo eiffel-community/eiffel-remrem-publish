@@ -8,13 +8,14 @@ import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import java.lang.Exception;
 import java.util.ArrayList;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 
 public class CliOptions {
+	
 	static private Options options=null;
 	static private CommandLine commandLine;
 
@@ -108,14 +109,14 @@ public class CliOptions {
     		    handleMessageBusOptions();
     	    } catch (Exception e) {
     	    	System.out.println(e.getMessage());
-    	    	help();
+    	    	help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
     	    }        
     }    
     
     public static void afterParseChecks() throws MissingOptionException {
         if (commandLine.hasOption("h")) {
     	    System.out.println("You passed help flag.");
-    	    help();
+    	    help(0);
         } else {
             checkRequiredOptions();
         }
@@ -155,12 +156,12 @@ public class CliOptions {
      * Prints the help for this application and exits.
      * @param options the options to print usage help for
      */
-    public static void help() {
+    public static void help(int errorCode) {
     	CliOptions.clearSystemProperties();
         // This prints out some help    	
         HelpFormatter formater = new HelpFormatter();
         formater.printHelp("java -jar", options);
-        System.exit(1);
+        exit(errorCode);
     }
     
     /**
@@ -168,7 +169,7 @@ public class CliOptions {
      * message bus host and exchange name
      * @param commandLine command line arguments
      */
-    public static void handleMessageBusOptions() throws Exception {
+    public static void handleMessageBusOptions() throws HandleMessageBusException {
         if (commandLine.hasOption("mb")) {
             String messageBusHost = commandLine.getOptionValue("mb");
             String key = PropertiesConfig.MESSAGE_BUS_HOST;
@@ -193,8 +194,8 @@ public class CliOptions {
             	tls_ver = "NULL";
             }
             String[] validTlsVersions = new String[]{"1", "1.1", "1.2", "default"};
-            if (StringUtils.indexOfAny(tls_ver, validTlsVersions) == -1) {
-            	throw new Exception("Specified TLS version is not valid! Specify a valid TLS version!");
+            if (!ArrayUtils.contains(validTlsVersions, tls_ver)) {
+            	throw new HandleMessageBusException("Specified TLS version is not valid! Specify a valid TLS version!");
             }
             String key = PropertiesConfig.TLS;
             System.setProperty(key, tls_ver);	

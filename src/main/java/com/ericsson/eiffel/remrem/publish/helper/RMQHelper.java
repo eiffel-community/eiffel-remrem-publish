@@ -3,20 +3,22 @@ package com.ericsson.eiffel.remrem.publish.helper;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.rabbitmq.client.AMQP.BasicProperties;
+
+import ch.qos.logback.classic.Logger;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
-import lombok.extern.slf4j.Slf4j;
-
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -26,7 +28,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
-@Component("rmqHelper") @Slf4j public class RMQHelper {
+@Component("rmqHelper") public class RMQHelper {
+	
+	@Inject
+	RMQBeanConnectionFactory factory;
 
     private static final int CHANNEL_COUNT = 100;
     private static final Random random = new Random();
@@ -39,6 +44,8 @@ import java.util.concurrent.TimeoutException;
     private boolean usePersitance = true;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
+    
+    Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
     public String getHost() {
 		return host;
@@ -48,7 +55,15 @@ import java.util.concurrent.TimeoutException;
 		this.host = host;
 	}
 	
-  public String getTlsVer() {
+    public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+	
+	public String getTlsVer() {
 		return tls_ver;
 	}
 
@@ -68,7 +83,7 @@ import java.util.concurrent.TimeoutException;
         log.info("RMQHelper init ...");
         initCli();
         try {
-            ConnectionFactory factory = new ConnectionFactory();
+            //ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(host);  
 
             if (port != null) {
@@ -80,7 +95,7 @@ import java.util.concurrent.TimeoutException;
             
             log.info("Host adress: " + host);
             log.info("Exchange is: " + exchangeName);
-            // "TLSv1.2"
+
             if (tls_ver != null && !tls_ver.isEmpty()) {
                 if (tls_ver.contains("default")) {
                     log.info("Using default TLS version connection to RabbitMQ.");
