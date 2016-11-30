@@ -8,23 +8,23 @@ import java.io.PrintStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+//import org.mockito.Mock;
+//import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.ericsson.eiffel.remrem.publish.cli.CLIExitCodes;
 import com.ericsson.eiffel.remrem.publish.cli.CLI;
 import com.ericsson.eiffel.remrem.publish.cli.CliOptions;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.shared.MsgService;
+//import com.ericsson.eiffel.remrem.shared.MsgService;
 
 
 public class CliUnitTests {
     private PrintStream console;
     private ByteArrayOutputStream bytes;
 	
-    @Mock
-    private MsgService msgService;	
+//    @Mock
+//    private MsgService msgService;	
 
     private CLI cli;
 	
@@ -41,10 +41,10 @@ public class CliUnitTests {
 //        cli = new CLI(msgServices);
         cli = new CLI();
         
-        Mockito.when(msgService.generateMsg(
-	                Mockito.anyString(),
-	                Mockito.anyObject()
-	        )).thenReturn("{ \"service\":\"msgService\" }");
+//        Mockito.when(msgService.generateMsg(
+//	                Mockito.anyString(),
+//	                Mockito.anyObject()
+//	        )).thenReturn("{ \"service\":\"msgService\" }");
     }
 	
     @After
