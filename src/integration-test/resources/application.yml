@@ -1,5 +1,8 @@
 rabbitmq:
   host: 150.132.35.5
+  port:
+  user:
+  password:
   exchange:
     name: eiffel.test
   port:
@@ -9,3 +12,7 @@ rabbitmq:
 spring:
   http.converters:
     preferred-json-mapper: gson
+activedirectory:
+  enabled: true
+  domain:
+  url:

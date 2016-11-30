@@ -23,3 +23,8 @@ rabbitmq:
 spring:
   http.converters:
     preferred-json-mapper: gson
+
+activedirectory:
+  enabled: false
+  domain:
+  url:
