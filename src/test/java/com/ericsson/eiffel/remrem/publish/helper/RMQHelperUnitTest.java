@@ -2,6 +2,9 @@ package com.ericsson.eiffel.remrem.publish.helper;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +45,7 @@ public class RMQHelperUnitTest {
 
     @After public void tearDown() throws Exception {
     	cleanProperties();
-//    	rmqHelper.cleanUp();
+    	rmqHelper.cleanUp();
     }
     
     private void initProperties() {
@@ -119,31 +122,55 @@ public class RMQHelperUnitTest {
     	assertTrue(rmqHelper.getExchangeName().equals(exchangeNameTest));
     }
     
-//    @Test public void setValuesTest() {
-//    	cleanProperties();
-//    	
-//    	String host = "HOSTC";
-//    	Integer portNumber = 1928;
-//    	String tlsVersion = "1.0";
-//    	String exchangeNameTest = "EN2";
-//    	String usePersistenceTest = "false";
-//    	
-//    	String key = PropertiesConfig.MESSAGE_BUS_HOST;
-//    	System.setProperty(key, host);
-//    	key = PropertiesConfig.MESSAGE_BUS_PORT;
-//    	System.setProperty(key, Integer.toString(portNumber));
-//    	key = PropertiesConfig.TLS;
-//    	System.setProperty(key, tlsVersion);
-//    	key = PropertiesConfig.EXCHANGE_NAME;
-//    	System.setProperty(key, exchangeNameTest);
-//    	key = PropertiesConfig.USE_PERSISTENCE;
-//    	System.setProperty(key, usePersistenceTest);
-//    	
-//    	rmqHelper.setV
-//    	
-//    	assertTrue(rmqHelper.getHost().equals(host));
-//    	assertTrue(rmqHelper.getPort().equals(portNumber));
-//    	assertTrue(rmqHelper.getTlsVer().equals(tlsVersion));
-//    	assertTrue(rmqHelper.getExchangeName().equals(exchangeNameTest));
-//    }
+    @Test public void setValuesTest() {
+    	cleanProperties();
+    	
+    	String host = "HOSTC";
+    	Integer portNumber = 1928;
+    	String tlsVersion = "1.0";
+    	String exchangeNameTest = "EN2";
+    	String usePersistenceTest = "false";
+    	
+    	String key = PropertiesConfig.MESSAGE_BUS_HOST;
+    	System.setProperty(key, host);
+    	key = PropertiesConfig.MESSAGE_BUS_PORT;
+    	System.setProperty(key, Integer.toString(portNumber));
+    	key = PropertiesConfig.TLS;
+    	System.setProperty(key, tlsVersion);
+    	key = PropertiesConfig.EXCHANGE_NAME;
+    	System.setProperty(key, exchangeNameTest);
+    	key = PropertiesConfig.USE_PERSISTENCE;
+    	System.setProperty(key, usePersistenceTest);
+    	
+    	RMQHelper rmqHelperTest = new RMQHelper();
+    	Method setValueMethod;
+		try {
+			setValueMethod = RMQHelper.class.getDeclaredMethod("setValues");
+			// Make private setValues() method visible with Reflection, so method can be tested.
+	    	setValueMethod.setAccessible(true);
+	    	try {
+				setValueMethod.invoke(rmqHelperTest);
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+				assertTrue(false);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				assertTrue(false);
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				assertTrue(false);
+			}
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			assertTrue(false);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			assertTrue(false);
+		}
+
+    	assertTrue(rmqHelperTest.getHost().equals(host));
+    	assertTrue(rmqHelperTest.getPort().equals(portNumber));
+    	assertTrue(rmqHelperTest.getTlsVer().equals(tlsVersion));
+    	assertTrue(rmqHelperTest.getExchangeName().equals(exchangeNameTest));
+    }
 }
