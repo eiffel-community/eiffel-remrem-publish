@@ -98,12 +98,12 @@ import java.util.concurrent.TimeoutException;
 
             if (tls_ver != null && !tls_ver.isEmpty()) {
                 if (tls_ver.contains("default")) {
-                    log.info("Using default TLS version connection to RabbitMQ.");
-                    factory.useSslProtocol();
+                	log.info("Using default TLS version connection to RabbitMQ.");
+                	factory.useSslProtocol();
                 }
                 else {
-                    log.info("Using TLS version " + tls_ver + " connection to RabbitMQ.");
-                    factory.useSslProtocol("TLSv" + tls_ver);
+                	log.info("Using TLS version " + tls_ver + " connection to RabbitMQ.");
+                	factory.useSslProtocol("TLSv" + tls_ver);
                 }
             }
             else{
@@ -114,12 +114,12 @@ import java.util.concurrent.TimeoutException;
             rabbitChannels = new ArrayList<>();            
             
             for (int i = 0; i < CHANNEL_COUNT; i++) {
-                rabbitChannels.add(rabbitConnection.createChannel());
+            	rabbitChannels.add(rabbitConnection.createChannel());
             }
         } catch (IOException | TimeoutException e) {
-            log.error(e.getMessage(), e);
+        	log.error(e.getMessage(), e);
         } catch (KeyManagementException e) {
-            log.error(e.getMessage(), e);
+        	log.error(e.getMessage(), e);
         } catch (NoSuchAlgorithmException e) {
         	log.error(e.getMessage(), e);            
 		}
