@@ -38,7 +38,7 @@ import java.util.concurrent.TimeoutException;
     @Value("${rabbitmq.host}") private String host;
     @Value("${rabbitmq.exchange.name}") private String exchangeName;
     @Value("${rabbitmq.port}") private Integer port;
-    @Value("${rabbitmq.tls}") private String tls_ver;
+    @Value("${rabbitmq.tls}") private String tlsVer;
     @Value("${rabbitmq.user}") private String user;
     @Value("${rabbitmq.password}") private String password;
     private boolean usePersitance = true;
@@ -62,13 +62,13 @@ import java.util.concurrent.TimeoutException;
 	public void setPort(Integer port) {
 		this.port = port;
 	}
-	
+
 	public String getTlsVer() {
-		return tls_ver;
+		return tlsVer;
 	}
 
-	public void setTlsVer(String tls_ver) {
-		this.tls_ver = tls_ver;
+	public void setTlsVer(String tlsVer) {
+		this.tlsVer = tlsVer;
 	}
 
 	public String getExchangeName() {
@@ -96,14 +96,14 @@ import java.util.concurrent.TimeoutException;
             log.info("Host adress: " + host);
             log.info("Exchange is: " + exchangeName);
 
-            if (tls_ver != null && !tls_ver.isEmpty()) {
-                if (tls_ver.contains("default")) {
+            if (tlsVer != null && !tlsVer.isEmpty()) {
+                if (tlsVer.contains("default")) {
                 	log.info("Using default TLS version connection to RabbitMQ.");
                 	factory.useSslProtocol();
                 }
                 else {
-                	log.info("Using TLS version " + tls_ver + " connection to RabbitMQ.");
-                	factory.useSslProtocol("TLSv" + tls_ver);
+                	log.info("Using TLS version " + tlsVer + " connection to RabbitMQ.");
+                	factory.useSslProtocol("TLSv" + tlsVer);
                 }
             }
             else{
@@ -142,7 +142,7 @@ import java.util.concurrent.TimeoutException;
 
     	String passedTlsVer = System.getProperty(PropertiesConfig.TLS); 
     	if (passedTlsVer != null) {
-    		tls_ver = passedTlsVer;
+    		tlsVer = passedTlsVer;
     	}
     	
     	String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
