@@ -61,7 +61,7 @@ public class CliOptions {
         options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus");
-        options.addOption("tls", "tls", true, "use tls, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
+        options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }
