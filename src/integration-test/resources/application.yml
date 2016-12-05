@@ -5,6 +5,7 @@ rabbitmq:
   password:
   exchange:
     name: eiffel.test
+  tls:
 spring:
   http.converters:
     preferred-json-mapper: gson
