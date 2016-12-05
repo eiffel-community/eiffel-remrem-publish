@@ -21,7 +21,7 @@ plugins {
 
 war {
     baseName = 'remrem-publish'
-    version =  '0.1.9'
+    version =  '0.2.0'
 }
 
 apply plugin: 'spring-boot'
@@ -74,7 +74,7 @@ ext {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.13'
+  gradleVersion = '3.1'
   distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
@@ -103,6 +103,7 @@ dependencies {
     compile 'com.rabbitmq:amqp-client:3.5.7'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'org.projectlombok:lombok:1.16.8'
+    compile 'javax.inject:javax.inject:1'
 
     //commons CLI
     compile 'commons-cli:commons-cli:1.3.1'
@@ -130,8 +131,4 @@ dependencies {
     testCompile 'org.assertj:assertj-core:3.4.1'
     testCompile "org.springframework.boot:spring-boot-starter-test:$sprintBootVersion"
     testCompile 'com.jayway.jsonpath:json-path-assert:2.2.0'
-
-    // In order to get embedded app container to work
-    integrationTestRuntime("org.springframework.boot:spring-boot-starter-tomcat")
-    integrationTestCompile group: 'com.jayway.restassured', name: 'rest-assured', version: '2.9.0'
 }

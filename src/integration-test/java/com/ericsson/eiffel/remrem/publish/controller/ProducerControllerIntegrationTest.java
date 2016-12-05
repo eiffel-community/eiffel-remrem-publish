@@ -1,6 +1,5 @@
 package com.ericsson.eiffel.remrem.publish.controller;
 
-import com.ericsson.eiffel.remrem.publish.App;
 import com.jayway.restassured.RestAssured;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
@@ -8,8 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
+
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -19,8 +19,7 @@ import static com.jayway.restassured.RestAssured.given;
 
 @ActiveProfiles("integration-test")
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = App.class)
-@WebIntegrationTest({"server.port=0", "management.port=0"})
+@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 public class ProducerControllerIntegrationTest {
     @Value("${local.server.port}")
     int port;

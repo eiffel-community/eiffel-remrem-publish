@@ -6,7 +6,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import lombok.extern.slf4j.Slf4j;
+import ch.qos.logback.classic.Logger;
+
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("messageServiceRMQImpl") @Slf4j public class MessageServiceRMQImpl
+@Service("messageServiceRMQImpl") public class MessageServiceRMQImpl
     implements MessageService {
 
     private static final String SUCCEED = "succeed";
     @Autowired @Qualifier("rmqHelper") RMQHelper rmqHelper;
+    
+    Logger log = (Logger) LoggerFactory.getLogger(MessageServiceRMQImpl.class);
 
     /* (non-Javadoc)
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.lang.String, java.util.List)
