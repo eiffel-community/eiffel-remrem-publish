@@ -21,7 +21,7 @@ plugins {
 
 war {
     baseName = 'remrem-publish'
-    version =  '0.2.1'
+    version =  '0.2.2'
 }
 
 apply plugin: 'spring-boot'
@@ -63,9 +63,9 @@ install.dependsOn assemble
 repositories {
     // Use 'jcenter' for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+    mavenCentral()
     maven {
-        url 'https://repo.spring.io/libs-milestone'
+        url 'https://jitpack.io'
     }
 }
 
@@ -112,6 +112,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.springframework.security:spring-security-ldap")
     compile("org.apache.directory.server:apacheds-server-jndi:1.5.5")
+    
+    
 
     //ServletException requires compile time servlet dependency but it causes problems
     //when deployed if exist on war run time.. hence provided but also compileOnly
@@ -121,7 +123,16 @@ dependencies {
 
     compile 'io.springfox:springfox-swagger2:2.4.0'
     compile 'io.springfox:springfox-swagger-ui:2.4.0'
-
+    
+    //Injectable Message Library and its Implementation
+    compile 'com.github.Ericsson:eiffel-remrem-shared:0.2.0'
+    compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
+    compile ('com.github.Ericsson:eiffel-remrem-semantics:0.1.9')
+    compile ('org.reflections:reflections:0.9.9')
+    
+    compile files('C:/Users/1231375/Downloads/types-42.0.4.jar')
+    compile files('C:/Users/1231375/Downloads/messaging-42.0.4.jar')
+    compile files('C:/Users/1231375/Downloads/eiffel3messaging-6.0.3.jar')
 
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the

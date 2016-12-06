@@ -41,6 +41,7 @@ import java.util.concurrent.TimeoutException;
     @Value("${rabbitmq.tls}") private String tlsVer;
     @Value("${rabbitmq.user}") private String user;
     @Value("${rabbitmq.password}") private String password;
+    @Value("${rabbitmq.domainId}") private String domainId;
     private boolean usePersitance = true;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
@@ -78,6 +79,14 @@ import java.util.concurrent.TimeoutException;
 	public void setExchangeName(String exchangeName) {
 		this.exchangeName = exchangeName;
 	}
+	
+    public String getDomainId() {
+        return domainId;
+    }
+
+    public void setDomainId(String domainId) {
+        this.domainId = domainId;
+    }
 
 	@PostConstruct public void init() {
         log.info("RMQHelper init ...");

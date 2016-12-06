@@ -5,6 +5,7 @@ rabbitmq:
   password:
   exchange:
     name: eiffel.test
+  domainId: eiffelxxx  
   tls:
 spring:
   http.converters:
