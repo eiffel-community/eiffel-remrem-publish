@@ -1,3 +1,6 @@
+## 0.2.1
+- Fix authentication required even when activedirectory.enabled=false
+
 ## 0.2.0
 - Added SSL support for the RabbitMq connection.
 - Improved Cli
