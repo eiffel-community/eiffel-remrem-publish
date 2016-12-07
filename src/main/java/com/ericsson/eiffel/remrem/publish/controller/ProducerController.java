@@ -1,5 +1,6 @@
 package com.ericsson.eiffel.remrem.publish.controller;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,12 +16,14 @@ import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonElement;
 
+import ch.qos.logback.classic.Logger;
+
 @RestController @RequestMapping("/producer") public class ProducerController {
     
     @Autowired
     private MsgService msgServices[] ;
     @Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
-
+    Logger log = (Logger) LoggerFactory.getLogger(ProducerController.class);
      @RequestMapping(value = "/msg", method = RequestMethod.POST)
      @ResponseBody
         public SendResult send(@RequestParam(value = "mp", required = false) String msgProtocol,
