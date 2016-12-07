@@ -80,7 +80,7 @@ public class ProducerControllerIntegrationTest {
                            "events[2].id", Matchers.equalTo("9cdd0f68-df85-44b0-88bd-fc4163ac90a1"));
     }
     
-    @Test
+    /*@Test
     public void testGetFamily() throws Exception {
         MsgService messageService = PublishUtils.getMessageService("eiffel3", msgServices);
         String jsonString = "{'eiffelMessageVersions': { '3.21.37.0.4': { 'domainId': 'testdomain', 'eventId': '4ce1e9e1-21c4-458f-b8d1-ef26b82a5634', 'eventTime': '2016-09-01T08:23:57.894Z', 'eventType': 'EiffelJobFinishedEvent', 'inputEventIds': [], 'eventData': { 'jobInstance': 'MySuperGreatJob', 'jobExecutionId': '81e06fbc-1247-4446-9426-3381f9a1bda2', 'jobExecutionNumber': 731, 'resultCode': 'SUCCESS', 'resultDetails': { 'key': 0, 'description': 'The Result was Successful' }, 'logReferences': {}, 'flowContext': '', 'optionalParameters': {} } }, '2.3.37.0.4': { 'domainId': 'testdomain', 'eventId': '4ce1e9e1-21c4-458f-b8d1-ef26b82a5634', 'eventTime': '2016-09-01T08:23:57.894Z', 'eventType': 'EiffelJobFinishedEvent', 'inputEventIds': [], 'eventData': { 'jobInstance': 'MySuperGreatJob', 'jobExecutionId': '81e06fbc-1247-4446-9426-3381f9a1bda2', 'jobExecutionNumber': 731, 'resultCode': 'SUCCESS', 'logReferences': {}, 'optionalParameters': {} } } } }";
@@ -88,6 +88,6 @@ public class ProducerControllerIntegrationTest {
         JsonElement json = parser.parse(jsonString);
         String family = messageService.getFamily(json.getAsJsonObject());
         assertEquals("job", family);
-    }
+    }*/
 
 }
