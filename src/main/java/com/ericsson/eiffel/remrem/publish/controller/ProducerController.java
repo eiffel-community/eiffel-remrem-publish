@@ -28,7 +28,7 @@ import com.google.gson.JsonElement;
             MsgService msgService = PublishUtils.getMessageService(msgProtocol,msgServices);
             System.out.println("MsgService is :" + msgService);
             
-            //log.debug("routingKey: " + routingKey);
-            //log.debug("body: " + body);
+            log.debug("mp: " + msgProtocol);
+            log.debug("body: " + body);
             return messageService.send(body, msgService);
         }}

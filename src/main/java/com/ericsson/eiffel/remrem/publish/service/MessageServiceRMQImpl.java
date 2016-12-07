@@ -63,7 +63,6 @@ import ch.qos.logback.classic.Logger;
         JsonParser parser = new JsonParser();
         try {
             JsonElement json = parser.parse(jsonContent);
-            String routingKey = PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(), rmqHelper);
             Map<String, String> map = new HashMap<>();
             Map<String, String> routekeyMap = new HashMap<>();
             String eventId = msgService.getEventId(json.getAsJsonObject());
@@ -126,9 +125,6 @@ import ch.qos.logback.classic.Logger;
         instantiateRmqHelper();
         try {
             rmqHelper.send(routingKey, msg);
-            System.out.println("##########################################################################");
-            System.out.println(routingKey+"===="+msg);
-            System.out.println("##########################################################################");
         } catch (Exception e) {
            log.error(e.getMessage(), e);
             resultMsg = "Failed to send message:" + msg;

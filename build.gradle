@@ -112,8 +112,6 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.springframework.security:spring-security-ldap")
     compile("org.apache.directory.server:apacheds-server-jndi:1.5.5")
-    
-    
 
     //ServletException requires compile time servlet dependency but it causes problems
     //when deployed if exist on war run time.. hence provided but also compileOnly
@@ -128,12 +126,7 @@ dependencies {
     compile 'com.github.Ericsson:eiffel-remrem-shared:0.2.0'
     compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
     compile ('com.github.Ericsson:eiffel-remrem-semantics:0.1.9')
-    compile ('org.reflections:reflections:0.9.9')
     
-    compile files('C:/Users/1231375/Downloads/types-42.0.4.jar')
-    compile files('C:/Users/1231375/Downloads/messaging-42.0.4.jar')
-    compile files('C:/Users/1231375/Downloads/eiffel3messaging-6.0.3.jar')
-
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add

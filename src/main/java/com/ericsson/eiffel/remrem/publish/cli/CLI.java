@@ -42,7 +42,6 @@ public class CLI implements CommandLineRunner{
 	@Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
 	@Autowired
     private MsgService[] msgServices;
-	
 	Logger log = (Logger) LoggerFactory.getLogger(CLI.class);
 	
     /**
