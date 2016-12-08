@@ -29,7 +29,6 @@ import ch.qos.logback.classic.Logger;
         public SendResult send(@RequestParam(value = "mp", required = false) String msgProtocol,
                 @RequestBody JsonElement body) { 
             MsgService msgService = PublishUtils.getMessageService(msgProtocol,msgServices);
-            System.out.println("MsgService is :" + msgService);
             
             log.debug("mp: " + msgProtocol);
             log.debug("body: " + body);

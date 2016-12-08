@@ -1,10 +1,19 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
+import com.google.gson.annotations.SerializedName;
+
 public class PublishResultItem {
 
+    @SerializedName("id")
     private String id;
+    
+    @SerializedName("status_code")
     private int status_code;
+    
+    @SerializedName("result")
     private String result;
+    
+    @SerializedName("message")
     private String message;
 
     public PublishResultItem(String id, int status_code, String result, String message) {
