@@ -127,7 +127,6 @@ import ch.qos.logback.classic.Logger;
         String resultMsg = PropertiesConfig.SUCCEED;
         instantiateRmqHelper();
         try {
-            System.out.println("############################################"+routingKey+"..............."+msg);
             rmqHelper.send(routingKey, msg);
         } catch (Exception e) {
            log.error(e.getMessage(), e);
