@@ -60,6 +60,7 @@ public class CliOptions {
         options.addOption("port", "port", true, "port to connect to message bus");
         options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
         options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, semantics");
+        options.addOption("ud", "user_domain", true, "name of user domain");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }

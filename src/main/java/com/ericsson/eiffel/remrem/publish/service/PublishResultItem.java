@@ -8,7 +8,7 @@ public class PublishResultItem {
     private String id;
     
     @SerializedName("status_code")
-    private int status_code;
+    private int statusCode;
     
     @SerializedName("result")
     private String result;
@@ -19,7 +19,7 @@ public class PublishResultItem {
     public PublishResultItem(String id, int status_code, String result, String message) {
         super();
         this.id = id;
-        this.status_code = status_code;
+        this.statusCode = status_code;
         this.result = result;
         this.message = message;
     }
@@ -33,11 +33,11 @@ public class PublishResultItem {
     }
 
     public int getStatus_code() {
-        return status_code;
+        return statusCode;
     }
 
     public void setStatus_code(int status_code) {
-        this.status_code = status_code;
+        this.statusCode = status_code;
     }
 
     public String getResult() {
@@ -55,9 +55,9 @@ public class PublishResultItem {
     public void setMessage(String message) {
         this.message = message;
     }
-
-    public String toString() {
-        return ("id : " + getId() + " , " + "status_code : " + getStatus_code() + " , " + "result : " + getResult()
-                + " , " + "message: " + getMessage());
+    
+    public String toString()
+    {
+        return ("id : " + getId() + " , " + "status_code : " + getStatus_code() + " , " + "result : " + getResult() + " , " + "message: " + getMessage() );
     }
 }

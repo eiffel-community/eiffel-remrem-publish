@@ -27,10 +27,11 @@ import ch.qos.logback.classic.Logger;
      @RequestMapping(value = "/msg", method = RequestMethod.POST)
      @ResponseBody
         public SendResult send(@RequestParam(value = "mp", required = false) String msgProtocol,
+                @RequestParam(value = "ud", required = false) String userDomain,
                 @RequestBody JsonElement body) { 
-            MsgService msgService = PublishUtils.getMessageService(msgProtocol,msgServices);
+            MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
             
             log.debug("mp: " + msgProtocol);
             log.debug("body: " + body);
-            return messageService.send(body, msgService);
+            return messageService.send(body, msgService, userDomain);
         }}

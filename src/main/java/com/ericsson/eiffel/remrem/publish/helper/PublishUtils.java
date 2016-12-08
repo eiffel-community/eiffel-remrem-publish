@@ -11,12 +11,13 @@ import ch.qos.logback.classic.Logger;
 
 public class PublishUtils {
 
+    private static final String DOT = ".";
     static Logger log = (Logger) LoggerFactory.getLogger(PublishUtils.class);
     /**
      * Method returns the MsgService based on the mp(message protocol) from the list of MsgService beans. 
-     * @param mp
-     * @param msgServices
-     * @return
+     * @param mp(message protocol) Specifies which service we consider from the list of MsgService beans
+     * @param msgServices List of msgService beans or instances
+     * @return msgService or null if message service not available.
      */
     public static MsgService getMessageService(String mp, MsgService msgServices[]) {
         if (StringUtils.isNotBlank(mp)) {
@@ -40,17 +41,23 @@ public class PublishUtils {
     }
     
     /**
-     * 
-     * @param msgService
-     * @param json
-     * @return
+     * Method returns the routing key from the messaging service based on the json event type.
+     * @param msgService the Messaging service.
+     * @param json the eiffel event
+     * @param userDomain is optional parameter, If user provide this it will add to the domainId.
+     * @return routing key or null if routing key not available
      */
-    public static String prepareRoutingKey(MsgService msgService, JsonObject json,RMQHelper rmqHelper) {
+    public static String prepareRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper,
+            String userDomain) {
+        String domainId = "";
         if (msgService != null && StringUtils.isNotEmpty(msgService.getFamily(json))
                 && StringUtils.isNotEmpty(msgService.getType(json))
                 && StringUtils.isNotEmpty(rmqHelper.getDomainId())) {
-            return msgService.getFamily(json) + "." + msgService.getType(json) + "." + "notag" + "."
-                    + rmqHelper.getDomainId();
+            domainId = rmqHelper.getDomainId();
+            if (StringUtils.isNotEmpty(userDomain)) {
+                domainId = domainId + DOT + userDomain;
+            }
+            return msgService.getFamily(json) + DOT + msgService.getType(json) + DOT + "notag" + DOT + domainId;
         }
         return null;
     }

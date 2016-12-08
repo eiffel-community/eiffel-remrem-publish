@@ -111,7 +111,7 @@ public class CLI implements CommandLineRunner{
             MsgService msgService = PublishUtils.getMessageService(CliOptions.getCommandLine().getOptionValue("mp"),
                     msgServices);
             if (msgService != null) {
-                SendResult results = messageService.send(content, msgService);
+                SendResult results = messageService.send(content, msgService,CliOptions.getCommandLine().getOptionValue("ud"));
                 for (PublishResultItem result : results.getEvents()) {
                     System.out.println(result);
                 }
