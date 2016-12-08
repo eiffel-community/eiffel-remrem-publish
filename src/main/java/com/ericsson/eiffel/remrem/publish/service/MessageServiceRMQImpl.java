@@ -35,14 +35,14 @@ import ch.qos.logback.classic.Logger;
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.util.Map, java.util.Map)
      */
     @Override
-    public SendResult send(Map<String, String> routeKeyMap, Map<String, String> msgs) {
+    public SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs) {
         List<PublishResultItem> results = new ArrayList<>();
         SendResult sendResult = null;
         PublishResultItem event = null;
         if (!CollectionUtils.isEmpty(msgs)) {
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
-                String message = sendMessage(routeKeyMap.get(entry.getKey()), entry.getValue());
-                if (PropertiesConfig.SUCCEED.equals(message)) {
+                String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue());
+                if (PropertiesConfig.SUCCESS.equals(message)) {
                     event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, null);
                 } else {
                     event = new PublishResultItem(entry.getKey(), 400, PropertiesConfig.INVALID_MESSAGE,
@@ -60,23 +60,23 @@ import ch.qos.logback.classic.Logger;
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.lang.String, com.ericsson.eiffel.remrem.protocol.MsgService, java.lang.String)
      */
     @Override
-    public SendResult send(String jsonContent, MsgService msgService, String userDomain) {
+    public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix) {
         
         JsonParser parser = new JsonParser();
         try {
             JsonElement json = parser.parse(jsonContent);
             Map<String, String> map = new HashMap<>();
-            Map<String, String> routeKeyMap = new HashMap<>();
+            Map<String, String> routingKeyMap = new HashMap<>();
             String eventId = msgService.getEventId(json.getAsJsonObject());
             if (eventId != null) {
                 map.put(eventId, json.toString());
-                routeKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomain)) ;
+                routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
             } else {
                 List<PublishResultItem> events = new ArrayList<>();
                 createFailureResult(events);
                 return new SendResult(events);
             }
-            return send(routeKeyMap, map);
+            return send(routingKeyMap, map);
         } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
             if (e.getCause() != null) {
@@ -94,10 +94,10 @@ import ch.qos.logback.classic.Logger;
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(com.google.gson.JsonElement, com.ericsson.eiffel.remrem.protocol.MsgService, java.lang.String)
      */
     @Override
-    public SendResult send(JsonElement json, MsgService msgService, String userDomain) {
+    public SendResult send(JsonElement json, MsgService msgService, String userDomainSuffix) {
         
         Map<String, String> map = new HashMap<>();
-        Map<String, String> routeKeyMap = new HashMap<>();
+        Map<String, String> routingKeyMap = new HashMap<>();
         List<PublishResultItem> events = new ArrayList<>();
         if (json == null) {
             createFailureResult(events);
@@ -105,14 +105,14 @@ import ch.qos.logback.classic.Logger;
         if (json.isJsonArray()) {
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
-                getAndCheckEvent(msgService, map, events, obj,routeKeyMap,userDomain);
+                getAndCheckEvent(msgService, map, events, obj,routingKeyMap,userDomainSuffix);
             }
         } else {
-            getAndCheckEvent(msgService, map, events, json,routeKeyMap,userDomain);
+            getAndCheckEvent(msgService, map, events, json,routingKeyMap,userDomainSuffix);
         }
 
         if (map.size() > 0) {
-            SendResult result = send(routeKeyMap, map);
+            SendResult result = send(routingKeyMap, map);
             events.addAll(result.getEvents());
             result.setEvents(events);
             return result;
@@ -124,7 +124,7 @@ import ch.qos.logback.classic.Logger;
     }
     
     private String sendMessage(String routingKey, String msg) {
-        String resultMsg = PropertiesConfig.SUCCEED;
+        String resultMsg = PropertiesConfig.SUCCESS;
         instantiateRmqHelper();
         try {
             rmqHelper.send(routingKey, msg);
@@ -160,10 +160,10 @@ import ch.qos.logback.classic.Logger;
      * @param routeKeyMap contains the eventId and routing key of that event
      */
     private void getAndCheckEvent(MsgService msgService, Map<String, String> map, List<PublishResultItem> events,
-            JsonElement obj, Map<String, String> routeKeyMap, String userDomain) {
+            JsonElement obj, Map<String, String> routeKeyMap, String userDomainSuffix) {
         String eventId = msgService.getEventId(obj.getAsJsonObject());
         if (eventId != null) {
-            routeKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomain)) ;
+            routeKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
             map.put(eventId, obj.toString());
         } else {
             createFailureResult(events);

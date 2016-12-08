@@ -29,14 +29,12 @@ public class PublishUtils {
         }
         else {
             for (MsgService service : msgServices) {
-                if (service instanceof SemanticsService) {
+                //if (service instanceof SemanticsService) {
                     return service;
-                }
+               // }
             }
         }
-        System.out.println("No protocol service has been found registered.");
         log.error("No protocol service has been found registered.");
-        // CLIOptions.exit(CLIExitCodes.MESSAGE_PROTOCOL_NOT_FOUND);
         return null;
     }
     
@@ -44,18 +42,18 @@ public class PublishUtils {
      * Method returns the routing key from the messaging service based on the json event type.
      * @param msgService the Messaging service.
      * @param json the eiffel event
-     * @param userDomain is optional parameter, If user provide this it will add to the domainId.
+     * @param userDomainSuffix is optional parameter, If user provide this it will add to the domainId.
      * @return routing key or null if routing key not available
      */
     public static String prepareRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper,
-            String userDomain) {
+            String userDomainSuffix) {
         String domainId = "";
         if (msgService != null && StringUtils.isNotEmpty(msgService.getFamily(json))
                 && StringUtils.isNotEmpty(msgService.getType(json))
                 && StringUtils.isNotEmpty(rmqHelper.getDomainId())) {
             domainId = rmqHelper.getDomainId();
-            if (StringUtils.isNotEmpty(userDomain)) {
-                domainId = domainId + DOT + userDomain;
+            if (StringUtils.isNotEmpty(userDomainSuffix)) {
+                domainId = domainId + DOT + userDomainSuffix;
             }
             return msgService.getFamily(json) + DOT + msgService.getType(json) + DOT + "notag" + DOT + domainId;
         }

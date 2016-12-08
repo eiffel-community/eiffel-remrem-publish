@@ -11,7 +11,6 @@ public class PropertiesConfig {
 	
 	public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
 	public static final String INVALID_MESSAGE = "INVALID_MESSAGE";
-	public static final String SUCCEED = "succeed";
 	public static final String SUCCESS = "SUCCESS";
 
 	public static final String EVENT_ID = "eventId";
