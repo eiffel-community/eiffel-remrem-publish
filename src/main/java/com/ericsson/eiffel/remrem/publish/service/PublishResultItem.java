@@ -7,7 +7,7 @@ public class PublishResultItem {
     @SerializedName("id")
     private String id;
     
-    @SerializedName("statusCode")
+    @SerializedName("status_code")
     private int statusCode;
     
     @SerializedName("result")
