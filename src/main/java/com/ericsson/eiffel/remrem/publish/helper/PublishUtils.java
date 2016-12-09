@@ -43,21 +43,19 @@ public class PublishUtils {
      * @param msgService the Messaging service.
      * @param json the eiffel event
      * @param userDomainSuffix is optional parameter, If user provide this it will add to the domainId.
-     * @return routing key or null if routing key not available
+     * @return routing key or returns domain id if family and type not available.
      */
     public static String prepareRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper,
             String userDomainSuffix) {
-        String domainId = "";
+        String domainId = rmqHelper.getDomainId();
+        if (StringUtils.isNotEmpty(userDomainSuffix)) {
+            domainId = domainId + DOT + userDomainSuffix;
+        }
         if (msgService != null && StringUtils.isNotEmpty(msgService.getFamily(json))
-                && StringUtils.isNotEmpty(msgService.getType(json))
-                && StringUtils.isNotEmpty(rmqHelper.getDomainId())) {
-            domainId = rmqHelper.getDomainId();
-            if (StringUtils.isNotEmpty(userDomainSuffix)) {
-                domainId = domainId + DOT + userDomainSuffix;
-            }
+                && StringUtils.isNotEmpty(msgService.getType(json))) {
             return msgService.getFamily(json) + DOT + msgService.getType(json) + DOT + "notag" + DOT + domainId;
         }
-        return null;
+        return domainId;
     }
 
 }
