@@ -41,10 +41,6 @@ public class PublishResultItem {
         this.statusCode = statusCode;
     }
 
-    public void setStatus_code(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
     public String getResult() {
         return result;
     }

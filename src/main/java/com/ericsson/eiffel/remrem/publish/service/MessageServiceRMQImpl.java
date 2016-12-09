@@ -157,13 +157,13 @@ import ch.qos.logback.classic.Logger;
      * @param map contains the eventId and event in string format.
      * @param events for list the eiffel events results
      * @param obj the eiffel event 
-     * @param routeKeyMap contains the eventId and routing key of that event
+     * @param routingKeyMap contains the eventId and routing key of that event
      */
     private void getAndCheckEvent(MsgService msgService, Map<String, String> map, List<PublishResultItem> events,
-            JsonElement obj, Map<String, String> routeKeyMap, String userDomainSuffix) {
+            JsonElement obj, Map<String, String> routingKeyMap, String userDomainSuffix) {
         String eventId = msgService.getEventId(obj.getAsJsonObject());
         if (eventId != null) {
-            routeKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
+            routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
             map.put(eventId, obj.toString());
         } else {
             createFailureResult(events);
