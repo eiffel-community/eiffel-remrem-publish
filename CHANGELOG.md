@@ -1,3 +1,7 @@
+## 0.2.2
+- Added eventId to output format in REMREM publish
+- Implemented get route key from messaging library.
+
 ## 0.2.1
 - Fix authentication required even when activedirectory.enabled=false
 

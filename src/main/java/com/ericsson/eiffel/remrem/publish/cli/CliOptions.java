@@ -35,7 +35,6 @@ public class CliOptions {
 	}
 
     private static OptionGroup contentGroup = null;
-    private static OptionGroup routingKeyGroup = null;
 
 	
 	public static CommandLine getCommandLine() {
@@ -54,14 +53,14 @@ public class CliOptions {
      */
     public static void createCLIOptions() {
         options = new Options();
-        routingKeyGroup = createRoutingKeyGroup();
-        options.addOptionGroup(routingKeyGroup);
         options.addOption(createHelpOption());
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
         options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus");
         options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
+        options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, semantics");
+        options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }
@@ -72,10 +71,6 @@ public class CliOptions {
     
     private static Option createFileOption() {
     	return new Option("f", "content_file", true, "event content file");
-    }
-    
-    private static Option createRoutingKeyOption() {
-    	return new Option("rk", "routing_key", true, "routing key, mandatory");
     }
     
     private static Option createHelpOption() {
@@ -89,11 +84,6 @@ public class CliOptions {
     	return group;
     }
     
-    private static OptionGroup createRoutingKeyGroup() {
-    	OptionGroup group = new OptionGroup();
-    	group.addOption(createRoutingKeyOption());    	
-    	return group;
-    }
     
     /**
      * Parse the given arguments and act on them
@@ -123,7 +113,7 @@ public class CliOptions {
     }
     
     public static void checkRequiredOptions() throws MissingOptionException {
-        OptionGroup[] groups = {routingKeyGroup, contentGroup};
+        OptionGroup[] groups = {contentGroup};
         for(OptionGroup group : groups) {
             ArrayList<Option> groupOptions = new ArrayList<Option>(group.getOptions());
             boolean groupIsGiven = false;

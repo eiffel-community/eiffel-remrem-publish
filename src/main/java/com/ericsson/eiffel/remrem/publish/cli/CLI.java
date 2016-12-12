@@ -5,8 +5,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.util.List;
-
 
 import org.apache.commons.cli.CommandLine;
 import org.slf4j.LoggerFactory;
@@ -16,8 +14,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
+import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 
 import ch.qos.logback.classic.Logger;
@@ -39,6 +40,8 @@ import ch.qos.logback.classic.Logger;
 public class CLI implements CommandLineRunner{
     
 	@Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
+	@Autowired
+    private MsgService[] msgServices;
 	Logger log = (Logger) LoggerFactory.getLogger(CLI.class);
 	
     /**
@@ -105,13 +108,18 @@ public class CLI implements CommandLineRunner{
      */
     public void handleContent(String content) {
         try {
-        	String routingKey = CliOptions.getCommandLine().getOptionValue("rk");
-            List<SendResult> results = messageService.send(routingKey, content);
-            for(SendResult result : results) {
-            	System.out.println(result.getMsg());
+            MsgService msgService = PublishUtils.getMessageService(CliOptions.getCommandLine().getOptionValue("mp"),
+                    msgServices);
+            if (msgService != null) {
+                SendResult results = messageService.send(content, msgService,CliOptions.getCommandLine().getOptionValue("ud"));
+                for (PublishResultItem result : results.getEvents()) {
+                    System.out.println(result);
+                }
+                messageService.cleanUp();
+                CliOptions.clearSystemProperties();
+            } else {
+                throw new Exception();
             }
-            messageService.cleanUp();
-            CliOptions.clearSystemProperties();
         } catch (Exception e) {
             log.debug("Exception: ", e);
             System.err.println("Exception: " + e.getMessage());

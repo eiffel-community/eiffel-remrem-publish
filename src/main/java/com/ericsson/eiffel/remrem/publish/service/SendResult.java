@@ -1,16 +1,25 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
+import java.util.List;
+
+import com.google.gson.annotations.SerializedName;
+
 public class SendResult {
-    private String msg;
+    
+    @SerializedName("events")
+    private List<PublishResultItem> events;
 
-    public String getMsg() {
-		return msg;
-	}
-
-	public SendResult(String msg) {
-        this.msg = msg;
+    public SendResult(List<PublishResultItem> msg) {
+        this.events = msg;
     }
 
     public SendResult() {
     }
-}
+
+    public void setEvents(List<PublishResultItem> events) {
+        this.events = events;
+    }
+
+    public List<PublishResultItem> getEvents() {
+        return events;
+    }}

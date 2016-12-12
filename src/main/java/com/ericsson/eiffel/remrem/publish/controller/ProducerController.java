@@ -1,12 +1,5 @@
 package com.ericsson.eiffel.remrem.publish.controller;
 
-import com.ericsson.eiffel.remrem.publish.helper.ResponseHelper;
-import com.ericsson.eiffel.remrem.publish.service.MessageService;
-import com.ericsson.eiffel.remrem.publish.service.SendResult;
-import com.google.gson.JsonElement;
-
-import ch.qos.logback.classic.Logger;
-
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,22 +9,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
+
+import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
+import com.ericsson.eiffel.remrem.publish.service.MessageService;
+import com.ericsson.eiffel.remrem.publish.service.SendResult;
+import com.google.gson.JsonElement;
+
+import ch.qos.logback.classic.Logger;
 
 @RestController @RequestMapping("/producer") public class ProducerController {
-
-    @Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
-    @Autowired @Qualifier("responseHelper") ResponseHelper responseHelper;
     
+    @Autowired
+    private MsgService msgServices[] ;
+    @Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
     Logger log = (Logger) LoggerFactory.getLogger(ProducerController.class);
-
-    @RequestMapping(value = "/msg", method = RequestMethod.POST) @ResponseBody
-    public List<String> send(@RequestParam(value = "rk", required = true) String routingKey,
-        @RequestBody JsonElement body) {
-        log.debug("routingKey: " + routingKey);
-        log.debug("body: " + body);
-
-        List<SendResult> results = messageService.send(routingKey, body);
-        return responseHelper.convert(results);
-    }
-}
+     @RequestMapping(value = "/msg", method = RequestMethod.POST)
+     @ResponseBody
+        public SendResult send(@RequestParam(value = "mp", required = false) String msgProtocol,
+                @RequestParam(value = "ud", required = false) String userDomain,
+                @RequestBody JsonElement body) { 
+            MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
+            
+            log.debug("mp: " + msgProtocol);
+            log.debug("body: " + body);
+            return messageService.send(body, msgService, userDomain);
+        }}
