@@ -1,5 +1,6 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 public class PublishResultItem {
@@ -57,8 +58,13 @@ public class PublishResultItem {
         this.message = message;
     }
     
-    public String toString()
+    public JsonObject toJsonObject()
     {
-        return ("id : " + getId() + " , " + "statusCode : " + getStatusCode() + " , " + "result : " + getResult() + " , " + "message: " + getMessage() );
+        JsonObject data=new JsonObject();
+        data.addProperty("id", getId());
+        data.addProperty("statusCode",getStatusCode());
+        data.addProperty("result", getResult());
+        data.addProperty("message", getMessage());
+        return data;
     }
 }

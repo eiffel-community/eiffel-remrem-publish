@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -19,6 +20,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
+import com.ericsson.eiffel.remrem.publish.service.MessageService;
+import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
+import com.ericsson.eiffel.remrem.publish.service.SendResult;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.jayway.restassured.RestAssured;
@@ -31,6 +36,7 @@ public class ProducerControllerIntegrationTest {
     int port;
     @Autowired
     private MsgService[] msgServices;
+    @Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
     private String credentials = "Basic " + Base64.getEncoder().encodeToString("user:secret".getBytes());
 
     @Before
@@ -92,4 +98,18 @@ public class ProducerControllerIntegrationTest {
         }
     }
 
+    @Test
+    public void testJsonOutput() throws Exception {
+        MsgService msgService = PublishUtils.getMessageService("eiffel3", msgServices);
+        if (msgService != null) {
+            JsonArray jarray = new JsonArray();
+            String jsonString = "{'eiffelMessageVersions': { '3.21.37.0.4': { 'domainId': 'testdomain', 'eventId': '4ce1e9e1-21c4-458f-b8d1-ef26b82a5634', 'eventTime': '2016-09-01T08:23:57.894Z', 'eventType': 'EiffelJobFinishedEvent', 'inputEventIds': [], 'eventData': { 'jobInstance': 'MySuperGreatJob', 'jobExecutionId': '81e06fbc-1247-4446-9426-3381f9a1bda2', 'jobExecutionNumber': 731, 'resultCode': 'SUCCESS', 'resultDetails': { 'key': 0, 'description': 'The Result was Successful' }, 'logReferences': {}, 'flowContext': '', 'optionalParameters': {} } }, '2.3.37.0.4': { 'domainId': 'testdomain', 'eventId': '4ce1e9e1-21c4-458f-b8d1-ef26b82a5634', 'eventTime': '2016-09-01T08:23:57.894Z', 'eventType': 'EiffelJobFinishedEvent', 'inputEventIds': [], 'eventData': { 'jobInstance': 'MySuperGreatJob', 'jobExecutionId': '81e06fbc-1247-4446-9426-3381f9a1bda2', 'jobExecutionNumber': 731, 'resultCode': 'SUCCESS', 'logReferences': {}, 'optionalParameters': {} } } } }";
+            SendResult results = messageService.send(jsonString, msgService, "fem001");
+            for (PublishResultItem result : results.getEvents()) {
+                jarray.add(result.toJsonObject());
+            }
+            String jsonArray = "[{\"id\":\"4ce1e9e1-21c4-458f-b8d1-ef26b82a5634\",\"statusCode\":200,\"result\":\"SUCCESS\",\"message\":null}]";
+            assertEquals(jsonArray, jarray.toString());
+        }
+    }
 }

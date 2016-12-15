@@ -4,6 +4,7 @@ package com.ericsson.eiffel.remrem.publish.helper;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
 import com.rabbitmq.client.Channel;
@@ -29,7 +30,8 @@ import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
 @Component("rmqHelper") public class RMQHelper {
-	
+
+    private static final String FALSE = "false";
 	@Inject
 	RMQBeanConnectionFactory factory;
 
@@ -89,6 +91,7 @@ import java.util.concurrent.TimeoutException;
     }
 
 	@PostConstruct public void init() {
+	    handleLogging();
         log.info("RMQHelper init ...");
         initCli();
         try {
@@ -161,6 +164,15 @@ import java.util.concurrent.TimeoutException;
     	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
     }
     
+    private void handleLogging() {
+        String debug = System.getProperty(PropertiesConfig.DEBUG);
+        log.setLevel(Level.ALL);
+        if (FALSE.equals(debug)) {
+            System.setProperty("logging.level.root", "OFF");
+            log.setLevel(Level.OFF);
+        }
+    }
+
     @PreDestroy
     public void cleanUp() throws IOException {
         log.info("RMQHelper cleanUp ...");
