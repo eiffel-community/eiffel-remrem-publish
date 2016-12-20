@@ -20,6 +20,8 @@ import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 
 import ch.qos.logback.classic.Logger;
 
@@ -112,9 +114,11 @@ public class CLI implements CommandLineRunner{
                     msgServices);
             if (msgService != null) {
                 SendResult results = messageService.send(content, msgService,CliOptions.getCommandLine().getOptionValue("ud"));
+                JsonArray jarray=new JsonArray();
                 for (PublishResultItem result : results.getEvents()) {
-                    System.out.println(result);
+                    jarray.add(result.toJsonObject());
                 }
+                System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(jarray));
                 messageService.cleanUp();
                 CliOptions.clearSystemProperties();
             } else {
@@ -125,7 +129,7 @@ public class CLI implements CommandLineRunner{
             System.err.println("Exception: " + e.getMessage());
             CliOptions.exit(CLIExitCodes.HANDLE_CONTENT_FAILED);
         }
-    }      
+    }
 
 	@Override
 	public void run(String... args) throws Exception {

@@ -1,5 +1,7 @@
 package com.ericsson.eiffel.remrem.publish.cli;
 
+import java.util.ArrayList;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -9,8 +11,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.ArrayUtils;
-import java.lang.Exception;
-import java.util.ArrayList;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 
@@ -54,6 +54,7 @@ public class CliOptions {
     public static void createCLIOptions() {
         options = new Options();
         options.addOption(createHelpOption());
+        options.addOption("d", "debug", false, "enable debug traces");
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
         options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
@@ -97,6 +98,7 @@ public class CliOptions {
     		    commandLine = parser.parse(options, args); 
     		    afterParseChecks();
     		    handleMessageBusOptions();
+    		    handleDebugOptions();
     	    } catch (Exception e) {
     	    	System.out.println(e.getMessage());
     	    	help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
@@ -201,6 +203,17 @@ public class CliOptions {
         System.setProperty(key, "true");
     }
     
+    /**
+     * Sets the system property with "false" value if debug option is not present"
+     * @param commandLine command line arguments
+     */
+    public static void handleDebugOptions()
+    {
+        String key = PropertiesConfig.DEBUG;
+        if (!commandLine.hasOption("d"))
+            System.setProperty(key, "false");
+    }
+
     /**
      * Remove the system properties added by this application 
      */

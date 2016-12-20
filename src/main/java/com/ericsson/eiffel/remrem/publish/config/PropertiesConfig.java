@@ -8,6 +8,7 @@ public class PropertiesConfig {
 	public static final String USE_PERSISTENCE = "com.ericsson.eiffel.remrem.publish.use.persistence";
 	public static final String CLI_MODE = "com.ericsson.eiffel.remrem.publish.cli.mode";
 	public static final String TEST_MODE = "com.ericsson.eiffel.remrem.publish.cli.test.mode";
+	public static final String DEBUG = "Debug";
 	
 	public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
 	public static final String INVALID_MESSAGE = "INVALID_MESSAGE";

@@ -1,3 +1,7 @@
+## 0.2.3
+- Implemented array of Json objects as input and output in Json format in CLI
+- Added Debug flag
+
 ## 0.2.2
 - Added eventId to output format in REMREM publish
 - Implemented get route key from messaging library.

@@ -65,18 +65,7 @@ import ch.qos.logback.classic.Logger;
         JsonParser parser = new JsonParser();
         try {
             JsonElement json = parser.parse(jsonContent);
-            Map<String, String> map = new HashMap<>();
-            Map<String, String> routingKeyMap = new HashMap<>();
-            String eventId = msgService.getEventId(json.getAsJsonObject());
-            if (eventId != null) {
-                map.put(eventId, json.toString());
-                routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
-            } else {
-                List<PublishResultItem> events = new ArrayList<>();
-                createFailureResult(events);
-                return new SendResult(events);
-            }
-            return send(routingKeyMap, map);
+            return send(json, msgService, userDomainSuffix);
         } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
             if (e.getCause() != null) {
