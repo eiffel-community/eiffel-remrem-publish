@@ -2,6 +2,7 @@ package com.ericsson.eiffel.remrem.publish.helper;
 
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.google.gson.JsonElement;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
 import ch.qos.logback.classic.Level;
@@ -27,6 +28,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Component("rmqHelper") public class RMQHelper {
@@ -185,37 +189,52 @@ import java.util.concurrent.TimeoutException;
     }
 
     public void send(String routingKey, String msg) throws IOException {
-    	try {
-    		Channel channel = giveMeRandomChannel();
-    		channel.addShutdownListener(new ShutdownListener() {
-                public void shutdownCompleted(ShutdownSignalException cause) {
-                    // Beware that proper synchronization is needed here                   
-                    if (cause.isInitiatedByApplication()) {
-                        log.debug("Shutdown is initiated by application. Ignoring it.");
-                    } else {                    	
-                        log.error("Shutdown is NOT initiated by application.");
-                        log.error(cause.getMessage());
-                        boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
-                        if (cliMode) {
-                        	System.exit(-3);
-                        }
+        Channel channel = giveMeRandomChannel();
+        channel.addShutdownListener(new ShutdownListener() {
+            public void shutdownCompleted(ShutdownSignalException cause) {
+                // Beware that proper synchronization is needed here
+                if (cause.isInitiatedByApplication()) {
+                    log.debug("Shutdown is initiated by application. Ignoring it.");
+                } else {
+                    log.error("Shutdown is NOT initiated by application.");
+                    log.error(cause.getMessage());
+                    boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+                    if (cliMode) {
+                        System.exit(-3);
                     }
                 }
-            });
-    		
-    		BasicProperties msgProps = MessageProperties.BASIC;
-    		if (usePersitance)
-    			msgProps = MessageProperties.PERSISTENT_BASIC;
+            }
+        });
 
-            channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
-            log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length, exchangeName, routingKey);
-		} catch (Exception e) {
-			 log.error("REMREM Publish: Failed to send message: " + e.getMessage(), e);
-		}
+        BasicProperties msgProps = MessageProperties.BASIC;
+        if (usePersitance)
+            msgProps = MessageProperties.PERSISTENT_BASIC;
+
+        channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
+        log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length,
+                exchangeName, routingKey);
     }
 
 
     private Channel giveMeRandomChannel() {
         return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
+    }
+    
+    public JsonElement getInputEventId(JsonElement json) {
+        if (json.isJsonObject() && json.getAsJsonObject().has(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS) && json
+                .getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet().size() > 0) {
+            Set<Entry<String, JsonElement>> entrySet = json.getAsJsonObject()
+                    .getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet();
+
+            for (Map.Entry<String, JsonElement> entry : entrySet) {
+                if (json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS)
+                        .getAsJsonObject(entry.getKey()).has(PropertiesConfig.INPUTEVENT_ID)) {
+                    return json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS)
+                            .getAsJsonObject(entry.getKey()).get(PropertiesConfig.INPUTEVENT_ID).getAsJsonArray();
+
+                }
+            }
+        }
+        return null;
     }
 }

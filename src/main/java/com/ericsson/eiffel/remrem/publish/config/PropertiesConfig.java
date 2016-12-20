@@ -11,11 +11,16 @@ public class PropertiesConfig {
 	public static final String DEBUG = "Debug";
 	
 	public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
-	public static final String INVALID_MESSAGE = "INVALID_MESSAGE";
+	public static final String INVALID_MESSAGE = "Bad Request";
 	public static final String SUCCESS = "SUCCESS";
-
+	public static final String SUCCESS_MESSAGE = "Event sent successfully";
 	public static final String EVENT_ID = "eventId";
 	public static final String ID = "id";
 	public static final String META = "meta";
 	public static final String EIFFEL_MESSAGE_VERSIONS = "eiffelMessageVersions";
+	
+	public static final String SERVER_DOWN="Internal Server Error";
+    public static final String SERVER_DOWN_MESSAGE="Possible to try again later when server is up";
+    public static final String INPUTEVENT_ID = "inputEventIds";
+    
 }
