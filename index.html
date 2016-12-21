@@ -81,6 +81,14 @@ usage: java -jar
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
+<p>The routing key format for Eiffel3Messaging : <br> 
+      &lt;family&gt;.&lt;type&gt;.&lt;tag&gt;.&lt;domain&gt; 
+   <ul>    
+      <li>&lt;family&gt; and &lt;type&gt; are procured from Eiffel3Messaging event. </li>
+      <li>&lt;tag&gt; is defaulted to the value 'notag'. </li>
+      <li>&lt;domain&gt; can be configured from application.yml file. </li>
+   </ul></p> 
+
 <p><strong>Publish on a given host, a given exchange and given user domain suffix:</strong></p>
 
 <pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb101 -ud fem001 -mp eiffelsemantics
@@ -88,12 +96,12 @@ usage: java -jar
 
 <p><strong>If you want to have the message non persistent add np flag:</strong></p>
 
-<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb123 -ud fem001 -np -mp eiffelsemantics
+<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
 </code></pre>
 
 <p><strong>If you want to have the message publishing logs add d flag:</strong></p>
 
-<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb123 -ud fem001 -np -mp eiffelsemantics -d
+<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
 </code></pre>
 
 <h2>
@@ -165,12 +173,12 @@ usage: java -jar
 
 <p><strong>One message:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/producer/msg?ud=fem001&mp=eiffelsemantics
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/producer/msg?mp=eiffelsemantics
 
 [{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS"}]
 </code></pre>
 
-<p><strong>Two messages/objects:</strong></p>
+<p><strong>Two messages/objects and given user domain suffix:</strong></p>
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' http://localhost:8080/producer/msg?ud=fem001&mp=eiffelsemantics
 
@@ -180,7 +188,7 @@ usage: java -jar
 <p><strong>Reading data from a file:</strong></p>
 
 <pre><code>$ echo '[{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' &gt; test.data
-$ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/producer/msg?ud=fem001&mp=eiffelsemantics
+$ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/producer/msg?mp=eiffelsemantics
 
 [{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","statusCode":200,"result":"SUCCESS"}]
 </code></pre>
