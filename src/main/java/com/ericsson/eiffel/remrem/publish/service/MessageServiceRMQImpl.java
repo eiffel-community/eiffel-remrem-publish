@@ -124,7 +124,7 @@ import ch.qos.logback.classic.Logger;
             for (JsonElement obj : bodyJson) {
                 getAndCheckEvent(msgService, map, events, obj,routingKeyMap,userDomainSuffix);
             }
-            serviceUnavailable(routingKeyMap, msgService, json,userDomainSuffix);
+            handleStatusCodesForMultipleEvents(routingKeyMap, msgService, json,userDomainSuffix);
             SendResult result = new SendResult();
             result.setEvents(events);
             return result;
@@ -212,12 +212,12 @@ import ch.qos.logback.classic.Logger;
     
     /**
      * This method handles multiple events status codes
-     * @param routingKeyMap
-     * @param msgService
+     * @param routingKeyMap contains the eventId and routing key of that event
+     * @param msgService Messaging service
      * @param json
      * @param userDomainSuffix
      */
-    public void serviceUnavailable(Map<String,String> routingKeyMap,MsgService msgService,
+    public void handleStatusCodesForMultipleEvents(Map<String,String> routingKeyMap,MsgService msgService,
             JsonElement json,String userDomainSuffix) {
         isSuccess = true;
         JsonArray bodyJson = json.getAsJsonArray();
@@ -242,6 +242,14 @@ import ch.qos.logback.classic.Logger;
             }
         }
     }
+    /**
+     * This method calls fetchInputEventIDs method for all inputevnts 
+     * @param routingKeyMap contains the eventId and routing key of that event
+     * @param referenceEventId
+     * @param msgService
+     * @param bodyJson
+     * @param userDomainSuffix
+     */
     private void callRecursiveValidationForEvents(Map<String,String> routingKeyMap, String referenceEventId,MsgService msgService, JsonArray bodyJson,String userDomainSuffix) {
         for (JsonElement obj : bodyJson) {
             String eventId = msgService.getEventId(obj.getAsJsonObject());
@@ -252,6 +260,14 @@ import ch.qos.logback.classic.Logger;
         }
     }
 
+    /**
+     * This method is called recursively to send all the inputevents  
+     * @param routingKeyMap contains the eventId and routing key of that event
+     * @param msgService
+     * @param obj the eiffel event
+     * @param userDomainSuffix
+     * @return result of type SendResult for inputevents
+     */
     public SendResult fetchInputEventIDs(Map<String,String> routingKeyMap, JsonElement obj, MsgService msgService,JsonArray bodyJson,String userDomainSuffix) {
         SendResult result = null;
         if (rmqHelper.getInputEventId(obj) != null) {
