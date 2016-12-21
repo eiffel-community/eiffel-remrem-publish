@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
@@ -43,48 +44,6 @@ public class ProducerControllerIntegrationTest {
     public void setUp() {
         RestAssured.port = port;
     }
-
-    @Test
-    public void testUnauthenticatedNotAllowed() throws Exception {
-        given()
-                .contentType("application/json")
-                .body("[\"test\"]")
-                .when()
-                    .post("/producer/msg?rk=test")
-                .then()
-                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
-    }
-
-    
-    @Test public void testSendSingle() throws Exception {
-        String body ="{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a0','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}}";
-        
-        given()
-                .header("Authorization", credentials)
-                .contentType("application/json")
-                .body(body)
-                .when()
-                    .post("/producer/msg?rk=test")
-                .then()
-                    .statusCode(HttpStatus.SC_OK)
-                    .body("events[0].id", Matchers.equalTo("9cdd0f68-df85-44b0-88bd-fc4163ac90a0"));
-    }
-    
-    @Test public void testSendMultiple() throws Exception {
-        String body ="[{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a1','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}},{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a2','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}},{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a3','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}}]";
-        
-        given()
-                .header("Authorization", credentials)
-                .contentType("application/json")
-                .body(body)
-                .when()
-                    .post("/producer/msg?rk=test")
-                .then()
-                    .statusCode(HttpStatus.SC_OK)
-                    .body("events[0].id", Matchers.equalTo("9cdd0f68-df85-44b0-88bd-fc4163ac90a2"),
-                           "events[1].id", Matchers.equalTo("9cdd0f68-df85-44b0-88bd-fc4163ac90a3"),
-                           "events[2].id", Matchers.equalTo("9cdd0f68-df85-44b0-88bd-fc4163ac90a1"));
-    }
     
     @Test
     public void testGetFamily() throws Exception {
@@ -108,8 +67,23 @@ public class ProducerControllerIntegrationTest {
             for (PublishResultItem result : results.getEvents()) {
                 jarray.add(result.toJsonObject());
             }
-            String jsonArray = "[{\"id\":\"4ce1e9e1-21c4-458f-b8d1-ef26b82a5634\",\"statusCode\":200,\"result\":\"SUCCESS\",\"message\":null}]";
+            String jsonArray = "[{\"id\":\"4ce1e9e1-21c4-458f-b8d1-ef26b82a5634\",\"statusCode\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
             assertEquals(jsonArray, jarray.toString());
         }
     }
-}
+    
+    @Test
+    public void testFailSingleEvent() throws Exception {
+        String body = "{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}}";
+
+        given().header("Authorization", credentials)
+               .contentType("application/json").body(body).when().post("/producer/msg").then()
+               .statusCode(HttpStatus.SC_BAD_REQUEST)
+               .body("events[0].id", Matchers.equalTo(null))
+               .body("events[0].status_code", Matchers.equalTo(400))
+               .body("events[0].result", Matchers.equalTo(PropertiesConfig.INVALID_MESSAGE)).body("events[0].message", Matchers
+                        .equalTo("Invalid event content, client need to fix problem in event before submitting again"));
+    }
+    
+ }
+    
