@@ -61,6 +61,7 @@ public class CliOptions {
         options.addOption("port", "port", true, "port to connect to message bus");
         options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
         options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, semantics");
+        options.addOption("domain", "domain", true, "domain");
         options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
@@ -175,9 +176,15 @@ public class CliOptions {
         }
 
         if (commandLine.hasOption("port")) {
-            String exchangeName = commandLine.getOptionValue("port");
+            String port = commandLine.getOptionValue("port");
             String key = PropertiesConfig.MESSAGE_BUS_PORT;
-            System.setProperty(key, exchangeName);
+            System.setProperty(key, port);
+        }
+
+        if (commandLine.hasOption("domain")) {
+            String domain = commandLine.getOptionValue("domain");
+            String key = PropertiesConfig.DOMAIN_ID;
+            System.setProperty(key, domain);
         }
 
         if (commandLine.hasOption("tls")) {

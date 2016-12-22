@@ -21,7 +21,7 @@ plugins {
 
 war {
     baseName = 'remrem-publish'
-    version =  '0.2.4'
+    version =  '0.2.5'
 }
 
 apply plugin: 'spring-boot'

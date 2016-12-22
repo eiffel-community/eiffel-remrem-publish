@@ -1,3 +1,6 @@
+## 0.2.5
+- Added domain option in CLI
+
 ## 0.2.4
 - Removed unused libraries and updated a few library versions.
 
