@@ -152,6 +152,11 @@ import java.util.concurrent.TimeoutException;
     		port = passedPort;
     	}
 
+        String passedDomain = System.getProperty(PropertiesConfig.DOMAIN_ID);
+        if (passedDomain != null) {
+            domainId = passedDomain;
+        }
+
     	String passedTlsVer = System.getProperty(PropertiesConfig.TLS); 
     	if (passedTlsVer != null) {
     		tlsVer = passedTlsVer;

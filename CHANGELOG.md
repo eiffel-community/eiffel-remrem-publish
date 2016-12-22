@@ -1,3 +1,6 @@
+## 0.2.4
+- Added domain option in CLI
+
 ## 0.2.3
 - Implemented array of Json objects as input and output in Json format in CLI
 - Added Debug flag
