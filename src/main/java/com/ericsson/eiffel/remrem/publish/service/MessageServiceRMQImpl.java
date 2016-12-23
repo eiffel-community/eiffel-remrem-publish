@@ -33,10 +33,9 @@ import ch.qos.logback.classic.Logger;
     
     /*Variables handles status codes*/
     List<Integer> statusCodes;
-    HashMap<String, Integer> statusCodeMap;
     List<JsonElement> errorItems;
     List<PublishResultItem> events;
-    boolean isSuccess;
+    boolean checkEventStatus;
 
     /*
      * (non-Javadoc)
@@ -109,48 +108,58 @@ import ch.qos.logback.classic.Logger;
      */
     @Override
     public SendResult send(JsonElement json, MsgService msgService, String userDomainSuffix) {
-        
         Map<String, String> map = new HashMap<>();
         Map<String, String> routingKeyMap = new HashMap<>();
+        SendResult result;
+        events = new ArrayList<PublishResultItem>();
         if (json == null) {
             createFailureResult(events);
         }
-        statusCodeMap = new HashMap<String,Integer>();
-        statusCodes = new ArrayList<Integer>();
         if (json.isJsonArray()) {
-            errorItems = new ArrayList<JsonElement>();
-            events = new ArrayList<PublishResultItem>();
+            statusCodes=new ArrayList<Integer>();
+            checkEventStatus = true;
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
-                getAndCheckEvent(msgService, map, events, obj,routingKeyMap,userDomainSuffix);
-            }
-            handleStatusCodesForMultipleEvents(routingKeyMap, msgService, json,userDomainSuffix);
-            SendResult result = new SendResult();
-            result.setEvents(events);
-            return result;
-        } else {
-            getAndCheckEvent(msgService, map, events, json,routingKeyMap,userDomainSuffix);
-            String eventId = msgService.getEventId(json.getAsJsonObject());
-            if (eventId != null) {
-                SendResult result = send(json.toString(),msgService,userDomainSuffix);
-                int statusCode = result.getEvents().get(0).getStatusCode();                 
-                statusCodeMap.put(eventId,statusCode);
-                if (statusCodes != null && !statusCodes.contains(statusCode))
-                    statusCodes.add(statusCode);
-                return result;
-            } else {
-                events = new ArrayList<PublishResultItem>();
-                SendResult result = new SendResult();
-                createFailureResult(events);
-                result.setEvents(events);
-                if (!statusCodes.contains(400)) {
-                    statusCodes.add(400);
+                getAndCheckEvent(msgService, map, events, obj, routingKeyMap, userDomainSuffix);
+                String eventId = msgService.getEventId(obj.getAsJsonObject());
+                if(eventId!=null && checkEventStatus){
+                    result = send(obj.toString(),msgService,userDomainSuffix);
+                    events.addAll(result.getEvents());
+                    int statusCode = result.getEvents().get(0).getStatusCode();
+                    if(statusCode!=200){
+                        checkEventStatus = false;
+                    }
+                    if(!statusCodes.contains(statusCode))
+                        statusCodes.add(statusCode);
+                }else{
+                    if(!checkEventStatus){
+                        createUnsuccessfulEvents(obj);
+                        int statusCode = events.get(0).getStatusCode();
+                        statusCodes.add(statusCode);
+                    }
+                    else{
+                        createFailureResult(events);
+                        errorItems=new ArrayList<JsonElement>();
+                        int statusCode = events.get(0).getStatusCode();
+                        statusCodes.add(statusCode);
+                        errorItems.add(obj);
+                        checkEventStatus = false;
+                    }
                 }
-                return result;
             }
+        }else{
+            statusCodes=new ArrayList<Integer>();
+            result = send(json.toString(),msgService,userDomainSuffix);
+            events.addAll(result.getEvents());
+            int statusCode = result.getEvents().get(0).getStatusCode();
+            if(!statusCodes.contains(statusCode))
+                statusCodes.add(statusCode);
         }
+        result = new SendResult();
+        result.setEvents(events);
+        return result;
     }
-    
+
     private String sendMessage(String routingKey, String msg) {
         String resultMsg = PropertiesConfig.SUCCESS;
         instantiateRmqHelper();
@@ -210,124 +219,18 @@ import ch.qos.logback.classic.Logger;
     }
     
     
-    /**
-     * This method handles multiple events status codes
-     * @param routingKeyMap contains the eventId and routing key of that event
-     * @param msgService Messaging service
-     * @param json
-     * @param userDomainSuffix
-     */
-    public void handleStatusCodesForMultipleEvents(Map<String,String> routingKeyMap,MsgService msgService,
-            JsonElement json,String userDomainSuffix) {
-        isSuccess = true;
-        JsonArray bodyJson = json.getAsJsonArray();
-        for (JsonElement obj : bodyJson) {
-            String eventId = msgService.getEventId(obj.getAsJsonObject());
-                if (eventId != null && !statusCodeMap.containsKey(eventId)) {
-                fetchInputEventIDs(routingKeyMap, obj,msgService, bodyJson,userDomainSuffix);
-                if (!statusCodeMap.containsKey(eventId)) {
-                    SendResult result = send(obj.toString(),msgService,userDomainSuffix);
-                    events.addAll(result.getEvents());
-                    result.setEvents(events);
-                    setHttpStatusCodes(events);
-                }
-            } else {
-                if (!errorItems.contains(obj) && !statusCodeMap.containsKey(eventId)) {
-                    errorItems.add(obj);
-                    createFailureResult(events);
-                    if (!statusCodes.contains(400)) {
-                        statusCodes.add(400);
-                    }
-                }
-            }
-        }
-    }
-    /**
-     * This method calls fetchInputEventIDs method for all inputevnts 
-     * @param routingKeyMap contains the eventId and routing key of that event
-     * @param referenceEventId
-     * @param msgService
-     * @param bodyJson
-     * @param userDomainSuffix
-     */
-    private void callRecursiveValidationForEvents(Map<String,String> routingKeyMap, String referenceEventId,MsgService msgService, JsonArray bodyJson,String userDomainSuffix) {
-        for (JsonElement obj : bodyJson) {
-            String eventId = msgService.getEventId(obj.getAsJsonObject());
-            if (eventId != null && referenceEventId.equals(eventId)) {
-                if (!statusCodeMap.containsKey(eventId))
-                    fetchInputEventIDs(routingKeyMap, obj, msgService,bodyJson,userDomainSuffix);
-            }
-        }
-    }
-
-    /**
-     * This method is called recursively to send all the inputevents  
-     * @param routingKeyMap contains the eventId and routing key of that event
-     * @param msgService
-     * @param obj the eiffel event
-     * @param userDomainSuffix
-     * @return result of type SendResult for inputevents
-     */
-    public SendResult fetchInputEventIDs(Map<String,String> routingKeyMap, JsonElement obj, MsgService msgService,JsonArray bodyJson,String userDomainSuffix) {
-        SendResult result = null;
-        if (rmqHelper.getInputEventId(obj) != null) {
-            JsonArray inputIDs = rmqHelper.getInputEventId(obj).getAsJsonArray();
-            String referenceEventId = "";
-            if (inputIDs.size() == 0) {
-                result = send(obj.toString(),msgService,userDomainSuffix);
-                events.addAll(result.getEvents());
-                setHttpStatusCodes(result.getEvents());
-                int statusCode = statusCodeMap.get(msgService.getEventId(obj.getAsJsonObject()));
-                    if (statusCode == 200) {
-                    isSuccess = true;
-                    if (statusCodes != null && !statusCodes.contains(statusCode))
-                        statusCodes.add(statusCode);
-                } else {
-                    isSuccess = false;
-                    if (statusCodes != null && !statusCodes.contains(statusCode))
-                        statusCodes.add(statusCode);
-                }
-                return null;
-            }
-            for (JsonElement el : inputIDs) {
-                referenceEventId = el.getAsString();
-                callRecursiveValidationForEvents(routingKeyMap, referenceEventId,msgService, bodyJson,userDomainSuffix);
-            }
-            if (isSuccess) {
-                result = send(obj.toString(),msgService,userDomainSuffix);
-                events.addAll(result.getEvents());
-                setHttpStatusCodes(result.getEvents());
-                int statusCode = statusCodeMap.get(msgService.getEventId(obj.getAsJsonObject()));
-                if (statusCodes != null && !statusCodes.contains(statusCode))
-                    statusCodes.add(statusCode);
-            }
-        } else {
-            result = send(obj.toString(),msgService,userDomainSuffix);
-            events.addAll(result.getEvents());
-            setHttpStatusCodes(result.getEvents());
-            int statusCode = statusCodeMap.get(msgService.getEventId(obj.getAsJsonObject()));
-            if (statusCodes != null && !statusCodes.contains(statusCode))
-                statusCodes.add(statusCode);
-            return result;
-        }
-        return null;
+    private void createUnsuccessfulEvents(JsonElement obj) {
+        PublishResultItem event = new PublishResultItem(null, 503, PropertiesConfig.SERVICE_UNAVAILABLE,
+                PropertiesConfig.UNSUCCESSFUL_EVENT_CONTENT);
+        events.add(event);
     }
     
-    public void setHttpStatusCodes(List<PublishResultItem> items) {
-        int statusCode = 0;
-        for (PublishResultItem item : items) {
-            statusCode = item.getStatusCode();
-            if (!statusCodeMap.containsKey(item.getId()))
-                statusCodeMap.put(item.getId(), statusCode);
-        }
-    }
-
+    /**
+     * Method returns the Http response code for the events.
+     */
     public HttpStatus getHttpStatus() {
         if (statusCodes.size() > 1) {
-            if (!isSuccess)
-                return HttpStatus.SERVICE_UNAVAILABLE;
-            else
-                return HttpStatus.MULTI_STATUS;
+            return HttpStatus.MULTI_STATUS;
         } else {
             return HttpStatus.valueOf(statusCodes.get(0));
         }

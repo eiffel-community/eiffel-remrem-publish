@@ -22,7 +22,7 @@ public class CliOptions {
     //Used for testing purposes
     private static ArrayList<Integer> testErrorCodes = new ArrayList<>();
 
-    public static ArrayList getErrorCodes() {
+    public static ArrayList<Integer> getErrorCodes() {
     return testErrorCodes;
     }
 

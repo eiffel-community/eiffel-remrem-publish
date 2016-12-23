@@ -67,7 +67,7 @@ public class ProducerControllerIntegrationTest {
             for (PublishResultItem result : results.getEvents()) {
                 jarray.add(result.toJsonObject());
             }
-            String jsonArray = "[{\"id\":\"4ce1e9e1-21c4-458f-b8d1-ef26b82a5634\",\"statusCode\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
+            String jsonArray = "[{\"id\":\"4ce1e9e1-21c4-458f-b8d1-ef26b82a5634\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
             assertEquals(jsonArray, jarray.toString());
         }
     }
@@ -79,7 +79,6 @@ public class ProducerControllerIntegrationTest {
         given().header("Authorization", credentials)
                .contentType("application/json").body(body).when().post("/producer/msg").then()
                .statusCode(HttpStatus.SC_BAD_REQUEST)
-               .body("events[0].id", Matchers.equalTo(null))
                .body("events[0].status_code", Matchers.equalTo(400))
                .body("events[0].result", Matchers.equalTo(PropertiesConfig.INVALID_MESSAGE)).body("events[0].message", Matchers
                         .equalTo("Invalid event content, client need to fix problem in event before submitting again"));

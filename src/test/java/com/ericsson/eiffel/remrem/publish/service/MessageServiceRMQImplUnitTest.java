@@ -69,22 +69,22 @@ public class MessageServiceRMQImplUnitTest {
         MsgService msgService = PublishUtils.getMessageService(null, msgServices);
         SendResult result = messageService.send(body, msgService, "test");
         Assert.assertNotNull(result);
-        Assert.assertEquals(null, result.getEvents().get(0).getId());
+        
         Assert.assertEquals(400, result.getEvents().get(0).getStatusCode());
         Assert.assertEquals("Bad Request", result.getEvents().get(0).getResult());
         Assert.assertEquals("Invalid event content, client need to fix problem in event before submitting again", result.getEvents().get(0).getMessage());
-        Assert.assertEquals(null, result.getEvents().get(1).getId());
-        Assert.assertEquals(400, result.getEvents().get(1).getStatusCode());
-        Assert.assertEquals("Bad Request", result.getEvents().get(1).getResult());
-        Assert.assertEquals("Invalid event content, client need to fix problem in event before submitting again", result.getEvents().get(1).getMessage());
-        Assert.assertEquals(null, result.getEvents().get(2).getId());
-        Assert.assertEquals(400, result.getEvents().get(2).getStatusCode());
-        Assert.assertEquals("Bad Request", result.getEvents().get(2).getResult());
-        Assert.assertEquals("Invalid event content, client need to fix problem in event before submitting again", result.getEvents().get(2).getMessage());
-        Assert.assertEquals(null, result.getEvents().get(3).getId());
-        Assert.assertEquals(400, result.getEvents().get(3).getStatusCode());
-        Assert.assertEquals("Bad Request", result.getEvents().get(3).getResult());
-        Assert.assertEquals("Invalid event content, client need to fix problem in event before submitting again", result.getEvents().get(3).getMessage());
+       
+        Assert.assertEquals(503, result.getEvents().get(1).getStatusCode());
+        Assert.assertEquals("Service Unavailable", result.getEvents().get(1).getResult());
+        Assert.assertEquals("Please check previous event and try again later", result.getEvents().get(1).getMessage());
+       
+        Assert.assertEquals(503, result.getEvents().get(2).getStatusCode());
+        Assert.assertEquals("Service Unavailable", result.getEvents().get(2).getResult());
+        Assert.assertEquals("Please check previous event and try again later", result.getEvents().get(2).getMessage());
+        
+        Assert.assertEquals(503, result.getEvents().get(3).getStatusCode());
+        Assert.assertEquals("Service Unavailable", result.getEvents().get(3).getResult());
+        Assert.assertEquals("Please check previous event and try again later", result.getEvents().get(3).getMessage());
     }
     @Test public void testMultipleSuccessfulEvent() throws Exception {
         String body ="[{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a1','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}},{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a2','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}},{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a3','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}}]";

@@ -1,36 +1,31 @@
 package com.ericsson.eiffel.remrem.publish.helper;
 
-import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.google.gson.JsonElement;
-import com.rabbitmq.client.AMQP.BasicProperties;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.MessageProperties;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
-
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.Map.Entry;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.MessageProperties;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 @Component("rmqHelper")
 public class RMQHelper {
@@ -225,21 +220,5 @@ public class RMQHelper {
         return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
     }
 
-    public JsonElement getInputEventId(JsonElement json) {
-        if (json.isJsonObject() && json.getAsJsonObject().has(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS) && json
-                .getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet().size() > 0) {
-            Set<Entry<String, JsonElement>> entrySet = json.getAsJsonObject()
-                    .getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS).entrySet();
-
-            for (Map.Entry<String, JsonElement> entry : entrySet) {
-                if (json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS)
-                        .getAsJsonObject(entry.getKey()).has(PropertiesConfig.INPUTEVENT_ID)) {
-                    return json.getAsJsonObject().getAsJsonObject(PropertiesConfig.EIFFEL_MESSAGE_VERSIONS)
-                            .getAsJsonObject(entry.getKey()).get(PropertiesConfig.INPUTEVENT_ID).getAsJsonArray();
-
-                }
-            }
-        }
-        return null;
-    }
+    
 }
