@@ -10,10 +10,12 @@ public class PropertiesConfig {
     public static final String TEST_MODE = "com.ericsson.eiffel.remrem.publish.cli.test.mode";
     public static final String DEBUG = "Debug";
     public static final String DOMAIN_ID = "com.ericsson.eiffel.remrem.publish.domain";
+	
 
-    public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
-    public static final String INVALID_MESSAGE = "Bad Request";
-    public static final String SUCCESS = "SUCCESS";
+	public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
+	public static final String INVALID_MESSAGE = "INVALID_MESSAGE";
+	public static final String SUCCESS = "SUCCESS";
+    
     public static final String EVENT_ID = "eventId";
     public static final String ID = "id";
     public static final String META = "meta";
