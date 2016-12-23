@@ -63,6 +63,8 @@
 <pre>$ java -jar publish.war -h
 You passed help flag.
 usage: java -jar
+ -d,--debug                     enable debug traces
+ -domain,--domain &lt;arg&gt;         domain
  -en,--exchange_name &lt;arg&gt;      exchange name, default is amq.direct
  -f,--content_file &lt;arg&gt;        event content file
  -h,--help                      show help.
@@ -75,23 +77,23 @@ usage: java -jar
  -np,--non_persistent           remove persistence from message sending
  -port,--port &lt;arg&gt;             port to connect to message bus
  -ud,--user_domain_suffix &lt;arg&gt; user domain suffix
- -d,--debug &lt;arg&gt;               enable debug traces
  -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
                                 eiffelsemantics, default is eiffelsemantics</pre>
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
-<p>The routing key format for Eiffel3Messaging : <br> 
-      &lt;family&gt;.&lt;type&gt;.&lt;tag&gt;.&lt;domain&gt; 
-   <ul>    
-      <li>&lt;family&gt; and &lt;type&gt; are procured from Eiffel3Messaging event. </li>
+<p>The routing key format is : <br> 
+      &lt;protocol&gt;.&lt;family&gt;.&lt;type&gt;.&lt;tag&gt;.&lt;domain&gt; 
+   <ul>
+      <li>&lt;protocol&gt; is used if provided by the protocol library used. </li>
+      <li>&lt;family&gt; and &lt;type&gt; are provided by the protocol library. </li>
       <li>&lt;tag&gt; is defaulted to the value 'notag'. </li>
-      <li>&lt;domain&gt; can be configured from application.yml file. </li>
-   </ul></p> 
+      <li>&lt;domain&gt; is configured and can be suffixed by a user domain part that the user can specify with -ud option. </li>
+   </ul></p>
 
-<p><strong>Publish on a given host, a given exchange and given user domain suffix:</strong></p>
+<p><strong>Publish on a given host, given exchange, given domain and given user domain suffix:</strong></p>
 
-<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb101 -ud fem001 -mp eiffelsemantics
+<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics
 </code></pre>
 
 <p><strong>If you want to have the message non persistent add np flag:</strong></p>
@@ -118,6 +120,7 @@ usage: java -jar
 <li><code>rabbitmq.host (String)</code></li>
 <li><code>rabbitmq.port (Optional)</code></li>
 <li><code>rabbitmq.exchange.name (String)</code></li>
+<li><code>rabbitmq.domainId (String)</code></li>
 </ul>
 
 <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
