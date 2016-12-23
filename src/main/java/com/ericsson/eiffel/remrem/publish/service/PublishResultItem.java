@@ -7,13 +7,13 @@ public class PublishResultItem {
 
     @SerializedName("id")
     private String id;
-
+    
     @SerializedName("status_code")
     private int statusCode;
-
+    
     @SerializedName("result")
     private String result;
-
+    
     @SerializedName("message")
     private String message;
 
@@ -33,6 +33,7 @@ public class PublishResultItem {
         this.id = id;
     }
 
+    
     public int getStatusCode() {
         return statusCode;
     }
@@ -56,14 +57,14 @@ public class PublishResultItem {
     public void setMessage(String message) {
         this.message = message;
     }
-
-    public JsonObject toJsonObject() {
-        JsonObject data = new JsonObject();
+    
+    public JsonObject toJsonObject()
+    {
+        JsonObject data=new JsonObject();
         data.addProperty("id", getId());
-        data.addProperty("status_code", getStatusCode());
+        data.addProperty("status_code",getStatusCode());
         data.addProperty("result", getResult());
         data.addProperty("message", getMessage());
         return data;
     }
-
 }

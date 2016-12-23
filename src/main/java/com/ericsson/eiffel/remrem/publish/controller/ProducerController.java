@@ -40,6 +40,7 @@ public class ProducerController {
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
         SendResult result = messageService.send(body, msgService, userDomain);
+        System.out.println(result);
         return new ResponseEntity(result, messageService.getHttpStatus());
     }
 }

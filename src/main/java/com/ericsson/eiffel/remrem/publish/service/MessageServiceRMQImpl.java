@@ -36,7 +36,7 @@ import ch.qos.logback.classic.Logger;
     List<JsonElement> errorItems;
     List<PublishResultItem> events;
     boolean checkEventStatus;
-
+    
     /*
      * (non-Javadoc)
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.util.Map, java.util.Map)
@@ -50,9 +50,10 @@ import ch.qos.logback.classic.Logger;
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
                 String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue());
                 if (PropertiesConfig.SUCCESS.equals(message)) {
-                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, PropertiesConfig.SUCCESS_MESSAGE);
+                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, null);
                 } else {
-                    event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,PropertiesConfig.SERVER_DOWN_MESSAGE);
+                    event = new PublishResultItem(entry.getKey(), 400, PropertiesConfig.INVALID_MESSAGE,
+                            PropertiesConfig.INVALID_EVENT_CONTENT);
                 }
                 results.add(event);
             }
@@ -89,7 +90,6 @@ import ch.qos.logback.classic.Logger;
                 }
                 return send(routingKeyMap, map);
             }
-            
         } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
             if (e.getCause() != null) {
@@ -126,9 +126,6 @@ import ch.qos.logback.classic.Logger;
                     result = send(obj.toString(),msgService,userDomainSuffix);
                     events.addAll(result.getEvents());
                     int statusCode = result.getEvents().get(0).getStatusCode();
-                    if(statusCode!=200){
-                        checkEventStatus = false;
-                    }
                     if(!statusCodes.contains(statusCode))
                         statusCodes.add(statusCode);
                 }else{
@@ -159,7 +156,7 @@ import ch.qos.logback.classic.Logger;
         result.setEvents(events);
         return result;
     }
-
+    
     private String sendMessage(String routingKey, String msg) {
         String resultMsg = PropertiesConfig.SUCCESS;
         instantiateRmqHelper();
@@ -203,7 +200,6 @@ import ch.qos.logback.classic.Logger;
             routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
             map.put(eventId, obj.toString());
         } else {
-            events = new ArrayList<PublishResultItem>();
             createFailureResult(events);
         }
     }
@@ -217,7 +213,6 @@ import ch.qos.logback.classic.Logger;
                 PropertiesConfig.INVALID_EVENT_CONTENT);
         events.add(event);
     }
-    
     
     private void createUnsuccessfulEvents(JsonElement obj) {
         PublishResultItem event = new PublishResultItem(null, 503, PropertiesConfig.SERVICE_UNAVAILABLE,
@@ -235,6 +230,4 @@ import ch.qos.logback.classic.Logger;
             return HttpStatus.valueOf(statusCodes.get(0));
         }
     }
-    
-    
 }

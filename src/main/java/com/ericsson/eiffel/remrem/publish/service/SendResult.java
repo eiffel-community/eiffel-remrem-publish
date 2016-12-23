@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 public class SendResult {
-
+    
     @SerializedName("events")
     private List<PublishResultItem> events;
 
@@ -22,6 +22,4 @@ public class SendResult {
 
     public List<PublishResultItem> getEvents() {
         return events;
-    }
-
-}
+    }}
