@@ -50,10 +50,10 @@ import ch.qos.logback.classic.Logger;
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
                 String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue());
                 if (PropertiesConfig.SUCCESS.equals(message)) {
-                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, null);
+                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, PropertiesConfig.SUCCESS_MESSAGE);
                 } else {
-                    event = new PublishResultItem(entry.getKey(), 400, PropertiesConfig.INVALID_MESSAGE,
-                            PropertiesConfig.INVALID_EVENT_CONTENT);
+                    event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,
+                            PropertiesConfig.SERVER_DOWN_MESSAGE);
                 }
                 results.add(event);
             }
@@ -68,14 +68,13 @@ import ch.qos.logback.classic.Logger;
      */
     @Override
     public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix) {
-        
+
         JsonParser parser = new JsonParser();
         try {
             JsonElement json = parser.parse(jsonContent);
-            if(json.isJsonArray()){
-                return send(json, msgService, userDomainSuffix);   
-            }
-            else{
+            if (json.isJsonArray()) {
+                return send(json, msgService, userDomainSuffix);
+            } else {
                 Map<String, String> map = new HashMap<>();
                 Map<String, String> routingKeyMap = new HashMap<>();
                 String eventId = msgService.getEventId(json.getAsJsonObject());
@@ -199,8 +198,6 @@ import ch.qos.logback.classic.Logger;
         if (eventId != null) {
             routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
             map.put(eventId, obj.toString());
-        } else {
-            createFailureResult(events);
         }
     }
 
@@ -228,6 +225,7 @@ import ch.qos.logback.classic.Logger;
             return HttpStatus.MULTI_STATUS;
         } else {
             return HttpStatus.valueOf(statusCodes.get(0));
+            
         }
     }
 }

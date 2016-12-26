@@ -190,7 +190,7 @@ import java.util.concurrent.TimeoutException;
     }
 
     public void send(String routingKey, String msg) throws IOException {
-    	try {
+    	
     		Channel channel = giveMeRandomChannel();
     		channel.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
@@ -214,10 +214,7 @@ import java.util.concurrent.TimeoutException;
 
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
             log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length, exchangeName, routingKey);
-		} catch (Exception e) {
-			 log.error("REMREM Publish: Failed to send message: " + e.getMessage(), e);
-		}
-    }
+	    }
 
 
     private Channel giveMeRandomChannel() {
