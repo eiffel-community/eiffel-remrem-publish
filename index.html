@@ -72,6 +72,8 @@ usage: java -jar
                                 also be a dash(-) and the json will be read
                                 from the output of other programs if piped. Multiple
                                 json events are also supported.
+ -tls,--tls &lt;arg&gt;               tls version, specify a valid tls version: '1', '1.1',
+                                '1.2' or default
  -mb,--message_bus &lt;arg&gt;        host of message bus to use, default is
                                 127.0.0.1
  -np,--non_persistent           remove persistence from message sending
@@ -82,7 +84,8 @@ usage: java -jar
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
-<p>The routing key format is : <br> 
+<p>The routing key is generated based on the event type and given configurations.<br>
+   The routing key format is : <br> 
       &lt;protocol&gt;.&lt;family&gt;.&lt;type&gt;.&lt;tag&gt;.&lt;domain&gt; 
    <ul>
       <li>&lt;protocol&gt; is used if provided by the protocol library used. </li>
