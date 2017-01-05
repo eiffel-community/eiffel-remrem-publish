@@ -62,7 +62,7 @@ public class PublishResultItem {
     {
         JsonObject data=new JsonObject();
         data.addProperty("id", getId());
-        data.addProperty("statusCode",getStatusCode());
+        data.addProperty("status_code",getStatusCode());
         data.addProperty("result", getResult());
         data.addProperty("message", getMessage());
         return data;

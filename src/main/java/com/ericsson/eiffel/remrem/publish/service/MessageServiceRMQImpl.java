@@ -9,6 +9,7 @@ import java.util.Map;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -29,7 +30,13 @@ import ch.qos.logback.classic.Logger;
     @Autowired @Qualifier("rmqHelper") RMQHelper rmqHelper;
     
     Logger log = (Logger) LoggerFactory.getLogger(MessageServiceRMQImpl.class);
-
+    
+    /*Variables handles status codes*/
+    List<Integer> statusCodes;
+    List<JsonElement> errorItems;
+    List<PublishResultItem> events;
+    boolean checkEventStatus;
+    
     /*
      * (non-Javadoc)
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.util.Map, java.util.Map)
@@ -43,10 +50,10 @@ import ch.qos.logback.classic.Logger;
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
                 String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue());
                 if (PropertiesConfig.SUCCESS.equals(message)) {
-                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, null);
+                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, PropertiesConfig.SUCCESS_MESSAGE);
                 } else {
-                    event = new PublishResultItem(entry.getKey(), 400, PropertiesConfig.INVALID_MESSAGE,
-                            PropertiesConfig.INVALID_EVENT_CONTENT);
+                    event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,
+                            PropertiesConfig.SERVER_DOWN_MESSAGE);
                 }
                 results.add(event);
             }
@@ -61,11 +68,27 @@ import ch.qos.logback.classic.Logger;
      */
     @Override
     public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix) {
-        
+
         JsonParser parser = new JsonParser();
         try {
             JsonElement json = parser.parse(jsonContent);
-            return send(json, msgService, userDomainSuffix);
+            if (json.isJsonArray()) {
+                return send(json, msgService, userDomainSuffix);
+            } else {
+                Map<String, String> map = new HashMap<>();
+                Map<String, String> routingKeyMap = new HashMap<>();
+                String eventId = msgService.getEventId(json.getAsJsonObject());
+                if (eventId != null) {
+                    map.put(eventId, json.toString());
+                    routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(),
+                            rmqHelper, userDomainSuffix));
+                } else {
+                    List<PublishResultItem> events = new ArrayList<>();
+                    createFailureResult(events);
+                    return new SendResult(events);
+                }
+                return send(routingKeyMap, map);
+            }
         } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
             if (e.getCause() != null) {
@@ -84,32 +107,53 @@ import ch.qos.logback.classic.Logger;
      */
     @Override
     public SendResult send(JsonElement json, MsgService msgService, String userDomainSuffix) {
-        
         Map<String, String> map = new HashMap<>();
         Map<String, String> routingKeyMap = new HashMap<>();
-        List<PublishResultItem> events = new ArrayList<>();
+        SendResult result;
+        events = new ArrayList<PublishResultItem>();
         if (json == null) {
             createFailureResult(events);
         }
         if (json.isJsonArray()) {
+            statusCodes=new ArrayList<Integer>();
+            checkEventStatus = true;
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
-                getAndCheckEvent(msgService, map, events, obj,routingKeyMap,userDomainSuffix);
+                getAndCheckEvent(msgService, map, events, obj, routingKeyMap, userDomainSuffix);
+                String eventId = msgService.getEventId(obj.getAsJsonObject());
+                if(eventId!=null && checkEventStatus){
+                    result = send(obj.toString(),msgService,userDomainSuffix);
+                    events.addAll(result.getEvents());
+                    int statusCode = result.getEvents().get(0).getStatusCode();
+                    if(!statusCodes.contains(statusCode))
+                        statusCodes.add(statusCode);
+                }else{
+                    if(!checkEventStatus){
+                        createUnsuccessfulEvents(obj);
+                        int statusCode = events.get(0).getStatusCode();
+                        statusCodes.add(statusCode);
+                    }
+                    else{
+                        createFailureResult(events);
+                        errorItems=new ArrayList<JsonElement>();
+                        int statusCode = events.get(0).getStatusCode();
+                        statusCodes.add(statusCode);
+                        errorItems.add(obj);
+                        checkEventStatus = false;
+                    }
+                }
             }
-        } else {
-            getAndCheckEvent(msgService, map, events, json,routingKeyMap,userDomainSuffix);
-        }
-
-        if (map.size() > 0) {
-            SendResult result = send(routingKeyMap, map);
+        }else{
+            statusCodes=new ArrayList<Integer>();
+            result = send(json.toString(),msgService,userDomainSuffix);
             events.addAll(result.getEvents());
-            result.setEvents(events);
-            return result;
-        } else {
-            SendResult result = new SendResult();
-            result.setEvents(events);
-            return result;
+            int statusCode = result.getEvents().get(0).getStatusCode();
+            if(!statusCodes.contains(statusCode))
+                statusCodes.add(statusCode);
         }
+        result = new SendResult();
+        result.setEvents(events);
+        return result;
     }
     
     private String sendMessage(String routingKey, String msg) {
@@ -154,8 +198,6 @@ import ch.qos.logback.classic.Logger;
         if (eventId != null) {
             routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
             map.put(eventId, obj.toString());
-        } else {
-            createFailureResult(events);
         }
     }
 
@@ -167,5 +209,23 @@ import ch.qos.logback.classic.Logger;
         PublishResultItem event = new PublishResultItem(null, 400, PropertiesConfig.INVALID_MESSAGE,
                 PropertiesConfig.INVALID_EVENT_CONTENT);
         events.add(event);
+    }
+    
+    private void createUnsuccessfulEvents(JsonElement obj) {
+        PublishResultItem event = new PublishResultItem(null, 503, PropertiesConfig.SERVICE_UNAVAILABLE,
+                PropertiesConfig.UNSUCCESSFUL_EVENT_CONTENT);
+        events.add(event);
+    }
+    
+    /**
+     * Method returns the Http response code for the events.
+     */
+    public HttpStatus getHttpStatus() {
+        if (statusCodes.size() > 1) {
+            return HttpStatus.MULTI_STATUS;
+        } else {
+            return HttpStatus.valueOf(statusCodes.get(0));
+            
+        }
     }
 }

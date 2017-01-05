@@ -3,6 +3,8 @@ package com.ericsson.eiffel.remrem.publish.service;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.google.gson.JsonElement;
 
@@ -39,4 +41,9 @@ public interface MessageService {
      * Does the cleanup like closing open connections
      */
     public void cleanUp(); 
-    }
+    
+    /**
+     * Implemented Status code for the response
+     */
+    public HttpStatus getHttpStatus();
+}
