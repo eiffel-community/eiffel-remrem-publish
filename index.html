@@ -64,7 +64,7 @@
 You passed help flag.
 usage: java -jar
  -d,--debug                     enable debug traces
- -domain,--domain &lt;arg&gt;         domain
+ -domain,--domainId &lt;arg&gt;       identifies the domain that produces the event.
  -en,--exchange_name &lt;arg&gt;      exchange name, default is amq.direct
  -f,--content_file &lt;arg&gt;        event content file
  -h,--help                      show help.
@@ -91,7 +91,7 @@ usage: java -jar
       <li>&lt;protocol&gt; is used if provided by the protocol library used. </li>
       <li>&lt;family&gt; and &lt;type&gt; are provided by the protocol library. </li>
       <li>&lt;tag&gt; is defaulted to the value 'notag'. </li>
-      <li>&lt;domain&gt; is configured and can be suffixed by a user domain part that the user can specify with -ud option. </li>
+      <li>&lt;domain&gt; is configured and can be suffixed by a user domain part that the user can specify with -ud option. For more information on domain, see <a href="https://github.com/Ericsson/eiffel/blob/master/eiffel-syntax-and-usage/the-meta-object.md#metasourcedomainid">this link</a> .</li>
    </ul></p>
 
 <p><strong>Publish on a given host, given exchange, given domain and given user domain suffix:</strong></p>
