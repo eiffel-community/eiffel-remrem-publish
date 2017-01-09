@@ -34,7 +34,7 @@ import ch.qos.logback.classic.Logger;
     /*Variables handles status codes*/
     List<Integer> statusCodes;
     List<JsonElement> errorItems;
-    List<PublishResultItem> events;
+    List<PublishResultItem> resultList;
     boolean checkEventStatus;
     
     /*
@@ -110,49 +110,48 @@ import ch.qos.logback.classic.Logger;
         Map<String, String> map = new HashMap<>();
         Map<String, String> routingKeyMap = new HashMap<>();
         SendResult result;
-        events = new ArrayList<PublishResultItem>();
+        resultList = new ArrayList<PublishResultItem>();
         if (json == null) {
-            createFailureResult(events);
+            createFailureResult(resultList);
         }
         if (json.isJsonArray()) {
-            statusCodes=new ArrayList<Integer>();
+            statusCodes = new ArrayList<Integer>();
             checkEventStatus = true;
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
-                getAndCheckEvent(msgService, map, events, obj, routingKeyMap, userDomainSuffix);
+                getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap, userDomainSuffix);
                 String eventId = msgService.getEventId(obj.getAsJsonObject());
-                if(eventId!=null && checkEventStatus){
-                    result = send(obj.toString(),msgService,userDomainSuffix);
-                    events.addAll(result.getEvents());
+                if (eventId != null && checkEventStatus) {
+                    result = send(obj.toString(), msgService, userDomainSuffix);
+                    resultList.addAll(result.getEvents());
                     int statusCode = result.getEvents().get(0).getStatusCode();
-                    if(!statusCodes.contains(statusCode))
+                    if (!statusCodes.contains(statusCode))
                         statusCodes.add(statusCode);
-                }else{
-                    if(!checkEventStatus){
-                        createUnsuccessfulEvents(obj);
-                        int statusCode = events.get(0).getStatusCode();
+                } else {
+                    if (!checkEventStatus) {
+                        addUnsuccessfulResultItem(obj);
+                        int statusCode = resultList.get(0).getStatusCode();
                         statusCodes.add(statusCode);
-                    }
-                    else{
-                        createFailureResult(events);
-                        errorItems=new ArrayList<JsonElement>();
-                        int statusCode = events.get(0).getStatusCode();
+                    } else {
+                        createFailureResult(resultList);
+                        errorItems = new ArrayList<JsonElement>();
+                        int statusCode = resultList.get(0).getStatusCode();
                         statusCodes.add(statusCode);
                         errorItems.add(obj);
                         checkEventStatus = false;
                     }
                 }
             }
-        }else{
-            statusCodes=new ArrayList<Integer>();
-            result = send(json.toString(),msgService,userDomainSuffix);
-            events.addAll(result.getEvents());
+        } else {
+            statusCodes = new ArrayList<Integer>();
+            result = send(json.toString(), msgService, userDomainSuffix);
+            resultList.addAll(result.getEvents());
             int statusCode = result.getEvents().get(0).getStatusCode();
-            if(!statusCodes.contains(statusCode))
+            if (!statusCodes.contains(statusCode))
                 statusCodes.add(statusCode);
         }
         result = new SendResult();
-        result.setEvents(events);
+        result.setEvents(resultList);
         return result;
     }
     
@@ -211,10 +210,10 @@ import ch.qos.logback.classic.Logger;
         events.add(event);
     }
     
-    private void createUnsuccessfulEvents(JsonElement obj) {
+    private void addUnsuccessfulResultItem(JsonElement obj) {
         PublishResultItem event = new PublishResultItem(null, 503, PropertiesConfig.SERVICE_UNAVAILABLE,
                 PropertiesConfig.UNSUCCESSFUL_EVENT_CONTENT);
-        events.add(event);
+        resultList.add(event);
     }
     
     /**
