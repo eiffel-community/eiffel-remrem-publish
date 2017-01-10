@@ -1,3 +1,6 @@
+## 0.2.6
+- Added status codes for output generate from publish.
+
 ## 0.2.5
 - Added domain option in CLI
 

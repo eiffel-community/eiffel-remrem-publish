@@ -60,8 +60,8 @@ public class CliOptions {
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus");
         options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
-        options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, semantics");
-        options.addOption("domain", "domain", true, "domain");
+        options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics, default is eiffelsemantics");
+        options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
         options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
