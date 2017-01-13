@@ -165,6 +165,7 @@ usage: java -jar
 <h2>
 <a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
 
+
 <p>You can use command-line tools like <a href="https://en.wikipedia.org/wiki/CURL">curl</a> or some plugin for your favorite browser. For example:</p>
 
 <ul>
@@ -181,14 +182,14 @@ usage: java -jar
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/producer/msg?mp=eiffelsemantics
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS"}]
+[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
 <p><strong>Two messages/objects and given user domain suffix:</strong></p>
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' http://localhost:8080/producer/msg?ud=fem001&mp=eiffelsemantics
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","statusCode":200,"result":"SUCCESS"}]
+[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","statusCode":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
 <p><strong>Reading data from a file:</strong></p>
@@ -196,16 +197,62 @@ usage: java -jar
 <pre><code>$ echo '[{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' &gt; test.data
 $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/producer/msg?mp=eiffelsemantics
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","statusCode":200,"result":"SUCCESS"}]
+[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","statusCode":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
 <p><strong>Malformed input:</strong></p>
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d 'SOMETHING' http://localhost:8080/producer/msg?ud=fem001&mp=eiffel3
 
-{"timestamp":"May 31, 2016 9:14:17 AM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: Expected a com.google.gson.JsonArray but was com.google.gson.JsonPrimitive; nested exception is com.google.gson.JsonSyntaxException: Expected a com.google.gson.JsonArray but was com.google.gson.JsonPrimitive","path":"/producer/msg"}
+[{"statusCode":400,"result":"Bad Request","message":"Invalid event content, client need to fix problem in event before submitting again"}]
 </code></pre>
 
+<p><strong>Status Codes:</strong></p>
+<p>The response generated includes eventID and status code based on the input JSON provided.Status codes are generated according to the below table: </p>
+
+<table class="wikitable">
+<tr>
+<th style="text-align:left;"> Status code
+</th>
+<th style="text-align:left;"> Description
+</th>
+<th style="text-align:left;"> Comment
+</th></tr>
+<tr>
+<td>200
+</td>
+<td>OK
+</td>
+<td> Event sent successfully
+</td></tr>
+<tr>
+<td>207
+</td>
+<td> Multi Status
+</td>
+<td> Used with batch publishing, client need to parse body to see status per event
+</td></tr>
+<tr>
+<td>400
+</td>
+<td> Bad Request
+</td>
+<td> Invalid event content, client need to fix problem in event before submitting again
+</td></tr>
+<tr>
+<td>500
+</td>
+<td> Internal Server Error
+</td>
+<td> Possible to try again later when server is up
+</td></tr>
+<tr>
+<td>503
+</td>
+<td> Service Unavailable
+</td>
+<td> Used with batch publishing. If one event fails REMREM will not publish remaining events that would risk broken chains. All subsequent events to the failed one will have this status code.
+</td></tr></table>
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
       </section>
     </div>
