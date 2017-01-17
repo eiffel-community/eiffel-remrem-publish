@@ -320,14 +320,36 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 	},
 ]
 </code></pre>
-<p><strong>503:</strong>Event will have this status code when the previous event is failed to send.</p>
+<p><strong>503:</strong>Event will have this status code when the previous event is failed to send.</br>
+For example,Consider you have 5 events.</br>
+E1<-E2<-E3<-E4<-E5</br>
+You send them all to publish in a batch command.</br>
+E1 and E2 is successful. (200)</br>
+E3 is malformatted. (400)</br>
+If we send E4 and E5 we will have a broken chain so that is not a good option. In this case we should skip sending E4 and E5 and have status code 503 for those.</p>
 <pre><code><Strong>HTTP Response</strong>: 207 :Multi Status
-[
+[	
 	{
 	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-	 "status_code":500,
-	 "result":"Internal Server Error",
-	 "message":"Possible to try again later when server is up"
+	 "status_code":200,
+	 "result":"SUCCESS",
+	 "message":"Event sent successfully"
+	},
+	{
+	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
+	 "status_code":200,
+	 "result":"SUCCESS",
+	 "message":"Event sent successfully"
+	},
+	{
+	 "status_code":400,
+	 "result":"Bad Request",
+	 "message":"Invalid event content, client need to fix problem in event before submitting again"
+	},
+	{
+	 "status_code":503,
+	 "result":"Service Unavailable",
+	 "message":"Please check previous event and try again later"
 	},
 	{
 	 "status_code":503,
