@@ -167,6 +167,7 @@ usage: java -jar
 <h2>
 <a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
 
+
 <p>You can use command-line tools like <a href="https://en.wikipedia.org/wiki/CURL">curl</a> or some plugin for your favorite browser. For example:</p>
 
 <ul>
@@ -183,14 +184,14 @@ usage: java -jar
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/producer/msg?mp=eiffelsemantics
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS"}]
+[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
 <p><strong>Two messages/objects and given user domain suffix:</strong></p>
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' http://localhost:8080/producer/msg?ud=fem001&mp=eiffelsemantics
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","statusCode":200,"result":"SUCCESS"}]
+[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
 <p><strong>Reading data from a file:</strong></p>
@@ -198,16 +199,166 @@ usage: java -jar
 <pre><code>$ echo '[{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' &gt; test.data
 $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/producer/msg?mp=eiffelsemantics
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","statusCode":200,"result":"SUCCESS"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","statusCode":200,"result":"SUCCESS"}]
+[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
 <p><strong>Malformed input:</strong></p>
 
 <pre><code>$ curl -H "Content-Type: application/json" -X POST -d 'SOMETHING' http://localhost:8080/producer/msg?ud=fem001&mp=eiffel3
 
-{"timestamp":"May 31, 2016 9:14:17 AM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: Expected a com.google.gson.JsonArray but was com.google.gson.JsonPrimitive; nested exception is com.google.gson.JsonSyntaxException: Expected a com.google.gson.JsonArray but was com.google.gson.JsonPrimitive","path":"/producer/msg"}
+[{"status_code":400,"result":"Bad Request","message":"Invalid event content, client need to fix problem in event before submitting again"}]
 </code></pre>
 
+<p><strong>Status Codes:</strong></p>
+<p>The response generated will have internal status codes for each and every event based on the input JSON provided.Status codes are generated according to the below table: </p>
+<p><strong> Note: </strong>We have a a status code on the HTTP response and an internal status code.</p>
+
+
+<table class="wikitable">
+<tr>
+<th style="text-align:left;"> Status code
+</th>
+<th style="text-align:left;"> Description
+</th>
+<th style="text-align:left;"> Comment
+</th>
+
+</tr>
+<tr>
+<td>200
+</td>
+<td>OK
+</td>
+<td> Event sent successfully
+</td>
+</tr>
+<tr>
+<td>207
+</td>
+<td> Multi Status
+</td>
+<td> Used with batch publishing, client need to parse body to see status per event
+</td>
+</tr>
+<tr>
+<td>400
+</td>
+<td> Bad Request
+</td>
+<td> Invalid event content, client need to fix problem in event before submitting again
+</td>
+</tr>
+<tr>
+<td>500
+</td>
+<td> Internal Server Error
+</td>
+<td> Possible to try again later when server is up
+</td>
+
+</tr>
+<tr>
+<td>503
+</td>
+<td> Service Unavailable
+</td>
+<td> Used with batch publishing. If one event fails REMREM will not publish remaining events that would risk broken chains. All subsequent events to the failed one will have this status code.
+</td>
+
+</tr></table>
+
+<p><strong>Status Codes Explanation:</strong></p>
+<p><strong>200:</strong>When all the event are sent successfully, then the internal status code for each event and status code for HTTP response will be 200.</p>
+<pre><code><strong>HTTP Response:</strong> 200 :OK
+[
+	{
+	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+	 "status_code":200,
+	 "result":"SUCCESS",
+	 "message":"Event sent successfully"
+	},
+	{
+	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
+	 "status_code":200,
+	 "result":"SUCCESS",
+	 "message":"Event sent successfully"
+	}
+]
+</code></pre>
+<p><strong>400:</strong>When the input JSON is malformated, that particular events internal status code will be 400. </p>
+<pre><code><strong>HTTP Response:</strong> 400 :Bad Request
+[
+	{
+	 "status_code":400,
+	 "result":"Bad Request",
+	 "message":"Invalid event content, client need to fix problem in event before submitting again"
+	},
+]
+</code></pre>
+<p><strong>207:</strong>When the events are having different internal status codes,then the status code of HTTP response will be 207.</p>
+<pre><code><strong>HTTP Response:</strong> 207 :Multi Status
+[
+	{
+	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+	 "status_code":200,
+	 "result":"SUCCESS",
+	 "message":"Event sent successfully"
+	},
+	{
+	 "status_code":400,
+	 "result":"Bad Request",
+	 "message":"Invalid event content, client need to fix problem in event before submitting again"
+	},
+]
+</code></pre>
+<p><strong>500:</strong>We will get this status code,When the event is failed to send because of internal server error.</p>
+<pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
+[
+	{
+	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+	 "status_code":500,
+	 "result":"Internal Server Error",
+	 "message":"Possible to try again later when server is up"
+	},
+]
+</code></pre>
+<p><strong>503:</strong>Event will have this status code when the previous event is failed to send.</br>
+For example,Consider you have 5 events.</br>
+E1<-E2<-E3<-E4<-E5</br>
+You send them all to publish in a batch command.</br>
+E1 and E2 is successful. (200)</br>
+E3 is malformatted. (400)</br>
+If we send E4 and E5 we will have a broken chain so that is not a good option. In this case we should skip sending E4 and E5 and have status code 503 for those.</p>
+<pre><code><Strong>HTTP Response</strong>: 207 :Multi Status
+[	
+	{
+	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+	 "status_code":200,
+	 "result":"SUCCESS",
+	 "message":"Event sent successfully"
+	},
+	{
+	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
+	 "status_code":200,
+	 "result":"SUCCESS",
+	 "message":"Event sent successfully"
+	},
+	{
+	 "status_code":400,
+	 "result":"Bad Request",
+	 "message":"Invalid event content, client need to fix problem in event before submitting again"
+	},
+	{
+	 "status_code":503,
+	 "result":"Service Unavailable",
+	 "message":"Please check previous event and try again later"
+	},
+	{
+	 "status_code":503,
+	 "result":"Service Unavailable",
+	 "message":"Please check previous event and try again later"
+	},
+]</code></pre>
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
       </section>
     </div>
