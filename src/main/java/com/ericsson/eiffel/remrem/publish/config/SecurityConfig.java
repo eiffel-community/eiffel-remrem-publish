@@ -15,7 +15,7 @@ import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAu
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Value("${activedirectory.domain")
+    @Value("${activedirectory.domain}")
     private String domain;
 
     @Value("${activedirectory.url}")

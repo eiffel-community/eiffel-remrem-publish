@@ -1,3 +1,6 @@
+## 0.2.7
+- Fixed domain property injection in SecurityConfig
+
 ## 0.2.6
 - Added status codes for output generate from publish.
 
