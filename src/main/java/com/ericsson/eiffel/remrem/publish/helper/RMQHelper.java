@@ -4,6 +4,7 @@ package com.ericsson.eiffel.remrem.publish.helper;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
 import com.rabbitmq.client.Channel;
@@ -29,7 +30,8 @@ import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
 @Component("rmqHelper") public class RMQHelper {
-	
+
+    private static final String FALSE = "false";
 	@Inject
 	RMQBeanConnectionFactory factory;
 
@@ -41,6 +43,7 @@ import java.util.concurrent.TimeoutException;
     @Value("${rabbitmq.tls}") private String tlsVer;
     @Value("${rabbitmq.user}") private String user;
     @Value("${rabbitmq.password}") private String password;
+    @Value("${rabbitmq.domainId}") private String domainId;
     private boolean usePersitance = true;
     private Connection rabbitConnection;
     private List<Channel> rabbitChannels;
@@ -78,8 +81,17 @@ import java.util.concurrent.TimeoutException;
 	public void setExchangeName(String exchangeName) {
 		this.exchangeName = exchangeName;
 	}
+	
+    public String getDomainId() {
+        return domainId;
+    }
+
+    public void setDomainId(String domainId) {
+        this.domainId = domainId;
+    }
 
 	@PostConstruct public void init() {
+	    handleLogging();
         log.info("RMQHelper init ...");
         initCli();
         try {
@@ -140,6 +152,11 @@ import java.util.concurrent.TimeoutException;
     		port = passedPort;
     	}
 
+        String passedDomain = System.getProperty(PropertiesConfig.DOMAIN_ID);
+        if (passedDomain != null) {
+            domainId = passedDomain;
+        }
+
     	String passedTlsVer = System.getProperty(PropertiesConfig.TLS); 
     	if (passedTlsVer != null) {
     		tlsVer = passedTlsVer;
@@ -152,6 +169,15 @@ import java.util.concurrent.TimeoutException;
     	usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
     }
     
+    private void handleLogging() {
+        String debug = System.getProperty(PropertiesConfig.DEBUG);
+        log.setLevel(Level.ALL);
+        if (FALSE.equals(debug)) {
+            System.setProperty("logging.level.root", "OFF");
+            log.setLevel(Level.OFF);
+        }
+    }
+
     @PreDestroy
     public void cleanUp() throws IOException {
         log.info("RMQHelper cleanUp ...");
@@ -164,7 +190,7 @@ import java.util.concurrent.TimeoutException;
     }
 
     public void send(String routingKey, String msg) throws IOException {
-    	try {
+    	
     		Channel channel = giveMeRandomChannel();
     		channel.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
@@ -188,10 +214,7 @@ import java.util.concurrent.TimeoutException;
 
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
             log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length, exchangeName, routingKey);
-		} catch (Exception e) {
-			 log.error("REMREM Publish: Failed to send message: " + e.getMessage(), e);
-		}
-    }
+	    }
 
 
     private Channel giveMeRandomChannel() {

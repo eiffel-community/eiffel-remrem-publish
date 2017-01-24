@@ -25,10 +25,10 @@ public class SpringLoggingInitializer implements ApplicationContextInitializer {
 		Class[] loggers = {SpringApplication.class, App.class, ConfigFileApplicationListener.class, EndpointMBeanExporter.class,
 				AutoConfigurationReportLoggingInitializer.class};
 		Logger log = (Logger) LoggerFactory.getLogger("ROOT");
-		log.setLevel(Level.INFO);
+		log.setLevel(Level.ERROR);
 		for (Class logger : loggers) {
 			log = (Logger) LoggerFactory.getLogger(logger);
-			log.setLevel(Level.INFO);
+			log.setLevel(Level.ERROR);
 		}
 	}
 }

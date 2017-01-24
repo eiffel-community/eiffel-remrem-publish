@@ -21,7 +21,7 @@ plugins {
 
 war {
     baseName = 'remrem-publish'
-    version =  '0.2.1'
+    version =  '0.2.6'
 }
 
 apply plugin: 'spring-boot'
@@ -63,9 +63,9 @@ install.dependsOn assemble
 repositories {
     // Use 'jcenter' for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+    mavenCentral()
     maven {
-        url 'https://repo.spring.io/libs-milestone'
+        url 'https://jitpack.io'
     }
 }
 
@@ -92,9 +92,8 @@ task integrationTest(type: Test) {
 // In this section you declare the dependencies for your production and test code
 dependencies {
     compile('com.jayway.restassured:rest-assured:2.9.0')
-    compile('org.yaml:snakeyaml:1.8')
     // The production code uses the SLF4J logging API at compile time
-    compile 'org.slf4j:slf4j-api:1.7.18'
+    compile 'org.slf4j:slf4j-api:1.7.21'
     compile("org.springframework.boot:spring-boot-starter-web:$sprintBootVersion") {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
@@ -102,15 +101,14 @@ dependencies {
     compile "org.springframework.boot:spring-boot:$sprintBootVersion"
     compile 'com.rabbitmq:amqp-client:3.5.7'
     compile 'com.google.code.gson:gson:2.6.2'
-    compile 'org.projectlombok:lombok:1.16.8'
     compile 'javax.inject:javax.inject:1'
 
     //commons CLI
     compile 'commons-cli:commons-cli:1.3.1'
 
     //Authentication
-    compile("org.springframework.boot:spring-boot-starter-security")
-    compile("org.springframework.security:spring-security-ldap")
+    compile("org.springframework.boot:spring-boot-starter-security:$sprintBootVersion")
+    compile("org.springframework.security:spring-security-ldap:4.1.3.RELEASE")
     compile("org.apache.directory.server:apacheds-server-jndi:1.5.5")
 
     //ServletException requires compile time servlet dependency but it causes problems
@@ -121,8 +119,12 @@ dependencies {
 
     compile 'io.springfox:springfox-swagger2:2.4.0'
     compile 'io.springfox:springfox-swagger-ui:2.4.0'
-
-
+    
+    //Injectable Message Library and its Implementation
+    compile 'com.github.Ericsson:eiffel-remrem-shared:0.2.0'
+    compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
+    compile ('com.github.Ericsson:eiffel-remrem-semantics:0.1.9')
+    
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add

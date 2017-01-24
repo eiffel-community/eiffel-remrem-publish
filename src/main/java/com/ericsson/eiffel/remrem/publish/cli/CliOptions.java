@@ -1,5 +1,7 @@
 package com.ericsson.eiffel.remrem.publish.cli;
 
+import java.util.ArrayList;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -9,8 +11,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.ArrayUtils;
-import java.lang.Exception;
-import java.util.ArrayList;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 
@@ -35,7 +35,6 @@ public class CliOptions {
 	}
 
     private static OptionGroup contentGroup = null;
-    private static OptionGroup routingKeyGroup = null;
 
 	
 	public static CommandLine getCommandLine() {
@@ -54,14 +53,16 @@ public class CliOptions {
      */
     public static void createCLIOptions() {
         options = new Options();
-        routingKeyGroup = createRoutingKeyGroup();
-        options.addOptionGroup(routingKeyGroup);
         options.addOption(createHelpOption());
+        options.addOption("d", "debug", false, "enable debug traces");
         options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
         options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus");
         options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
+        options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics, default is eiffelsemantics");
+        options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
+        options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }
@@ -72,10 +73,6 @@ public class CliOptions {
     
     private static Option createFileOption() {
     	return new Option("f", "content_file", true, "event content file");
-    }
-    
-    private static Option createRoutingKeyOption() {
-    	return new Option("rk", "routing_key", true, "routing key, mandatory");
     }
     
     private static Option createHelpOption() {
@@ -89,11 +86,6 @@ public class CliOptions {
     	return group;
     }
     
-    private static OptionGroup createRoutingKeyGroup() {
-    	OptionGroup group = new OptionGroup();
-    	group.addOption(createRoutingKeyOption());    	
-    	return group;
-    }
     
     /**
      * Parse the given arguments and act on them
@@ -107,6 +99,7 @@ public class CliOptions {
     		    commandLine = parser.parse(options, args); 
     		    afterParseChecks();
     		    handleMessageBusOptions();
+    		    handleDebugOptions();
     	    } catch (Exception e) {
     	    	System.out.println(e.getMessage());
     	    	help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
@@ -123,7 +116,7 @@ public class CliOptions {
     }
     
     public static void checkRequiredOptions() throws MissingOptionException {
-        OptionGroup[] groups = {routingKeyGroup, contentGroup};
+        OptionGroup[] groups = {contentGroup};
         for(OptionGroup group : groups) {
             ArrayList<Option> groupOptions = new ArrayList<Option>(group.getOptions());
             boolean groupIsGiven = false;
@@ -183,9 +176,15 @@ public class CliOptions {
         }
 
         if (commandLine.hasOption("port")) {
-            String exchangeName = commandLine.getOptionValue("port");
+            String port = commandLine.getOptionValue("port");
             String key = PropertiesConfig.MESSAGE_BUS_PORT;
-            System.setProperty(key, exchangeName);
+            System.setProperty(key, port);
+        }
+
+        if (commandLine.hasOption("domain")) {
+            String domain = commandLine.getOptionValue("domain");
+            String key = PropertiesConfig.DOMAIN_ID;
+            System.setProperty(key, domain);
         }
 
         if (commandLine.hasOption("tls")) {
@@ -211,6 +210,17 @@ public class CliOptions {
         System.setProperty(key, "true");
     }
     
+    /**
+     * Sets the system property with "false" value if debug option is not present"
+     * @param commandLine command line arguments
+     */
+    public static void handleDebugOptions()
+    {
+        String key = PropertiesConfig.DEBUG;
+        if (!commandLine.hasOption("d"))
+            System.setProperty(key, "false");
+    }
+
     /**
      * Remove the system properties added by this application 
      */
