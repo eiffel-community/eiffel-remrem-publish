@@ -122,19 +122,29 @@ import java.util.concurrent.TimeoutException;
             	log.info("Using standard connection method to RabbitMQ.");
             }
 
-            rabbitConnection = factory.newConnection();
-            rabbitChannels = new ArrayList<>();            
-            
-            for (int i = 0; i < CHANNEL_COUNT; i++) {
-            	rabbitChannels.add(rabbitConnection.createChannel());
-            }
-        } catch (IOException | TimeoutException e) {
-        	log.error(e.getMessage(), e);
+            getConnection();
+
         } catch (KeyManagementException e) {
         	log.error(e.getMessage(), e);
         } catch (NoSuchAlgorithmException e) {
         	log.error(e.getMessage(), e);            
 		}
+    }
+
+    private void getConnection() {
+        try {
+            if(rabbitConnection == null || !rabbitConnection.isOpen()){
+                rabbitConnection = factory.newConnection();
+                log.info("Connected to RabbitMQ.");
+                rabbitChannels = new ArrayList<>();
+                for (int i = 0; i < CHANNEL_COUNT; i++) {
+                    rabbitChannels.add(rabbitConnection.createChannel());
+                }
+            }
+        } catch (IOException | TimeoutException e) {
+            log.error(e.getMessage(), e);
+        }
+
     }
 
     private void initCli() {
@@ -218,6 +228,11 @@ import java.util.concurrent.TimeoutException;
 
 
     private Channel giveMeRandomChannel() {
-        return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
+        if (rabbitChannels != null && rabbitConnection.isOpen() && rabbitChannels.size() > 0) {
+            return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
+        } else {
+            getConnection();
+            return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
+        }
     }
 }

@@ -1,3 +1,6 @@
+## 0.2.7
+- Implemented RabbitMQ connection retry in Service.
+
 ## 0.2.6
 - Added status codes for output generate from publish.
 
