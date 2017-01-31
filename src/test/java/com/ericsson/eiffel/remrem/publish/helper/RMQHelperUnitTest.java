@@ -94,9 +94,11 @@ public class RMQHelperUnitTest {
 
     @Test public void testConnection() {
         try {
+            assertNotNull(rmqHelper.rabbitConnection);
             rmqHelper.cleanUp();
-            if(!mockConnection.isOpen())
-                rmqHelper.createConnection();
+            assertNull(rmqHelper.rabbitConnection);
+            rmqHelper.createConnection();
+            assertNotNull(rmqHelper.rabbitConnection);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

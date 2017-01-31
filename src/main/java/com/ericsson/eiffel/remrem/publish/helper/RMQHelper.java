@@ -45,7 +45,7 @@ import java.util.concurrent.TimeoutException;
     @Value("${rabbitmq.password}") private String password;
     @Value("${rabbitmq.domainId}") private String domainId;
     private boolean usePersitance = true;
-    private Connection rabbitConnection;
+    public Connection rabbitConnection;
     private List<Channel> rabbitChannels;
     
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
