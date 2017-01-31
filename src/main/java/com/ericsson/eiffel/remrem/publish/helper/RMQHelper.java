@@ -131,7 +131,7 @@ import java.util.concurrent.TimeoutException;
 		}
     }
 
-    private void createConnection() {
+    public void createConnection() {
         try {
             rabbitConnection = factory.newConnection();
             log.info("Connected to RabbitMQ.");
@@ -225,7 +225,7 @@ import java.util.concurrent.TimeoutException;
 
 
     private Channel giveMeRandomChannel() {
-        if ((rabbitChannels == null || !rabbitConnection.isOpen()) && !Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+        if ((rabbitConnection == null || !rabbitConnection.isOpen())) {
             createConnection();
         }
         return rabbitChannels.get(random.nextInt(rabbitChannels.size()));

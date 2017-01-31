@@ -92,6 +92,17 @@ public class RMQHelperUnitTest {
     	assertTrue(rmqHelper.getHost().equals(host));
     }
 
+    @Test public void testConnection() {
+        try {
+            rmqHelper.cleanUp();
+            if(!mockConnection.isOpen())
+                rmqHelper.createConnection();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
     @Test public void getPortTest() {
     	assertTrue(rmqHelper.getPort().equals(mBusPort));
     }
