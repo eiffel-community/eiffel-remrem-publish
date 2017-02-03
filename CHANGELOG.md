@@ -1,5 +1,9 @@
-## 0.2.7
+## 0.2.8
 - Implemented RabbitMQ connection retry in Service.
+
+## 0.2.7
+- upgraded semantics version in build.gradle to support all
+  EiffelEvents in the eiffel repo from topic-drop4 branch 
 
 ## 0.2.6
 - Added status codes for output generate from publish.
