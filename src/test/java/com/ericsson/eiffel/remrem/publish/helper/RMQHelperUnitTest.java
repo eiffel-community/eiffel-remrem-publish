@@ -2,6 +2,7 @@ package com.ericsson.eiffel.remrem.publish.helper;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -90,6 +91,20 @@ public class RMQHelperUnitTest {
     	String host = "HostA"; 
     	rmqHelper.setHost(host);
     	assertTrue(rmqHelper.getHost().equals(host));
+    }
+
+    @Test
+    public void testConnection() {
+        try {
+            assertNotNull(rmqHelper.rabbitConnection);
+            rmqHelper.cleanUp();
+            assertNull(rmqHelper.rabbitConnection);
+            rmqHelper.createConnection();
+            assertNotNull(rmqHelper.rabbitConnection);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            fail(e.getMessage().toString());
+        }
     }
 
     @Test public void getPortTest() {
