@@ -2,6 +2,7 @@ package com.ericsson.eiffel.remrem.publish.service;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,5 +90,19 @@ public class MessageServiceRMQImplUnitTest {
            }
      assertEquals(Expected, jarray.toString());
        
+    }
+
+    @Test
+    public void testRabbitMQConnection() {
+        try {
+            assertTrue(rmqHelper.rabbitConnection.isOpen());
+            rmqHelper.rabbitConnection.close();
+            assertFalse(rmqHelper.rabbitConnection.isOpen());
+            rmqHelper.send("eiffelxxx", "Test message");
+            assertTrue(rmqHelper.rabbitConnection.isOpen());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            fail(e.getMessage().toString());
+        }
     }
 }

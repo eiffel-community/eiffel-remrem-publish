@@ -45,7 +45,7 @@ import java.util.concurrent.TimeoutException;
     @Value("${rabbitmq.password}") private String password;
     @Value("${rabbitmq.domainId}") private String domainId;
     private boolean usePersitance = true;
-    private Connection rabbitConnection;
+    public Connection rabbitConnection;
     private List<Channel> rabbitChannels;
     
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
@@ -122,19 +122,26 @@ import java.util.concurrent.TimeoutException;
             	log.info("Using standard connection method to RabbitMQ.");
             }
 
-            rabbitConnection = factory.newConnection();
-            rabbitChannels = new ArrayList<>();            
-            
-            for (int i = 0; i < CHANNEL_COUNT; i++) {
-            	rabbitChannels.add(rabbitConnection.createChannel());
-            }
-        } catch (IOException | TimeoutException e) {
-        	log.error(e.getMessage(), e);
+            createConnection();
+
         } catch (KeyManagementException e) {
         	log.error(e.getMessage(), e);
         } catch (NoSuchAlgorithmException e) {
         	log.error(e.getMessage(), e);            
 		}
+    }
+
+    public void createConnection() {
+        try {
+            rabbitConnection = factory.newConnection();
+            log.info("Connected to RabbitMQ.");
+            rabbitChannels = new ArrayList<>();
+            for (int i = 0; i < CHANNEL_COUNT; i++) {
+                rabbitChannels.add(rabbitConnection.createChannel());
+            }
+        } catch (IOException | TimeoutException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     private void initCli() {
@@ -218,6 +225,9 @@ import java.util.concurrent.TimeoutException;
 
 
     private Channel giveMeRandomChannel() {
+        if ((rabbitConnection == null || !rabbitConnection.isOpen())) {
+            createConnection();
+        }
         return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
     }
 }
