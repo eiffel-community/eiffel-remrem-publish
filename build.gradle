@@ -121,7 +121,7 @@ dependencies {
     compile 'io.springfox:springfox-swagger-ui:2.4.0'
     
     //Injectable Message Library and its Implementation
-    compile 'com.github.Ericsson:eiffel-remrem-shared:0.2.0'
+    compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.0'
     compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
     compile ('com.github.Ericsson:eiffel-remrem-semantics:0.2.0')
     
