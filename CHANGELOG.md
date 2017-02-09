@@ -1,3 +1,6 @@
+## 0.2.9
+- Updated the RemRem shared version to latest
+
 ## 0.2.8
 - Implemented RabbitMQ connection retry in Service.
 
