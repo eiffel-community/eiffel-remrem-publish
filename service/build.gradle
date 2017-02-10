@@ -1,0 +1,97 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
+    }
+}
+// Apply the java plugin to add support for Java
+plugins {
+    id 'war'
+    id 'maven'
+    id 'jacoco'
+}
+
+war {
+    baseName = 'remrem-publish-service'
+    version =  '0.3.0'
+}
+
+apply plugin: 'spring-boot'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+bootRepackage {
+    enabled = false
+}
+
+springBoot {
+    mainClass = ""
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+        html.destination "${buildDir}/jacocoHtml"
+   }
+    executionData = files('build/jacoco/jacocoTest.exec', 'build/jacoco/test.exec')
+}
+
+configurations {
+    providedRuntime
+    provided
+
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+install.dependsOn assemble
+
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use 'jcenter' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+ext {
+    sprintBootVersion = "1.4.1.RELEASE"
+}
+
+task integrationTest(type: Test) {
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+        classDumpFile = file("$buildDir/classes/integrationTest")
+    }
+
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    compile project(':common')
+    compile('com.jayway.restassured:rest-assured:2.9.0') 
+    
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+    testCompile("org.springframework.boot:spring-boot-starter-tomcat")
+        
+}

@@ -15,5 +15,7 @@ include 'shared'
 include 'api'
 include 'services:webservice'
 */
-
+include 'cli'
+include 'service'
+include 'common'
 rootProject.name = 'publish'
