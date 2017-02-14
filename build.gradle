@@ -61,10 +61,6 @@ subprojects {
         compile("org.springframework.boot:spring-boot-starter-actuator:$sprintBootVersion")
         compile("org.springframework.boot:spring-boot:$sprintBootVersion")
         
-        //ServletException requires compile time servlet dependency but it causes problems
-        //when deployed if exist on war run time.. hence provided but also compileOnly
-        compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
-        
         compile 'com.google.code.gson:gson:2.3.1'
         compile 'javax.inject:javax.inject:1'
         

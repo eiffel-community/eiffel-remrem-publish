@@ -15,7 +15,6 @@ plugins {
 
 war {
     baseName = 'remrem-publish-service'
-    version =  '0.3.0'
 }
 
 apply plugin: 'spring-boot'
@@ -89,8 +88,10 @@ task integrationTest(type: Test) {
 // In this section you declare the dependencies for your production and test code
 dependencies {
     compile project(':common')
-    compile('com.jayway.restassured:rest-assured:2.9.0') 
-    
+    compile('com.jayway.restassured:rest-assured:2.9.0')
+    //ServletException requires compile time servlet dependency but it causes problems
+    //when deployed if exist on war run time.. hence provided but also compileOnly
+    compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testCompile("org.springframework.boot:spring-boot-starter-tomcat")
         

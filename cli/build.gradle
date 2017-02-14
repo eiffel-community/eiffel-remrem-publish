@@ -18,7 +18,6 @@ apply plugin: 'eclipse'
 
 jar {
     baseName = 'remrem-publish-cli'
-    version = '0.3.0'
 }
 
 repositories {
