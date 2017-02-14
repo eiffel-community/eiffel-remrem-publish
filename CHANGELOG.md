@@ -1,5 +1,8 @@
+## 0.3.0
+- Split REMREM Publish component into cli, service and common.
+
 ## 0.2.9
-- Updated the RemRem shared version to latest
+- Updated the RemRem shared version to latest.
 
 ## 0.2.8
 - Implemented RabbitMQ connection retry in Service.

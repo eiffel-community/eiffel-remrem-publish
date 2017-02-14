@@ -1,0 +1,16 @@
+rabbitmq:
+  host: 127.0.0.1
+  port:
+  user:
+  password:
+  exchange:
+    name: amq.direct
+  domainId: eiffelxxx  
+  tls:
+spring:
+  http.converters:
+    preferred-json-mapper: gson
+activedirectory:
+  enabled: false
+  domain:
+  url:
