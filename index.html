@@ -42,9 +42,9 @@
 <a id="components" class="anchor" href="#components" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Components</h2>
 
 <ul>
-<li>Common</li>
-<li>CLI (Command Line Interface)</li>
-<li>Service</li>
+<li>REMREM Publish Common</li>
+<li>REMREM Publish CLI (Command Line Interface)</li>
+<li>REMREM Publish Service</li>
 
 </ul>
 
@@ -63,23 +63,69 @@
 <h2>
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
-<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack</a></p>
+<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack common</a></p>
+<p><b>Download the latest REMREM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');">publish-cli.jar</a></p>
+<p><b>Download the latest REMREM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');">publish-service.war</a></p>
+<div id="downloadLink" style="visibility: hidden;color: red;font-size: 14px;">
+</div>
+<script type="text/javascript">
+function getLatestVersion(type,extn){
+	var xhr = new XMLHttpRequest(); 
+	xhr.open("GET", "https://jitpack.io/v/Ericsson/eiffel-remrem-publish.svg"); 
+ 	xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
+ 	xhr.onload = function() 
+ 	{
+ 		var blob = xhr.response;
+ 		var reader = new FileReader();
+ 		reader.addEventListener("loadend", function() {
+			var result = reader.result;
+			if(result=="Repo not found or no access token provided"){
+				document.getElementById("downloadLink").innerHTML = result;
+				document.getElementById("downloadLink").style.visibility = "";
+			}
+			else{
+				document.getElementById("downloadLink").innerHTML = result;
+				var val = document.getElementsByTagName("text")[2].innerHTML;
+				val = val.trim();
+				urlLink = "https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/publish-"+type +"\/"+val+"/publish-"+type +"-"+val+"."+extn;
+				var link = document.createElement("a");
+				link.setAttribute('id',"MYLINK");
+				link.href = urlLink;
+				document.body.appendChild(link);
+                link.setAttribute("type", "hidden");
+				link.click();
+				
+				
+				}
+	 	});
+ 		reader.readAsBinaryString(blob);
+ 	}
+ 	xhr.send();
+}
+</script>
 
-<p>RemRem Publish in this repository is licensed under the <a href="https://raw.githubusercontent.com/ericsson/eiffel-remrem-publish/master/LICENSE">Apache License 2.0</a>.</p>
+<h3>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
+
+<p>Start the self executing Publish-cli JAR</p>
+<pre>java -jar publish-cli.jar</pre>
+
+<p>Deploy the self executing Publish-Service WAR in Tomcat to use REST services.</p>
+
 
 <hr>
 
 <h2>
 <a id="usage-common" class="anchor" href="#usage-common" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage Common</h2>
 
-  <p>REMREM Common is a common repository of codes which helps both CLI and service to validate eiffel messages and publish them on RabbitMQ. It cannot be run as micro services or stand alone versions. It just help in proper working of both CLI and service. </p>
+  <p>REMREM Publish Common is a common repository of codes which helps both CLI and service to validate eiffel messages and publish them on RabbitMQ. It cannot be run as micro services or stand alone versions. It just help in proper working of both CLI and service. </p>
 
 <h2>
 
 <h2>
 <a id="usage-cli-command-line-interface" class="anchor" href="#usage-cli-command-line-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage CLI (Command Line Interface)</h2>
 
-<pre>$ java -jar remrem-publish-cli.jar -h
+<pre>$ java -jar publish-cli.jar -h
 You passed help flag.
 usage: java -jar
  -d,--debug                     enable debug traces
@@ -117,17 +163,17 @@ usage: java -jar
 
 <p><strong>Publish on a given host, given exchange, given domain and given user domain suffix:</strong></p>
 
-<pre><code> $ java -jar remrem-publish-cli.jar -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics
 </code></pre>
 
 <p><strong>If you want to have the message non persistent add np flag:</strong></p>
 
-<pre><code> $ java -jar remrem-publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
 </code></pre>
 
 <p><strong>If you want to have the message publishing logs add d flag:</strong></p>
 
-<pre><code> $ java -jar remrem-publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
 </code></pre>
 
 <h2>
