@@ -1,0 +1,3 @@
+
+ include 'publish-common'
+rootProject.name = 'publish-cli'
