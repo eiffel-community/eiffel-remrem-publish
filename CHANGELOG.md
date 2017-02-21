@@ -1,3 +1,6 @@
+## 0.3.1
+- Added changes in build.gradle.
+
 ## 0.3.0
 - Split REMREM Publish component into cli, service and common.
 
