@@ -1,5 +1,5 @@
 
-include 'cli'
-include 'service'
-include 'common'
+include 'publish-cli'
+include 'publish-service'
+include 'publish-common'
 rootProject.name = 'publish'
