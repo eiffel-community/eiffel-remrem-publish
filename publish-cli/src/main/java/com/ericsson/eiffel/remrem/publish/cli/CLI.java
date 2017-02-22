@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.slf4j.LoggerFactory;
@@ -13,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.Banner;
-import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
@@ -147,13 +144,12 @@ public class CLI implements CommandLineRunner{
         	CliOptions.help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
 	}
 	
-	public static void main(String args[])
-	{
+	public static void main(String args[]) {
 		SpringApplication application = new SpringApplication(CLI.class);
 		application.addInitializers(new SpringLoggingInitializer());
-        application.setBannerMode(Banner.Mode.OFF);
-        application.setLogStartupInfo(false);
-        application.setWebEnvironment(false);
-        application.run(args);
+		application.setBannerMode(Banner.Mode.OFF);
+		application.setLogStartupInfo(false);
+		application.setWebEnvironment(false);
+		application.run(args);
 	}
 }
