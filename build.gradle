@@ -40,7 +40,7 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.3.0"
+    version = "0.3.1"
 
     repositories {
         mavenCentral()
@@ -50,6 +50,10 @@ subprojects {
     apply plugin: 'spring-boot'
     apply plugin: 'java'
     apply plugin: 'eclipse'
+
+	bootRepackage {
+		enabled = false
+	}
 
     // In this section you declare the dependencies for your production and test code
     dependencies {
