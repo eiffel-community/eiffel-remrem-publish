@@ -1,14 +1,14 @@
-// Apply the java plugin to add support for Java
 plugins {
     id 'war'
-    id 'maven'
-    id 'jacoco'
+    id 'jacoco' // provides code coverage metrics for Java code via integration with Jacoco
 }
 
+//This task creates the executable service war
 war {
     baseName = 'publish-service'
 }
 
+//JacocoReport task can be used to generate code coverage reports in different formats
 jacocoTestReport {
     reports {
         xml.enabled = true // coveralls plugin depends on xml format report
@@ -37,6 +37,7 @@ sourceSets {
     }
 }
 
+//Assembles all the archives in the project.
 install.dependsOn assemble
 
 task integrationTest(type: Test) {
@@ -50,7 +51,7 @@ task integrationTest(type: Test) {
     outputs.upToDateWhen { false }
 }
 
-// In this section you declare the dependencies for your production and test code
+//Declare the dependencies for this project and test code
 dependencies {
     compile project(':publish-common')
     compile('com.jayway.restassured:rest-assured:2.9.0')
