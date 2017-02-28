@@ -5,10 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,11 +49,11 @@ public class MessageServiceRMQImplUnitTest {
     }
     
     @Test public void testSingleSuccessfulEvent() throws Exception {
-        String body ="{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a0','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}}";
+        String body = FileUtils.readFileToString(new File("src/integration-test/resources/EiffelActivityFinishedEvent.json"));
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
         SendResult result = messageService.send(body, msgService, "test");
-        String Expected="[{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a0\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
+        String Expected="[{\"id\":\"1afffd13-04ae-4638-97f1-aaeed78a28c7\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         for (PublishResultItem results : result.getEvents()) {
             jarray.add(results.toJsonObject());
         }
@@ -58,7 +61,7 @@ public class MessageServiceRMQImplUnitTest {
     }
     
     @Test public void testSingleFailedEvent() throws Exception {
-        String body ="{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}}";
+        String body = FileUtils.readFileToString(new File("src/integration-test/resources/Invalid_EiffelActivityFinishedEvent.json"));
         MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
         JsonArray jarray = new JsonArray();
         SendResult result = messageService.send(body, msgService, "test");
@@ -70,7 +73,7 @@ public class MessageServiceRMQImplUnitTest {
     }
     
     @Test public void testMultipleFailedEvents() throws Exception {
-        String body ="[{'eiffelMessageVersions':{'3.21.39.0.5':{'domainId':'TCS','eventTime':'2016-09-28T11:51:08.464Z','eventType':'EiffelJobFinishedEvent','inputEventIds':['c597aa70-8733-4930-a425-ea8992ae6c6f'],'eventData':{'jobInstance':'IMPMessage','jobExecutionId':'f011f05e-e371-45aa-961a-22fc585b4bc2','jobExecutionNumber':10,'resultCode':'SUCCESS','logReferences':{},'flowContext':'','optionalParameters':{}},'eventSource':{'hostName':'SE00208242','pid':10344,'name':'testComponent','url':'http://localhost:8080/job/IMPMessage/10/'}},'2.3.39.0.5':{'domainId':'TCS','eventTime':'2016-09-28T11:51:08.464Z','eventType':'EiffelJobFinishedEvent','inputEventIds':['c597aa70-8733-4930-a425-ea8992ae6c6f'],'eventData':{'jobInstance':'IMPMessage','jobExecutionId':'f011f05e-e371-45aa-961a-22fc585b4bc2','jobExecutionNumber':10,'resultCode':'SUCCESS','logReferences':{},'optionalParameters':{}}}}},{'eiffelMessageVersions':{'3.21.39.0.5':{'domainId':'TCS','eventTime':'2016-09-28T11:51:07.457Z','eventType':'EiffelJobStartedEvent','inputEventIds':['50acee77-24ef-45d1-9ec4-2b4453cd6387','14d38a89-ca6d-4d06-acdc-5a2cfb8c52f7'],'eventData':{'jobInstance':'IMPMessage','jobExecutionId':'f011f05e-e371-45aa-961a-22fc585b4bc2','jobExecutionNumber':10,'logReferences':{},'flowContext':'','optionalParameters':{}},'eventSource':{'hostName':'SE00208242','pid':10344,'name':'testComponent','url':'http://localhost:8080/job/IMPMessage/10/'}},'2.3.39.0.5':{'domainId':'TCS','eventTime':'2016-09-28T11:51:07.457Z','eventType':'EiffelJobStartedEvent','inputEventIds':['50acee77-24ef-45d1-9ec4-2b4453cd6387','14d38a89-ca6d-4d06-acdc-5a2cfb8c52f7'],'eventData':{'jobInstance':'IMPMessage','jobExecutionId':'f011f05e-e371-45aa-961a-22fc585b4bc2','jobExecutionNumber':10,'optionalParameters':{}}}}},{'eiffelMessageVersions':{'3.21.39.0.5':{'domainId':'TCS','eventTime':'2016-09-28T11:51:06.558Z','eventType':'EiffelJobQueuedEvent','inputEventIds':[],'eventData':{'jobInstance':'IMPMessage','jobExecutionId':'e71c530b-97e1-42fa-b1bb-ce01bdd53f34','triggerCause':{'type':'MANUAL','description':'Started by user anonymous'},'logReferences':{},'flowContext':'','optionalParameters':{}},'eventSource':{'hostName':'SE00208242','pid':10344,'name':'testComponent','url':'http://localhost:8080/job/IMPMessage/'}},'2.3.39.0.5':{'domainId':'TCS','eventTime':'2016-09-28T11:51:06.558Z','eventType':'EiffelJobQueuedEvent','inputEventIds':[],'eventData':{'jobInstance':'IMPMessage','jobExecutionId':'e71c530b-97e1-42fa-b1bb-ce01bdd53f34','optionalParameters':{}}}}},{'eiffelMessageVersions':{'3.21.39.0.5':{'domainId':'TCS','eventTime':'2016-09-28T11:51:06.780Z','eventType':'EiffelJobQueuedEvent','inputEventIds':[],'eventData':{'jobInstance':'IMPMessage','jobExecutionId':'f011f05e-e371-45aa-961a-22fc585b4bc2','triggerCause':{'type':'MANUAL','description':'Started by user anonymous'},'logReferences':{},'flowContext':'','optionalParameters':{}},'eventSource':{'hostName':'SE00208242','pid':10344,'name':'testComponent','url':'http://localhost:8080/job/IMPMessage/'}},'2.3.39.0.5':{'domainId':'TCS','eventTime':'2016-09-28T11:51:06.780Z','eventType':'EiffelJobQueuedEvent','inputEventIds':[],'eventData':{'jobInstance':'IMPMessage','jobExecutionId':'f011f05e-e371-45aa-961a-22fc585b4bc2','optionalParameters':{}}}}}]";
+        String body = FileUtils.readFileToString(new File("src/integration-test/resources/MultipleInvalidEvents.json"));
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);  
         SendResult result = messageService.send(body, msgService, "test");
@@ -82,7 +85,7 @@ public class MessageServiceRMQImplUnitTest {
         assertEquals(Expected, jarray.toString());
     }
       @Test public void testMultipleSuccessfulEvents() throws Exception {
-        String body ="[{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a1','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}},{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a2','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}},{'data':{'outcome':{'conclusion':'TIMED_OUT','description':'Compilation timed out.'},'persistentLogs':[{'name':'firstLog','uri':'http://myHost.com/firstLog'},{'name':'otherLog','uri':'isbn:0-486-27557-4'}]},'links':{'activityExecution':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1','flowContext':'flowContext','causes':['cause1','cause2']},'meta':{'domainId':'example.domain','id':'9cdd0f68-df85-44b0-88bd-fc4163ac90a3','type':'eiffelactivityfinished','version':'0.1.7','time':1478780245184,'tags':['tag1','tag2'],'source':{'host':'host','name':'name','uri':'http://java.sun.com/j2se/1.3/','serializer':{'groupId':'G','artifactId':'A','version':'V'}}}}]";
+        String body = FileUtils.readFileToString(new File("src/integration-test/resources/MultipleValidEvents.json"));
         String Expected="[{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a1\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a2\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a3\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
@@ -109,13 +112,13 @@ public class MessageServiceRMQImplUnitTest {
     }
 
     @Test
-    public void testRoutingKey() {
+    public void testRoutingKey() throws Exception {
         MsgService msgService = PublishUtils.getMessageService("", msgServices);
         String routingKey;
         if (msgService != null) {
-            String jsonString = "{'data': { 'outcome': { 'conclusion': 'TIMED_OUT', 'description': 'Compilation timed out.' }, 'persistentLogs': [ { 'name': 'firstLog', 'uri': 'http://myHost.com/firstLog' }, { 'name': 'otherLog', 'uri': 'isbn:0-486-27557-4' } ] }, 'links': { 'activityExecution': 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1', 'flowContext': 'flowContext', 'causes': [ 'cause1', 'cause2' ] }, 'meta': { 'domainId': 'TCS', 'id': '1afffd13-04ae-4638-97f1-aaeed78a28c7', 'type': 'eiffelactivityfinished', 'version': '0.1.8', 'time': 1481628758807, 'tags': [ 'tag1', 'tag2' ], 'source': { 'host': 'host', 'name': 'name', 'uri': 'http://java.sun.com/j2se/1.3/', 'serializer': { 'groupId': 'G', 'artifactId': 'A', 'version': 'V' }}}}";
+            File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
-            JsonElement json = parser.parse(jsonString);
+            JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             routingKey = PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001");
             assertEquals("eiffel.activity.finished.notag.eiffelxxx.fem001", routingKey);
         }

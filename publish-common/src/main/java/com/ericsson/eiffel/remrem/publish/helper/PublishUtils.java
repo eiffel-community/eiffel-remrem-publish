@@ -49,16 +49,16 @@ public class PublishUtils {
     public static String prepareRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper,
             String userDomainSuffix) {
         String domainId = rmqHelper.getDomainId();
+        String family = msgService.getFamily(json);
+        String type = msgService.getType(json);
         if (StringUtils.isNotEmpty(userDomainSuffix)) {
             domainId = domainId + DOT + userDomainSuffix;
         }
-        if (msgService != null && StringUtils.isNotEmpty(msgService.getFamily(json))
-                && StringUtils.isNotEmpty(msgService.getType(json))) {
+        if (msgService != null && StringUtils.isNotEmpty(family) && StringUtils.isNotEmpty(type)) {
             if (msgService instanceof SemanticsService)
-                return PropertiesConfig.PROTOCOL + DOT + msgService.getFamily(json) + DOT + msgService.getType(json)
-                        + DOT + "notag" + DOT + domainId;
+                return PropertiesConfig.PROTOCOL + DOT + family + DOT + type + DOT + "notag" + DOT + domainId;
             else
-                return msgService.getFamily(json) + DOT + msgService.getType(json) + DOT + "notag" + DOT + domainId;
+                return family + DOT + type + DOT + "notag" + DOT + domainId;
         }
         return null;
     }
