@@ -1,3 +1,6 @@
+## 0.3.3
+- Implemented RoutingKey functionality for REMREM Semantics.
+
 ## 0.3.2
 - Added comments and removed unnecessary dependencies in build.gradle.
 

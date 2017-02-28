@@ -83,5 +83,28 @@ public class ProducerControllerIntegrationTest {
                .body("events[0].result", Matchers.equalTo(PropertiesConfig.INVALID_MESSAGE)).body("events[0].message", Matchers
                         .equalTo("Invalid event content, client need to fix problem in event before submitting again"));
     }
-    
+
+    @Test
+    public void testGetFamilyRoutingKey() throws Exception {
+        MsgService messageService = PublishUtils.getMessageService("", msgServices);
+        if (messageService != null) {
+            String jsonString = "{'data': { 'outcome': { 'conclusion': 'TIMED_OUT', 'description': 'Compilation timed out.' }, 'persistentLogs': [ { 'name': 'firstLog', 'uri': 'http://myHost.com/firstLog' }, { 'name': 'otherLog', 'uri': 'isbn:0-486-27557-4' } ] }, 'links': { 'activityExecution': 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1', 'flowContext': 'flowContext', 'causes': [ 'cause1', 'cause2' ] }, 'meta': { 'domainId': 'TCS', 'id': '1afffd13-04ae-4638-97f1-aaeed78a28c7', 'type': 'eiffelactivityfinished', 'version': '0.1.8', 'time': 1481628758807, 'tags': [ 'tag1', 'tag2' ], 'source': { 'host': 'host', 'name': 'name', 'uri': 'http://java.sun.com/j2se/1.3/', 'serializer': { 'groupId': 'G', 'artifactId': 'A', 'version': 'V' }}}}";
+            JsonParser parser = new JsonParser();
+            JsonElement json = parser.parse(jsonString);
+            String family = messageService.getFamily(json.getAsJsonObject());
+            assertEquals("activity", family);
+        }
+    }
+
+    @Test
+    public void testGetTypeRoutingKey() throws Exception {
+        MsgService messageService = PublishUtils.getMessageService("", msgServices);
+        if (messageService != null) {
+            String jsonString = "{'data': { 'outcome': { 'conclusion': 'TIMED_OUT', 'description': 'Compilation timed out.' }, 'persistentLogs': [ { 'name': 'firstLog', 'uri': 'http://myHost.com/firstLog' }, { 'name': 'otherLog', 'uri': 'isbn:0-486-27557-4' } ] }, 'links': { 'activityExecution': 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1', 'flowContext': 'flowContext', 'causes': [ 'cause1', 'cause2' ] }, 'meta': { 'domainId': 'TCS', 'id': '1afffd13-04ae-4638-97f1-aaeed78a28c7', 'type': 'eiffelactivityfinished', 'version': '0.1.8', 'time': 1481628758807, 'tags': [ 'tag1', 'tag2' ], 'source': { 'host': 'host', 'name': 'name', 'uri': 'http://java.sun.com/j2se/1.3/', 'serializer': { 'groupId': 'G', 'artifactId': 'A', 'version': 'V' }}}}";
+            JsonParser parser = new JsonParser();
+            JsonElement json = parser.parse(jsonString);
+            String type = messageService.getType(json.getAsJsonObject());
+            assertEquals("finished", type);
+        }
+    }
  }

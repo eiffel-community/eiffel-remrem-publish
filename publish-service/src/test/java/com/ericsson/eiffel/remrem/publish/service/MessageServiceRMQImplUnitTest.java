@@ -22,6 +22,8 @@ import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
@@ -103,6 +105,19 @@ public class MessageServiceRMQImplUnitTest {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             fail(e.getMessage().toString());
+        }
+    }
+
+    @Test
+    public void testRoutingKey() {
+        MsgService msgService = PublishUtils.getMessageService("", msgServices);
+        String routingKey;
+        if (msgService != null) {
+            String jsonString = "{'data': { 'outcome': { 'conclusion': 'TIMED_OUT', 'description': 'Compilation timed out.' }, 'persistentLogs': [ { 'name': 'firstLog', 'uri': 'http://myHost.com/firstLog' }, { 'name': 'otherLog', 'uri': 'isbn:0-486-27557-4' } ] }, 'links': { 'activityExecution': 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1', 'flowContext': 'flowContext', 'causes': [ 'cause1', 'cause2' ] }, 'meta': { 'domainId': 'TCS', 'id': '1afffd13-04ae-4638-97f1-aaeed78a28c7', 'type': 'eiffelactivityfinished', 'version': '0.1.8', 'time': 1481628758807, 'tags': [ 'tag1', 'tag2' ], 'source': { 'host': 'host', 'name': 'name', 'uri': 'http://java.sun.com/j2se/1.3/', 'serializer': { 'groupId': 'G', 'artifactId': 'A', 'version': 'V' }}}}";
+            JsonParser parser = new JsonParser();
+            JsonElement json = parser.parse(jsonString);
+            routingKey = PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001");
+            assertEquals("eiffel.activity.finished.notag.eiffelxxx.fem001", routingKey);
         }
     }
 }
