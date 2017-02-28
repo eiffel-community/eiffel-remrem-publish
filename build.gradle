@@ -27,51 +27,71 @@ repositories {
     }
 }
 
+//This task is used to build the subprojects within eiffel-remrem-publish
 subprojects {
+    //For all subproject we add the build script and dependencies here
     buildscript {
-        repositories { mavenCentral() }
+        repositories {
+            mavenCentral()
+        }
         dependencies {
             classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
         }
     }
+    //Spring boot version
+    ext {
+        sprintBootVersion = "1.4.1.RELEASE"
+    }
 
-    ext { sprintBootVersion = "1.4.1.RELEASE" }
-
+    //Apply the java plugin to add support for Java
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.3.1"
+    version = "0.3.2"
 
+    //Declare where to find the dependencies of project here
     repositories {
+        // Use 'jcenter' for resolving your dependencies.
+        // You can declare any Maven/Ivy/file repository here.
         mavenCentral()
         maven { url 'https://jitpack.io' }
     }
 
     apply plugin: 'spring-boot'
-    apply plugin: 'java'
     apply plugin: 'eclipse'
+    apply plugin: 'maven'
 
-	bootRepackage {
-		enabled = false
-	}
+    //Used to execute the build from gradlew.bat from the root of the project
+    task wrapper(type: Wrapper) {
+        gradleVersion = '3.1'
+        distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+    }
 
-    // In this section you declare the dependencies for your production and test code
+    //Declare the dependencies for all subprojects and test code
     dependencies {
-        // The production code uses the SLF4J logging API at compile time
+        // The code uses the SLF4J logging API at compile time
         compile 'org.slf4j:slf4j-api:1.7.21'
         compile("org.springframework.boot:spring-boot-starter-web:$sprintBootVersion") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
         }
+
+        //Actuator endpoints allow you to monitor and interact with application
+        //To create and activate spring boot endpoints
         compile("org.springframework.boot:spring-boot-starter-actuator:$sprintBootVersion")
         compile("org.springframework.boot:spring-boot:$sprintBootVersion")
         
+        //To process Json content
         compile 'com.google.code.gson:gson:2.3.1'
+        //To Inject annotations, For eg: @Autowired/@Resource/@Inject
         compile 'javax.inject:javax.inject:1'
         
         //Authentication
         compile("org.springframework.boot:spring-boot-starter-security:$sprintBootVersion")
         compile 'org.springframework.security:spring-security-ldap:4.1.3.RELEASE'
         compile 'org.apache.directory.server:apacheds-server-jndi:1.5.5'
+
+        //Swagger is a specification for documenting REST API.
+        //It specifies the format (URL, method, and representation) to describe REST web services
         compile 'io.springfox:springfox-swagger2:2.4.0'
         compile 'io.springfox:springfox-swagger-ui:2.4.0'
         compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
@@ -79,12 +99,13 @@ subprojects {
         //Injectable Message Library and its Implementation
         compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.0'
         compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
+        //For publishing eiffel2.0 events
         compile 'com.github.Ericsson:eiffel-remrem-semantics:0.2.0'               
         
-        // Declare the dependency for your favourite test framework you want to use in your tests.
-        // TestNG is also supported by the Gradle Test task. Just change the
-        // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
-        // 'test.useTestNG()' to your build script.
+        //Declare the dependency for your favourite test framework you want to use in your tests.
+        //TestNG is also supported by the Gradle Test task. Just change the
+        //testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
+        //'test.useTestNG()' to your build script.
         testCompile 'junit:junit:4.12'
         testCompile 'org.assertj:assertj-core:3.4.1'
         testCompile "org.springframework.boot:spring-boot-starter-test:$sprintBootVersion"
