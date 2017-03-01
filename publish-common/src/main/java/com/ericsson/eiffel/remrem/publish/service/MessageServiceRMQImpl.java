@@ -78,10 +78,11 @@ import ch.qos.logback.classic.Logger;
                 Map<String, String> map = new HashMap<>();
                 Map<String, String> routingKeyMap = new HashMap<>();
                 String eventId = msgService.getEventId(json.getAsJsonObject());
-                if (eventId != null) {
+                String routingKey = (eventId != null) ? (PublishUtils.prepareRoutingKey(msgService,
+                        json.getAsJsonObject(), rmqHelper, userDomainSuffix)) : null;
+                if (eventId != null && routingKey != null) {
                     map.put(eventId, json.toString());
-                    routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(),
-                            rmqHelper, userDomainSuffix));
+                    routingKeyMap.put(eventId, routingKey);
                 } else {
                     List<PublishResultItem> events = new ArrayList<>();
                     createFailureResult(events);
@@ -194,8 +195,11 @@ import ch.qos.logback.classic.Logger;
     private void getAndCheckEvent(MsgService msgService, Map<String, String> map, List<PublishResultItem> events,
             JsonElement obj, Map<String, String> routingKeyMap, String userDomainSuffix) {
         String eventId = msgService.getEventId(obj.getAsJsonObject());
-        if (eventId != null) {
-            routingKeyMap.put(eventId, PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix)) ;
+        String routingKey = (eventId != null)
+                ? (PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix))
+                : null;
+        if (eventId != null && routingKey != null) {
+            routingKeyMap.put(eventId, routingKey);
             map.put(eventId, obj.toString());
         }
     }
