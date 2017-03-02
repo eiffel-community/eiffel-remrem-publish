@@ -63,7 +63,7 @@
 <h2>
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
-<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack common</a></p>
+<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
 <p><b>Download the latest REMREM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');">publish-cli.jar</a></p>
 <p><b>Download the latest REMREM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');">publish-service.war</a></p>
 <div id="downloadLink" style="visibility: hidden;color: red;font-size: 14px;">
@@ -110,7 +110,6 @@ function getLatestVersion(type,extn){
 <p>Start the self executing Publish-cli JAR</p>
 <pre>java -jar publish-cli.jar</pre>
 
-<p>Deploy the self executing Publish-Service WAR in Tomcat to use REST services.</p>
 
 
 <hr>
@@ -118,7 +117,7 @@ function getLatestVersion(type,extn){
 <h2>
 <a id="usage-common" class="anchor" href="#usage-common" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage Common</h2>
 
-  <p>REMREM Publish Common is a common repository of codes which helps both CLI and service to validate eiffel messages and publish them on RabbitMQ. It cannot be run as micro services or stand alone versions. It just help in proper working of both CLI and service. </p>
+  <p>REMREM Publish Common is the common repository of code which is responsible for publishing eiffel messages on RabbitMQ for both CLI and service.</p>
 
 <h2>
 
@@ -180,6 +179,11 @@ usage: java -jar
 <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
 
 <p>RemRem Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called using a relative link <code>producer/msg</code>.</p>
+
+<h3>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
+
+<p>Deploy the self executing Publish-Service WAR in Tomcat to use REST services.</p>
 
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
