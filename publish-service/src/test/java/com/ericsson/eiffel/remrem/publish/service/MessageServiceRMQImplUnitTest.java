@@ -113,7 +113,7 @@ public class MessageServiceRMQImplUnitTest {
 
     @Test
     public void testRoutingKey() throws Exception {
-        MsgService msgService = PublishUtils.getMessageService("", msgServices);
+        MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
         String routingKey;
         if (msgService != null) {
             File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");

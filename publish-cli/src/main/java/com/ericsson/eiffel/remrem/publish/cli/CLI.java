@@ -136,7 +136,6 @@ public class CLI implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		CliOptions.parse(args);
 		if (CliOptions.hasParsedOptions())
 			handleOptions();
 		boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
@@ -150,6 +149,7 @@ public class CLI implements CommandLineRunner{
 		application.setBannerMode(Banner.Mode.OFF);
 		application.setLogStartupInfo(false);
 		application.setWebEnvironment(false);
+		CliOptions.parse(args);
 		application.run(args);
 	}
 }
