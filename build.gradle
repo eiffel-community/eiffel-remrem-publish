@@ -94,13 +94,15 @@ subprojects {
         //It specifies the format (URL, method, and representation) to describe REST web services
         compile 'io.springfox:springfox-swagger2:2.4.0'
         compile 'io.springfox:springfox-swagger-ui:2.4.0'
-        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+        compile 'org.apache.commons:commons-lang3:3.5'
         
         //Injectable Message Library and its Implementation
         compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.0'
         compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
         //For publishing eiffel2.0 events
-        compile 'com.github.Ericsson:eiffel-remrem-semantics:0.2.3'
+        compile("com.github.Ericsson:eiffel-remrem-semantics:0.2.3"){
+                exclude group: 'org.apache.commons'
+        }
         
         //Declare the dependency for your favourite test framework you want to use in your tests.
         //TestNG is also supported by the Gradle Test task. Just change the
