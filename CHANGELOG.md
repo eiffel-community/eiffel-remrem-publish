@@ -1,3 +1,6 @@
+## 0.3.4
+- Updated Version for dependency Commons-Lang in REMREM publish
+
 ## 0.3.3
 - Implemented RoutingKey functionality for REMREM Semantics.
 
