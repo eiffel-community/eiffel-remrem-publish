@@ -27,4 +27,5 @@ public class PropertiesConfig {
     public static final String SERVER_DOWN = "Internal Server Error";
     public static final String SERVER_DOWN_MESSAGE = "Possible to try again later when server is up";
     public static final String UNSUCCESSFUL_EVENT_CONTENT = "Please check previous event and try again later";
+    public static final String PROTOCOL = "eiffel";
 }

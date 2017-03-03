@@ -1,4 +1,4 @@
-
+//Include the subprojects in root project
 include 'publish-cli'
 include 'publish-service'
 include 'publish-common'

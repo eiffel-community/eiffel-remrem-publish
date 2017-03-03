@@ -1,9 +1,11 @@
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.1'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+//This task is used for spring boot repackaging
+bootRepackage{
+    enabled = false
 }
 
+//Declare the dependencies for this project
 dependencies {
+    //To publish messages to RabbitMQ
     compile 'com.rabbitmq:amqp-client:3.5.7'
     compile 'javax.servlet:javax.servlet-api:3.0.1'
 }
