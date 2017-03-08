@@ -39,6 +39,18 @@
 <hr>
 
 <h2>
+<a id="components" class="anchor" href="#components" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Components</h2>
+
+<ul>
+<li>REMREM Publish Common</li>
+<li>REMREM Publish CLI (Command Line Interface)</li>
+<li>REMREM Publish Service</li>
+
+</ul>
+
+<h2>
+
+<h2>
 <a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compatibility</h2>
 
 <ul>
@@ -51,16 +63,68 @@
 <h2>
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
-<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish/">jitPack</a></p>
+<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
+<p><b>Download the latest REMREM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');">publish-cli.jar</a></p>
+<p><b>Download the latest REMREM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');">publish-service.war</a></p>
+<div id="downloadLink" style="visibility: hidden;color: red;font-size: 14px;">
+</div>
+<script type="text/javascript">
+function getLatestVersion(type,extn){
+	var xhr = new XMLHttpRequest(); 
+	xhr.open("GET", "https://jitpack.io/v/Ericsson/eiffel-remrem-publish.svg"); 
+ 	xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
+ 	xhr.onload = function() 
+ 	{
+ 		var blob = xhr.response;
+ 		var reader = new FileReader();
+ 		reader.addEventListener("loadend", function() {
+			var result = reader.result;
+			if(result=="Repo not found or no access token provided"){
+				document.getElementById("downloadLink").innerHTML = result;
+				document.getElementById("downloadLink").style.visibility = "";
+			}
+			else{
+				document.getElementById("downloadLink").innerHTML = result;
+				var val = document.getElementsByTagName("text")[2].innerHTML;
+				val = val.trim();
+				urlLink = "https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/publish-"+type +"\/"+val+"/publish-"+type +"-"+val+"."+extn;
+				var link = document.createElement("a");
+				link.setAttribute('id',"MYLINK");
+				link.href = urlLink;
+				document.body.appendChild(link);
+                link.setAttribute("type", "hidden");
+				link.click();
+				
+				
+				}
+	 	});
+ 		reader.readAsBinaryString(blob);
+ 	}
+ 	xhr.send();
+}
+</script>
 
-<p>RemRem Publish in this repository is licensed under the <a href="https://raw.githubusercontent.com/ericsson/eiffel-remrem-publish/master/LICENSE">Apache License 2.0</a>.</p>
+<h3>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
+
+<p>Start the self executing Publish-cli JAR</p>
+<pre>java -jar publish-cli.jar</pre>
+
+
 
 <hr>
 
 <h2>
+<a id="usage-common" class="anchor" href="#usage-common" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage Common</h2>
+
+  <p>REMREM Publish Common is the common repository of code which is responsible for publishing eiffel messages on RabbitMQ for both CLI and service.</p>
+
+<h2>
+
+<h2>
 <a id="usage-cli-command-line-interface" class="anchor" href="#usage-cli-command-line-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage CLI (Command Line Interface)</h2>
 
-<pre>$ java -jar publish.war -h
+<pre>$ java -jar publish-cli.jar -h
 You passed help flag.
 usage: java -jar
  -d,--debug                     enable debug traces
@@ -84,6 +148,8 @@ usage: java -jar
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
+<p>For other than eiffelsemantics protocol, we need to provide the <strong><em>-Djava.ext.dirs="Path to other protocol jars"</em></strong> for loading other protocol jars.</p>
+
 <p>The routing key is generated based on the event type and given configurations.<br>
    The routing key format is : <br> 
       &lt;protocol&gt;.&lt;family&gt;.&lt;type&gt;.&lt;tag&gt;.&lt;domain&gt; 
@@ -96,23 +162,28 @@ usage: java -jar
 
 <p><strong>Publish on a given host, given exchange, given domain and given user domain suffix:</strong></p>
 
-<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics
 </code></pre>
 
 <p><strong>If you want to have the message non persistent add np flag:</strong></p>
 
-<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
 </code></pre>
 
 <p><strong>If you want to have the message publishing logs add d flag:</strong></p>
 
-<pre><code> $ java -jar publish.war -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
 </code></pre>
 
 <h2>
 <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
 
 <p>RemRem Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called using a relative link <code>producer/msg</code>.</p>
+
+<h3>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
+
+<p>Deploy the self executing Publish-Service WAR in Tomcat to use REST services.</p>
 
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
@@ -191,6 +262,9 @@ usage: java -jar
 
 [{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
+
+<p><strong>NOTE:</strong> For other than eiffelsemantics protocol, provide the Java opts as: </p>
+<pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/other/protocol/jars" in catalina.sh</pre>
 
 <p><strong>Reading data from a file:</strong></p>
 
