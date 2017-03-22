@@ -15,6 +15,8 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
@@ -41,6 +43,8 @@ import ch.qos.logback.classic.Logger;
  *
  */
 @SpringBootApplication
+@PropertySources({ @PropertySource("classpath:config.properties"),
+	@PropertySource(value = "file:${catalina.home}/conf/config.properties", ignoreResourceNotFound = true) })
 @ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
 public class CLI implements CommandLineRunner{
     

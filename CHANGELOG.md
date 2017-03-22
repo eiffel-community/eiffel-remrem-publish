@@ -1,3 +1,6 @@
+## 0.3.5
+- Moved ldap related functionality to shared
+
 ## 0.3.4
 - Updated Version for dependency Commons-Lang in REMREM publish
 
