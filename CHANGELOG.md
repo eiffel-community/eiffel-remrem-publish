@@ -1,3 +1,6 @@
+## 0.3.6
+- Added validation for 503 status code to check routing key as null.
+
 ## 0.3.5
 - Moved ldap related functionality to shared
 
