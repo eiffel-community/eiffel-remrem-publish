@@ -120,9 +120,9 @@ import ch.qos.logback.classic.Logger;
             checkEventStatus = true;
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
-                getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap, userDomainSuffix);
+                String routingKey = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap, userDomainSuffix);
                 String eventId = msgService.getEventId(obj.getAsJsonObject());
-                if (eventId != null && checkEventStatus) {
+                if (eventId != null && checkEventStatus && routingKey!=null) {
                     result = send(obj.toString(), msgService, userDomainSuffix);
                     resultList.addAll(result.getEvents());
                     int statusCode = result.getEvents().get(0).getStatusCode();
@@ -192,7 +192,7 @@ import ch.qos.logback.classic.Logger;
      * @param obj the eiffel event 
      * @param routingKeyMap contains the eventId and routing key of that event
      */
-    private void getAndCheckEvent(MsgService msgService, Map<String, String> map, List<PublishResultItem> events,
+    private String getAndCheckEvent(MsgService msgService, Map<String, String> map, List<PublishResultItem> events,
             JsonElement obj, Map<String, String> routingKeyMap, String userDomainSuffix) {
         String eventId = msgService.getEventId(obj.getAsJsonObject());
         String routingKey = (eventId != null)
@@ -202,6 +202,7 @@ import ch.qos.logback.classic.Logger;
             routingKeyMap.put(eventId, routingKey);
             map.put(eventId, obj.toString());
         }
+        return routingKey;
     }
 
     /**
