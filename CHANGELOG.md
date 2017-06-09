@@ -1,3 +1,6 @@
+## 0.3.7
+- Updated remrem-shared version to 0.3.2 to support base64 encryption functionality for Ldap manager password.
+
 ## 0.3.6
 - Added validation for 503 status code to check routing key as null.
 
