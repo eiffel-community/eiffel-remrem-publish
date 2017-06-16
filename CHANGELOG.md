@@ -1,3 +1,15 @@
+## 0.3.7
+- Updated remrem-shared version to 0.3.2 to support base64 encryption functionality for Ldap manager password.
+
+## 0.3.6
+- Added validation for 503 status code to check routing key as null.
+
+## 0.3.5
+- Moved ldap related functionality to shared
+
+## 0.3.4
+- Updated Version for dependency Commons-Lang in REMREM publish
+
 ## 0.3.3
 - Implemented RoutingKey functionality for REMREM Semantics.
 
