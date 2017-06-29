@@ -1,3 +1,6 @@
+## 0.3.8
+- Added copyright headers to the source code.
+
 ## 0.3.7
 - Updated remrem-shared version to 0.3.2 to support base64 encryption functionality for Ldap manager password.
 
