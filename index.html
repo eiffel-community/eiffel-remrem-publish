@@ -148,8 +148,6 @@ usage: java -jar
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
-<p>For other than eiffelsemantics protocol, we need to provide the <strong><em>-Djava.ext.dirs="Path to other protocol jars"</em></strong> for loading other protocol jars.</p>
-
 <p>The routing key is generated based on the event type and given configurations.<br>
    The routing key format is : <br> 
       &lt;protocol&gt;.&lt;family&gt;.&lt;type&gt;.&lt;tag&gt;.&lt;domain&gt; 
@@ -170,6 +168,11 @@ usage: java -jar
 <pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
 </code></pre>
 
+<p><strong>For loading protocol jars other than eiffelsemantics :</strong></p>
+
+<pre><code> $ java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -mp protocolType
+</code></pre>
+<strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
 <p><strong>If you want to have the message publishing logs add d flag:</strong></p>
 
 <pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
@@ -206,21 +209,27 @@ usage: java -jar
 <pre><code>$ java -Drabbitmq.host=localhost -Drabbitmq.exchange.name=EXCHANGE_NAME -jar eiffel-remrem*
 </code></pre>
 
-<p>Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property <code>activedirectory.enabled=true</code>. The necessary configuration properties for Active Directory are</p> 
+<h3>Ldap configurations:</h3>
+<p align="justify">Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property <code>activedirectory.enabled=true</code>.</p>
+<p>To authenticate with active ldap server we have to provide the following configurations in the <strong>config.properties </strong>file.</P>
+<pre>
+  activedirectory.ldapUrl         : &lt;LDAP server url&gt;
+  activedirectory.managerPassword : &lt;LDAP server manager password(must be base64 Encrypted format)&gt;
+  activedirectory.managerDn       : &lt;LDAP managerDn pattern&gt;
+  activedirectory.rootDn          : &lt;LDAP rootDn pattern&gt;
+  activedirectory.userSearchFilter: &lt;LDAP userSearchFilter pattern&gt;
+</pre>
 
-<ul>
-  <li><code>activedirectory.domain=&lt;the domain name, may be empty&gt;</code></li>
-  <li><code>activedirectory.url=&lt;LDAP url&gt;</code></li>
-</ul>
+<p><strong> LDAP authentication without Base64 encryption: </strong></p>
+<pre> <code> $ curl -XPOST -H "Content-Type: application/json" --user username:password --data @ActivityCanceled.json http://localhost:8080/publish-service/producer/msg?mp=eiffelsemantics </code></pre>
 
-<p>Each HTTP request must then include an Authorization header with value <code>Basic &lt;Base64 encoded username:password&gt;</code>.</p>
+<p align="justify">Each HTTP request must then include an Authorization header with value <code>Basic &lt;Base64 encoded username:password&gt;</code>.</p>
+<p><strong> LDAP authentication with Base64 encryption: </strong></p>
 
-<p>Example Active Directory configuration</p>
+<pre> <code> $ curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json http://localhost:8080/publish-service/producer/msg?mp=eiffelsemantics </code></pre>
 
-<pre><code>$ java -Drabbitmq.host=localhost -Drabbitmq.exchange.name=EXCHANGE_NAME -Dactivedirectory.enabled=true -Dactivedirectory.domain=mycompany -Dactivedirectory.url=ldap://ad.mycompany.com:389 -jar eiffel-remrem*
-</code></pre>
-
-<p>To authenticate a user with username "user" and password "secret" the HTTP header <code>Authorization: Basic dXNlcjpzZWNyZXQ=</code> must be included in the request. Where dXNlcjpzZWNyZXQ= is the string user:secret Base64 encoded.</p>
+<p><strong>Note:</strong> <br>
+We have to place the <strong>config.properties</strong> file in<strong> tomcat/conf </strong> folder to load the configurations. 
 
 <h3>
 <a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST methods</h3>
@@ -266,8 +275,8 @@ usage: java -jar
 </code></pre>
 
 <p><strong>NOTE:</strong> For other than eiffelsemantics protocol, provide the Java opts as: </p>
-<pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/other/protocol/jars" in catalina.sh</pre>
-
+<pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/jars/" in catalina.sh</pre>
+<strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
 <p><strong>Reading data from a file:</strong></p>
 
 <pre><code>$ echo '[{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"TIMED_OUT","description":"Compilation timed out."},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"eiffelactivityfinished","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' &gt; test.data
