@@ -20,6 +20,11 @@ plugins {
 //This task creates the executable service war
 war {
     baseName = 'publish-service'
+    manifest {
+        attributes('Main-Class': 'com.ericsson.eiffel.remrem.publish.service.App')
+        attributes('remremVersionKey': 'serviceVersion')
+        attributes('serviceVersion': version)
+    }
 }
 
 //JacocoReport task can be used to generate code coverage reports in different formats
