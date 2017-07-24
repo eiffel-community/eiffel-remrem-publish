@@ -17,6 +17,11 @@ apply plugin: 'application'
 //To create executable CLI jar
 jar {
     baseName = 'publish-cli'
+   manifest {
+        attributes('Main-Class': 'com.ericsson.eiffel.remrem.publish.cli.CLI')
+        attributes('remremVersionKey': 'serviceVersion')
+        attributes('serviceVersion': version)
+    }
 }
 
 //This task is used for spring boot repackaging

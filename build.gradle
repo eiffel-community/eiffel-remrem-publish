@@ -109,10 +109,10 @@ subprojects {
         compile 'org.apache.commons:commons-lang3:3.5'
         
         //Injectable Message Library and its Implementation
-        compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.2'
+        compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.3'
         compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
         //For publishing eiffel2.0 events
-        compile("com.github.Ericsson:eiffel-remrem-semantics:0.2.3"){
+        compile("com.github.Ericsson:eiffel-remrem-semantics:0.2.5"){
                 exclude group: 'org.apache.commons'
         }
         
