@@ -132,6 +132,7 @@ usage: java -jar
  -en,--exchange_name &lt;arg&gt;      exchange name, default is amq.direct
  -f,--content_file &lt;arg&gt;        event content file
  -h,--help                      show help.
+ -v,--list_versions             lists the versions of publish and all loaded protocols
  -json,--json_content &lt;arg&gt;     event content in json string. The value can
                                 also be a dash(-) and the json will be read
                                 from the output of other programs if piped. Multiple
@@ -203,10 +204,6 @@ usage: java -jar
 </ul>
 
 <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
-
-<p>For <strong>stand-alone</strong> deployment, the library can be utilized like this:</p>
-
-<pre><code>$ java -Drabbitmq.host=localhost -Drabbitmq.exchange.name=EXCHANGE_NAME -jar eiffel-remrem*
 </code></pre>
 
 <h3>Ldap configurations:</h3>
@@ -241,6 +238,24 @@ We have to place the <strong>config.properties</strong> file in<strong> tomcat/c
 <p>You have to specify a messaging protocol using <code><b>mp</b></code> URL parameter.</p>
 
 <p>The request's body must contain a <strong>JSON Object or JSON Array</strong> with the messages.</p>
+
+<h3>Versions Endpoint:</h3>
+"/versions" endpoint is used to get the versions of messaging protocols along with the current version of publish in a json format.<br>
+
+Ex:  http://localhost:8080/publish-service/versions/ <br>
+
+Result:
+
+<pre>
+        {
+            "serviceVersion": {
+                "version": "0.8.1"
+            },
+            "endpointVersions": {
+                "semanticsVersion": "0.2.5",
+            }
+        }
+</pre>
 
 <hr>
 
