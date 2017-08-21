@@ -1,3 +1,10 @@
+## 0.3.9
+- Uplifted remrem-semantics version to 0.2.6 to support links validation.
+
+## 0.3.8
+- Added copyright headers to the source code.
+- Uplifted remrem-shared version to 0.3.3 to get the versions of publish and all loaded protocols.
+
 ## 0.3.7
 - Updated remrem-shared version to 0.3.2 to support base64 encryption functionality for Ldap manager password.
 

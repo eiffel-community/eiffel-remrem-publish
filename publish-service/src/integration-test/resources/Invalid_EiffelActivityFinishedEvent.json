@@ -12,11 +12,10 @@
 			"uri": "isbn:0-486-27557-4"
 		}]
 	},
-	"links": {
-		"activityExecution": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1",
-		"flowContext": "flowContext",
-		"causes": ["cause1", "cause2"]
-	},
+	"links": [{
+		"type": "ACTIVITY_EXECUTION",
+		"target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+	}],
 	"meta": {
 		"domainId": "example.domain",
 		"type": "eiffelactivityfinished",
