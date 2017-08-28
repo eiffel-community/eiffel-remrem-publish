@@ -56,13 +56,13 @@ import ch.qos.logback.classic.Logger;
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.util.Map, java.util.Map)
      */
     @Override
-    public SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs) {
+    public SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs, MsgService msgService) {
         List<PublishResultItem> results = new ArrayList<>();
         SendResult sendResult = null;
         PublishResultItem event = null;
         if (!CollectionUtils.isEmpty(msgs)) {
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
-                String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue());
+                String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue(), msgService);
                 if (PropertiesConfig.SUCCESS.equals(message)) {
                     event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, PropertiesConfig.SUCCESS_MESSAGE);
                 } else {
@@ -102,7 +102,7 @@ import ch.qos.logback.classic.Logger;
                     createFailureResult(events);
                     return new SendResult(events);
                 }
-                return send(routingKeyMap, map);
+                return send(routingKeyMap, map, msgService);
             }
         } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
@@ -170,11 +170,11 @@ import ch.qos.logback.classic.Logger;
         return result;
     }
     
-    private String sendMessage(String routingKey, String msg) {
+    private String sendMessage(String routingKey, String msg, MsgService msgService) {
         String resultMsg = PropertiesConfig.SUCCESS;
         instantiateRmqHelper();
         try {
-            rmqHelper.send(routingKey, msg);
+            rmqHelper.send(routingKey, msg, msgService);
         } catch (Exception e) {
            log.error(e.getMessage(), e);
             resultMsg = "Failed to send message:" + msg;

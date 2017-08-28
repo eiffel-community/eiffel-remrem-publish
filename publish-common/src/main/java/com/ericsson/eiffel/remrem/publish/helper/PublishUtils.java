@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.config.RabbitMqProperties;
 import com.ericsson.eiffel.remrem.semantics.SemanticsService;
 import com.google.gson.JsonObject;
 
@@ -62,7 +63,8 @@ public class PublishUtils {
      */
     public static String prepareRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper,
             String userDomainSuffix) {
-        String domainId = rmqHelper.getDomainId();
+        RabbitMqProperties rabbitMqProperties = rmqHelper.rabbitMqPropertiesMap.get(msgService.getServiceName());
+        String domainId = rabbitMqProperties != null ? rabbitMqProperties.getDomainId() : rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getDomainId();
         String family = msgService.getFamily(json);
         String type = msgService.getType(json);
         if (StringUtils.isNotEmpty(userDomainSuffix)) {

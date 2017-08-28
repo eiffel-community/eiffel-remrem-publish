@@ -58,8 +58,9 @@ public class MessageServiceRMQImplUnitTest {
     
     @Test public void sendNormal() throws Exception {
         Map<String, String> map = new HashMap<String, String>();
+        MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
         map.put("test", "test");
-        messageService.send(map, map);
+        messageService.send(map, map, msgService);
     }
     
     @Test public void testSingleSuccessfulEvent() throws Exception {
@@ -114,11 +115,12 @@ public class MessageServiceRMQImplUnitTest {
     @Test
     public void testRabbitMQConnection() {
         try {
-            assertTrue(rmqHelper.rabbitConnection.isOpen());
-            rmqHelper.rabbitConnection.close();
-            assertFalse(rmqHelper.rabbitConnection.isOpen());
-            rmqHelper.send("eiffelxxx", "Test message");
-            assertTrue(rmqHelper.rabbitConnection.isOpen());
+            assertTrue(rmqHelper.getRabbitMqPropertiesMap().get("eiffelsemantics").getRabbitConnection().isOpen());
+            rmqHelper.getRabbitMqPropertiesMap().get("eiffelsemantics").getRabbitConnection().close();
+            assertFalse(rmqHelper.getRabbitMqPropertiesMap().get("eiffelsemantics").getRabbitConnection().isOpen());
+            MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
+            rmqHelper.send("eiffelxxx", "Test message", msgService);
+            assertTrue(rmqHelper.getRabbitMqPropertiesMap().get("eiffelsemantics").getRabbitConnection().isOpen());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             fail(e.getMessage().toString());
