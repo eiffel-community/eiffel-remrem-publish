@@ -195,13 +195,20 @@ usage: java -jar
 <p>These parameters need to be provided to start the service:</p>
 
 <ul>
-<li><code>rabbitmq.host (String)</code></li>
-<li><code>rabbitmq.port (Optional)</code></li>
-<li><code>rabbitmq.exchange.name (String)</code></li>
-<li><code>rabbitmq.domainId (String)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.host (String)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.port (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.user (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.password (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.tls (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.exchangeName (String)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.domainId (String)</code></li>
 </ul>
 
 <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
+
+<p>protocol is name of the protocol used. Eg: eiffelsemantics</p>
+
+<p>Currently eiffelsemantics protocol rabbitmq properties are configured in config.properties. By default any protocol can use these properties. If we need protocol specific rabbitmq properties then need to add same set of properties for other protocols. </p>
 </code></pre>
 
 <h3>Ldap configurations:</h3>
