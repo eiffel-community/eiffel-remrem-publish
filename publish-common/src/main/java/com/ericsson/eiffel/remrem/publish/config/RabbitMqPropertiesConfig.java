@@ -20,6 +20,10 @@ public class RabbitMqPropertiesConfig {
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
+    /***
+     * This method is used to give RabbitMq properties based on protocol
+     * @return protocol specific RabbitMq properties in map
+     */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
         for(Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext(); ) {

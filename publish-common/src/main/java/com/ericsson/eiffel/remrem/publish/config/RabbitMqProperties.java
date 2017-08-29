@@ -11,6 +11,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.helper.RMQBeanConnectionFactory;
+import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -38,7 +39,7 @@ public class RabbitMqProperties {
 
     private List<Channel> rabbitChannels;
 
-    Logger log = (Logger) LoggerFactory.getLogger(RabbitMqProperties.class);
+    Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
     public String getHost() {
         return host;
