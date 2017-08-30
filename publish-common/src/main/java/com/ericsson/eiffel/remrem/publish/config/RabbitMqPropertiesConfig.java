@@ -12,6 +12,8 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Component;
 
+import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
+
 @Component
 public class RabbitMqPropertiesConfig {
 
@@ -46,8 +48,8 @@ public class RabbitMqPropertiesConfig {
                     rabbitMqPropertiesMap.get(protocol).setHost(entry.getValue().toString());
                 } else if(key.contains("rabbitmq.port")) {
                     rabbitMqPropertiesMap.get(protocol).setPort(Integer.getInteger(entry.getValue().toString()));
-                } else if(key.contains("rabbitmq.user")) {
-                    rabbitMqPropertiesMap.get(protocol).setUser(entry.getValue().toString());
+                } else if(key.contains("rabbitmq.username")) {
+                    rabbitMqPropertiesMap.get(protocol).setUsername(entry.getValue().toString());
                 } else if(key.contains("rabbitmq.password")) {
                     rabbitMqPropertiesMap.get(protocol).setPassword(entry.getValue().toString());
                 } else if(key.contains("rabbitmq.tls")) {

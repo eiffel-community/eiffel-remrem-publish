@@ -1,4 +1,4 @@
-package com.ericsson.eiffel.remrem.publish.config;
+package com.ericsson.eiffel.remrem.publish.helper;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -10,6 +10,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.slf4j.LoggerFactory;
 
+import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.helper.RMQBeanConnectionFactory;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -32,7 +33,7 @@ public class RabbitMqProperties {
     private String exchangeName;
     private Integer port;
     private String tlsVer;
-    private String user;
+    private String username;
     private String password;
     private String domainId;
     private Connection rabbitConnection;
@@ -73,12 +74,12 @@ public class RabbitMqProperties {
         this.tlsVer = tlsVer;
     }
 
-    public String getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUsername(String user) {
+        this.username = user;
     }
 
     public String getPassword() {
@@ -126,9 +127,14 @@ public class RabbitMqProperties {
             } else {
                 log.info("Using default rabbit mq port.");
             }
-            
+
             log.info("Host adress: " + host);
             log.info("Exchange is: " + exchangeName);
+
+            if((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
+                factory.setUsername(username);
+                factory.setPassword(password);
+            }
 
             if (tlsVer != null && !tlsVer.isEmpty()) {
                 if (tlsVer.contains("default")) {

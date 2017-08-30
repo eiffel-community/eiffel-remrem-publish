@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.publish.config.RabbitMqProperties;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 
 import ch.qos.logback.classic.Level;
@@ -66,10 +65,11 @@ import ch.qos.logback.classic.Logger;
     }
 
     public void send(String routingKey, String msg, MsgService msgService) throws IOException {
-        if(rabbitMqPropertiesMap.get(msgService.getServiceName()) != null) {
-            rabbitMqPropertiesMap.get(msgService.getServiceName()).send(routingKey,msg);
+        String protocol = msgService.getServiceName();
+        if(rabbitMqPropertiesMap.get(protocol) != null) {
+            rabbitMqPropertiesMap.get(protocol).send(routingKey,msg);
         } else {
-            rabbitMqPropertiesMap.get("eiffelsemantics").send(routingKey,msg);
+            log.error("RabbitMq properties not configured for the protocol "+protocol);
         }
     }
 

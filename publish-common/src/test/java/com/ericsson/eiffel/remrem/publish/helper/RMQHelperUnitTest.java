@@ -34,7 +34,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.publish.config.RabbitMqProperties;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 import com.rabbitmq.client.Connection;
 
@@ -48,6 +47,7 @@ public class RMQHelperUnitTest {
     private static final String testMode= "True";
     private static final String tlsVer= "1.2";
     private static final String usePersistence= "1.2";
+    private String protocol = "eiffelsemantics";
 
     @InjectMocks
     RMQHelper rmqHelper;
@@ -67,7 +67,7 @@ public class RMQHelperUnitTest {
         Mockito.when(mockConnection.createChannel()).thenReturn(mockChannel);
         Mockito.when(rmqHelper.rabbitMqPropertiesConfig.getRabbitMqProperties()).thenReturn(rabbitMqPropertiesMap);
         initProperties();
-        rabbitMqPropertiesMap.put("eiffelsemantics", rabbitMqProperties);
+        rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
         rmqHelper.setRabbitMqPropertiesMap(rabbitMqPropertiesMap);
         rmqHelper.init();
     }
@@ -112,23 +112,23 @@ public class RMQHelperUnitTest {
     }
 
     @Test public void getHostTest() {
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getHost().equals(mBusHost));
+        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getHost().equals(mBusHost));
     }
 
     @Test public void setHostTest() {
         String host = "HostA";
-        rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").setHost(host);
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getHost().equals(host));
+        rmqHelper.rabbitMqPropertiesMap.get(protocol).setHost(host);
+        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getHost().equals(host));
     }
 
     @Test
     public void testConnection() {
         try {
-            assertNotNull(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getRabbitConnection());
+            assertNotNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
             rmqHelper.cleanUp();
-            assertNull(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getRabbitConnection());
-            rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").createRabbitMqConnection();
-            assertNotNull(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getRabbitConnection());
+            assertNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
+            rmqHelper.rabbitMqPropertiesMap.get(protocol).createRabbitMqConnection();
+            assertNotNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             fail(e.getMessage().toString());
@@ -136,33 +136,33 @@ public class RMQHelperUnitTest {
     }
 
     @Test public void getPortTest() {
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getPort().equals(mBusPort));
+        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getPort().equals(mBusPort));
     }
 
     @Test public void setPortTest() {
         Integer portNumber = 5678;
-        rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").setPort(portNumber);
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getPort().equals(portNumber));
+        rmqHelper.rabbitMqPropertiesMap.get(protocol).setPort(portNumber);
+        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getPort().equals(portNumber));
     }
 
     @Test public void getTlsVersionTest() {
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getTlsVer().equals(tlsVer));
+        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getTlsVer().equals(tlsVer));
     }
 
     @Test public void setTlsVersionTest() {
         String tlsVersion = "1.1";
-        rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").setTlsVer(tlsVersion);
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getTlsVer().equals(tlsVersion));
+        rmqHelper.rabbitMqPropertiesMap.get(protocol).setTlsVer(tlsVersion);
+        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getTlsVer().equals(tlsVersion));
     }
 
     @Test public void getExchangeNameTest() {
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getExchangeName().equals(exchangeName));
+        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getExchangeName().equals(exchangeName));
     }
 
     @Test public void setExchangeNameTest() {
         String exchangeNameTest = "exchangeNameA";
-        rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").setExchangeName(exchangeNameTest);
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get("eiffelsemantics").getExchangeName().equals(exchangeNameTest));
+        rmqHelper.rabbitMqPropertiesMap.get(protocol).setExchangeName(exchangeNameTest);
+        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getExchangeName().equals(exchangeNameTest));
     }
 
     @Test public void setValuesTest() {
@@ -195,7 +195,7 @@ public class RMQHelperUnitTest {
             setValueMethod.setAccessible(true);
             try {
                 setValueMethod.invoke(rabbitMqProperties);
-                rabbitMqPropertiesMap.put("eiffelsemantics",rabbitMqProperties);
+                rabbitMqPropertiesMap.put(protocol,rabbitMqProperties);
                 rmqHelperTest.setRabbitMqPropertiesMap(rabbitMqPropertiesMap);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -215,9 +215,9 @@ public class RMQHelperUnitTest {
             assertTrue(false);
         }
 
-        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get("eiffelsemantics").getHost().equals(host));
-        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get("eiffelsemantics").getPort().equals(portNumber));
-        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get("eiffelsemantics").getTlsVer().equals(tlsVersion));
-        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get("eiffelsemantics").getExchangeName().equals(exchangeNameTest));
+        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getHost().equals(host));
+        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getPort().equals(portNumber));
+        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getTlsVer().equals(tlsVersion));
+        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getExchangeName().equals(exchangeNameTest));
     }
 }
