@@ -197,7 +197,7 @@ usage: java -jar
 <ul>
 <li><code> &lt;protocol&gt;.rabbitmq.host (String)</code></li>
 <li><code> &lt;protocol&gt;.rabbitmq.port (Optional)</code></li>
-<li><code> &lt;protocol&gt;.rabbitmq.user (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.username (Optional)</code></li>
 <li><code> &lt;protocol&gt;.rabbitmq.password (Optional)</code></li>
 <li><code> &lt;protocol&gt;.rabbitmq.tls (Optional)</code></li>
 <li><code> &lt;protocol&gt;.rabbitmq.exchangeName (String)</code></li>
@@ -208,7 +208,7 @@ usage: java -jar
 
 <p>protocol is name of the protocol used. Eg: eiffelsemantics</p>
 
-<p>Currently eiffelsemantics protocol rabbitmq properties are configured in config.properties. By default any protocol can use these properties. If we need protocol specific rabbitmq properties then need to add same set of properties for other protocols. </p>
+<p>Currently eiffelsemantics protocol rabbitmq properties are configured in config.properties. For protocols other than eiffelsemantics we need to add same set of RabbitMq properties for that specific protocol.</p>
 </code></pre>
 
 <h3>Ldap configurations:</h3>
@@ -368,6 +368,15 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 <td> Used with batch publishing. If one event fails REMREM will not publish remaining events that would risk broken chains. All subsequent events to the failed one will have this status code.
 </td>
 
+</tr>
+<tr>
+<td>404
+</td>
+<td> RabbitMq properties not found
+</td>
+<td> RabbitMq properties not configured for the protocol &lt;protocol&gt;
+</td>
+
 </tr></table>
 
 <p><strong>Status Codes Explanation:</strong></p>
@@ -411,7 +420,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 	 "status_code":400,
 	 "result":"Bad Request",
 	 "message":"Invalid event content, client need to fix problem in event before submitting again"
-	},
+	}
 ]
 </code></pre>
 <p><strong>500:</strong>We will get this status code,When the event is failed to send because of internal server error.</p>
@@ -422,7 +431,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 	 "status_code":500,
 	 "result":"Internal Server Error",
 	 "message":"Possible to try again later when server is up"
-	},
+	}
 ]
 </code></pre>
 <p><strong>503:</strong>Event will have this status code when the previous event is failed to send.</br>
@@ -460,8 +469,18 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 	 "status_code":503,
 	 "result":"Service Unavailable",
 	 "message":"Please check previous event and try again later"
-	},
+	}
 ]</code></pre>
+<p><strong>404:</strong>We will get this status code,When RabbitMq properties not configured for the protocol.</p>
+<pre><code><strong>HTTP Response:</strong> 404 :Not Found
+[
+	{
+	"status_code": 404,
+	"result": "RabbitMq properties not found",
+	"message": "RabbitMq properties not configured for the protocol &lt;protocol&gt;"
+	}
+]
+</code></pre>
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
       </section>
     </div>
