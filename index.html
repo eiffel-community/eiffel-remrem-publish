@@ -179,6 +179,17 @@ usage: java -jar
 <pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
 </code></pre>
 
+<p><strong>If you want to have the message publishing on secured port(5671):</strong></p>
+
+<p>tls option is used to run RemRem on Secured port(5671)</p>
+
+<p>tls option value is either 'default'or &lt;version&gt; for secured port.</p>
+
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2
+</code></pre>
+
+<strong>Note: For Rabbitmq default port 5672, No need to pass tls option.</strong>
+
 <h2>
 <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
 
@@ -208,7 +219,7 @@ usage: java -jar
 
 <p>protocol is name of the protocol used. Eg: eiffelsemantics</p>
 
-<p>Currently eiffelsemantics protocol rabbitmq properties are configured in config.properties. For protocols other than eiffelsemantics we need to add same set of RabbitMq properties for that specific protocol.</p>
+<p>Currently eiffelsemantics protocol Rabbitmq properties are configured in config.properties. For protocols other than eiffelsemantics we need to add same set of RabbitMq properties for that specific protocol.</p>
 </code></pre>
 
 <h3>Ldap configurations:</h3>
