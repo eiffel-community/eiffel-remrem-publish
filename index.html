@@ -132,20 +132,21 @@ usage: java -jar
  -en,--exchange_name &lt;arg&gt;      exchange name, default is amq.direct
  -f,--content_file &lt;arg&gt;        event content file
  -h,--help                      show help.
- -v,--list_versions             lists the versions of publish and all loaded protocols
  -json,--json_content &lt;arg&gt;     event content in json string. The value can
                                 also be a dash(-) and the json will be read
                                 from the output of other programs if piped. Multiple
                                 json events are also supported.
- -tls,--tls &lt;arg&gt;               tls version, specify a valid tls version: '1', '1.1',
-                                '1.2' or default
  -mb,--message_bus &lt;arg&gt;        host of message bus to use, default is
                                 127.0.0.1
+ -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
+                                eiffelsemantics, default is eiffelsemantics
  -np,--non_persistent           remove persistence from message sending
+ -tls,--tls &lt;arg&gt;               tls version, specify a valid tls version: '1', '1.1',
+                                '1.2' or default.
+                                It is required for RabbitMq secured port.
  -port,--port &lt;arg&gt;             port to connect to message bus
  -ud,--user_domain_suffix &lt;arg&gt; user domain suffix
- -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
-                                eiffelsemantics, default is eiffelsemantics</pre>
+ -v,--list_versions             lists the versions of publish and all loaded protocols</pre>
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
@@ -179,9 +180,9 @@ usage: java -jar
 <pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
 </code></pre>
 
-<p><strong>If you want to have the message publishing on secured port(5671):</strong></p>
+<p><strong>If you want to have the message publishing on RabbitMq secured port(5671):</strong></p>
 
-<p>tls option is used to run RemRem on Secured port(5671)</p>
+<p>tls option is used to run RemRem on RabbitMq secured port(5671)</p>
 
 <p>tls option value is either 'default'or &lt;version&gt; for secured port.</p>
 
