@@ -50,19 +50,18 @@ import ch.qos.logback.classic.Logger;
     List<JsonElement> errorItems;
     List<PublishResultItem> resultList;
     boolean checkEventStatus;
-    
     /*
      * (non-Javadoc)
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.util.Map, java.util.Map)
      */
     @Override
-    public SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs) {
+    public SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs, MsgService msgService) {
         List<PublishResultItem> results = new ArrayList<>();
         SendResult sendResult = null;
         PublishResultItem event = null;
         if (!CollectionUtils.isEmpty(msgs)) {
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
-                String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue());
+                String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue(), msgService);
                 if (PropertiesConfig.SUCCESS.equals(message)) {
                     event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, PropertiesConfig.SUCCESS_MESSAGE);
                 } else {
@@ -94,15 +93,20 @@ import ch.qos.logback.classic.Logger;
                 String eventId = msgService.getEventId(json.getAsJsonObject());
                 String routingKey = (eventId != null) ? (PublishUtils.prepareRoutingKey(msgService,
                         json.getAsJsonObject(), rmqHelper, userDomainSuffix)) : null;
-                if (eventId != null && routingKey != null) {
+                if (eventId != null && routingKey != null && !routingKey.isEmpty()) {
                     map.put(eventId, json.toString());
                     routingKeyMap.put(eventId, routingKey);
+                } else if(routingKey != null && routingKey.isEmpty()) {
+                    List<PublishResultItem> events = new ArrayList<>();
+                    PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
+                    events.add(resultItem);
+                    return new SendResult(events);
                 } else {
                     List<PublishResultItem> events = new ArrayList<>();
                     createFailureResult(events);
                     return new SendResult(events);
                 }
-                return send(routingKeyMap, map);
+                return send(routingKeyMap, map, msgService);
             }
         } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
@@ -136,7 +140,7 @@ import ch.qos.logback.classic.Logger;
             for (JsonElement obj : bodyJson) {
                 String routingKey = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap, userDomainSuffix);
                 String eventId = msgService.getEventId(obj.getAsJsonObject());
-                if (eventId != null && checkEventStatus && routingKey!=null) {
+                if (eventId != null && checkEventStatus && (routingKey != null && !routingKey.isEmpty())) {
                     result = send(obj.toString(), msgService, userDomainSuffix);
                     resultList.addAll(result.getEvents());
                     int statusCode = result.getEvents().get(0).getStatusCode();
@@ -147,6 +151,12 @@ import ch.qos.logback.classic.Logger;
                         addUnsuccessfulResultItem(obj);
                         int statusCode = resultList.get(0).getStatusCode();
                         statusCodes.add(statusCode);
+                    } else if(routingKey != null && routingKey.isEmpty()) {
+                        PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
+                        resultList.add(resultItem);
+                        int statusCode = resultItem.getStatusCode();
+                        statusCodes.add(statusCode);
+                        break;
                     } else {
                         createFailureResult(resultList);
                         errorItems = new ArrayList<JsonElement>();
@@ -170,14 +180,14 @@ import ch.qos.logback.classic.Logger;
         return result;
     }
     
-    private String sendMessage(String routingKey, String msg) {
+    private String sendMessage(String routingKey, String msg, MsgService msgService) {
         String resultMsg = PropertiesConfig.SUCCESS;
         instantiateRmqHelper();
         try {
-            rmqHelper.send(routingKey, msg);
+            rmqHelper.send(routingKey, msg, msgService);
         } catch (Exception e) {
            log.error(e.getMessage(), e);
-            resultMsg = "Failed to send message:" + msg;
+           resultMsg = "Failed to send message:" + msg;
         }
         return resultMsg;
     }
@@ -212,7 +222,7 @@ import ch.qos.logback.classic.Logger;
         String routingKey = (eventId != null)
                 ? (PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix))
                 : null;
-        if (eventId != null && routingKey != null) {
+        if (eventId != null && routingKey != null && !routingKey.isEmpty()) {
             routingKeyMap.put(eventId, routingKey);
             map.put(eventId, obj.toString());
         }
@@ -228,7 +238,18 @@ import ch.qos.logback.classic.Logger;
                 PropertiesConfig.INVALID_EVENT_CONTENT);
         events.add(event);
     }
-    
+
+    /**
+     * This method returns result for Missing RabbitMq properties in configuration file
+     * @param msgService
+     * @return PublishResultItem for 404
+     */
+    private PublishResultItem rabbitmqConfigurationNotFound(MsgService msgService) {
+        PublishResultItem event = new PublishResultItem(null, 404, PropertiesConfig.RABBITMQ_PROPERTIES_NOT_FOUND,
+                PropertiesConfig.RABBITMQ_PROPERTIES_NOT_FOUND_CONTENT+msgService.getServiceName());
+        return event;
+    }
+
     private void addUnsuccessfulResultItem(JsonElement obj) {
         PublishResultItem event = new PublishResultItem(null, 503, PropertiesConfig.SERVICE_UNAVAILABLE,
                 PropertiesConfig.UNSUCCESSFUL_EVENT_CONTENT);

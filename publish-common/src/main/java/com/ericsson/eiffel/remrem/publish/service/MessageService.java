@@ -27,9 +27,10 @@ public interface MessageService {
      * 
      * @param routingKeyMap
      * @param msgs the list with messages to be sent
+     * @param msgService
      * @return SendResult which contains response including eventId, statusCode, message and result.
      */
-    SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs);
+    SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs, MsgService msgService);
     
     /**
      * 
@@ -60,4 +61,5 @@ public interface MessageService {
      * Implemented Status code for the response
      */
     public HttpStatus getHttpStatus();
+
 }

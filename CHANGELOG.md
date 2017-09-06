@@ -1,3 +1,6 @@
+## 0.4.0
+- Implemented one MB for each protocol in REMREM publish.
+
 ## 0.3.9
 - Uplifted remrem-semantics version to 0.2.6 to support links validation.
 
