@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Eiffel RemRem Publish Service</title>
+    <title>Eiffel REMReM Publish Service</title>
   </head>
 
   <body>
@@ -18,7 +18,7 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
 
-          <h1 id="project_title">Eiffel RemRem Publish Service</h1>
+          <h1 id="project_title">Eiffel REMReM Publish Service</h1>
           <h2 id="project_tagline"></h2>
 
             <section id="downloads">
@@ -34,7 +34,7 @@
         <p>REMReM (REST Mailbox for Registered Messages) is a set of tools that can be used to generate validated Eiffel messages and publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a></p>
 
 <h1>
-<a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RemRem Publish</h1>
+<a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REMReM Publish</h1>
 
 <hr>
 
@@ -42,9 +42,9 @@
 <a id="components" class="anchor" href="#components" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Components</h2>
 
 <ul>
-<li>REMREM Publish Common</li>
-<li>REMREM Publish CLI (Command Line Interface)</li>
-<li>REMREM Publish Service</li>
+<li>REMReM Publish Common</li>
+<li>REMReM Publish CLI (Command Line Interface)</li>
+<li>REMReM Publish Service</li>
 
 </ul>
 
@@ -64,8 +64,8 @@
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
 <p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
-<p><b>Download the latest REMREM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');">publish-cli.jar</a></p>
-<p><b>Download the latest REMREM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');">publish-service.war</a></p>
+<p><b>Download the latest REMReM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');">publish-cli.jar</a></p>
+<p><b>Download the latest REMReM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');">publish-service.war</a></p>
 <div id="downloadLink" style="visibility: hidden;color: red;font-size: 14px;">
 </div>
 <script type="text/javascript">
@@ -117,7 +117,7 @@ function getLatestVersion(type,extn){
 <h2>
 <a id="usage-common" class="anchor" href="#usage-common" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage Common</h2>
 
-  <p>REMREM Publish Common is the common repository of code which is responsible for publishing eiffel messages on RabbitMQ for both CLI and service.</p>
+  <p>REMReM Publish Common is the common repository of code which is responsible for publishing eiffel messages on RabbitMQ for both CLI and service.</p>
 
 <h2>
 
@@ -132,20 +132,21 @@ usage: java -jar
  -en,--exchange_name &lt;arg&gt;      exchange name, default is amq.direct
  -f,--content_file &lt;arg&gt;        event content file
  -h,--help                      show help.
- -v,--list_versions             lists the versions of publish and all loaded protocols
  -json,--json_content &lt;arg&gt;     event content in json string. The value can
                                 also be a dash(-) and the json will be read
                                 from the output of other programs if piped. Multiple
                                 json events are also supported.
- -tls,--tls &lt;arg&gt;               tls version, specify a valid tls version: '1', '1.1',
-                                '1.2' or default
  -mb,--message_bus &lt;arg&gt;        host of message bus to use, default is
                                 127.0.0.1
+ -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
+                                eiffelsemantics, default is eiffelsemantics
  -np,--non_persistent           remove persistence from message sending
+ -tls,--tls &lt;arg&gt;               tls version, specify a valid tls version: '1', '1.1',
+                                '1.2' or default.
+                                It is required for RabbitMq secured port(5671).
  -port,--port &lt;arg&gt;             port to connect to message bus
  -ud,--user_domain_suffix &lt;arg&gt; user domain suffix
- -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
-                                eiffelsemantics, default is eiffelsemantics</pre>
+ -v,--list_versions             lists the versions of publish and all loaded protocols</pre>
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
@@ -179,10 +180,21 @@ usage: java -jar
 <pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
 </code></pre>
 
+<p><strong>If you want to have the message publishing on RabbitMq secured port(5671):</strong></p>
+
+<p>tls option is used to run REMReM on RabbitMq secured port(5671)</p>
+
+<p>tls option value is either 'default'or &lt;version&gt; for secured port.</p>
+
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2
+</code></pre>
+
+<strong>Note: For Rabbitmq default port 5672, No need to pass tls option.</strong>
+
 <h2>
 <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
 
-<p>RemRem Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called using a relative link <code>producer/msg</code>.</p>
+<p>REMReM Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called using a relative link <code>producer/msg</code>.</p>
 
 <h3>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
@@ -195,13 +207,20 @@ usage: java -jar
 <p>These parameters need to be provided to start the service:</p>
 
 <ul>
-<li><code>rabbitmq.host (String)</code></li>
-<li><code>rabbitmq.port (Optional)</code></li>
-<li><code>rabbitmq.exchange.name (String)</code></li>
-<li><code>rabbitmq.domainId (String)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.host (String)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.port (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.username (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.password (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.tls (Optional)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.exchangeName (String)</code></li>
+<li><code> &lt;protocol&gt;.rabbitmq.domainId (String)</code></li>
 </ul>
 
 <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
+
+<p>protocol is name of the protocol used. Eg: eiffelsemantics</p>
+
+<p>Currently eiffelsemantics protocol Rabbitmq properties are configured in config.properties. For protocols other than eiffelsemantics we need to add same set of RabbitMq properties for that specific protocol.</p>
 </code></pre>
 
 <h3>Ldap configurations:</h3>
@@ -358,7 +377,16 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> Service Unavailable
 </td>
-<td> Used with batch publishing. If one event fails REMREM will not publish remaining events that would risk broken chains. All subsequent events to the failed one will have this status code.
+<td> Used with batch publishing. If one event fails REMReM will not publish remaining events that would risk broken chains. All subsequent events to the failed one will have this status code.
+</td>
+
+</tr>
+<tr>
+<td>404
+</td>
+<td> RabbitMq properties not found
+</td>
+<td> RabbitMq properties not configured for the protocol &lt;protocol&gt;
 </td>
 
 </tr></table>
@@ -404,7 +432,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 	 "status_code":400,
 	 "result":"Bad Request",
 	 "message":"Invalid event content, client need to fix problem in event before submitting again"
-	},
+	}
 ]
 </code></pre>
 <p><strong>500:</strong>We will get this status code,When the event is failed to send because of internal server error.</p>
@@ -415,7 +443,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 	 "status_code":500,
 	 "result":"Internal Server Error",
 	 "message":"Possible to try again later when server is up"
-	},
+	}
 ]
 </code></pre>
 <p><strong>503:</strong>Event will have this status code when the previous event is failed to send.</br>
@@ -453,8 +481,18 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 	 "status_code":503,
 	 "result":"Service Unavailable",
 	 "message":"Please check previous event and try again later"
-	},
+	}
 ]</code></pre>
+<p><strong>404:</strong>We will get this status code,When RabbitMq properties not configured for the protocol.</p>
+<pre><code><strong>HTTP Response:</strong> 404 :Not Found
+[
+	{
+	"status_code": 404,
+	"result": "RabbitMq properties not found",
+	"message": "RabbitMq properties not configured for the protocol &lt;protocol&gt;"
+	}
+]
+</code></pre>
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
       </section>
     </div>
@@ -462,7 +500,7 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">Eiffel RemRem Publish Service maintained by <a href="https://github.com/evasiba-ericsson">evasiba-ericsson</a></p>
+        <p class="copyright">Eiffel REMReM Publish Service maintained by <a href="https://github.com/evasiba-ericsson">evasiba-ericsson</a></p>
         <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
