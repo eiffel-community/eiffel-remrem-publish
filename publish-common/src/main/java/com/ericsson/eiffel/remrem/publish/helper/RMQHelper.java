@@ -60,6 +60,16 @@ import ch.qos.logback.classic.Logger;
         rabbitMqPropertiesMap = rabbitMqPropertiesConfig.getRabbitMqProperties();
         for(String protocol : rabbitMqPropertiesMap.keySet()) {
             rabbitMqPropertiesMap.get(protocol).setFactory(factory);
+            rabbitMqPropertiesMap.get(protocol).setProtocol(protocol);
+            rabbitMqPropertiesMap.get(protocol).init();
+        }
+    }
+
+    public void otherProtocolInit(String protocol) {
+        if(!rabbitMqPropertiesMap.containsKey(protocol)) {
+            rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
+            rabbitMqPropertiesMap.get(protocol).setFactory(factory);
+            rabbitMqPropertiesMap.get(protocol).setProtocol(protocol);
             rabbitMqPropertiesMap.get(protocol).init();
         }
     }

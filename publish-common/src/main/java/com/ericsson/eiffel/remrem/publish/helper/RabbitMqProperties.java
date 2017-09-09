@@ -37,6 +37,7 @@ public class RabbitMqProperties {
     private String password;
     private String domainId;
     private Connection rabbitConnection;
+    private String protocol;
 
     private List<Channel> rabbitChannels;
 
@@ -106,6 +107,14 @@ public class RabbitMqProperties {
         this.factory = factory;
     }
 
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
     public Connection getRabbitConnection() {
         return rabbitConnection;
     }
@@ -116,8 +125,13 @@ public class RabbitMqProperties {
 
     public void init() {
         log.info("RabbitMqProperties init ...");
-        initCli();
+        if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+            initCli();
+        } else {
+            initService();
+        }
 
+        madatoryParametersCheck();
         try {
             factory.setHost(host);  
 
@@ -150,8 +164,6 @@ public class RabbitMqProperties {
                 log.info("Using standard connection method to RabbitMQ.");
             }
 
-            createRabbitMqConnection();
-
         } catch (KeyManagementException e) {
             log.error(e.getMessage(), e);
         } catch (NoSuchAlgorithmException e) {
@@ -179,13 +191,40 @@ public class RabbitMqProperties {
         setValues();
     }
 
+    private void initService() {
+        String passedHost = System.getProperty(protocol+".rabbitmq.host");
+        if (passedHost != null) {
+            host = passedHost;
+        }
+
+        Integer passedPort = Integer.getInteger(System.getProperty(protocol+".rabbitmq.port"));
+        if (passedPort != null) {
+            port = passedPort;
+        }
+
+        String passedDomain = System.getProperty(protocol+".rabbitmq.domainId");
+        if (passedDomain != null) {
+            domainId = passedDomain;
+        }
+
+        String passedTlsVer = System.getProperty(protocol+".rabbitmq.tls");
+        if (passedTlsVer != null) {
+            tlsVer = passedTlsVer;
+        }
+
+        String passedExchange = System.getProperty(protocol+".rabbitmq.exchangeName");
+        if (passedExchange != null) {
+            exchangeName = passedExchange;
+        }
+    }
+
     private void setValues() {
-        String passedHost = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST); 
+        String passedHost = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
         if (passedHost != null) {
             host = passedHost;
         }
         
-        Integer passedPort = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT); 
+        Integer passedPort = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
         if (passedPort != null) {
             port = passedPort;
         }
@@ -195,7 +234,7 @@ public class RabbitMqProperties {
             domainId = passedDomain;
         }
 
-        String passedTlsVer = System.getProperty(PropertiesConfig.TLS); 
+        String passedTlsVer = System.getProperty(PropertiesConfig.TLS);
         if (passedTlsVer != null) {
             tlsVer = passedTlsVer;
         }
@@ -207,6 +246,17 @@ public class RabbitMqProperties {
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
     }
 
+    /****
+     * This method is used to check mandatory RabbitMQ properties.
+     */
+    private void madatoryParametersCheck() {
+        if(host == null || exchangeName == null || domainId == null) {
+            if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+                System.err.println("Mandatory RabbitMq properties missing");
+                System.exit(-1);
+            }
+        }
+    }
     /****
      * This method is used to publish the message to RabbitMQ
      * @param routingKey

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
+import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.ericsson.eiffel.remrem.shared.VersionService;
@@ -46,6 +47,8 @@ public class ProducerController {
     @Autowired
     @Qualifier("messageServiceRMQImpl")
     MessageService messageService;
+    @Autowired
+    RMQHelper rmqHelper;
     Logger log = (Logger) LoggerFactory.getLogger(ProducerController.class);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -57,6 +60,9 @@ public class ProducerController {
 
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
+        if(msgService != null && !msgProtocol.equals("eiffelsemantics")) {
+            rmqHelper.otherProtocolInit(msgProtocol);
+        }
         SendResult result = messageService.send(body, msgService, userDomain);
         return new ResponseEntity(result, messageService.getHttpStatus());
     }

@@ -17,9 +17,7 @@ package com.ericsson.eiffel.remrem.publish.helper;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -47,6 +45,7 @@ public class RMQHelperUnitTest {
     private static final String testMode= "True";
     private static final String tlsVer= "1.2";
     private static final String usePersistence= "1.2";
+    private static final String domainId= "eiffelxxx";
     private String protocol = "eiffelsemantics";
 
     @InjectMocks
@@ -92,6 +91,8 @@ public class RMQHelperUnitTest {
         System.setProperty(key, tlsVer);
         key = PropertiesConfig.USE_PERSISTENCE;
         System.setProperty(key, usePersistence);
+        key = PropertiesConfig.DOMAIN_ID;
+        System.setProperty(key, domainId);
     }
 
     private void cleanProperties() {
@@ -109,6 +110,8 @@ public class RMQHelperUnitTest {
         System.clearProperty(key);
         key = PropertiesConfig.USE_PERSISTENCE;
         System.clearProperty(key);
+        key = PropertiesConfig.DOMAIN_ID;
+        System.clearProperty(key);
     }
 
     @Test public void getHostTest() {
@@ -123,16 +126,9 @@ public class RMQHelperUnitTest {
 
     @Test
     public void testConnection() {
-        try {
-            assertNotNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
-            rmqHelper.cleanUp();
-            assertNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
-            rmqHelper.rabbitMqPropertiesMap.get(protocol).createRabbitMqConnection();
-            assertNotNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            fail(e.getMessage().toString());
-        }
+        assertNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
+        rmqHelper.rabbitMqPropertiesMap.get(protocol).createRabbitMqConnection();
+        assertNotNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
     }
 
     @Test public void getPortTest() {

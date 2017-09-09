@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,12 +118,10 @@ public class MessageServiceRMQImplUnitTest {
     public void testRabbitMQConnection() {
         try {
             if(rmqHelper.getRabbitMqPropertiesMap().get(protocol) != null) {
-            assertTrue(rmqHelper.getRabbitMqPropertiesMap().get(protocol).getRabbitConnection().isOpen());
-            rmqHelper.getRabbitMqPropertiesMap().get(protocol).getRabbitConnection().close();
-            assertFalse(rmqHelper.getRabbitMqPropertiesMap().get(protocol).getRabbitConnection().isOpen());
-            MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
-            rmqHelper.send("eiffelxxx", "Test message", msgService);
-            assertTrue(rmqHelper.getRabbitMqPropertiesMap().get(protocol).getRabbitConnection().isOpen());
+                rmqHelper.getRabbitMqPropertiesMap().get(protocol).createRabbitMqConnection();
+                MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
+                rmqHelper.send("eiffelxxx", "Test message", msgService);
+                assertTrue(rmqHelper.getRabbitMqPropertiesMap().get(protocol).getRabbitConnection().isOpen());
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
