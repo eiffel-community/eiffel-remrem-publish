@@ -1,3 +1,6 @@
+## 0.4.1
+- Implemented functionality to get properties from java opts for publish-service
+
 ## 0.4.0
 - Implemented one MB for each protocol in REMREM publish.
 
