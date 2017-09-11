@@ -60,7 +60,7 @@ public class ProducerController {
 
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
-        if(msgService != null && !msgProtocol.equals("eiffelsemantics")) {
+        if(msgService != null && msgProtocol != null && !msgProtocol.equals("eiffelsemantics")) {
             rmqHelper.otherProtocolInit(msgProtocol);
         }
         SendResult result = messageService.send(body, msgService, userDomain);

@@ -136,7 +136,7 @@ public class CLI implements CommandLineRunner{
         try {
             String msgProtocol = CliOptions.getCommandLine().getOptionValue("mp");
             MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
-            if(msgService != null && !msgProtocol.equals("eiffelsemantics")) {
+            if(msgService != null && msgProtocol != null && !msgProtocol.equals("eiffelsemantics")) {
                 rmqHelper.otherProtocolInit(msgProtocol);
             }
             if (msgService != null) {
