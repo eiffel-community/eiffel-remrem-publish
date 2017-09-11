@@ -64,7 +64,7 @@ public class PublishUtils {
             String userDomainSuffix) {
         String protocol = msgService.getServiceName();
         RabbitMqProperties rabbitMqProperties = rmqHelper.rabbitMqPropertiesMap.get(protocol);
-        if (rabbitMqProperties != null && rabbitMqProperties.getDomainId() != null) {
+        if (rabbitMqProperties != null && rabbitMqProperties.getDomainId() != null && rabbitMqProperties.getExchangeName() != null && rabbitMqProperties.getHost() != null) {
             String domainId = rabbitMqProperties.getDomainId();
             String family = msgService.getFamily(json);
             String type = msgService.getType(json);
