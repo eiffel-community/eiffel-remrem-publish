@@ -24,7 +24,7 @@ import ch.qos.logback.classic.Logger;
 
 public class RabbitMqProperties {
 
-    private RMQBeanConnectionFactory factory;
+    private RMQBeanConnectionFactory factory = new RMQBeanConnectionFactory();
     private static final int CHANNEL_COUNT = 100;
     private static final Random random = new Random();
     private boolean usePersitance = true;
@@ -192,29 +192,53 @@ public class RabbitMqProperties {
     }
 
     private void initService() {
-        String passedHost = System.getProperty(protocol+".rabbitmq.host");
-        if (passedHost != null) {
-            host = passedHost;
+        if (host == null) {
+            String passedHost = System.getProperty(protocol + ".rabbitmq.host");
+            if (passedHost != null) {
+                host = passedHost;
+            }
         }
 
-        Integer passedPort = Integer.getInteger(System.getProperty(protocol+".rabbitmq.port"));
-        if (passedPort != null) {
-            port = passedPort;
+        if (port == null) {
+            Integer passedPort = Integer.getInteger(System.getProperty(protocol + ".rabbitmq.port"));
+            if (passedPort != null) {
+                port = passedPort;
+            }
         }
 
-        String passedDomain = System.getProperty(protocol+".rabbitmq.domainId");
-        if (passedDomain != null) {
-            domainId = passedDomain;
+        if (domainId == null) {
+            String passedDomain = System.getProperty(protocol + ".rabbitmq.domainId");
+            if (passedDomain != null) {
+                domainId = passedDomain;
+            }
         }
 
-        String passedTlsVer = System.getProperty(protocol+".rabbitmq.tls");
-        if (passedTlsVer != null) {
-            tlsVer = passedTlsVer;
+        if (tlsVer == null) {
+            String passedTlsVer = System.getProperty(protocol + ".rabbitmq.tls");
+            if (passedTlsVer != null) {
+                tlsVer = passedTlsVer;
+            }
         }
 
-        String passedExchange = System.getProperty(protocol+".rabbitmq.exchangeName");
-        if (passedExchange != null) {
-            exchangeName = passedExchange;
+        if (exchangeName == null) {
+            String passedExchange = System.getProperty(protocol + ".rabbitmq.exchangeName");
+            if (passedExchange != null) {
+                exchangeName = passedExchange;
+            }
+        }
+
+        if (username == null) {
+            String passedUsername = System.getProperty(protocol + ".rabbitmq.username");
+            if (passedUsername != null) {
+                username = passedUsername;
+            }
+        }
+
+        if (password == null) {
+            String passedPassword = System.getProperty(protocol + ".rabbitmq.password");
+            if (passedPassword != null) {
+                password = passedPassword;
+            }
         }
     }
 
