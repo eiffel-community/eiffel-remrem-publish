@@ -15,7 +15,6 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -27,7 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
+import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -57,6 +57,18 @@ public class MessageServiceRMQImplUnitTest {
     @Autowired @Qualifier("rmqHelper") 
     RMQHelper rmqHelper;
     private String protocol = "eiffelsemantics";
+    private static final String host= "127.0.0.1";
+    private static final String exchangeName= "amq.direct";
+    private static final String domainId= "eiffelxxx";
+
+    @Before public void setUp() throws Exception {
+        rmqHelper.getRabbitMqPropertiesMap().put(protocol, new RabbitMqProperties());
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setProtocol(protocol);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+    }
     
     @Test public void sendNormal() throws Exception {
         Map<String, String> map = new HashMap<String, String>();
@@ -101,7 +113,7 @@ public class MessageServiceRMQImplUnitTest {
         }
         assertEquals(Expected, jarray.toString());
     }
-      @Test public void testMultipleSuccessfulEvents() throws Exception {
+    @Test public void testMultipleSuccessfulEvents() throws Exception {
         String body = FileUtils.readFileToString(new File("src/integration-test/resources/MultipleValidEvents.json"));
         String Expected="[{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a1\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a2\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a3\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         JsonArray jarray = new JsonArray();

@@ -64,11 +64,9 @@ public class RMQHelperUnitTest {
         Mockito.doNothing().when(factory).useSslProtocol();
         Mockito.when(factory.newConnection()).thenReturn(mockConnection);
         Mockito.when(mockConnection.createChannel()).thenReturn(mockChannel);
-        Mockito.when(rmqHelper.rabbitMqPropertiesConfig.getRabbitMqProperties()).thenReturn(rabbitMqPropertiesMap);
         initProperties();
-        rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
-        rmqHelper.setRabbitMqPropertiesMap(rabbitMqPropertiesMap);
-        rmqHelper.init();
+        rmqHelper.rabbitMqPropertiesInit(protocol);
+        rmqHelper.rabbitMqPropertiesMap.get(protocol).setFactory(factory);
     }
 
     @After public void tearDown() throws Exception {

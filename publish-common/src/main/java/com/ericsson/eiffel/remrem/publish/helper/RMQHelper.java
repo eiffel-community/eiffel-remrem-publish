@@ -24,7 +24,6 @@ import javax.annotation.PreDestroy;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
@@ -41,24 +40,6 @@ import ch.qos.logback.classic.Logger;
     @Autowired
     RabbitMqPropertiesConfig rabbitMqPropertiesConfig;
 
-    @Value("${activedirectory.enabled}")
-    private boolean securityEnabled;
-
-    @Value("${activedirectory.ldapUrl}")
-    private String ldapUrl;
-
-    @Value("${activedirectory.managerPassword}")
-    private String managerPassword;
-
-    @Value("${activedirectory.managerDn}")
-    private String managerDn;
-
-    @Value("${activedirectory.userSearchFilter}")
-    private String userSearchFilter;
-    
-    @Value("${activedirectory.rootDn}")
-    private String rootDn;
-
     Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
@@ -74,12 +55,6 @@ import ch.qos.logback.classic.Logger;
     @PostConstruct
     public void init() {
         if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
-            log.info("activedirectory.enabled: "+securityEnabled);
-            log.info("activedirectory.ldapUrl: "+ldapUrl);
-            log.info("activedirectory.managerPassword: "+managerPassword);
-            log.info("activedirectory.managerDn: "+managerDn);
-            log.info("activedirectory.userSearchFilter: "+userSearchFilter);
-            log.info("activedirectory.rootDn: "+rootDn);
             log.info("RMQHelper init ...");
             rabbitMqPropertiesMap = rabbitMqPropertiesConfig.getRabbitMqProperties();
             for (String protocol : rabbitMqPropertiesMap.keySet()) {
@@ -104,7 +79,6 @@ import ch.qos.logback.classic.Logger;
      * @param protocol name
      */
     private void protocolInit(String protocol) {
-        log.info("factory: "+rabbitMqPropertiesMap.get(protocol).getFactory());
         rabbitMqPropertiesMap.get(protocol).setProtocol(protocol);
         rabbitMqPropertiesMap.get(protocol).init();
     }
