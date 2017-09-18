@@ -28,10 +28,11 @@ public class RabbitMqPropertiesConfig {
      */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
+        String cataline_home = System.getProperty("catalina.home").replace('\\', '/');
         for(Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext(); ) {
             PropertySource propertySource = (PropertySource) it.next();
             if (propertySource instanceof MapPropertySource) {
-                if(propertySource.getName().equalsIgnoreCase("URL [file:C:/Users/846964/Eiffel_SW/apache-tomcat-7.0.50-windows-x64/apache-tomcat-7.0.50/conf/config.properties]")) {
+                if(propertySource.getName().contains("[file:"+cataline_home+"/conf/config.properties]")) {
                     map.putAll(((MapPropertySource) propertySource).getSource());
                 }
             }
