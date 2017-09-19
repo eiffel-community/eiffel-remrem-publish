@@ -193,42 +193,36 @@ public class RabbitMqProperties {
 
     private void initService() {
         if (host == null) {
-            getValuesFromSystemProperties(host, protocol + ".rabbitmq.host");
+            host = getValuesFromSystemProperties(protocol + ".rabbitmq.host");
         }
 
         if (port == null) {
-            Integer passedPort = Integer.getInteger(System.getProperty(protocol + ".rabbitmq.port"));
-            if (passedPort != null) {
-                port = passedPort;
-            }
+            port = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.port"));
         }
 
         if (domainId == null) {
-            getValuesFromSystemProperties(domainId, protocol + ".rabbitmq.domainId");
+            domainId = getValuesFromSystemProperties(protocol + ".rabbitmq.domainId");
         }
 
         if (tlsVer == null) {
-            getValuesFromSystemProperties(tlsVer, protocol + ".rabbitmq.tls");
+            tlsVer = getValuesFromSystemProperties(protocol + ".rabbitmq.tls");
         }
 
         if (exchangeName == null) {
-            getValuesFromSystemProperties(exchangeName, protocol + ".rabbitmq.exchangeName");
+            exchangeName = getValuesFromSystemProperties(protocol + ".rabbitmq.exchangeName");
         }
 
         if (username == null) {
-            getValuesFromSystemProperties(username, protocol + ".rabbitmq.username");
+            username = getValuesFromSystemProperties(protocol + ".rabbitmq.username");
         }
 
         if (password == null) {
-            getValuesFromSystemProperties(password, protocol + ".rabbitmq.password");
+            password = getValuesFromSystemProperties(protocol + ".rabbitmq.password");
         }
     }
 
-    private void getValuesFromSystemProperties(String property,String propertyName) {
-        String propertyValue = System.getProperty(propertyName);
-        if (propertyValue != null) {
-            property = propertyValue;
-        }
+    private String getValuesFromSystemProperties(String propertyName) {
+        return System.getProperty(propertyName);
     }
 
     private void setValues() {
