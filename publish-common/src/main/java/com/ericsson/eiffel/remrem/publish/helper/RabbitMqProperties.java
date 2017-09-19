@@ -193,10 +193,7 @@ public class RabbitMqProperties {
 
     private void initService() {
         if (host == null) {
-            String passedHost = System.getProperty(protocol + ".rabbitmq.host");
-            if (passedHost != null) {
-                host = passedHost;
-            }
+            getValuesFromSystemProperties(host, protocol + ".rabbitmq.host");
         }
 
         if (port == null) {
@@ -207,38 +204,30 @@ public class RabbitMqProperties {
         }
 
         if (domainId == null) {
-            String passedDomain = System.getProperty(protocol + ".rabbitmq.domainId");
-            if (passedDomain != null) {
-                domainId = passedDomain;
-            }
+            getValuesFromSystemProperties(domainId, protocol + ".rabbitmq.domainId");
         }
 
         if (tlsVer == null) {
-            String passedTlsVer = System.getProperty(protocol + ".rabbitmq.tls");
-            if (passedTlsVer != null) {
-                tlsVer = passedTlsVer;
-            }
+            getValuesFromSystemProperties(tlsVer, protocol + ".rabbitmq.tls");
         }
 
         if (exchangeName == null) {
-            String passedExchange = System.getProperty(protocol + ".rabbitmq.exchangeName");
-            if (passedExchange != null) {
-                exchangeName = passedExchange;
-            }
+            getValuesFromSystemProperties(exchangeName, protocol + ".rabbitmq.exchangeName");
         }
 
         if (username == null) {
-            String passedUsername = System.getProperty(protocol + ".rabbitmq.username");
-            if (passedUsername != null) {
-                username = passedUsername;
-            }
+            getValuesFromSystemProperties(username, protocol + ".rabbitmq.username");
         }
 
         if (password == null) {
-            String passedPassword = System.getProperty(protocol + ".rabbitmq.password");
-            if (passedPassword != null) {
-                password = passedPassword;
-            }
+            getValuesFromSystemProperties(password, protocol + ".rabbitmq.password");
+        }
+    }
+
+    private void getValuesFromSystemProperties(String property,String propertyName) {
+        String propertyValue = System.getProperty(propertyName);
+        if (propertyValue != null) {
+            property = propertyValue;
         }
     }
 

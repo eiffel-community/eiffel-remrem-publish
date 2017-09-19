@@ -24,9 +24,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +57,12 @@ public class MessageServiceRMQImplUnitTest {
     
     @Autowired @Qualifier("rmqHelper") 
     RMQHelper rmqHelper;
-    private String protocol = "eiffelsemantics";
+    private static final String protocol = "eiffelsemantics";
     private static final String host= "127.0.0.1";
     private static final String exchangeName= "amq.direct";
     private static final String domainId= "eiffelxxx";
 
-    @Before public void setUp() throws Exception {
+    @PostConstruct public void setUp() throws Exception {
         rmqHelper.getRabbitMqPropertiesMap().put(protocol, new RabbitMqProperties());
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setProtocol(protocol);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);

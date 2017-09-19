@@ -75,7 +75,7 @@ import ch.qos.logback.classic.Logger;
     }
 
     /***
-     * This method is used to set the values of factory, protocol and initialize the RabbitMq properties
+     * This method is used to set the values of protocol and initialize the RabbitMq properties
      * @param protocol name
      */
     private void protocolInit(String protocol) {
