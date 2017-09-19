@@ -132,10 +132,8 @@ public class CLI implements CommandLineRunner{
         try {
             String msgProtocol = CliOptions.getCommandLine().getOptionValue("mp");
             MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
-            if(msgService != null && msgProtocol != null) {
-                rmqHelper.rabbitMqPropertiesInit(msgProtocol);
-            }
-            if (msgService != null) {
+            if(msgService != null) {
+                rmqHelper.rabbitMqPropertiesInit(msgService.getServiceName());
                 SendResult results = messageService.send(content, msgService,CliOptions.getCommandLine().getOptionValue("ud"));
                 JsonArray jarray=new JsonArray();
                 for (PublishResultItem result : results.getEvents()) {
