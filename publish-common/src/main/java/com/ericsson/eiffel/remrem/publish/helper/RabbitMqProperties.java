@@ -221,36 +221,17 @@ public class RabbitMqProperties {
         }
     }
 
-    private String getValuesFromSystemProperties(String propertyName) {
-        return System.getProperty(propertyName);
+    private void setValues() {
+        host = getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_HOST);
+        port = Integer.getInteger(getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_PORT));
+        domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
+        tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
+        exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
+        usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
     }
 
-    private void setValues() {
-        String passedHost = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
-        if (passedHost != null) {
-            host = passedHost;
-        }
-        
-        Integer passedPort = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
-        if (passedPort != null) {
-            port = passedPort;
-        }
-
-        String passedDomain = System.getProperty(PropertiesConfig.DOMAIN_ID);
-        if (passedDomain != null) {
-            domainId = passedDomain;
-        }
-
-        String passedTlsVer = System.getProperty(PropertiesConfig.TLS);
-        if (passedTlsVer != null) {
-            tlsVer = passedTlsVer;
-        }
-
-        String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
-        if (passedExchange != null) {
-            exchangeName = passedExchange;
-        }
-        usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
+    private String getValuesFromSystemProperties(String propertyName) {
+        return System.getProperty(propertyName);
     }
 
     /****
