@@ -223,7 +223,7 @@ public class RabbitMqProperties {
 
     private void setValues() {
         host = getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_HOST);
-        port = Integer.getInteger(getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_PORT));
+        port = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
         domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
         tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
         exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
