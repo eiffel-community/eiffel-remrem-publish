@@ -28,10 +28,11 @@ public class RabbitMqPropertiesConfig {
      */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
+        String catalina_home = System.getProperty("catalina.home").replace('\\', '/');
         for(Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext(); ) {
             PropertySource propertySource = (PropertySource) it.next();
             if (propertySource instanceof MapPropertySource) {
-                if(propertySource.getName().equalsIgnoreCase("class path resource [config.properties]")) {
+                if(propertySource.getName().contains("[file:"+catalina_home+"/conf/config.properties]")) {
                     map.putAll(((MapPropertySource) propertySource).getSource());
                 }
             }
@@ -39,24 +40,24 @@ public class RabbitMqPropertiesConfig {
         for (Entry<String, Object> entry : map.entrySet())
         {
             String key = entry.getKey();
-            if(key.contains("rabbitmq") && rabbitMqPropertiesMap.get(key.split("\\.")[0]) == null){
-                rabbitMqPropertiesMap.put(key.split("\\.")[0], new RabbitMqProperties());
-            }
-            if(key.contains("rabbitmq")) {
+            if (key.contains("rabbitmq")) {
                 String protocol = key.split("\\.")[0];
-                if(key.contains("rabbitmq.host")) {
+                if (rabbitMqPropertiesMap.get(protocol) == null) {
+                    rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
+                }
+                if (key.contains("rabbitmq.host")) {
                     rabbitMqPropertiesMap.get(protocol).setHost(entry.getValue().toString());
-                } else if(key.contains("rabbitmq.port")) {
+                } else if (key.contains("rabbitmq.port")) {
                     rabbitMqPropertiesMap.get(protocol).setPort(Integer.getInteger(entry.getValue().toString()));
-                } else if(key.contains("rabbitmq.username")) {
+                } else if (key.contains("rabbitmq.username")) {
                     rabbitMqPropertiesMap.get(protocol).setUsername(entry.getValue().toString());
-                } else if(key.contains("rabbitmq.password")) {
+                } else if (key.contains("rabbitmq.password")) {
                     rabbitMqPropertiesMap.get(protocol).setPassword(entry.getValue().toString());
-                } else if(key.contains("rabbitmq.tls")) {
+                } else if (key.contains("rabbitmq.tls")) {
                     rabbitMqPropertiesMap.get(protocol).setTlsVer(entry.getValue().toString());
-                } else if(key.contains("rabbitmq.exchangeName")) {
+                } else if (key.contains("rabbitmq.exchangeName")) {
                     rabbitMqPropertiesMap.get(protocol).setExchangeName(entry.getValue().toString());
-                } else if(key.contains("rabbitmq.domainId")) {
+                } else if (key.contains("rabbitmq.domainId")) {
                     rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
                 }
             }

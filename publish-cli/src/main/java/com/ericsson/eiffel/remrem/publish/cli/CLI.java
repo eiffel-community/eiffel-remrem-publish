@@ -29,8 +29,6 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
@@ -58,8 +56,6 @@ import ch.qos.logback.classic.Logger;
  *
  */
 @SpringBootApplication
-@PropertySources({ @PropertySource("classpath:config.properties"),
-	@PropertySource(value = "file:${catalina.home}/conf/config.properties", ignoreResourceNotFound = true) })
 @ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
 public class CLI implements CommandLineRunner{
     
@@ -136,10 +132,8 @@ public class CLI implements CommandLineRunner{
         try {
             String msgProtocol = CliOptions.getCommandLine().getOptionValue("mp");
             MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
-            if(msgService != null && msgProtocol != null && !msgProtocol.equals("eiffelsemantics")) {
-                rmqHelper.otherProtocolInit(msgProtocol);
-            }
-            if (msgService != null) {
+            if(msgService != null) {
+                rmqHelper.rabbitMqPropertiesInit(msgService.getServiceName());
                 SendResult results = messageService.send(content, msgService,CliOptions.getCommandLine().getOptionValue("ud"));
                 JsonArray jarray=new JsonArray();
                 for (PublishResultItem result : results.getEvents()) {

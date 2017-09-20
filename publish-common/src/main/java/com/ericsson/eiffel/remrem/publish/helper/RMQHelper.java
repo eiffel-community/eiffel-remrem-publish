@@ -16,11 +16,11 @@ package com.ericsson.eiffel.remrem.publish.helper;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +35,12 @@ import ch.qos.logback.classic.Logger;
 
 @Component("rmqHelper") public class RMQHelper {
 
-    @Inject
-    RMQBeanConnectionFactory factory;
     private static final String FALSE = "false";
 
     @Autowired
     RabbitMqPropertiesConfig rabbitMqPropertiesConfig;
 
-    Map<String, RabbitMqProperties> rabbitMqPropertiesMap;
+    Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
@@ -54,24 +52,35 @@ import ch.qos.logback.classic.Logger;
         this.rabbitMqPropertiesMap = rabbitMqPropertiesMap;
     }
 
-    @PostConstruct public void init() {
-        handleLogging();
-        log.info("RMQHelper init ...");
-        rabbitMqPropertiesMap = rabbitMqPropertiesConfig.getRabbitMqProperties();
-        for(String protocol : rabbitMqPropertiesMap.keySet()) {
-            rabbitMqPropertiesMap.get(protocol).setFactory(factory);
-            rabbitMqPropertiesMap.get(protocol).setProtocol(protocol);
-            rabbitMqPropertiesMap.get(protocol).init();
+    @PostConstruct
+    public void init() {
+        if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+            log.info("RMQHelper init ...");
+            rabbitMqPropertiesMap = rabbitMqPropertiesConfig.getRabbitMqProperties();
+            for (String protocol : rabbitMqPropertiesMap.keySet()) {
+                protocolInit(protocol);
+            }
         }
     }
 
-    public void otherProtocolInit(String protocol) {
+    /***
+     * This method is used to set protocol specific RabbitMQ properties
+     * @param protocol name
+     */
+    public void rabbitMqPropertiesInit(String protocol) {
         if(!rabbitMqPropertiesMap.containsKey(protocol)) {
             rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
-            rabbitMqPropertiesMap.get(protocol).setFactory(factory);
-            rabbitMqPropertiesMap.get(protocol).setProtocol(protocol);
-            rabbitMqPropertiesMap.get(protocol).init();
+            protocolInit(protocol);
         }
+    }
+
+    /***
+     * This method is used to set the values of protocol and initialize the RabbitMq properties
+     * @param protocol name
+     */
+    private void protocolInit(String protocol) {
+        rabbitMqPropertiesMap.get(protocol).setProtocol(protocol);
+        rabbitMqPropertiesMap.get(protocol).init();
     }
 
     public void send(String routingKey, String msg, MsgService msgService) throws IOException {
@@ -97,6 +106,7 @@ import ch.qos.logback.classic.Logger;
         }
     }
 
+    @PostConstruct
     private void handleLogging() {
         String debug = System.getProperty(PropertiesConfig.DEBUG);
         log.setLevel(Level.ALL);

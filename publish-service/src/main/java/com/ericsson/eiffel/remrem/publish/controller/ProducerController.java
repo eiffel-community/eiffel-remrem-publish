@@ -60,8 +60,8 @@ public class ProducerController {
 
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
-        if(msgService != null && msgProtocol != null && !msgProtocol.equals("eiffelsemantics")) {
-            rmqHelper.otherProtocolInit(msgProtocol);
+        if(msgService != null && msgProtocol != null) {
+            rmqHelper.rabbitMqPropertiesInit(msgProtocol);
         }
         SendResult result = messageService.send(body, msgService, userDomain);
         return new ResponseEntity(result, messageService.getHttpStatus());

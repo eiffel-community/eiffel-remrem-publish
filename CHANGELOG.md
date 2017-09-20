@@ -1,3 +1,6 @@
+## 0.4.2
+- Changed REMReM publish to read required properties from CLI options for CLI and from JAVA_OPTS, tomcat/conf/config.properties for service.
+
 ## 0.4.1
 - Implemented functionality to get properties from java opts for publish-service
 

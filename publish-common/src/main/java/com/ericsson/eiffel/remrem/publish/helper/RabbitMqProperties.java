@@ -24,7 +24,7 @@ import ch.qos.logback.classic.Logger;
 
 public class RabbitMqProperties {
 
-    private RMQBeanConnectionFactory factory;
+    private RMQBeanConnectionFactory factory = new RMQBeanConnectionFactory();
     private static final int CHANNEL_COUNT = 100;
     private static final Random random = new Random();
     private boolean usePersitance = true;
@@ -192,58 +192,46 @@ public class RabbitMqProperties {
     }
 
     private void initService() {
-        String passedHost = System.getProperty(protocol+".rabbitmq.host");
-        if (passedHost != null) {
-            host = passedHost;
+        if (host == null) {
+            host = getValuesFromSystemProperties(protocol + ".rabbitmq.host");
         }
 
-        Integer passedPort = Integer.getInteger(System.getProperty(protocol+".rabbitmq.port"));
-        if (passedPort != null) {
-            port = passedPort;
+        if (port == null) {
+            port = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.port"));
         }
 
-        String passedDomain = System.getProperty(protocol+".rabbitmq.domainId");
-        if (passedDomain != null) {
-            domainId = passedDomain;
+        if (domainId == null) {
+            domainId = getValuesFromSystemProperties(protocol + ".rabbitmq.domainId");
         }
 
-        String passedTlsVer = System.getProperty(protocol+".rabbitmq.tls");
-        if (passedTlsVer != null) {
-            tlsVer = passedTlsVer;
+        if (tlsVer == null) {
+            tlsVer = getValuesFromSystemProperties(protocol + ".rabbitmq.tls");
         }
 
-        String passedExchange = System.getProperty(protocol+".rabbitmq.exchangeName");
-        if (passedExchange != null) {
-            exchangeName = passedExchange;
+        if (exchangeName == null) {
+            exchangeName = getValuesFromSystemProperties(protocol + ".rabbitmq.exchangeName");
+        }
+
+        if (username == null) {
+            username = getValuesFromSystemProperties(protocol + ".rabbitmq.username");
+        }
+
+        if (password == null) {
+            password = getValuesFromSystemProperties(protocol + ".rabbitmq.password");
         }
     }
 
     private void setValues() {
-        String passedHost = System.getProperty(PropertiesConfig.MESSAGE_BUS_HOST);
-        if (passedHost != null) {
-            host = passedHost;
-        }
-        
-        Integer passedPort = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
-        if (passedPort != null) {
-            port = passedPort;
-        }
-
-        String passedDomain = System.getProperty(PropertiesConfig.DOMAIN_ID);
-        if (passedDomain != null) {
-            domainId = passedDomain;
-        }
-
-        String passedTlsVer = System.getProperty(PropertiesConfig.TLS);
-        if (passedTlsVer != null) {
-            tlsVer = passedTlsVer;
-        }
-
-        String passedExchange = System.getProperty(PropertiesConfig.EXCHANGE_NAME);
-        if (passedExchange != null) {
-            exchangeName = passedExchange;
-        }
+        host = getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_HOST);
+        port = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
+        domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
+        tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
+        exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
+    }
+
+    private String getValuesFromSystemProperties(String propertyName) {
+        return System.getProperty(propertyName);
     }
 
     /****
