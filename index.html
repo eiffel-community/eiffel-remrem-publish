@@ -129,22 +129,22 @@ You passed help flag.
 usage: java -jar
  -d,--debug                     enable debug traces
  -domain,--domainId &lt;arg&gt;       identifies the domain that produces the event.
- -en,--exchange_name &lt;arg&gt;      exchange name, default is amq.direct
+ -en,--exchange_name &lt;arg&gt;      exchange name
  -f,--content_file &lt;arg&gt;        event content file
  -h,--help                      show help.
  -json,--json_content &lt;arg&gt;     event content in json string. The value can
                                 also be a dash(-) and the json will be read
                                 from the output of other programs if piped. Multiple
                                 json events are also supported.
- -mb,--message_bus &lt;arg&gt;        host of message bus to use, default is
-                                127.0.0.1
+ -mb,--message_bus &lt;arg&gt;        host of message bus to use
  -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
                                 eiffelsemantics, default is eiffelsemantics
  -np,--non_persistent           remove persistence from message sending
  -tls,--tls &lt;arg&gt;               tls version, specify a valid tls version: '1', '1.1',
                                 '1.2' or default.
                                 It is required for RabbitMq secured port(5671).
- -port,--port &lt;arg&gt;             port to connect to message bus
+ -port,--port &lt;arg&gt;             port to connect to message bus, default
+                                is 5672
  -ud,--user_domain_suffix &lt;arg&gt; user domain suffix
  -v,--list_versions             lists the versions of publish and all loaded protocols</pre>
 
@@ -167,17 +167,17 @@ usage: java -jar
 
 <p><strong>If you want to have the message non persistent add np flag:</strong></p>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -domain eiffel001 -np -mp eiffelsemantics
 </code></pre>
 
 <p><strong>For loading protocol jars other than eiffelsemantics :</strong></p>
 
-<pre><code> $ java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -mp protocolType
+<pre><code> $ java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -domain eiffel001 -mp protocolType
 </code></pre>
 <strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
 <p><strong>If you want to have the message publishing logs add d flag:</strong></p>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -domain eiffel001 -mp eiffelsemantics -d
 </code></pre>
 
 <p><strong>If you want to have the message publishing on RabbitMq secured port(5671):</strong></p>
@@ -186,7 +186,7 @@ usage: java -jar
 
 <p>tls option value is either 'default'or &lt;version&gt; for secured port.</p>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -domain eiffel001 -mp eiffelsemantics -tls 1.2
 </code></pre>
 
 <strong>Note: For Rabbitmq default port 5672, No need to pass tls option.</strong>
@@ -204,7 +204,9 @@ usage: java -jar
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
 
-<p>Configuration parameters will be read from the application.yml file at the root of the classpath at startup.</p>
+<p>Configuration is done in tomcat using a config.properties file: tomcat/conf/config.properties</p>
+
+<h3>Exchange configurations:</h3>
 
 <p>These parameters need to be provided to start the service:</p>
 
@@ -222,12 +224,13 @@ usage: java -jar
 
 <p>protocol is name of the protocol used. Eg: eiffelsemantics</p>
 
-<p>Currently eiffelsemantics protocol Rabbitmq properties are configured in config.properties. For protocols other than eiffelsemantics we need to add same set of RabbitMq properties for that specific protocol.</p>
+<p>For any protocol, need to configure above RabbitMq properties in <strong>tomcat/conf/config.properties</strong> file.</p>
+<p>classpath:config.properties file is for reference only. Will not pick any values from that file.</p>
 </code></pre>
 
 <h3>Ldap configurations:</h3>
 <p align="justify">Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property <code>activedirectory.enabled=true</code>.</p>
-<p>To authenticate with active ldap server we have to provide the following configurations in the <strong>config.properties </strong>file.</P>
+<p>To authenticate with active ldap server we have to provide the following configurations in the <strong>tomcat/conf/config.properties</strong> file.</P>
 <pre>
   activedirectory.ldapUrl         : &lt;LDAP server url&gt;
   activedirectory.managerPassword : &lt;LDAP server manager password(must be base64 Encrypted format)&gt;
@@ -243,9 +246,6 @@ usage: java -jar
 <p><strong> LDAP authentication with Base64 encryption: </strong></p>
 
 <pre> <code> $ curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json http://localhost:8080/publish-service/producer/msg?mp=eiffelsemantics </code></pre>
-
-<p><strong>Note:</strong> <br>
-We have to place the <strong>config.properties</strong> file in<strong> tomcat/conf </strong> folder to load the configurations. 
 
 <h3>
 <a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST methods</h3>
@@ -485,7 +485,7 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 	 "message":"Please check previous event and try again later"
 	}
 ]</code></pre>
-<p><strong>404:</strong>We will get this status code,When RabbitMq properties not configured for the protocol.</p>
+<p><strong>404:</strong>We will get this status code,when RabbitMq properties not configured in tomcat/conf/config.properties file for the protocol.</p>
 <pre><code><strong>HTTP Response:</strong> 404 :Not Found
 [
 	{
