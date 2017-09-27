@@ -1,3 +1,6 @@
+## 0.4.3
+- Removed spring configurations from config.properties file and handled through code.
+
 ## 0.4.2
 - Changed REMReM publish to read required properties from CLI options for CLI and from JAVA_OPTS, tomcat/conf/config.properties for service.
 
