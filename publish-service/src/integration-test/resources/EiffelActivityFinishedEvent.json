@@ -19,7 +19,7 @@
 	"meta": {
 		"domainId": "TCS",
 		"id": "1afffd13-04ae-4638-97f1-aaeed78a28c7",
-		"type": "eiffelactivityfinished",
+		"type": "EiffelActivityFinishedEvent",
 		"version": "0.1.8",
 		"time": 1481628758807,
 		"tags": ["tag1", "tag2"],
