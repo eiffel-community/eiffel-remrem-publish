@@ -60,7 +60,7 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.4.3"
+    version = "0.4.4"
 
     //Declare where to find the dependencies of project here
     repositories {
@@ -112,7 +112,7 @@ subprojects {
         compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.4'
         compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
         //For publishing eiffel2.0 events
-        compile("com.github.Ericsson:eiffel-remrem-semantics:0.2.6"){
+        compile("com.github.Ericsson:eiffel-remrem-semantics:0.2.7"){
                 exclude group: 'org.apache.commons'
         }
         
