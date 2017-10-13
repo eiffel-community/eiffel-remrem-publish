@@ -19,7 +19,7 @@
 	"meta": {
 		"domainId": "example.domain",
 		"id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
-		"type": "eiffelactivityfinished",
+		"type": "EiffelActivityFinishedEvent",
 		"version": "0.1.7",
 		"time": 1478780245184,
 		"tags": ["tag1", "tag2"],
@@ -55,7 +55,7 @@
 	"meta": {
 		"domainId": "example.domain",
 		"id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a2",
-		"type": "eiffelactivityfinished",
+		"type": "EiffelActivityFinishedEvent",
 		"version": "0.1.7",
 		"time": 1478780245184,
 		"tags": ["tag1", "tag2"],
@@ -91,7 +91,7 @@
 	"meta": {
 		"domainId": "example.domain",
 		"id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a3",
-		"type": "eiffelactivityfinished",
+		"type": "EiffelActivityFinishedEvent",
 		"version": "0.1.7",
 		"time": 1478780245184,
 		"tags": ["tag1", "tag2"],

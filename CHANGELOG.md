@@ -1,3 +1,15 @@
+## 0.4.3
+- Removed spring configurations from config.properties file and handled through code.
+
+## 0.4.2
+- Changed REMReM publish to read required properties from CLI options for CLI and from JAVA_OPTS, tomcat/conf/config.properties for service.
+
+## 0.4.1
+- Implemented functionality to get properties from java opts for publish-service
+
+## 0.4.0
+- Implemented one MB for each protocol in REMREM publish.
+
 ## 0.3.9
 - Uplifted remrem-semantics version to 0.2.6 to support links validation.
 

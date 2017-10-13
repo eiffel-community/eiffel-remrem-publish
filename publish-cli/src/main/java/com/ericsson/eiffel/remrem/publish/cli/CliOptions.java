@@ -71,11 +71,11 @@ public class CliOptions {
         options = new Options();
         options.addOption(createHelpOption());
         options.addOption("d", "debug", false, "enable debug traces");
-        options.addOption("mb", "message_bus", true, "host of message bus to use, default is 127.0.0.1");
-        options.addOption("en", "exchange_name", true, "exchange name, default is amq.direct");
+        options.addOption("mb", "message_bus", true, "host of message bus to use");
+        options.addOption("en", "exchange_name", true, "exchange name");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
-        options.addOption("port", "port", true, "port to connect to message bus");
-        options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'");
+        options.addOption("port", "port", true, "port to connect to message bus, default is 5672");
+        options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'. It is required for RabbitMq secured port.");
         options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics, default is eiffelsemantics");
         options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
         options.addOption("ud", "user_domain_suffix", true, "user domain suffix");

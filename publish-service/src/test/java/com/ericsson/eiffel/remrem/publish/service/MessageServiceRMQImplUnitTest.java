@@ -15,7 +15,6 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -24,6 +23,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -38,6 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
+import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -55,17 +57,31 @@ public class MessageServiceRMQImplUnitTest {
     
     @Autowired @Qualifier("rmqHelper") 
     RMQHelper rmqHelper;
+    private static final String protocol = "eiffelsemantics";
+    private static final String host= "127.0.0.1";
+    private static final String exchangeName= "amq.direct";
+    private static final String domainId= "eiffelxxx";
+
+    @PostConstruct public void setUp() throws Exception {
+        rmqHelper.getRabbitMqPropertiesMap().put(protocol, new RabbitMqProperties());
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setProtocol(protocol);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+    }
     
     @Test public void sendNormal() throws Exception {
         Map<String, String> map = new HashMap<String, String>();
+        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         map.put("test", "test");
-        messageService.send(map, map);
+        messageService.send(map, map, msgService);
     }
     
     @Test public void testSingleSuccessfulEvent() throws Exception {
         String body = FileUtils.readFileToString(new File("src/integration-test/resources/EiffelActivityFinishedEvent.json"));
         JsonArray jarray = new JsonArray();
-        MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
+        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test");
         String Expected="[{\"id\":\"1afffd13-04ae-4638-97f1-aaeed78a28c7\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         for (PublishResultItem results : result.getEvents()) {
@@ -76,7 +92,7 @@ public class MessageServiceRMQImplUnitTest {
     
     @Test public void testSingleFailedEvent() throws Exception {
         String body = FileUtils.readFileToString(new File("src/integration-test/resources/Invalid_EiffelActivityFinishedEvent.json"));
-        MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
+        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         JsonArray jarray = new JsonArray();
         SendResult result = messageService.send(body, msgService, "test");
         String Expected="[{\"id\":null,\"status_code\":400,\"result\":\"Bad Request\",\"message\":\"Invalid event content, client need to fix problem in event before submitting again\"}]";
@@ -89,7 +105,7 @@ public class MessageServiceRMQImplUnitTest {
     @Test public void testMultipleFailedEvents() throws Exception {
         String body = FileUtils.readFileToString(new File("src/integration-test/resources/MultipleInvalidEvents.json"));
         JsonArray jarray = new JsonArray();
-        MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);  
+        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test");
         Assert.assertNotNull(result);
         String Expected="[{\"id\":null,\"status_code\":400,\"result\":\"Bad Request\",\"message\":\"Invalid event content, client need to fix problem in event before submitting again\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"}]";
@@ -98,11 +114,11 @@ public class MessageServiceRMQImplUnitTest {
         }
         assertEquals(Expected, jarray.toString());
     }
-      @Test public void testMultipleSuccessfulEvents() throws Exception {
+    @Test public void testMultipleSuccessfulEvents() throws Exception {
         String body = FileUtils.readFileToString(new File("src/integration-test/resources/MultipleValidEvents.json"));
         String Expected="[{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a1\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a2\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a3\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         JsonArray jarray = new JsonArray();
-        MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
+        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test");
         Assert.assertNotNull(result);
         for (PublishResultItem results : result.getEvents()) {
@@ -114,11 +130,12 @@ public class MessageServiceRMQImplUnitTest {
     @Test
     public void testRabbitMQConnection() {
         try {
-            assertTrue(rmqHelper.rabbitConnection.isOpen());
-            rmqHelper.rabbitConnection.close();
-            assertFalse(rmqHelper.rabbitConnection.isOpen());
-            rmqHelper.send("eiffelxxx", "Test message");
-            assertTrue(rmqHelper.rabbitConnection.isOpen());
+            if(rmqHelper.getRabbitMqPropertiesMap().get(protocol) != null) {
+                rmqHelper.getRabbitMqPropertiesMap().get(protocol).createRabbitMqConnection();
+                MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
+                rmqHelper.send("eiffelxxx", "Test message", msgService);
+                assertTrue(rmqHelper.getRabbitMqPropertiesMap().get(protocol).getRabbitConnection().isOpen());
+            }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             fail(e.getMessage().toString());
@@ -127,14 +144,16 @@ public class MessageServiceRMQImplUnitTest {
 
     @Test
     public void testRoutingKey() throws Exception {
-        MsgService msgService = PublishUtils.getMessageService("eiffelsemantics", msgServices);
+        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         String routingKey;
         if (msgService != null) {
             File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             routingKey = PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001");
-            assertEquals("eiffel.activity.finished.notag.eiffelxxx.fem001", routingKey);
+            if(routingKey != null) {
+                assertEquals("eiffel.activity.finished.notag.eiffelxxx.fem001", routingKey);
+            }
         }
     }
 }
