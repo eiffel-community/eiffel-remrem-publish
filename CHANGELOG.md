@@ -1,3 +1,9 @@
+## 0.4.5
+- Uplifted remrem-semantics version to 0.2.8.
+
+## 0.4.4
+- Uplifted remrem-semantics version to 0.2.7.
+
 ## 0.4.3
 - Removed spring configurations from config.properties file and handled through code.
 
