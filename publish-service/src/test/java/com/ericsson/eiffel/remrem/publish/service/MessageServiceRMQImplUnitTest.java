@@ -108,7 +108,7 @@ public class MessageServiceRMQImplUnitTest {
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test");
         Assert.assertNotNull(result);
-        String Expected="[{\"id\":null,\"status_code\":400,\"result\":\"Bad Request\",\"message\":\"Invalid event content, client need to fix problem in event before submitting again\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"}]";
+        String Expected="[{\"id\":null,\"status_code\":400,\"result\":\"Bad Request\",\"message\":\"Invalid event content, client need to fix problem in event before submitting again\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"}]";
         for (PublishResultItem results : result.getEvents()) {
             jarray.add(results.toJsonObject());
         }
@@ -150,9 +150,9 @@ public class MessageServiceRMQImplUnitTest {
             File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            routingKey = PublishUtils.prepareRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001");
+            routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001");
             if(routingKey != null) {
-                assertEquals("eiffel.activity.finished.notag.eiffelxxx.fem001", routingKey);
+                assertEquals("eiffel.activity.finished.notag.example.domain.fem001", routingKey);
             }
         }
     }
