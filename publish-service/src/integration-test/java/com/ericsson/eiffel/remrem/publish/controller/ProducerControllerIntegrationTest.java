@@ -61,18 +61,6 @@ public class ProducerControllerIntegrationTest {
     public void setUp() {
         RestAssured.port = port;
     }
-    
-    @Test
-    public void testGetFamily() throws Exception {
-        MsgService messageService = PublishUtils.getMessageService("eiffel3", msgServices);
-        if (messageService != null) {
-            File file = new File("src/integration-test/resources/EiffelJobFinishedEvent.json");
-            JsonParser parser = new JsonParser();
-            JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            String family = messageService.getFamily(json.getAsJsonObject());
-            assertEquals("job", family);
-        }
-    }
 
     @Test
     public void testJsonOutput() throws Exception {
@@ -102,26 +90,14 @@ public class ProducerControllerIntegrationTest {
     }
 
     @Test
-    public void testGetFamilyRoutingKey() throws Exception {
+    public void testGenerateRoutingKey() throws Exception {
         MsgService messageService = PublishUtils.getMessageService("", msgServices);
         if (messageService != null) {
             File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            String family = messageService.getFamily(json.getAsJsonObject());
-            assertEquals("activity", family);
-        }
-    }
-
-    @Test
-    public void testGetTypeRoutingKey() throws Exception {
-        MsgService messageService = PublishUtils.getMessageService("", msgServices);
-        if (messageService != null) {
-            File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
-            JsonParser parser = new JsonParser();
-            JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            String type = messageService.getType(json.getAsJsonObject());
-            assertEquals("finished", type);
+            String routingKey = messageService.generateRoutingKey(json.getAsJsonObject(), null, null, null);
+            assertEquals("eiffel.activity.finished.notag.example.domain", routingKey);
         }
     }
  }
