@@ -38,6 +38,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
+import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
@@ -56,10 +57,22 @@ public class ProducerControllerIntegrationTest {
     private MsgService[] msgServices;
     @Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
     private String credentials = "Basic " + Base64.getEncoder().encodeToString("user:secret".getBytes());
+    private String domainId= "True";
+    private String exchangeName= "EN1";
+    private String host= "HostA";
+    private String routingKey = "eiffelxxx.femxxx";
+    private String protocol = "eiffelsemantics";
+    @Autowired
+    RMQHelper rmqHelper;
 
     @Before
     public void setUp() {
         RestAssured.port = port;
+        rmqHelper.rabbitMqPropertiesInit(protocol);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setRoutingKey(routingKey);
     }
 
     @Test
@@ -98,6 +111,18 @@ public class ProducerControllerIntegrationTest {
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             String routingKey = messageService.generateRoutingKey(json.getAsJsonObject(), null, null, null);
             assertEquals("eiffel.activity.finished.notag.example.domain", routingKey);
+        }
+    }
+
+    @Test
+    public void testRoutingKey() throws Exception {
+        MsgService messageService = PublishUtils.getMessageService("", msgServices);
+        if (messageService != null) {
+            File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
+            JsonParser parser = new JsonParser();
+            JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
+            String routingKey = PublishUtils.getRoutingKey(messageService, json.getAsJsonObject(), rmqHelper, null);
+            assertEquals("eiffelxxx.femxxx", routingKey);
         }
     }
  }

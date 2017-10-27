@@ -94,11 +94,11 @@ import ch.qos.logback.classic.Logger;
                 Map<String, String> routingKeyMap = new HashMap<>();
                 String eventType = msgService.getEventType(json.getAsJsonObject());
                 String eventId = msgService.getEventId(json.getAsJsonObject());
-                if (StringUtils.isNotEmpty(eventId) && StringUtils.isNotEmpty(eventType)) {
+                if (StringUtils.isNotBlank(eventId) && StringUtils.isNotBlank(eventType)) {
                     ValidationResult validationResult = getValidationResult(msgService, json, eventType);
                     if (validationResult != null && validationResult.isValid()) {
                         String routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomainSuffix);
-                        if (routingKey != null && !routingKey.isEmpty()) {
+                        if (StringUtils.isNotBlank(routingKey)) {
                             map.put(eventId, json.toString());
                             routingKeyMap.put(eventId, routingKey);
                         } else if (routingKey == null) {
@@ -126,7 +126,7 @@ import ch.qos.logback.classic.Logger;
                 }
                 return send(routingKeyMap, map, msgService);
             }
-        } catch (final Exception e) {
+        } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
             if (e.getCause() != null) {
                 resultMsg = resultMsg + " Cause: " + e.getCause().getMessage();
@@ -163,7 +163,7 @@ import ch.qos.logback.classic.Logger;
                     if (validationResult != null && validationResult.isValid()) {
                         String routingKey = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap,
                                 userDomainSuffix);
-                        if (routingKey != null && !routingKey.isEmpty()) {
+                        if (StringUtils.isNotBlank(routingKey)) {
                             result = send(obj.toString(), msgService, userDomainSuffix);
                             resultList.addAll(result.getEvents());
                             int statusCode = result.getEvents().get(0).getStatusCode();

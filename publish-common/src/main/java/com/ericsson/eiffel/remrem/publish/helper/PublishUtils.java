@@ -64,9 +64,8 @@ public class PublishUtils {
         RabbitMqProperties rabbitMqProperties = rmqHelper.rabbitMqPropertiesMap.get(protocol);
         String domainId = rabbitMqProperties.getDomainId();
         if (rabbitMqProperties != null && rabbitMqProperties.getExchangeName() != null && rabbitMqProperties.getHost() != null
-                && (cliMode || (!cliMode && StringUtils.isNotEmpty(domainId)))) {
-                return rabbitMqProperties.getRoutingKey() != null ? rabbitMqProperties.getRoutingKey()
-                        : msgService.generateRoutingKey(json, rabbitMqProperties.getTag(), domainId, userDomainSuffix);
+                && (cliMode || (!cliMode && StringUtils.isNotBlank(domainId)))) {
+                return StringUtils.defaultIfBlank(rabbitMqProperties.getRoutingKey(), msgService.generateRoutingKey(json, rabbitMqProperties.getTag(), domainId, userDomainSuffix));
         }
         return "";
     }
