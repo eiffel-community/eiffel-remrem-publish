@@ -146,15 +146,19 @@ import ch.qos.logback.classic.Logger;
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
                 String eventId = msgService.getEventId(obj.getAsJsonObject());
-                if (StringUtils.isNotEmpty(eventId) && checkEventStatus) {
+                if (StringUtils.isNotEmpty(eventId)) {
                     String routingKey = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap,
                             userDomainSuffix);
-                    if (StringUtils.isNotBlank(routingKey)) {
+                    if (StringUtils.isNotBlank(routingKey) && checkEventStatus) {
                         result = send(obj.toString(), msgService, userDomainSuffix);
                         resultList.addAll(result.getEvents());
                         int statusCode = result.getEvents().get(0).getStatusCode();
                         if (!statusCodes.contains(statusCode))
                             statusCodes.add(statusCode);
+                    } else if (!checkEventStatus) {
+                        addUnsuccessfulResultItem(obj);
+                        int statusCode = resultList.get(0).getStatusCode();
+                        statusCodes.add(statusCode);
                     } else if (routingKey == null) {
                         routingKey(resultList);
                         errorItems = new ArrayList<JsonElement>();
@@ -170,7 +174,18 @@ import ch.qos.logback.classic.Logger;
                         break;
                     }
                 } else {
-                    createFailureStatusCodeResult(obj, null);
+                    if (!checkEventStatus) {
+                        addUnsuccessfulResultItem(obj);
+                        int statusCode = resultList.get(0).getStatusCode();
+                        statusCodes.add(statusCode);
+                    } else {
+                        createFailureResult(resultList);
+                        errorItems = new ArrayList<JsonElement>();
+                        int statusCode = resultList.get(0).getStatusCode();
+                        statusCodes.add(statusCode);
+                        errorItems.add(obj);
+                        checkEventStatus = false;
+                    }
                 }
             }
         } else {
@@ -184,24 +199,6 @@ import ch.qos.logback.classic.Logger;
         result = new SendResult();
         result.setEvents(resultList);
         return result;
-    }
-
-    private void createFailureStatusCodeResult(JsonElement obj, ValidationResult validationResult) {
-        if (!checkEventStatus) {
-            addUnsuccessfulResultItem(obj);
-            int statusCode = resultList.get(0).getStatusCode();
-            statusCodes.add(statusCode);
-        } else {
-            if(validationResult != null) {
-                log.error(validationResult.getValidationMesage());
-            }
-            createFailureResult(resultList);
-            errorItems = new ArrayList<JsonElement>();
-            int statusCode = resultList.get(0).getStatusCode();
-            statusCodes.add(statusCode);
-            errorItems.add(obj);
-            checkEventStatus = false;
-        }
     }
 
     private String sendMessage(String routingKey, String msg, MsgService msgService) {
