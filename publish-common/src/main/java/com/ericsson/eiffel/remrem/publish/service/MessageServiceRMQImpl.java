@@ -146,19 +146,15 @@ import ch.qos.logback.classic.Logger;
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
                 String eventId = msgService.getEventId(obj.getAsJsonObject());
-                if (StringUtils.isNotEmpty(eventId)) {
+                if (StringUtils.isNotEmpty(eventId) && checkEventStatus) {
                     String routingKey = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap,
                             userDomainSuffix);
-                    if (StringUtils.isNotBlank(routingKey) && checkEventStatus) {
+                    if (StringUtils.isNotBlank(routingKey)) {
                         result = send(obj.toString(), msgService, userDomainSuffix);
                         resultList.addAll(result.getEvents());
                         int statusCode = result.getEvents().get(0).getStatusCode();
                         if (!statusCodes.contains(statusCode))
                             statusCodes.add(statusCode);
-                    } else if (!checkEventStatus) {
-                        addUnsuccessfulResultItem(obj);
-                        int statusCode = resultList.get(0).getStatusCode();
-                        statusCodes.add(statusCode);
                     } else if (routingKey == null) {
                         routingKey(resultList);
                         errorItems = new ArrayList<JsonElement>();
