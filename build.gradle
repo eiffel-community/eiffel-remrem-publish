@@ -60,7 +60,7 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.4.6"
+    version = "0.4.7"
 
     //Declare where to find the dependencies of project here
     repositories {
@@ -110,12 +110,11 @@ subprojects {
         
         //Injectable Message Library and its Implementation
         compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.4'
-        compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.1'
+        compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.5'
         //For publishing eiffel2.0 events
-        compile("com.github.Ericsson:eiffel-remrem-semantics:0.2.9"){
+        compile("com.github.Ericsson:eiffel-remrem-semantics:0.3.0"){
                 exclude group: 'org.apache.commons'
         }
-        
         //Declare the dependency for your favourite test framework you want to use in your tests.
         //TestNG is also supported by the Gradle Test task. Just change the
         //testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add

@@ -24,7 +24,8 @@ public class PropertiesConfig {
     public static final String TEST_MODE = "com.ericsson.eiffel.remrem.publish.cli.test.mode";
     public static final String DEBUG = "Debug";
     public static final String DOMAIN_ID = "com.ericsson.eiffel.remrem.publish.domain";
-	
+    public static final String TAG = "com.ericsson.eiffel.remrem.publish.tag";
+    public static final String ROUTING_KEY = "com.ericsson.eiffel.remrem.publish.routingkey";
 
 	public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
 	public static final String INVALID_MESSAGE = "Bad Request";
@@ -40,6 +41,7 @@ public class PropertiesConfig {
 
     public static final String SERVER_DOWN = "Internal Server Error";
     public static final String SERVER_DOWN_MESSAGE = "Possible to try again later when server is up";
+    public static final String ROUTING_KEY_NULL_CONTENT = "Could not prepare Routing key";
     public static final String UNSUCCESSFUL_EVENT_CONTENT = "Please check previous event and try again later";
     public static final String RABBITMQ_PROPERTIES_NOT_FOUND = "RabbitMq properties not found";
     public static final String RABBITMQ_PROPERTIES_NOT_FOUND_CONTENT = "RabbitMq properties not configured for the protocol ";
