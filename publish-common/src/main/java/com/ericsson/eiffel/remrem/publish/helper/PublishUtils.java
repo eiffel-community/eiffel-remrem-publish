@@ -58,14 +58,14 @@ public class PublishUtils {
      * @param userDomainSuffix is optional parameter, If user provide this it will add to the domainId.
      * @return routing key or returns "" if host, exchange and domainId not available.
     */
-    public static String getRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper, String userDomainSuffix) {
+    public static String getRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper, String userDomainSuffix, String tag) {
         String protocol = msgService.getServiceName();
         Boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
         RabbitMqProperties rabbitMqProperties = rmqHelper.rabbitMqPropertiesMap.get(protocol);
         String domainId = rabbitMqProperties.getDomainId();
         if (rabbitMqProperties != null && rabbitMqProperties.getExchangeName() != null && rabbitMqProperties.getHost() != null
                 && (cliMode || (!cliMode && StringUtils.isNotBlank(domainId)))) {
-                return StringUtils.defaultIfBlank(rabbitMqProperties.getRoutingKey(), msgService.generateRoutingKey(json, rabbitMqProperties.getTag(), domainId, userDomainSuffix));
+                return msgService.generateRoutingKey(json, tag, domainId, userDomainSuffix);
         }
         return "";
     }

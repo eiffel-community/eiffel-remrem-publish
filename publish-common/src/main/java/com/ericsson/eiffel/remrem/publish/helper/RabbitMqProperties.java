@@ -36,9 +36,6 @@ public class RabbitMqProperties {
     private String username;
     private String password;
     private String domainId;
-    private String tag;
-    private String routingKey;
-
 
     private Connection rabbitConnection;
     private String protocol;
@@ -119,28 +116,12 @@ public class RabbitMqProperties {
         this.protocol = protocol;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
     public Connection getRabbitConnection() {
         return rabbitConnection;
     }
 
     public void setRabbitConnection(Connection rabbitConnection) {
         this.rabbitConnection = rabbitConnection;
-    }
-
-    public String getRoutingKey() {
-        return routingKey;
-    }
-
-    public void setRoutingKey(String routingKey) {
-        this.routingKey = routingKey;
     }
 
     public void init() {
@@ -240,13 +221,6 @@ public class RabbitMqProperties {
             password = getValuesFromSystemProperties(protocol + ".rabbitmq.password");
         }
 
-        if (tag == null) {
-            tag = getValuesFromSystemProperties(protocol + ".rabbitmq.tag");
-        }
-
-        if (routingKey == null) {
-            routingKey = getValuesFromSystemProperties(protocol + ".rabbitmq.routingKey");
-        }
     }
 
     private void setValues() {
@@ -255,8 +229,6 @@ public class RabbitMqProperties {
         domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
         tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
         exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
-        tag = getValuesFromSystemProperties(PropertiesConfig.TAG);
-        routingKey = getValuesFromSystemProperties(PropertiesConfig.ROUTING_KEY);
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
     }
 

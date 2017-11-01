@@ -59,10 +59,6 @@ public class RabbitMqPropertiesConfig {
                     rabbitMqPropertiesMap.get(protocol).setExchangeName(entry.getValue().toString());
                 } else if (key.contains("rabbitmq.domainId")) {
                     rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.routingKey")) {
-                    rabbitMqPropertiesMap.get(protocol).setRoutingKey(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.tag")) {
-                    rabbitMqPropertiesMap.get(protocol).setTag(entry.getValue().toString());
                 }
             }
         }

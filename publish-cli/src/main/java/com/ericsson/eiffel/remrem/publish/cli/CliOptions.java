@@ -221,18 +221,6 @@ public class CliOptions {
             System.setProperty(key, tls_ver);	
         }
 
-        if (commandLine.hasOption("tag")) {
-            String tag = commandLine.getOptionValue("tag");
-            String key = PropertiesConfig.TAG;
-            System.setProperty(key, tag);
-        }
-
-        if (commandLine.hasOption("rk")) {
-            String routingKey = commandLine.getOptionValue("rk");
-            String key = PropertiesConfig.ROUTING_KEY;
-            System.setProperty(key, routingKey);
-        }
-
         String usePersistance = "true";
         if (commandLine.hasOption("np")) {
             usePersistance = "false";    		
@@ -271,10 +259,6 @@ public class CliOptions {
         key = PropertiesConfig.TLS;
         System.clearProperty(key);
         key = PropertiesConfig.DOMAIN_ID;
-        System.clearProperty(key);
-        key = PropertiesConfig.TAG;
-        System.clearProperty(key);
-        key = PropertiesConfig.ROUTING_KEY;
         System.clearProperty(key);
     }
     
