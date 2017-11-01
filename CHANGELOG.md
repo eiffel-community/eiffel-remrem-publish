@@ -1,3 +1,6 @@
+## 0.4.8
+- Uplifted remrem-semantics to 0.3.1 to override given input meta.source.serializer GAV information
+
 ## 0.4.7
 - Added rk(Routing key) and tag option in CLI.
 - Added routingKey and tag parameter in Service.
