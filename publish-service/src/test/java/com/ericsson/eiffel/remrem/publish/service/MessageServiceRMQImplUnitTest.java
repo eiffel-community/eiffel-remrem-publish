@@ -150,7 +150,7 @@ public class MessageServiceRMQImplUnitTest {
             File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001", null);
+            routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001", null, null);
             if(routingKey != null) {
                 assertEquals("eiffel.activity.finished.notag.example.domain.fem001", routingKey);
             }

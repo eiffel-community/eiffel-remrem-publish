@@ -93,7 +93,7 @@ import ch.qos.logback.classic.Logger;
                 Map<String, String> routingKeyMap = new HashMap<>();
                 String eventId = msgService.getEventId(json.getAsJsonObject());
                 if (StringUtils.isNotBlank(eventId)) {
-                    String routing_key = StringUtils.defaultIfBlank(routingKey, PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomainSuffix, tag));
+                    String routing_key = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomainSuffix, tag, routingKey);
                     if (StringUtils.isNotBlank(routing_key)) {
                         map.put(eventId, json.toString());
                         routingKeyMap.put(eventId, routing_key);
@@ -236,7 +236,7 @@ import ch.qos.logback.classic.Logger;
             JsonElement obj, Map<String, String> routingKeyMap, String userDomainSuffix, String tag, String routingKey) {
         String eventId = msgService.getEventId(obj.getAsJsonObject());
         String routing_key = (eventId != null)
-                ? StringUtils.defaultIfBlank(routingKey, PublishUtils.getRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix, tag)) : null;
+                ? PublishUtils.getRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix, tag, routingKey) : null;
         if (eventId != null && routing_key != null && !routing_key.isEmpty()) {
             routingKeyMap.put(eventId, routing_key);
             map.put(eventId, obj.toString());

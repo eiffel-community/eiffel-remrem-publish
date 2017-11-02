@@ -56,16 +56,18 @@ public class PublishUtils {
      * @param msgService the Messaging service.
      * @param json the eiffel event
      * @param userDomainSuffix is optional parameter, If user provide this it will add to the domainId.
+     * @param tag is optional parameter, If user provide this it will add to the tag.
+     * @param routingKey is optional parameter, If user provide this it will add to the routingKey.
      * @return routing key or returns "" if host, exchange and domainId not available.
     */
-    public static String getRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper, String userDomainSuffix, String tag) {
+    public static String getRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper, String userDomainSuffix, String tag, String routingKey) {
         String protocol = msgService.getServiceName();
         Boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
         RabbitMqProperties rabbitMqProperties = rmqHelper.rabbitMqPropertiesMap.get(protocol);
         String domainId = rabbitMqProperties.getDomainId();
         if (rabbitMqProperties != null && rabbitMqProperties.getExchangeName() != null && rabbitMqProperties.getHost() != null
                 && (cliMode || (!cliMode && StringUtils.isNotBlank(domainId)))) {
-                return msgService.generateRoutingKey(json, tag, domainId, userDomainSuffix);
+            return StringUtils.defaultIfBlank(routingKey, msgService.generateRoutingKey(json, tag, domainId, userDomainSuffix));
         }
         return "";
     }
