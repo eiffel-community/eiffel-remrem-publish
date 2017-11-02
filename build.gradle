@@ -60,7 +60,7 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.4.7"
+    version = "0.4.8"
 
     //Declare where to find the dependencies of project here
     repositories {
