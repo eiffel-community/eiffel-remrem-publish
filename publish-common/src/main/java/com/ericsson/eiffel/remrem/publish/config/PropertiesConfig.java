@@ -38,10 +38,10 @@ public class PropertiesConfig {
     public static final String SERVICE_UNAVAILABLE = "Service Unavailable";
 
     public static final String SERVER_DOWN = "Internal Server Error";
-    public static final String SERVER_DOWN_MESSAGE = "Possible to try again later when server is up";
-    public static final String ROUTING_KEY_NULL_CONTENT = "Could not prepare Routing key";
+    public static final String SERVER_DOWN_MESSAGE = "RabbitMQ is down. Please try later";
+    public static final String ROUTING_KEY_GENERATION_FAILED_CONTENT = "Could not prepare Routing key to publish message";
     public static final String UNSUCCESSFUL_EVENT_CONTENT = "Please check previous event and try again later";
-    public static final String RABBITMQ_PROPERTIES_NOT_FOUND = "RabbitMq properties not found";
-    public static final String RABBITMQ_PROPERTIES_NOT_FOUND_CONTENT = "RabbitMq properties not configured for the protocol ";
+    public static final String RABBITMQ_PROPERTIES_NOT_FOUND = "RabbitMQ properties not found";
+    public static final String RABBITMQ_PROPERTIES_NOT_FOUND_CONTENT = "RabbitMQ properties not configured for the protocol ";
     public static final String PROTOCOL = "eiffel";
 }

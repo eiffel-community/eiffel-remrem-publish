@@ -61,6 +61,7 @@ public class ProducerController {
 
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
+        log.debug("user domain suffix: " + userDomain + " tag: " + tag + " Routing Key: " + routingKey);
         if(msgService != null && msgProtocol != null) {
             rmqHelper.rabbitMqPropertiesInit(msgProtocol);
         }

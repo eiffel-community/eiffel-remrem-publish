@@ -56,8 +56,8 @@ public class PublishUtils {
      * @param msgService the Messaging service.
      * @param json the eiffel event
      * @param userDomainSuffix is optional parameter, If user provide this it will add to the domainId.
-     * @param tag is optional parameter, If user provide this it will add to the tag.
-     * @param routingKey is optional parameter, If user provide this it will add to the routingKey.
+     * @param tag is optional parameter, If user provide this it will add to the tag if routingKey is not specified by the user.
+     * @param routingKey is optional parameter, If user provide this it will add to the routingKey otherwise generate routingKey based on message type.
      * @return routing key or returns "" if host, exchange and domainId not available.
     */
     public static String getRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper, String userDomainSuffix, String tag, String routingKey) {

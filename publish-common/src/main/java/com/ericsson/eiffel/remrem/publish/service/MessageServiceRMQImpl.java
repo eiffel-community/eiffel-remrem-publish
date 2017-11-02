@@ -99,7 +99,7 @@ import ch.qos.logback.classic.Logger;
                         routingKeyMap.put(eventId, routing_key);
                     } else if (routing_key == null) {
                         List<PublishResultItem> events = new ArrayList<>();
-                        routingKeyFailure(events);
+                        routingKeyGenerationFailure(events);
                         return new SendResult(events);
                     } else {
                         List<PublishResultItem> events = new ArrayList<>();
@@ -155,7 +155,7 @@ import ch.qos.logback.classic.Logger;
                         if (!statusCodes.contains(statusCode))
                             statusCodes.add(statusCode);
                     } else if (routing_key == null) {
-                        routingKeyFailure(resultList);
+                        routingKeyGenerationFailure(resultList);
                         errorItems = new ArrayList<JsonElement>();
                         int statusCode = resultList.get(0).getStatusCode();
                         statusCodes.add(statusCode);
@@ -265,9 +265,9 @@ import ch.qos.logback.classic.Logger;
         return event;
     }
 
-    private void routingKeyFailure(List<PublishResultItem> events) {
+    private void routingKeyGenerationFailure(List<PublishResultItem> events) {
         PublishResultItem event = new PublishResultItem(null, 500, PropertiesConfig.SERVER_DOWN,
-                PropertiesConfig.ROUTING_KEY_NULL_CONTENT);
+                PropertiesConfig.ROUTING_KEY_GENERATION_FAILED_CONTENT);
         events.add(event);
     }
 
