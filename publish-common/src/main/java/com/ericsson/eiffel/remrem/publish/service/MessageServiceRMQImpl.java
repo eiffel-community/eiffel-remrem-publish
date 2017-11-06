@@ -98,19 +98,19 @@ import ch.qos.logback.classic.Logger;
                         map.put(eventId, json.toString());
                         routingKeyMap.put(eventId, routing_key);
                     } else if (routing_key == null) {
-                        List<PublishResultItem> events = new ArrayList<>();
-                        routingKeyGenerationFailure(events);
-                        return new SendResult(events);
+                        List<PublishResultItem> resultItemList = new ArrayList<>();
+                        routingKeyGenerationFailure(resultItemList);
+                        return new SendResult(resultItemList);
                     } else {
-                        List<PublishResultItem> events = new ArrayList<>();
+                        List<PublishResultItem> resultItemList = new ArrayList<>();
                         PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
-                        events.add(resultItem);
-                        return new SendResult(events);
+                        resultItemList.add(resultItem);
+                        return new SendResult(resultItemList);
                     }
                 } else {
-                    List<PublishResultItem> events = new ArrayList<>();
-                    createFailureResult(events);
-                    return new SendResult(events);
+                    List<PublishResultItem> resultItemList = new ArrayList<>();
+                    createFailureResult(resultItemList);
+                    return new SendResult(resultItemList);
                 }
                 return send(routingKeyMap, map, msgService);
             }
@@ -120,9 +120,9 @@ import ch.qos.logback.classic.Logger;
                 resultMsg = resultMsg + " Cause: " + e.getCause().getMessage();
             }
             log.error(resultMsg, e.getMessage());
-            List<PublishResultItem> events = new ArrayList<>();
-            createFailureResult(events);
-            return new SendResult(events);
+            List<PublishResultItem> resultItemList = new ArrayList<>();
+            createFailureResult(resultItemList);
+            return new SendResult(resultItemList);
         }
     }
 
@@ -248,10 +248,10 @@ import ch.qos.logback.classic.Logger;
      * Method returns result for the failure event.
      * @param events for list the eiffel events results
      */
-    private void createFailureResult(List<PublishResultItem> events) {
-        PublishResultItem event = new PublishResultItem(null, 400, PropertiesConfig.INVALID_MESSAGE,
+    private void createFailureResult(List<PublishResultItem> resultItemList) {
+        PublishResultItem resultItem = new PublishResultItem(null, 400, PropertiesConfig.INVALID_MESSAGE,
                 PropertiesConfig.INVALID_EVENT_CONTENT);
-        events.add(event);
+        resultItemList.add(resultItem);
     }
 
     /**
@@ -265,10 +265,10 @@ import ch.qos.logback.classic.Logger;
         return event;
     }
 
-    private void routingKeyGenerationFailure(List<PublishResultItem> events) {
-        PublishResultItem event = new PublishResultItem(null, 500, PropertiesConfig.SERVER_DOWN,
+    private void routingKeyGenerationFailure(List<PublishResultItem> resultItemList) {
+        PublishResultItem resultItem = new PublishResultItem(null, 500, PropertiesConfig.SERVER_DOWN,
                 PropertiesConfig.ROUTING_KEY_GENERATION_FAILED_CONTENT);
-        events.add(event);
+        resultItemList.add(resultItem);
     }
 
     private void addUnsuccessfulResultItem(JsonElement obj) {

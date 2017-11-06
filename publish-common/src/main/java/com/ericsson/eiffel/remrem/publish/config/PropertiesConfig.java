@@ -43,5 +43,4 @@ public class PropertiesConfig {
     public static final String UNSUCCESSFUL_EVENT_CONTENT = "Please check previous event and try again later";
     public static final String RABBITMQ_PROPERTIES_NOT_FOUND = "RabbitMQ properties not found";
     public static final String RABBITMQ_PROPERTIES_NOT_FOUND_CONTENT = "RabbitMQ properties not configured for the protocol ";
-    public static final String PROTOCOL = "eiffel";
 }
