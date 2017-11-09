@@ -359,7 +359,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td>OK
 </td>
-<td> This response code will get if all events are published successfully or complete request is successful.
+<td> Status code of 200 is returned if the event is published successfully.
 </td>
 </tr>
 <tr>
@@ -367,7 +367,8 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> Multi Status
 </td>
-<td> This response code will get if few events are published successfully and few events are failed to publish.
+<td> Status code of 207 is returned if we have a mix of internal status codes, i.e. Publish of few events was successful and few events was a failure. It is only applicable for batch publishing.<br>
+Incase of Multiple events in the body json, if a event is given internal status code of 400 or 500 rest events will not be published and will be given a internal status code of 503, which will result in overall HTTP response code of 207.
 </td>
 </tr>
 <tr>
@@ -375,7 +376,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> Bad Request
 </td>
-<td> This response code will get if event is malformed or event structure is not correct.
+<td> Status code of 400 is returned if the request body json is malformed. i.e. Unable to parse the body json. This status code is applicable if request body json is a single event or multiple events.
 </td>
 </tr>
 <tr>
@@ -383,22 +384,14 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> Not Found
 </td>
-<td> This response code will get if RabbitMQ properties not configured for the protocol &lt;protocol&gt;
+<td> Status code of 404 is returned if RabbitMQ message broker properties are not found for the requested protocol. This status code is applicable if request body json is a single event or multiple events.
 </td>
 <tr>
 <td>500
 </td>
 <td> Internal Server Error
 </td>
-<td> This response code will get RabbitMQ server is down or could not prepare Routing key to publish message
-</td>
-</tr>
-<tr>
-<td>503
-</td>
-<td> Service Unavailable
-</td>
-<td> This response code will get when multiple events are published and if one of the event is failed to publish then REMReM will not publish remaining events that would risk broken chains. All subsequent events to the failed one will have this status code.
+<td> Status code of 500 is returned if RabbitMq is down or could not prepare routing key to publish the eiffel event. This status code is applicable if request body json is a single event.
 </td>
 </tr></table>
 
@@ -423,7 +416,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td>Event sent successfully
 </td>
-<td> This response code will get if all events are published successfully or complete request is successful.
+<td> Status code of 200 is returned if the request is completed successfully.
 </td>
 </tr>
 <tr>
@@ -433,7 +426,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> Invalid event content, client need to fix problem in event before submitting again
 </td>
-<td> This response code will get if event is malformed or event structure is not correct.
+<td> Status code of 400 is returned if the request body json is malformed. i.e. Unable to parse the body json. Applicable to single and multiple events in json (or) an event has a missing ID field.
 </td>
 </tr>
 <tr>
@@ -443,7 +436,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> RabbitMq properties not configured for the protocol &lt;protocol&gt;
 </td>
-<td> This response code will get if RabbitMQ properties not configured for the protocol &lt;protocol&gt;
+<td> Status code of 404 is returned if RabbitMQ message broker properties are not found for the event.
 </td>
 </tr>
 <tr>
@@ -454,13 +447,13 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> RabbitMQ is down. Please try later
 </td>
-<td> This response code will get if RabbitMQ server is down.
+<td> Status code of 500 is returned if RabbitMq is down.
 </td>
 </tr>
 <tr>
 <td> Could not prepare Routing key to publish message
 </td>
-<td> This response code will get if protocol library could not prepare routing key to publish message
+<td> Status code of 500 is returned if could not prepare routing key to publish the eiffel event.
 </td>
 </tr>
 <tr>
@@ -470,7 +463,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> Please check previous event and try again later
 </td>
-<td> This response code will get when multiple events are published and if one of the event is failed to publish then REMReM will not publish remaining events that would risk broken chains. All subsequent events to the failed one will have this status code.
+<td> Status code of 503 is returned if there is a failure in publishing previous event with 400, 404 or 500 error.
 </td>
 </tr></table>
 
