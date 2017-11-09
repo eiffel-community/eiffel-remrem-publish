@@ -138,19 +138,15 @@ usage: java -jar
  -port,--port &lt;arg&gt;             port to connect to message bus, default
                                 is 5672
  -ud,--user_domain_suffix &lt;arg&gt; user domain suffix
+ -rk,--routing_key &lt;arg&gt;        routing key of the eiffel message. When provided
+                                routing key is not generated and the value provided is used.
+ -tag,--tag &lt;arg&gt;               tag to be used in routing key
  -v,--list_versions             lists the versions of publish and all loaded protocols</pre>
 
 <p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
 
-<p>The routing key is generated based on the event type and given configurations.<br>
-   The routing key format is : <br> 
-      &lt;protocol&gt;.&lt;family&gt;.&lt;type&gt;.&lt;tag&gt;.&lt;domain&gt; 
-   <ul>
-      <li>&lt;protocol&gt; is used if provided by the protocol library used. </li>
-      <li>&lt;family&gt; and &lt;type&gt; are provided by the protocol library. </li>
-      <li>&lt;tag&gt; is defaulted to the value 'notag'. </li>
-      <li>&lt;domain&gt; is configured and can be suffixed by a user domain part that the user can specify with -ud option. For more information on domain, see <a href="https://github.com/Ericsson/eiffel/blob/master/eiffel-syntax-and-usage/the-meta-object.md#metasourcedomainid">this link</a> .</li>
-   </ul></p>
+<p>The routing key is generated in the protocol library based on the event type.<br>
+   For more information on routing key, see <a href="http://ericsson.github.io/eiffel-remrem-semantics/" target="_blank">this link</a></p>
 
 <p><strong>Publish on a given host, given exchange, given domain and given user domain suffix:</strong></p>
 
@@ -159,17 +155,17 @@ usage: java -jar
 
 <p><strong>If you want to have the message non persistent add np flag:</strong></p>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -domain eiffel001 -np -mp eiffelsemantics
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
 </code></pre>
 
 <p><strong>For loading protocol jars other than eiffelsemantics :</strong></p>
 
-<pre><code> $ java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -domain eiffel001 -mp protocolType
+<pre><code> $ java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp protocolType
 </code></pre>
 <strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
 <p><strong>If you want to have the message publishing logs add d flag:</strong></p>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -domain eiffel001 -mp eiffelsemantics -d
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
 </code></pre>
 
 <p><strong>If you want to have the message publishing on RabbitMq secured port(5671):</strong></p>
@@ -178,10 +174,20 @@ usage: java -jar
 
 <p>tls option value is either 'default'or &lt;version&gt; for secured port.</p>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -domain eiffel001 -mp eiffelsemantics -tls 1.2
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2
 </code></pre>
 
 <strong>Note: For Rabbitmq default port 5672, No need to pass tls option.</strong>
+
+<p><strong>If you want to have the message publishing on RabbitMq with given routing key:</strong></p>
+
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -rk myroutingkey
+</code></pre>
+
+<p><strong>If you want to have the message publishing on RabbitMq with given tag:</strong></p>
+
+<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tag production
+</code></pre>
 
 <h2>
 <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
@@ -232,12 +238,14 @@ usage: java -jar
 </pre>
 
 <p><strong> LDAP authentication without Base64 encryption: </strong></p>
-<pre> <code> $ curl -XPOST -H "Content-Type: application/json" --user username:password --data @ActivityCanceled.json http://localhost:8080/publish-service/producer/msg?mp=eiffelsemantics </code></pre>
+<pre> <code> $ curl -XPOST -H "Content-Type: application/json" --user username:password --data @ActivityCanceled.json http://localhost:8080/publish/producer/msg?mp=eiffelsemantics </code></pre>
 
 <p align="justify">Each HTTP request must then include an Authorization header with value <code>Basic &lt;Base64 encoded username:password&gt;</code>.</p>
 <p><strong> LDAP authentication with Base64 encryption: </strong></p>
 
-<pre> <code> $ curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json http://localhost:8080/publish-service/producer/msg?mp=eiffelsemantics </code></pre>
+<pre> <code> $ curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json http://localhost:8080/publish/producer/msg?mp=eiffelsemantics </code></pre>
+
+<p><strong>Note: Assuming the publish-service is deployed in tomcat as publish</strong></p>
 
 <h3>
 <a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST methods</h3>
@@ -253,7 +261,7 @@ usage: java -jar
 <h3>Versions Endpoint:</h3>
 "/versions" endpoint is used to get the versions of messaging protocols along with the current version of publish in a json format.<br>
 
-Ex:  http://localhost:8080/publish-service/versions/ <br>
+Ex:  http://localhost:8080/publish/versions/ <br>
 
 Result:
 
@@ -288,46 +296,59 @@ Result:
 
 <p><strong>One message:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/producer/msg?mp=eiffelsemantics
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics
 
 [{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
 <p><strong>Two messages/objects and given user domain suffix:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' http://localhost:8080/producer/msg?ud=fem001&mp=eiffelsemantics
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics
 
 [{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
-<p><strong>NOTE:</strong> For other than eiffelsemantics protocol, provide the Java opts as: </p>
+<p><strong>One message and given tag:</strong></p>
+
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&tag=production
+
+[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
+</code></pre>
+
+<p><strong>One message and given routing key:</strong></p>
+
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&rk=myroutingkey
+
+[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
+</code></pre>
+
+<p><strong>NOTE:</strong> For any protocol, provide the Java opts as: </p>
 <pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/jars/" in catalina.sh</pre>
 <strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
 <p><strong>Reading data from a file:</strong></p>
 
 <pre><code>$ echo '[{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' &gt; test.data
-$ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/producer/msg?mp=eiffelsemantics
+$ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/publish/producer/msg?mp=eiffelsemantics
 
 [{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
 
 <p><strong>Malformed input:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d 'SOMETHING' http://localhost:8080/producer/msg?ud=fem001&mp=eiffel3
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d 'SOMETHING' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffel3
 
 [{"status_code":400,"result":"Bad Request","message":"Invalid event content, client need to fix problem in event before submitting again"}]
 </code></pre>
 
 <p><strong>Status Codes:</strong></p>
-<p>The response generated will have internal status codes for each and every event based on the input JSON provided.Status codes are generated according to the below table: </p>
-<p><strong> Note: </strong>We have a a status code on the HTTP response and an internal status code.</p>
-
-
+<p>The response generated will have internal status codes for each and every event based on the input JSON provided.Status codes are generated according to the below tables: </p>
+<p><strong> Note: </strong>We have a status code on the HTTP response and an internal status code.</p>
+<p><strong>HTTP response codes:</strong></p>
 <table class="wikitable">
 <tr>
 <th style="text-align:left;"> Status code
 </th>
-<th style="text-align:left;"> Description
+<th style="text-align:left;"> HTTP response
 </th>
 <th style="text-align:left;"> Comment
 </th>
@@ -338,7 +359,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td>OK
 </td>
-<td> Event sent successfully
+<td> Status code of 200 is returned if the event is published successfully.
 </td>
 </tr>
 <tr>
@@ -346,7 +367,56 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> Multi Status
 </td>
-<td> Used with batch publishing, client need to parse body to see status per event
+<td> Status code of 207 is returned if we have a mix of internal status codes, i.e. Publish of few events was successful and few events was a failure. It is only applicable for batch publishing.<br>
+Incase of Multiple events in the body json, if a event is given internal status code of 400 or 500 rest events will not be published and will be given a internal status code of 503, which will result in overall HTTP response code of 207.
+</td>
+</tr>
+<tr>
+<td>400
+</td>
+<td> Bad Request
+</td>
+<td> Status code of 400 is returned if the request body json is malformed. i.e. Unable to parse the body json. This status code is applicable if request body json is a single event or multiple events.
+</td>
+</tr>
+<tr>
+<td>404
+</td>
+<td> Not Found
+</td>
+<td> Status code of 404 is returned if RabbitMQ message broker properties are not found for the requested protocol. This status code is applicable if request body json is a single event or multiple events.
+</td>
+<tr>
+<td>500
+</td>
+<td> Internal Server Error
+</td>
+<td> Status code of 500 is returned if RabbitMq is down or could not prepare routing key to publish the eiffel event. This status code is applicable if request body json is a single event.
+</td>
+</tr></table>
+
+
+<p><strong>Internal status codes:</strong></p>
+<table class="wikitable">
+<tr>
+<th style="text-align:left;"> Status code
+</th>
+<th style="text-align:left;"> Result
+</th>
+<th style="text-align:left;"> Message
+</th>
+<th style="text-align:left;"> Comment
+</th>
+
+</tr>
+<tr>
+<td>200
+</td>
+<td>SUCCESS
+</td>
+<td>Event sent successfully
+</td>
+<td> Status code of 200 is returned if the request is completed successfully.
 </td>
 </tr>
 <tr>
@@ -356,24 +426,8 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> Invalid event content, client need to fix problem in event before submitting again
 </td>
-</tr>
-<tr>
-<td>500
+<td> Status code of 400 is returned if the request body json is malformed. i.e. Unable to parse the body json. Applicable to single and multiple events in json (or) an event has a missing ID field.
 </td>
-<td> Internal Server Error
-</td>
-<td> Possible to try again later when server is up
-</td>
-
-</tr>
-<tr>
-<td>503
-</td>
-<td> Service Unavailable
-</td>
-<td> Used with batch publishing. If one event fails REMReM will not publish remaining events that would risk broken chains. All subsequent events to the failed one will have this status code.
-</td>
-
 </tr>
 <tr>
 <td>404
@@ -382,11 +436,39 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 </td>
 <td> RabbitMq properties not configured for the protocol &lt;protocol&gt;
 </td>
+<td> Status code of 404 is returned if RabbitMQ message broker properties are not found for the event.
+</td>
+</tr>
+<tr>
 
+<td rowspan="2">500
+</td>
+<td rowspan="2"> Internal Server Error
+</td>
+<td> RabbitMQ is down. Please try later
+</td>
+<td> Status code of 500 is returned if RabbitMq is down.
+</td>
+</tr>
+<tr>
+<td> Could not prepare Routing key to publish message
+</td>
+<td> Status code of 500 is returned if could not prepare routing key to publish the eiffel event.
+</td>
+</tr>
+<tr>
+<td>503
+</td>
+<td> Service Unavailable
+</td>
+<td> Please check previous event and try again later
+</td>
+<td> Status code of 503 is returned if there is a failure in publishing previous event with 400, 404 or 500 error.
+</td>
 </tr></table>
 
 <p><strong>Status Codes Explanation:</strong></p>
-<p><strong>200:</strong>When all the event are sent successfully, then the internal status code for each event and status code for HTTP response will be 200.</p>
+<p><strong>200:</strong>When all the events are sent successfully, then the internal status code for each event and status code for HTTP response will be 200.</p>
 <pre><code><strong>HTTP Response:</strong> 200 :OK
 [
 	{
@@ -436,7 +518,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
 	 "status_code":500,
 	 "result":"Internal Server Error",
-	 "message":"Possible to try again later when server is up"
+	 "message":"RabbitMQ is down. Please try later"
 	}
 ]
 </code></pre>
@@ -484,6 +566,16 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 	"status_code": 404,
 	"result": "RabbitMq properties not found",
 	"message": "RabbitMq properties not configured for the protocol &lt;protocol&gt;"
+	}
+]
+</code></pre>
+<p><strong>500:</strong>We will get this status code,when cannot prepare routing key.</p>
+<pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
+[
+	{
+	"status_code": 500,
+	"result": "Internal Server Error",
+	"message": "Could not prepare Routing key to publish message"
 	}
 ]
 </code></pre>
