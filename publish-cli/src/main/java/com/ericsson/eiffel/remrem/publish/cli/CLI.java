@@ -134,7 +134,8 @@ public class CLI implements CommandLineRunner{
             MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
             if(msgService != null) {
                 rmqHelper.rabbitMqPropertiesInit(msgService.getServiceName());
-                SendResult results = messageService.send(content, msgService,CliOptions.getCommandLine().getOptionValue("ud"));
+                SendResult results = messageService.send(content, msgService, CliOptions.getCommandLine().getOptionValue("ud"), 
+                        CliOptions.getCommandLine().getOptionValue("tag"), CliOptions.getCommandLine().getOptionValue("rk"));
                 JsonArray jarray=new JsonArray();
                 for (PublishResultItem result : results.getEvents()) {
                     jarray.add(result.toJsonObject());

@@ -1,3 +1,6 @@
+## 0.4.9
+- Modified rk and tag to query parameters in Service.
+
 ## 0.4.8
 - Uplifted remrem-semantics to 0.3.1 to override given input meta.source.serializer GAV information
 

@@ -55,15 +55,17 @@ public class ProducerController {
     @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity send(@RequestParam(value = "mp", required = false) String msgProtocol,
-            @RequestParam(value = "ud", required = false) String userDomain, @RequestBody JsonElement body) {
+            @RequestParam(value = "ud", required = false) String userDomain, @RequestParam(value = "tag", required = false) 
+            String tag, @RequestParam(value = "rk", required = false) String routingKey, @RequestBody JsonElement body) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
 
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
+        log.debug("user domain suffix: " + userDomain + " tag: " + tag + " Routing Key: " + routingKey);
         if(msgService != null && msgProtocol != null) {
             rmqHelper.rabbitMqPropertiesInit(msgProtocol);
         }
-        SendResult result = messageService.send(body, msgService, userDomain);
+        SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
         return new ResponseEntity(result, messageService.getHttpStatus());
     }
     

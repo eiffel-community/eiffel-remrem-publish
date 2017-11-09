@@ -60,7 +60,6 @@ public class ProducerControllerIntegrationTest {
     private String domainId= "True";
     private String exchangeName= "EN1";
     private String host= "HostA";
-    private String routingKey = "eiffelxxx.femxxx";
     private String protocol = "eiffelsemantics";
     @Autowired
     RMQHelper rmqHelper;
@@ -72,7 +71,6 @@ public class ProducerControllerIntegrationTest {
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setRoutingKey(routingKey);
     }
 
     @Test
@@ -81,7 +79,7 @@ public class ProducerControllerIntegrationTest {
         if (msgService != null) {
             JsonArray jarray = new JsonArray();
             String jsonString = FileUtils.readFileToString(new File("src/integration-test/resources/EiffelJobFinishedEvent.json"));
-            SendResult results = messageService.send(jsonString, msgService, "fem001");
+            SendResult results = messageService.send(jsonString, msgService, "fem001", null, null);
             for (PublishResultItem result : results.getEvents()) {
                 jarray.add(result.toJsonObject());
             }
@@ -111,18 +109,6 @@ public class ProducerControllerIntegrationTest {
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             String routingKey = messageService.generateRoutingKey(json.getAsJsonObject(), null, null, null);
             assertEquals("eiffel.activity.finished.notag.example.domain", routingKey);
-        }
-    }
-
-    @Test
-    public void testRoutingKey() throws Exception {
-        MsgService messageService = PublishUtils.getMessageService("", msgServices);
-        if (messageService != null) {
-            File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
-            JsonParser parser = new JsonParser();
-            JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            String routingKey = PublishUtils.getRoutingKey(messageService, json.getAsJsonObject(), rmqHelper, null);
-            assertEquals("eiffelxxx.femxxx", routingKey);
         }
     }
  }
