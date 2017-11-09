@@ -80,8 +80,8 @@ public class CliOptions {
         options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
         options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         options.addOption("v", "lists the versions of publish and all loaded protocols");
-        options.addOption("tag", "tag", true, "tag needs to put in routing key");
-        options.addOption("rk", "routing_key", true, "routing key of the eiffel message");
+        options.addOption("tag", "tag", true, "tag to be used in routing key");
+        options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }

@@ -64,10 +64,12 @@ import ch.qos.logback.classic.Logger;
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
                 String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue(), msgService);
                 if (PropertiesConfig.SUCCESS.equals(message)) {
-                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, PropertiesConfig.SUCCESS_MESSAGE);
+                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS,
+                            PropertiesConfig.SUCCESS_MESSAGE);
                 } else {
                     event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,
                             PropertiesConfig.SERVER_DOWN_MESSAGE);
+                    checkEventStatus = false;
                 }
                 results.add(event);
             }
