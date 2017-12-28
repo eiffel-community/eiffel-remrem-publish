@@ -1,3 +1,6 @@
+## 0.5.0
+- Updated non-workable examples in documentation.
+
 ## 0.4.9
 - Modified rk and tag to query parameters in Service.
 
