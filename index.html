@@ -296,49 +296,56 @@ Result:
 
 <p><strong>One message:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics</code></pre>
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
-</code></pre>
+<p>Gives:</p>
+
+<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
 <p><strong>Two messages/objects and given user domain suffix:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]},{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440998,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics</code></pre>
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
-</code></pre>
+<p>Gives:</p>
+
+<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
 <p><strong>One message and given tag:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&tag=production
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&tag=production</code></pre>
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
-</code></pre>
+<p>Gives:</p>
+
+<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
 <p><strong>One message and given routing key:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '["{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}"]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&rk=myroutingkey
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&rk=myroutingkey</code></pre>
 
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
-</code></pre>
+<p>Gives:</p>
+
+<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
 <p><strong>NOTE:</strong> For any protocol, provide the Java opts as: </p>
 <pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/jars/" in catalina.sh</pre>
 <strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
 <p><strong>Reading data from a file:</strong></p>
 
-<pre><code>$ echo '[{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}},{"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}]},"links":{"activityExecution":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeee1","flowContext":"flowContext","causes":["cause1","cause2"]},"meta":{"domainId":"example.domain","id":"9cdd0f68-df85-44b0-88bd-fc4163ac90b1","type":"EiffelActivityFinishedEvent","version":"0.1.7","time":1478780245184,"tags":["tag1","tag2"],"source":{"host":"host","name":"name","uri":"http://java.sun.com/j2se/1.3/","serializer":{"groupId":"G","artifactId":"A","version":"V"}}}}]' &gt; test.data
+<pre><code>$ echo '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}, {"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440998,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' > test.data
 $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/publish/producer/msg?mp=eiffelsemantics
-
-[{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]
 </code></pre>
+
+<p>Gives:</p>
+
+<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
 <p><strong>Malformed input:</strong></p>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d 'SOMETHING' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffel3
+<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{Message}]' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffel3</code></pre>
 
-[{"status_code":400,"result":"Bad Request","message":"Invalid event content, client need to fix problem in event before submitting again"}]
-</code></pre>
+<p>Gives:</p>
+
+<pre>{"timestamp":"Dec 27, 2017 3:34:11 PM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: ..."}</pre>
 
 <p><strong>Status Codes:</strong></p>
 <p>The response generated will have internal status codes for each and every event based on the input JSON provided.Status codes are generated according to the below tables: </p>
