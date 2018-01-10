@@ -1,3 +1,6 @@
+## 0.5.0
+- Uplifted remrem-semantics version to 0.3.2 to support continuous operation events
+
 ## 0.4.9
 - Modified rk and tag to query parameters in Service.
 
