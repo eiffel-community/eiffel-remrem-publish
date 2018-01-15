@@ -39,18 +39,22 @@ public interface MessageService {
      *      surrounded with brackets
      * @param msgService
      * @param userDomainSuffix is optional parameter, If user provide this it will add to the domainId.
+     * @param tag is optional parameter, If user provide this it will add to the tag if routingKey is not specified by the user.
+     * @param routingKey is optional parameter, If user provide this it will add to the routingKey otherwise generate routingKey based on message type.
      * @return SendResult which contains response including eventId, statusCode, message and result.
      */
  
-    public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix);
+    public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix, String tag, String routingKey);
     
     /**
      * @param jsonContent a json object containing the messages to be send
      * @param msgService
      * @param userDomainSuffix is optional parameter, If user provide this it will add to the domainId.
+     * @param tag is optional parameter, If user provide this it will add to the tag if routingKey is not specified by the user.
+     * @param routingKey is optional parameter, If user provide this it will add to the routingKey otherwise generate routingKey based on message type.
      * @return SendResult which contains response including eventId, statusCode, message and result.
      */
-    public SendResult send(JsonElement jsonContent, MsgService msgService, String userDomainSuffix);
+    public SendResult send(JsonElement jsonContent, MsgService msgService, String userDomainSuffix, String tag, String routingKey);
     
     /**
      * Does the cleanup like closing open connections

@@ -38,6 +38,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
+import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
@@ -56,22 +57,20 @@ public class ProducerControllerIntegrationTest {
     private MsgService[] msgServices;
     @Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
     private String credentials = "Basic " + Base64.getEncoder().encodeToString("user:secret".getBytes());
+    private String domainId= "True";
+    private String exchangeName= "EN1";
+    private String host= "HostA";
+    private String protocol = "eiffelsemantics";
+    @Autowired
+    RMQHelper rmqHelper;
 
     @Before
     public void setUp() {
         RestAssured.port = port;
-    }
-    
-    @Test
-    public void testGetFamily() throws Exception {
-        MsgService messageService = PublishUtils.getMessageService("eiffel3", msgServices);
-        if (messageService != null) {
-            File file = new File("src/integration-test/resources/EiffelJobFinishedEvent.json");
-            JsonParser parser = new JsonParser();
-            JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            String family = messageService.getFamily(json.getAsJsonObject());
-            assertEquals("job", family);
-        }
+        rmqHelper.rabbitMqPropertiesInit(protocol);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
     }
 
     @Test
@@ -80,7 +79,7 @@ public class ProducerControllerIntegrationTest {
         if (msgService != null) {
             JsonArray jarray = new JsonArray();
             String jsonString = FileUtils.readFileToString(new File("src/integration-test/resources/EiffelJobFinishedEvent.json"));
-            SendResult results = messageService.send(jsonString, msgService, "fem001");
+            SendResult results = messageService.send(jsonString, msgService, "fem001", null, null);
             for (PublishResultItem result : results.getEvents()) {
                 jarray.add(result.toJsonObject());
             }
@@ -102,26 +101,14 @@ public class ProducerControllerIntegrationTest {
     }
 
     @Test
-    public void testGetFamilyRoutingKey() throws Exception {
+    public void testGenerateRoutingKey() throws Exception {
         MsgService messageService = PublishUtils.getMessageService("", msgServices);
         if (messageService != null) {
             File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            String family = messageService.getFamily(json.getAsJsonObject());
-            assertEquals("activity", family);
-        }
-    }
-
-    @Test
-    public void testGetTypeRoutingKey() throws Exception {
-        MsgService messageService = PublishUtils.getMessageService("", msgServices);
-        if (messageService != null) {
-            File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
-            JsonParser parser = new JsonParser();
-            JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            String type = messageService.getType(json.getAsJsonObject());
-            assertEquals("finished", type);
+            String routingKey = messageService.generateRoutingKey(json.getAsJsonObject(), null, null, null);
+            assertEquals("eiffel.activity.finished.notag.example.domain", routingKey);
         }
     }
  }

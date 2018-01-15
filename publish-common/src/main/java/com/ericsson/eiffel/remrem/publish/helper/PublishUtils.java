@@ -19,14 +19,12 @@ import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.semantics.SemanticsService;
 import com.google.gson.JsonObject;
 
 import ch.qos.logback.classic.Logger;
 
 public class PublishUtils {
 
-    private static final String DOT = ".";
     static Logger log = (Logger) LoggerFactory.getLogger(PublishUtils.class);
     /**
      * Method returns the MsgService based on the mp(message protocol) from the list of MsgService beans. 
@@ -58,33 +56,19 @@ public class PublishUtils {
      * @param msgService the Messaging service.
      * @param json the eiffel event
      * @param userDomainSuffix is optional parameter, If user provide this it will add to the domainId.
-     * @return routing key or returns null if family and type not available.
-     */
-    public static String prepareRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper,
-            String userDomainSuffix) {
+     * @param tag is optional parameter, If user provide this it will add to the tag if routingKey is not specified by the user.
+     * @param routingKey is optional parameter, If user provide this it will add to the routingKey otherwise generate routingKey based on message type.
+     * @return routing key or returns "" if host, exchange and domainId not available.
+    */
+    public static String getRoutingKey(MsgService msgService, JsonObject json, RMQHelper rmqHelper, String userDomainSuffix, String tag, String routingKey) {
         String protocol = msgService.getServiceName();
+        Boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
         RabbitMqProperties rabbitMqProperties = rmqHelper.rabbitMqPropertiesMap.get(protocol);
-        if (rabbitMqProperties != null && rabbitMqProperties.getDomainId() != null && rabbitMqProperties.getExchangeName() != null && rabbitMqProperties.getHost() != null) {
-            String domainId = rabbitMqProperties.getDomainId();
-            String family = msgService.getFamily(json);
-            String type = msgService.getType(json);
-            if (StringUtils.isNotEmpty(userDomainSuffix)) {
-                domainId = domainId + DOT + userDomainSuffix;
-            }
-            if (msgService != null && StringUtils.isNotEmpty(family) && StringUtils.isNotEmpty(type)) {
-                if (msgService instanceof SemanticsService)
-                    return PropertiesConfig.PROTOCOL + DOT + family + DOT + type + DOT + "notag" + DOT + domainId;
-                else
-                    return family + DOT + type + DOT + "notag" + DOT + domainId;
-            }
-        } else {
-            if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
-                log.error("RabbitMq properties not configured for protocol " + protocol);
-                System.exit(-1);
-            }
-            return "";
+        String domainId = rabbitMqProperties.getDomainId();
+        if (rabbitMqProperties != null && rabbitMqProperties.getExchangeName() != null && rabbitMqProperties.getHost() != null
+                && (cliMode || (!cliMode && StringUtils.isNotBlank(domainId)))) {
+            return StringUtils.defaultIfBlank(routingKey, msgService.generateRoutingKey(json, tag, domainId, userDomainSuffix));
         }
-        return null;
+        return "";
     }
-
 }

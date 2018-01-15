@@ -80,6 +80,8 @@ public class CliOptions {
         options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
         options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         options.addOption("v", "lists the versions of publish and all loaded protocols");
+        options.addOption("tag", "tag", true, "tag to be used in routing key");
+        options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }
@@ -209,16 +211,16 @@ public class CliOptions {
         if (commandLine.hasOption("tls")) {
             String tls_ver = commandLine.getOptionValue("tls");
             if (tls_ver == null) {
-            	tls_ver = "NULL";
+                tls_ver = "NULL";
             }
             String[] validTlsVersions = new String[]{"1", "1.1", "1.2", "default"};
             if (!ArrayUtils.contains(validTlsVersions, tls_ver)) {
-            	throw new HandleMessageBusException("Specified TLS version is not valid! Specify a valid TLS version!");
+                throw new HandleMessageBusException("Specified TLS version is not valid! Specify a valid TLS version!");
             }
             String key = PropertiesConfig.TLS;
             System.setProperty(key, tls_ver);	
-    	}
-    	
+        }
+
         String usePersistance = "true";
         if (commandLine.hasOption("np")) {
             usePersistance = "false";    		
@@ -255,6 +257,8 @@ public class CliOptions {
         key = PropertiesConfig.MESSAGE_BUS_PORT;
         System.clearProperty(key);
         key = PropertiesConfig.TLS;
+        System.clearProperty(key);
+        key = PropertiesConfig.DOMAIN_ID;
         System.clearProperty(key);
     }
     

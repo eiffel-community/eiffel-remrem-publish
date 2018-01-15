@@ -1,3 +1,23 @@
+## 0.4.9
+- Modified rk and tag to query parameters in Service.
+
+## 0.4.8
+- Uplifted remrem-semantics to 0.3.1 to override given input meta.source.serializer GAV information
+
+## 0.4.7
+- Added rk(Routing key) and tag option in CLI.
+- Added routingKey and tag parameter in Service.
+- Moved Routing key generation to corresponding protocol.
+
+## 0.4.6
+- Uplifted remrem-semantics version to 0.2.9
+
+## 0.4.5
+- Uplifted remrem-semantics version to 0.2.8.
+
+## 0.4.4
+- Uplifted remrem-semantics version to 0.2.7.
+
 ## 0.4.3
 - Removed spring configurations from config.properties file and handled through code.
 

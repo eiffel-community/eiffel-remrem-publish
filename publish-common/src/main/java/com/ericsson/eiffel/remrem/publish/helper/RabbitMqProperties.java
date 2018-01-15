@@ -36,6 +36,7 @@ public class RabbitMqProperties {
     private String username;
     private String password;
     private String domainId;
+
     private Connection rabbitConnection;
     private String protocol;
 
@@ -219,6 +220,7 @@ public class RabbitMqProperties {
         if (password == null) {
             password = getValuesFromSystemProperties(protocol + ".rabbitmq.password");
         }
+
     }
 
     private void setValues() {
@@ -238,7 +240,7 @@ public class RabbitMqProperties {
      * This method is used to check mandatory RabbitMQ properties.
      */
     private void madatoryParametersCheck() {
-        if(host == null || exchangeName == null || domainId == null) {
+        if(host == null || exchangeName == null) {
             if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
                 System.err.println("Mandatory RabbitMq properties missing");
                 System.exit(-1);

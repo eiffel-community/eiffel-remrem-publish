@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -63,10 +64,12 @@ import ch.qos.logback.classic.Logger;
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
                 String message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue(), msgService);
                 if (PropertiesConfig.SUCCESS.equals(message)) {
-                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS, PropertiesConfig.SUCCESS_MESSAGE);
+                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS,
+                            PropertiesConfig.SUCCESS_MESSAGE);
                 } else {
                     event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,
                             PropertiesConfig.SERVER_DOWN_MESSAGE);
+                    checkEventStatus = false;
                 }
                 results.add(event);
             }
@@ -80,31 +83,36 @@ import ch.qos.logback.classic.Logger;
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.lang.String, com.ericsson.eiffel.remrem.protocol.MsgService, java.lang.String)
      */
     @Override
-    public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix) {
+    public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix, String tag, String routingKey) {
 
         JsonParser parser = new JsonParser();
         try {
             JsonElement json = parser.parse(jsonContent);
             if (json.isJsonArray()) {
-                return send(json, msgService, userDomainSuffix);
+                return send(json, msgService, userDomainSuffix, tag, routingKey);
             } else {
                 Map<String, String> map = new HashMap<>();
                 Map<String, String> routingKeyMap = new HashMap<>();
                 String eventId = msgService.getEventId(json.getAsJsonObject());
-                String routingKey = (eventId != null) ? (PublishUtils.prepareRoutingKey(msgService,
-                        json.getAsJsonObject(), rmqHelper, userDomainSuffix)) : null;
-                if (eventId != null && routingKey != null && !routingKey.isEmpty()) {
-                    map.put(eventId, json.toString());
-                    routingKeyMap.put(eventId, routingKey);
-                } else if(routingKey != null && routingKey.isEmpty()) {
-                    List<PublishResultItem> events = new ArrayList<>();
-                    PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
-                    events.add(resultItem);
-                    return new SendResult(events);
+                if (StringUtils.isNotBlank(eventId)) {
+                    String routing_key = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomainSuffix, tag, routingKey);
+                    if (StringUtils.isNotBlank(routing_key)) {
+                        map.put(eventId, json.toString());
+                        routingKeyMap.put(eventId, routing_key);
+                    } else if (routing_key == null) {
+                        List<PublishResultItem> resultItemList = new ArrayList<>();
+                        routingKeyGenerationFailure(resultItemList);
+                        return new SendResult(resultItemList);
+                    } else {
+                        List<PublishResultItem> resultItemList = new ArrayList<>();
+                        PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
+                        resultItemList.add(resultItem);
+                        return new SendResult(resultItemList);
+                    }
                 } else {
-                    List<PublishResultItem> events = new ArrayList<>();
-                    createFailureResult(events);
-                    return new SendResult(events);
+                    List<PublishResultItem> resultItemList = new ArrayList<>();
+                    createFailureResult(resultItemList);
+                    return new SendResult(resultItemList);
                 }
                 return send(routingKeyMap, map, msgService);
             }
@@ -114,18 +122,18 @@ import ch.qos.logback.classic.Logger;
                 resultMsg = resultMsg + " Cause: " + e.getCause().getMessage();
             }
             log.error(resultMsg, e.getMessage());
-            List<PublishResultItem> events = new ArrayList<>();
-            createFailureResult(events);
-            return new SendResult(events);
+            List<PublishResultItem> resultItemList = new ArrayList<>();
+            createFailureResult(resultItemList);
+            return new SendResult(resultItemList);
         }
     }
-    
+
     /*
      * (non-Javadoc)
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(com.google.gson.JsonElement, com.ericsson.eiffel.remrem.protocol.MsgService, java.lang.String)
-     */
+    */
     @Override
-    public SendResult send(JsonElement json, MsgService msgService, String userDomainSuffix) {
+    public SendResult send(JsonElement json, MsgService msgService, String userDomainSuffix, String tag, String routingKey) {
         Map<String, String> map = new HashMap<>();
         Map<String, String> routingKeyMap = new HashMap<>();
         SendResult result;
@@ -138,25 +146,35 @@ import ch.qos.logback.classic.Logger;
             checkEventStatus = true;
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
-                String routingKey = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap, userDomainSuffix);
                 String eventId = msgService.getEventId(obj.getAsJsonObject());
-                if (eventId != null && checkEventStatus && (routingKey != null && !routingKey.isEmpty())) {
-                    result = send(obj.toString(), msgService, userDomainSuffix);
-                    resultList.addAll(result.getEvents());
-                    int statusCode = result.getEvents().get(0).getStatusCode();
-                    if (!statusCodes.contains(statusCode))
-                        statusCodes.add(statusCode);
-                } else {
-                    if (!checkEventStatus) {
-                        addUnsuccessfulResultItem(obj);
+                if (StringUtils.isNotEmpty(eventId) && checkEventStatus) {
+                    String routing_key = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap,
+                            userDomainSuffix, tag, routingKey);
+                    if (StringUtils.isNotBlank(routing_key)) {
+                        result = send(obj.toString(), msgService, userDomainSuffix, tag, routing_key);
+                        resultList.addAll(result.getEvents());
+                        int statusCode = result.getEvents().get(0).getStatusCode();
+                        if (!statusCodes.contains(statusCode))
+                            statusCodes.add(statusCode);
+                    } else if (routing_key == null) {
+                        routingKeyGenerationFailure(resultList);
+                        errorItems = new ArrayList<JsonElement>();
                         int statusCode = resultList.get(0).getStatusCode();
                         statusCodes.add(statusCode);
-                    } else if(routingKey != null && routingKey.isEmpty()) {
+                        errorItems.add(obj);
+                        checkEventStatus = false;
+                    } else {
                         PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
                         resultList.add(resultItem);
                         int statusCode = resultItem.getStatusCode();
                         statusCodes.add(statusCode);
                         break;
+                    }
+                } else {
+                    if (!checkEventStatus) {
+                        addUnsuccessfulResultItem(obj);
+                        int statusCode = resultList.get(0).getStatusCode();
+                        statusCodes.add(statusCode);
                     } else {
                         createFailureResult(resultList);
                         errorItems = new ArrayList<JsonElement>();
@@ -169,7 +187,7 @@ import ch.qos.logback.classic.Logger;
             }
         } else {
             statusCodes = new ArrayList<Integer>();
-            result = send(json.toString(), msgService, userDomainSuffix);
+            result = send(json.toString(), msgService, userDomainSuffix, tag, routingKey);
             resultList.addAll(result.getEvents());
             int statusCode = result.getEvents().get(0).getStatusCode();
             if (!statusCodes.contains(statusCode))
@@ -179,7 +197,7 @@ import ch.qos.logback.classic.Logger;
         result.setEvents(resultList);
         return result;
     }
-    
+
     private String sendMessage(String routingKey, String msg, MsgService msgService) {
         String resultMsg = PropertiesConfig.SUCCESS;
         instantiateRmqHelper();
@@ -207,7 +225,7 @@ import ch.qos.logback.classic.Logger;
                 log.error(e.getMessage(), e);
             }
     }
-    
+
     /**
      * Method get the eventId from the messaging service. And checks the eventId.
      * @param msgService Messaging service.
@@ -217,26 +235,25 @@ import ch.qos.logback.classic.Logger;
      * @param routingKeyMap contains the eventId and routing key of that event
      */
     private String getAndCheckEvent(MsgService msgService, Map<String, String> map, List<PublishResultItem> events,
-            JsonElement obj, Map<String, String> routingKeyMap, String userDomainSuffix) {
+            JsonElement obj, Map<String, String> routingKeyMap, String userDomainSuffix, String tag, String routingKey) {
         String eventId = msgService.getEventId(obj.getAsJsonObject());
-        String routingKey = (eventId != null)
-                ? (PublishUtils.prepareRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix))
-                : null;
-        if (eventId != null && routingKey != null && !routingKey.isEmpty()) {
-            routingKeyMap.put(eventId, routingKey);
+        String routing_key = (eventId != null)
+                ? PublishUtils.getRoutingKey(msgService, obj.getAsJsonObject(), rmqHelper, userDomainSuffix, tag, routingKey) : null;
+        if (eventId != null && routing_key != null && !routing_key.isEmpty()) {
+            routingKeyMap.put(eventId, routing_key);
             map.put(eventId, obj.toString());
         }
-        return routingKey;
+        return routing_key;
     }
 
     /**
      * Method returns result for the failure event.
      * @param events for list the eiffel events results
      */
-    private void createFailureResult(List<PublishResultItem> events) {
-        PublishResultItem event = new PublishResultItem(null, 400, PropertiesConfig.INVALID_MESSAGE,
+    private void createFailureResult(List<PublishResultItem> resultItemList) {
+        PublishResultItem resultItem = new PublishResultItem(null, 400, PropertiesConfig.INVALID_MESSAGE,
                 PropertiesConfig.INVALID_EVENT_CONTENT);
-        events.add(event);
+        resultItemList.add(resultItem);
     }
 
     /**
@@ -248,6 +265,12 @@ import ch.qos.logback.classic.Logger;
         PublishResultItem event = new PublishResultItem(null, 404, PropertiesConfig.RABBITMQ_PROPERTIES_NOT_FOUND,
                 PropertiesConfig.RABBITMQ_PROPERTIES_NOT_FOUND_CONTENT+msgService.getServiceName());
         return event;
+    }
+
+    private void routingKeyGenerationFailure(List<PublishResultItem> resultItemList) {
+        PublishResultItem resultItem = new PublishResultItem(null, 500, PropertiesConfig.SERVER_DOWN,
+                PropertiesConfig.ROUTING_KEY_GENERATION_FAILED_CONTENT);
+        resultItemList.add(resultItem);
     }
 
     private void addUnsuccessfulResultItem(JsonElement obj) {
