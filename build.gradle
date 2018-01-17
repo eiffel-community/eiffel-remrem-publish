@@ -14,7 +14,8 @@
 */
 buildscript {
     repositories {
-        mavenCentral()
+        //mavenCentral()
+        maven { url 'http://repo1.maven.org/maven2' } 
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
@@ -35,7 +36,8 @@ plugins {
 repositories {
     // Use 'jcenter' for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    mavenCentral()
+    //mavenCentral()
+    maven { url 'http://repo1.maven.org/maven2' } 
     maven {
         url 'https://jitpack.io'
     }
@@ -49,7 +51,8 @@ subprojects {
     //For all subproject we add the build script and dependencies here
     buildscript {
         repositories {
-            mavenCentral()
+            //mavenCentral()
+            maven { url 'http://repo1.maven.org/maven2' }             
         }
         dependencies {
             classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
@@ -66,7 +69,8 @@ subprojects {
     repositories {
         // Use 'jcenter' for resolving your dependencies.
         // You can declare any Maven/Ivy/file repository here.
-        mavenCentral()
+        //mavenCentral()
+        maven { url 'http://repo1.maven.org/maven2' }
         maven { url 'https://jitpack.io' }
     }
 
