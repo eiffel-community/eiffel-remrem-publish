@@ -30,6 +30,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.*;
+
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,7 +116,7 @@ public class EiffelRemremCommonControllerUnitTest {
     public void testRestTemplateCallSuccess() throws Exception {
         String correctURL = "/{mp}?msgType={msgType}";
         when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>>any(),
-                Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOK);                
+                Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOK);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",
                 body.getAsJsonObject());
@@ -155,10 +157,13 @@ public class EiffelRemremCommonControllerUnitTest {
         map.put("tag", tag);
         map.put("rk", rk);
 
-        urlT.generate(mp, msgType, ud, rk, tag);
+        String generateServerHost = "localhost";
+        String generateServerPort = "8987";
+        String correctURL = "http://{generateServerHost}:{generateServerPort}/{mp}?msgType={msgType}&ud={ud}&tag={tag}&rk={rk}";
+
+        urlT.generate(mp, msgType, ud, rk, tag, generateServerHost, generateServerPort);
         mapTest = urlT.getMap();
 
-        String correctURL = "http://localhost:8987/{mp}?msgType={msgType}&ud={ud}&tag={tag}&rk={rk}";
         assertEquals(mapTest.get("mp"), map.get("mp"));
         assertEquals(mapTest.get("msgType"), map.get("msgType"));
 

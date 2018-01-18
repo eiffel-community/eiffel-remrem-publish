@@ -128,7 +128,7 @@ public class ProducerController {
             @RequestParam(value = "rk", required = false) String routingKey, @RequestBody JsonObject bodyJson) {
 
         URLTemplate urlTemplate = new URLTemplate();
-        urlTemplate.generate(mp, msgType, userDomain, routingKey, tag);
+        urlTemplate.generate(mp, msgType, userDomain, routingKey, tag, generateServerHost ,generateServerPort);
 
         ResponseEntity<String> response = null;
 

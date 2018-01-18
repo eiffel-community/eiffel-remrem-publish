@@ -20,13 +20,15 @@ public class URLTemplate {
         return map;
     }
 
-    public void generate(String mp, String msgType, String userDomain, String routingKey, String tag) {
+    public void generate(String mp, String msgType, String userDomain, String routingKey, String tag,  String generateServerHost, String generateServerPort) {
 
-        url = "http://localhost:8987/{mp}?msgType={msgType}";
+        url = "http://{generateServerHost}:{generateServerPort}/{mp}?msgType={msgType}";
 
         map = new HashMap<String, String>();
         map.put("mp", mp);
         map.put("msgType", msgType);
+        map.put("generateServerHost", generateServerHost);
+        map.put("generateServerPort", generateServerPort);
         
         if (userDomain == null) {userDomain = "";}
         if (tag == null) {tag = "";}
