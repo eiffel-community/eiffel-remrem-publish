@@ -14,7 +14,7 @@
 */
 buildscript {
     repositories {
-        mavenCentral()
+        mavenCentral() 
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
@@ -35,7 +35,7 @@ plugins {
 repositories {
     // Use 'jcenter' for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    mavenCentral()
+    mavenCentral() 
     maven {
         url 'https://jitpack.io'
     }
@@ -49,7 +49,7 @@ subprojects {
     //For all subproject we add the build script and dependencies here
     buildscript {
         repositories {
-            mavenCentral()
+            mavenCentral()                
         }
         dependencies {
             classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
@@ -112,7 +112,7 @@ subprojects {
         compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.4'
         compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.5'
         //For publishing eiffel2.0 events
-        compile("com.github.Ericsson:eiffel-remrem-semantics:0.3.1"){
+        compile("com.github.Ericsson:eiffel-remrem-semantics:0.3.5"){
                 exclude group: 'org.apache.commons'
         }
         //Declare the dependency for your favourite test framework you want to use in your tests.
