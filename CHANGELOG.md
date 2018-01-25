@@ -1,5 +1,8 @@
+
 ## 0.5.2
 - Added a common REST API for Generate and Publish
+- Moved ldap related functionality from shared
+- Added functionality to disable the Remrem Publish Authentication.
 
 ## 0.5.1
 - This version is the same as 0.4.9. The intended changes were missed to be merged.
