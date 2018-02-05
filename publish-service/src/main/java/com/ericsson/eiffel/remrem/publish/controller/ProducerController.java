@@ -169,6 +169,7 @@ public class ProducerController {
      *         protocols.
      */
 
+
     @RequestMapping(value = "/versions", method = RequestMethod.GET)
     public JsonElement getVersions() {
         JsonParser parser = new JsonParser();
