@@ -1,13 +1,11 @@
-<<<<<<< HEAD
-## 0.5.2
-- Added a common REST API for Generate and Publish
-=======
+## 0.5.3
+- Corrected the name of endpoint "version" back to "versions"
+- Updated github pages for common REST api for generate and publish
 
 ## 0.5.2
 - Added a common REST API for Generate and Publish
 - Moved ldap related functionality from shared
 - Added functionality to disable the Remrem Publish Authentication.
->>>>>>> fc66dbe67bf1a01a55a2f2ea4e68a0b785cbdf19
 
 ## 0.5.1
 - This version is the same as 0.4.9. The intended changes were missed to be merged.
