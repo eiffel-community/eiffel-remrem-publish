@@ -169,7 +169,8 @@ public class ProducerController {
      *         protocols.
      */
 
-    @RequestMapping(value = "/version", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/versions", method = RequestMethod.GET)
     public JsonElement getVersions() {
         JsonParser parser = new JsonParser();
         Map<String, Map<String, String>> versions = new VersionService().getMessagingVersions();

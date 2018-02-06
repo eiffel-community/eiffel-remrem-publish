@@ -1,3 +1,6 @@
+## 0.5.3
+- Corrected the name of endpoint "version" back to "versions"
+- Updated github pages for common REST api for generate and publish
 
 ## 0.5.2
 - Added a common REST API for Generate and Publish
