@@ -260,7 +260,7 @@ usage: java -jar
 
 
 <h3>GenerateAndPublish Endpoint:</h3>
-The service works on the relative link <code>/generateAndPublish</code> and supports POST requests.<br>
+The service works on the relative link <code>/generateAndPublish</code> if run as standalone application or <code>/publish/generateAndPublish</code> if run as tomcat app and supports POST requests.<br>
 This controller provides single RemRem REST API End Point for both RemRem Generate and Publish.<br>
 
 Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
@@ -276,7 +276,7 @@ Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
 
 <b>Usage: A typical CURL command:</b>
 <pre>
-         curl -H "Content-Type: application/json" -X POST --data "@inputGenerate_activity_finished.txt"  "http://localhost:8986/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"
+         curl -H "Content-Type: application/json" -X POST --data "@inputGenerate_activity_finished.txt"  "http://localhost:8986/publish/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"
 </pre>
 <p>Where, "inputGenerate_activity_finished.txt" is:</p>
 
