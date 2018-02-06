@@ -258,6 +258,89 @@ usage: java -jar
 
 <p>The request's body must contain a <strong>JSON Object or JSON Array</strong> with the messages.</p>
 
+
+<h3>GenerateAndPublish Endpoint:</h3>
+The service works on the relative link <code>/generateAndPublish</code> if run as standalone application or <code>/publish/generateAndPublish</code> if run as tomcat app and supports POST requests.<br>
+This controller provides single RemRem REST API End Point for both RemRem Generate and Publish.<br>
+
+Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
+
+ </p>Parameters:<br>
+     * @param mp<br>
+     * @param message protocol (required)<br>
+     * @param msgType message type (required)<br>
+     * @param ud user domain (not required)<br>
+     * @param tag (not required)<br>
+     * @param rk (not required)<br>
+     * @return A response entity which contains https status and result<br></p>
+
+<b>Usage: A typical CURL command:</b>
+<pre>
+         curl -H "Content-Type: application/json" -X POST --data "@inputGenerate_activity_finished.txt"  "http://localhost:8986/publish/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"
+</pre>
+<p>Where, "inputGenerate_activity_finished.txt" is:</p>
+
+<pre>
+{
+  "msgParams": {
+    "meta": {
+    "type": "EiffelActivityFinishedEvent",
+      "tags": [
+        "tag1",
+        "tag2"
+      ],
+      "source": {
+        "domainId": "example.domain",
+        "host": "host",
+        "name": "name",
+        "uri": "http:\/\/java.sun.com\/j2se\/1.3\/",
+        "gav": {
+          "groupId": "com.github.Ericsson",
+          "artifactId": "eiffel-remrem-semantics",
+          "version": "0.2.9"
+        }
+      },
+      "security": {
+        "sdm": {
+          "authorIdentity": "test",
+          "encryptedDigest": "sample"
+        }
+      }
+    }
+  },
+  "eventParams": {
+    "data": {
+      "outcome": {
+        "conclusion": "SUCCESSFUL"
+      },
+      "persistentLogs": [{
+          "name": "firstLog",
+          "uri": "http:\/\/myHost.com\/firstLog"
+        },
+        {
+          "name": "otherLog",
+          "uri": "isbn:0-486-27557-4"
+        }
+      ]
+    },
+    "links": [
+        {
+            "type": "ACTIVITY_EXECUTION",
+            "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+        }
+    ]
+  }
+}
+</pre>
+
+<p>RESULT:<br>
+
+A typical output of executing the above curl command with an arbitrary JSON:</p>
+<pre>
+{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}
+</pre>
+
+
 <h3>Versions Endpoint:</h3>
 "/versions" endpoint is used to get the versions of messaging protocols along with the current version of publish in a json format.<br>
 
