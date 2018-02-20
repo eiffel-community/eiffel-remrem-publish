@@ -7,6 +7,9 @@
 - Updated github pages for common REST api for generate and publish
 - Uplifted remrem-semantics version to 0.3.7
 
+## 0.5.3
+- added logback support to remrem publish
+
 ## 0.5.1
 - This version is the same as 0.4.9. The intended changes were missed to be merged.
 - Updated remrem-generator version to 0.5.1
