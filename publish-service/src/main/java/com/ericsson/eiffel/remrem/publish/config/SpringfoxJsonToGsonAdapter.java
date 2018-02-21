@@ -12,24 +12,21 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.ericsson.eiffel.remrem.publish.cli;
+package com.ericsson.eiffel.remrem.publish.config;
 
-import org.apache.commons.cli.MissingOptionException;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import springfox.documentation.spring.web.json.Json;
 
-public class CLIExitCodes {
-    public static int CLI_EXCEPTION=1;
-    public static int CLI_MISSING_OPTION_EXCEPTION=2;
-    public static int HANDLE_CONTENT_FAILED=3;
-    public static int HANDLE_CONTENT_FILE_NOT_FOUND_FAILED=4;
-    public static int HANDLE_CONTENT_FILE_COULD_NOT_READ_FAILED=5;
-    public static int READ_JSON_FROM_CONSOLE_FAILED=6;
+import java.lang.reflect.Type;
 
+public class SpringfoxJsonToGsonAdapter implements JsonSerializer<Json> {
 
-
-    public static int getExceptionCode(Exception e) {
-        if (e instanceof MissingOptionException) {
-            return CLI_MISSING_OPTION_EXCEPTION;
+        @Override
+        public JsonElement serialize(Json json, Type type, JsonSerializationContext context) {
+                final JsonParser parser = new JsonParser();
+                return parser.parse(json.value());
         }
-        return CLI_EXCEPTION;
-    }
 }

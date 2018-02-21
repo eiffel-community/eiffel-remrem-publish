@@ -1,4 +1,8 @@
 
+## 0.5.3
+- Added swagger for publish service
+- Changed year in copyright headers from 2017 to 2018
+
 ## 0.5.2
 - Added a common REST API for Generate and Publish
 - Moved ldap related functionality from shared
