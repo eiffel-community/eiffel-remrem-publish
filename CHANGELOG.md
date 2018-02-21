@@ -1,4 +1,7 @@
 
+## 0.5.3
+- added logback support to remrem publish
+
 ## 0.5.2
 - Added a common REST API for Generate and Publish
 - Moved ldap related functionality from shared
@@ -6,9 +9,6 @@
 - Corrected the name of endpoint "version" back to "versions"
 - Updated github pages for common REST api for generate and publish
 - Uplifted remrem-semantics version to 0.3.7
-
-## 0.5.3
-- added logback support to remrem publish
 
 ## 0.5.1
 - This version is the same as 0.4.9. The intended changes were missed to be merged.
