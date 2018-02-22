@@ -122,9 +122,9 @@ public class ProducerController {
      * @param routingKey
      *            (not required)
      * @return A response entity which contains http status and result
-//     * @exception IOException
-//     *                On input error.
-//     * @see IOException
+     * @exception IOException
+     *                On input error.
+     * @see IOException
      * @use A typical CURL command: curl -H "Content-Type: application/json" -X POST
      *      --data "@inputGenerate_activity_finished.txt"
      *      "http://localhost:8986/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"
