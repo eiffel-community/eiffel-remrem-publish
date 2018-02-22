@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Eiffel REMReM Publish Service</title>
+    <title>Eiffel REMReM Publish</title>
   </head>
 
   <body>
@@ -18,7 +18,7 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
 
-          <h1 id="project_title">Eiffel REMReM Publish Service</h1>
+          <h1 id="project_title">Eiffel REMReM Publish</h1>
           <h2 id="project_tagline"></h2>
 
             <section id="downloads">
@@ -62,9 +62,9 @@
 <h2>
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
-<p>Binary is relased via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
-<p><b>Download the latest REMReM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');">publish-cli.jar</a></p>
-<p><b>Download the latest REMReM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');">publish-service.war</a></p>
+<p>Binary is release via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
+<p><b>Download the latest REMReM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');" href="#">publish-cli.jar</a></p>
+<p><b>Download the latest REMReM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');" href="#">publish-service.war</a></p>
 <div id="downloadLink" style="visibility: hidden;color: red;font-size: 14px;">
 </div>
 <script type="text/javascript">
@@ -86,7 +86,7 @@ function getLatestVersion(type,extn){
 				document.getElementById("downloadLink").innerHTML = result;
 				var val = document.getElementsByTagName("text")[2].innerHTML;
 				val = val.trim();
-				urlLink = "https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/publish-"+type +"\/"+val+"/publish-"+type +"-"+val+"."+extn;
+				urlLink = "https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/publish-"+type +"/"+val+"/publish-"+type +"-"+val+"."+extn;
 				var link = document.createElement("a");
 				link.setAttribute('id',"MYLINK");
 				link.href = urlLink;
@@ -124,10 +124,10 @@ usage: java -jar
  -en,--exchange_name &lt;arg&gt;      exchange name
  -f,--content_file &lt;arg&gt;        event content file
  -h,--help                      show help.
- -json,--json_content &lt;arg&gt;     event content in json string. The value can
-                                also be a dash(-) and the json will be read
+ -json,--json_content &lt;arg&gt;     event content in JSON string. The value can
+                                also be a dash(-) and the JSON will be read
                                 from the output of other programs if piped. Multiple
-                                json events are also supported.
+                                JSON events are also supported.
  -mb,--message_bus &lt;arg&gt;        host of message bus to use
  -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
                                 eiffelsemantics, default is eiffelsemantics
@@ -143,7 +143,7 @@ usage: java -jar
  -tag,--tag &lt;arg&gt;               tag to be used in routing key
  -v,--list_versions             lists the versions of publish and all loaded protocols</pre>
 
-<p>For publish we have input only from file that can contain one or more messages in a json array (surrounded with square brackets) separated by comma. </p>
+<p>For publish we have input only from file that can contain one or more messages in a JSON array (surrounded with square brackets) separated by comma. </p>
 
 <p>The routing key is generated in the protocol library based on the event type.<br>
    For more information on routing key, see <a href="http://ericsson.github.io/eiffel-remrem-semantics/" target="_blank">this link</a></p>
@@ -293,7 +293,7 @@ Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
         "domainId": "example.domain",
         "host": "host",
         "name": "name",
-        "uri": "http:\/\/java.sun.com\/j2se\/1.3\/",
+        "uri": "http://java.sun.com/j2se/1.3/",
         "gav": {
           "groupId": "com.github.Ericsson",
           "artifactId": "eiffel-remrem-semantics",
@@ -315,7 +315,7 @@ Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
       },
       "persistentLogs": [{
           "name": "firstLog",
-          "uri": "http:\/\/myHost.com\/firstLog"
+          "uri": "http://myHost.com/firstLog"
         },
         {
           "name": "otherLog",
@@ -341,20 +341,20 @@ A typical output of executing the above curl command with an arbitrary JSON:</p>
 </pre>
 
 
-<h3>Versions Endpoint:</h3>
-"/versions" endpoint is used to get the versions of messaging protocols along with the current version of publish in a json format.<br>
+<h3>Versions End point:</h3>
+"/versions" end point is used to get the versions of messaging protocols along with the current version of publish in a JSON format.<br>
 
-Ex:  http://localhost:8080/publish/versions/ <br>
+URL:  http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/versions/ <br>
 
-Result:
+Sample Result:
 
 <pre>
         {
             "serviceVersion": {
-                "version": "0.8.1"
+                "version": "x.x.x"
             },
             "endpointVersions": {
-                "semanticsVersion": "0.2.5",
+                "semanticsVersion": "x.x.x",
             }
         }
 </pre>
@@ -458,7 +458,7 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 <td> Multi Status
 </td>
 <td> Status code of 207 is returned if we have a mix of internal status codes, i.e. Publish of few events was successful and few events was a failure. It is only applicable for batch publishing.<br>
-Incase of Multiple events in the body json, if a event is given internal status code of 400 or 500 rest events will not be published and will be given a internal status code of 503, which will result in overall HTTP response code of 207.
+Incase of Multiple events in the body JSON, if a event is given internal status code of 400 or 500 rest events will not be published and will be given a internal status code of 503, which will result in overall HTTP response code of 207.
 </td>
 </tr>
 <tr>
@@ -466,7 +466,7 @@ Incase of Multiple events in the body json, if a event is given internal status 
 </td>
 <td> Bad Request
 </td>
-<td> Status code of 400 is returned if the request body json is malformed. i.e. Unable to parse the body json. This status code is applicable if request body json is a single event or multiple events.
+<td> Status code of 400 is returned if the request body JSON is malformed. i.e. Unable to parse the body JSON. This status code is applicable if request body JSON is a single event or multiple events.
 </td>
 </tr>
 <tr>
@@ -474,14 +474,14 @@ Incase of Multiple events in the body json, if a event is given internal status 
 </td>
 <td> Not Found
 </td>
-<td> Status code of 404 is returned if RabbitMQ message broker properties are not found for the requested protocol. This status code is applicable if request body json is a single event or multiple events.
+<td> Status code of 404 is returned if RabbitMQ message broker properties are not found for the requested protocol. This status code is applicable if request body JSON is a single event or multiple events.
 </td>
 <tr>
 <td>500
 </td>
 <td> Internal Server Error
 </td>
-<td> Status code of 500 is returned if RabbitMq is down or could not prepare routing key to publish the eiffel event. This status code is applicable if request body json is a single event.
+<td> Status code of 500 is returned if RabbitMq is down or could not prepare routing key to publish the eiffel event. This status code is applicable if request body JSON is a single event.
 </td>
 </tr></table>
 
@@ -516,7 +516,7 @@ Incase of Multiple events in the body json, if a event is given internal status 
 </td>
 <td> Invalid event content, client need to fix problem in event before submitting again
 </td>
-<td> Status code of 400 is returned if the request body json is malformed. i.e. Unable to parse the body json. Applicable to single and multiple events in json (or) an event has a missing ID field.
+<td> Status code of 400 is returned if the request body JSON is malformed. i.e. Unable to parse the body JSON. Applicable to single and multiple events in JSON (or) an event has a missing ID field.
 </td>
 </tr>
 <tr>
@@ -670,6 +670,25 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 ]
 </code></pre>
 <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
+
+<h2>Logging</h2>
+
+
+<p>REMReM publish application logging is implemented using the logback-classic, and we required to configure the logback.xml file, <br/>
+   With out logback.xml configuration log will get the PARSER_ERROR like below
+<pre><code>%PARSER_ERROR[wEx]%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] 
+  <br/>%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr]
+</code></pre>
+<br/>Here is configuration setting <strong>-Dlogging.config=path/logback.xml</strong>
+ <br/> 
+
+
+<a href="https://logback.qos.ch/manual/configuration.html">Click here</a> for info about logback configurations
+
+<br/> <a target="_blank" href="logback/logback-sample.xml">Get sample logback.xml</a>
+</p>
+
+</p>
       </section>
     </div>
 
