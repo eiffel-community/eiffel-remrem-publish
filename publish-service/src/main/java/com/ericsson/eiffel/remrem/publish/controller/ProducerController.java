@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Ericsson AB.
+    Copyright 2017 Ericsson AB.
     For a full list of individual contributors, please see the commit history.
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@ package com.ericsson.eiffel.remrem.publish.controller;
 
 import java.util.Map;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,7 +47,6 @@ import ch.qos.logback.classic.Logger;
 
 @RestController
 @RequestMapping("/*")
-@Api(value = "REMReM Publish Service", description = "REST API for publishing Eiffel messages to message bus")
 public class ProducerController {
 
     @Value("${generate.server.host}")
@@ -83,12 +78,6 @@ public class ProducerController {
     Logger log = (Logger) LoggerFactory.getLogger(ProducerController.class);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @ApiOperation(value = "To publish eiffel event to message bus", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Event sent successfully"),
-            @ApiResponse(code = 400, message = "Invalid event content"),
-            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
-            @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 503, message = "Service Unavailable") })
     @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity send(@RequestParam(value = "mp", required = false) String msgProtocol,
@@ -111,15 +100,15 @@ public class ProducerController {
      * This controller provides single RemRem REST API End Point for both RemRem
      * Generate and Publish.
      * 
-     * @param msgProtocol
+     * @param mp
      *            message protocol (required)
      * @param msgType
      *            message type (required)
-     * @param userDomain
+     * @param ud
      *            user domain (not required)
      * @param tag
      *            (not required)
-     * @param routingKey
+     * @param rk
      *            (not required)
      * @return A response entity which contains http status and result
      * @exception IOException
@@ -131,21 +120,15 @@ public class ProducerController {
      */
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @ApiOperation(value = "To generate and publish eiffel event to message bus", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Event sent successfully"),
-            @ApiResponse(code = 400, message = "Invalid event content"),
-            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
-            @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 503, message = "Message protocol is invalid") })
     @RequestMapping(value = "/generateAndPublish", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity generateAndPublish(@RequestParam(value = "mp") String msgProtocol, @RequestParam("msgType") String msgType,
+    public ResponseEntity generateAndPublish(@RequestParam(value = "mp") String mp, @RequestParam("msgType") String msgType,
             @RequestParam(value = "ud", required = false) String userDomain,
             @RequestParam(value = "tag", required = false) String tag,
             @RequestParam(value = "rk", required = false) String routingKey, @RequestBody JsonObject bodyJson) {
 
         URLTemplate urlTemplate = new URLTemplate();
-        urlTemplate.generate(msgProtocol, msgType, userDomain, routingKey, tag, generateServerHost ,generateServerPort);
+        urlTemplate.generate(mp, msgType, userDomain, routingKey, tag, generateServerHost ,generateServerPort);
 
         ResponseEntity<String> response = null;
 
@@ -164,13 +147,13 @@ public class ProducerController {
             String responseBody = response.getBody();
             // publishing requires an array if you want status code
             responseBody = "[" + responseBody + "]";
-            MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
+            MsgService msgService = PublishUtils.getMessageService(mp, msgServices);
 
-            log.debug("mp: " + msgProtocol);
+            log.debug("mp: " + mp);
             log.debug("body: " + responseBody);
             log.debug("user domain suffix: " + userDomain + " tag: " + tag + " Routing Key: " + routingKey);
-            if (msgService != null && msgProtocol != null) {
-                rmqHelper.rabbitMqPropertiesInit(msgProtocol);
+            if (msgService != null && mp != null) {
+                rmqHelper.rabbitMqPropertiesInit(mp);
             }
             SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
             return new ResponseEntity(result, messageService.getHttpStatus());
@@ -185,7 +168,8 @@ public class ProducerController {
      * @return this method returns the current version of publish and all loaded
      *         protocols.
      */
-    @ApiOperation(value = "To get versions of publish and all loaded protocols", response = String.class)
+
+
     @RequestMapping(value = "/versions", method = RequestMethod.GET)
     public JsonElement getVersions() {
         JsonParser parser = new JsonParser();

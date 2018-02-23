@@ -1,8 +1,4 @@
 
-## 0.5.4
-- Added swagger for publish service
-- Changed year in copyright headers from 2017 to 2018
-
 ## 0.5.3
 - added logback support to remrem publish
 
