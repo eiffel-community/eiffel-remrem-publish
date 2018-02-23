@@ -91,10 +91,10 @@ public class ProducerController {
             @ApiResponse(code = 503, message = "Service Unavailable") })
     @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity send(@RequestParam(value = "msgProtocol", required = false) String msgProtocol,
-            @RequestParam(value = "userDomain", required = false) String userDomain,
+    public ResponseEntity send(@RequestParam(value = "mp", required = false) String msgProtocol,
+            @RequestParam(value = "ud", required = false) String userDomain,
             @RequestParam(value = "tag", required = false) String tag,
-            @RequestParam(value = "routingKey", required = false) String routingKey, @RequestBody JsonElement body) {
+            @RequestParam(value = "rk", required = false) String routingKey, @RequestBody JsonElement body) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
 
         log.debug("mp: " + msgProtocol);
@@ -139,10 +139,10 @@ public class ProducerController {
             @ApiResponse(code = 503, message = "Message protocol is invalid") })
     @RequestMapping(value = "/generateAndPublish", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity generateAndPublish(@RequestParam(value = "msgProtocol") String msgProtocol, @RequestParam("msgType") String msgType,
-            @RequestParam(value = "userDomain", required = false) String userDomain,
+    public ResponseEntity generateAndPublish(@RequestParam(value = "mp") String msgProtocol, @RequestParam("msgType") String msgType,
+            @RequestParam(value = "ud", required = false) String userDomain,
             @RequestParam(value = "tag", required = false) String tag,
-            @RequestParam(value = "routingKey", required = false) String routingKey, @RequestBody JsonObject bodyJson) {
+            @RequestParam(value = "rk", required = false) String routingKey, @RequestBody JsonObject bodyJson) {
 
         URLTemplate urlTemplate = new URLTemplate();
         urlTemplate.generate(msgProtocol, msgType, userDomain, routingKey, tag, generateServerHost ,generateServerPort);
@@ -166,7 +166,7 @@ public class ProducerController {
             responseBody = "[" + responseBody + "]";
             MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
 
-            log.debug("msgProtocol: " + msgProtocol);
+            log.debug("mp: " + msgProtocol);
             log.debug("body: " + responseBody);
             log.debug("user domain suffix: " + userDomain + " tag: " + tag + " Routing Key: " + routingKey);
             if (msgService != null && msgProtocol != null) {
