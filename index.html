@@ -62,7 +62,7 @@
 <h2>
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
 
-<p>Binary is release via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
+<p>Binary is released via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
 <p><b>Download the latest REMReM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');" href="#">publish-cli.jar</a></p>
 <p><b>Download the latest REMReM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');" href="#">publish-service.war</a></p>
 <div id="downloadLink" style="visibility: hidden;color: red;font-size: 14px;">
@@ -124,10 +124,10 @@ usage: java -jar
  -en,--exchange_name &lt;arg&gt;      exchange name
  -f,--content_file &lt;arg&gt;        event content file
  -h,--help                      show help.
- -json,--json_content &lt;arg&gt;     event content in JSON string. The value can
-                                also be a dash(-) and the JSON will be read
+ -json,--json_content &lt;arg&gt;     event content in json string. The value can
+                                also be a dash(-) and the json will be read
                                 from the output of other programs if piped. Multiple
-                                JSON events are also supported.
+                                json events are also supported.
  -mb,--message_bus &lt;arg&gt;        host of message bus to use
  -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
                                 eiffelsemantics, default is eiffelsemantics
@@ -674,18 +674,19 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 <h2>Logging</h2>
 
 
-<p>REMReM Publish application logging is implemented using the logback-classic, and we required to configure the logback.xml file. <br/>
+<p>logback-classic. It requires user to configure the logback.xml file.<br/>
+When using without logback.xml log messages will look as below: <br/>
    With out logback.xml configuration log will get the PARSER_ERROR like below
 <pre><code>%PARSER_ERROR[wEx]%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] 
   <br/>%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr]
 </code></pre>
-<br/>Here is configuration setting <strong>-Dlogging.config=path/logback.xml</strong>
+<br/>To configure the logback.xml file use <strong>-Dlogging.config=path/logback.xml</strong>
  <br/> 
 
 
 <a href="https://logback.qos.ch/manual/configuration.html">Click here</a> for info about logback configurations
 
-<br/> <a target="_blank" href="logback/logback-sample.xml">Get sample logback.xml</a>
+<br/>To get sample logback.xml to use  <a target="_blank" href="logback/logback-sample.xml">Click Here</a>
 </p>
 
 </p>
