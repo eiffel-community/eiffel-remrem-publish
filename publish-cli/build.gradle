@@ -39,3 +39,6 @@ dependencies {
 	compile project(':publish-common')
 	runtime fileTree(dir: 'libs', include: '*.jar')
 }
+configurations.all {
+		exclude group: "ch.qos.logback", module: "logback-classic"
+	}
