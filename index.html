@@ -31,7 +31,7 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p>REMReM (REST Mailbox for Registered Messages) is a set of tools that can be used to generate validated Eiffel messages and publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a></p>
+        <p>REMReM (<strong>REST Mailbox for Registered Messages</strong>) is a set of tools that can be used to generate validated Eiffel messages and publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a></p>
 
 <h1>
 <a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REMReM Publish</h1>
@@ -192,7 +192,7 @@ usage: java -jar
 <h2>
 <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
 
-<p>REMReM Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an endPoint that must be called using a relative link <code>producer/msg</code>.</p>
+<p>REMReM Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an end point that must be called using a relative link <code>producer/msg</code>.</p>
 
 <h3>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
@@ -259,7 +259,7 @@ usage: java -jar
 <p>The request's body must contain a <strong>JSON Object or JSON Array</strong> with the messages.</p>
 
 
-<h3>GenerateAndPublish Endpoint:</h3>
+<h3>GenerateAndPublish end point:</h3>
 The service works on the relative link <code>/generateAndPublish</code> if run as standalone application or <code>/publish/generateAndPublish</code> if run as tomcat app and supports POST requests.<br>
 This controller provides single RemRem REST API End Point for both RemRem Generate and Publish.<br>
 
@@ -585,7 +585,7 @@ Incase of Multiple events in the body JSON, if a event is given internal status 
 	}
 ]
 </code></pre>
-<p><strong>207:</strong>When the events are having different internal status codes,then the status code of HTTP response will be 207.</p>
+<p><strong>207:</strong>When the events are having different internal status codes, then the status code of HTTP response will be 207.</p>
 <pre><code><strong>HTTP Response:</strong> 207 :Multi Status
 [
 	{
@@ -601,7 +601,7 @@ Incase of Multiple events in the body JSON, if a event is given internal status 
 	}
 ]
 </code></pre>
-<p><strong>500:</strong>We will get this status code,When the event is failed to send because of internal server error.</p>
+<p><strong>500:</strong>We will get this status code, when the event is failed to send because of internal server error.</p>
 <pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
 [
 	{
@@ -649,7 +649,7 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 	 "message":"Please check previous event and try again later"
 	}
 ]</code></pre>
-<p><strong>404:</strong>We will get this status code,when RabbitMq properties not configured in tomcat/conf/config.properties file for the protocol.</p>
+<p><strong>404:</strong>We will get this status code, when RabbitMq properties not configured in tomcat/conf/config.properties file for the protocol.</p>
 <pre><code><strong>HTTP Response:</strong> 404 :Not Found
 [
 	{
@@ -659,7 +659,7 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 	}
 ]
 </code></pre>
-<p><strong>500:</strong>We will get this status code,when cannot prepare routing key.</p>
+<p><strong>500:</strong>We will get this status code, when cannot prepare routing key.</p>
 <pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
 [
 	{
@@ -674,7 +674,7 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 <h2>Logging</h2>
 
 
-<p>REMReM publish application logging is implemented using the logback-classic, and we required to configure the logback.xml file, <br/>
+<p>REMReM Publish application logging is implemented using the logback-classic, and we required to configure the logback.xml file. <br/>
    With out logback.xml configuration log will get the PARSER_ERROR like below
 <pre><code>%PARSER_ERROR[wEx]%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] 
   <br/>%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr]
