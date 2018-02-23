@@ -51,7 +51,7 @@ import ch.qos.logback.classic.Logger;
 
 @RestController
 @RequestMapping("/*")
-@Api(value = "REMReM Publish", description = "REST API for publishing Eiffel messages to message bus")
+@Api(value = "REMReM Publish Service", description = "REST API for publishing Eiffel messages to message bus")
 public class ProducerController {
 
     @Value("${generate.server.host}")
@@ -185,7 +185,7 @@ public class ProducerController {
      * @return this method returns the current version of publish and all loaded
      *         protocols.
      */
-    @ApiOperation(value = "To get versions of publish and all loaded protocols.", response = String.class)
+    @ApiOperation(value = "To get versions of publish and all loaded protocols", response = String.class)
     @RequestMapping(value = "/versions", method = RequestMethod.GET)
     public JsonElement getVersions() {
         JsonParser parser = new JsonParser();
