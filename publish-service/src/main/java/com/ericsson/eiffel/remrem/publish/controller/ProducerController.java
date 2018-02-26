@@ -16,10 +16,7 @@ package com.ericsson.eiffel.remrem.publish.controller;
 
 import java.util.Map;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -91,10 +88,11 @@ public class ProducerController {
             @ApiResponse(code = 503, message = "Service Unavailable") })
     @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity send(@RequestParam(value = "mp", required = false) String msgProtocol,
-                               @RequestParam(value = "ud", required = false) String userDomain,
-                               @RequestParam(value = "tag", required = false) String tag,
-                               @RequestParam(value = "rk", required = false) String routingKey, @RequestBody JsonElement body) {
+    public ResponseEntity send(@ApiParam(value = "message protocol") @RequestParam(value = "mp", required = false) String msgProtocol,
+                               @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) String userDomain,
+                               @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) String tag,
+                               @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) String routingKey,
+                               @ApiParam(value = "eiffel event") @RequestBody JsonElement body) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
 
         log.debug("mp: " + msgProtocol);
@@ -139,10 +137,12 @@ public class ProducerController {
             @ApiResponse(code = 503, message = "Message protocol is invalid") })
     @RequestMapping(value = "/generateAndPublish", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity generateAndPublish(@RequestParam(value = "mp") String msgProtocol, @RequestParam("msgType") String msgType,
-                                             @RequestParam(value = "ud", required = false) String userDomain,
-                                             @RequestParam(value = "tag", required = false) String tag,
-                                             @RequestParam(value = "rk", required = false) String routingKey, @RequestBody JsonObject bodyJson) {
+    public ResponseEntity generateAndPublish(@ApiParam(value = "message protocol") @RequestParam(value = "mp") String msgProtocol,
+                                             @ApiParam(value = "message type") @RequestParam("msgType") String msgType,
+                                             @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) String userDomain,
+                                             @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) String tag,
+                                             @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) String routingKey,
+                                             @ApiParam(value = "JSON message") @RequestBody JsonObject bodyJson) {
 
         URLTemplate urlTemplate = new URLTemplate();
         urlTemplate.generate(msgProtocol, msgType, userDomain, routingKey, tag, generateServerHost ,generateServerPort);
