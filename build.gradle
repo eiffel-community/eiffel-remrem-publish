@@ -94,7 +94,7 @@ subprojects {
         compile("org.springframework.boot:spring-boot:$springBootVersion")
         
         //To process Json content
-        compile 'com.google.code.gson:gson:2.3.1'
+        compile 'com.google.code.gson:gson:2.6.2'
         //To Inject annotations, For eg: @Autowired/@Resource/@Inject
         compile 'javax.inject:javax.inject:1'
         

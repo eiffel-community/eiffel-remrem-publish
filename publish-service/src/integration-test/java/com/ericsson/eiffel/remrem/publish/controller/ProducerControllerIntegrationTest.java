@@ -93,7 +93,7 @@ public class ProducerControllerIntegrationTest {
         String body = FileUtils.readFileToString(new File("src/integration-test/resources/Invalid_EiffelActivityFinishedEvent.json"));
 
         given().header("Authorization", credentials)
-               .contentType("application/json").body(body).when().post("/producer/msg").then()
+               .contentType("application/json").body(body).when().post("/producer/msg?mp=eiffelsemantics").then()
                .statusCode(HttpStatus.SC_BAD_REQUEST)
                .body("events[0].status_code", Matchers.equalTo(400))
                .body("events[0].result", Matchers.equalTo(PropertiesConfig.INVALID_MESSAGE)).body("events[0].message", Matchers
