@@ -1,4 +1,7 @@
 
+## 0.5.3
+- added logback support to remrem publish
+
 ## 0.5.2
 - Added a common REST API for Generate and Publish
 - Moved ldap related functionality from shared
