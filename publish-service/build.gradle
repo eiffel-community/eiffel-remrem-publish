@@ -80,10 +80,4 @@ dependencies {
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testCompile("org.springframework.boot:spring-boot-starter-tomcat")
 
-    //gson support
-    compile("com.google.code.gson:gson:2.6.2")
-
-    //swagger UI
-    compile("io.springfox:springfox-swagger2:2.4.0")
-    compile("io.springfox:springfox-swagger-ui:2.4.0")
 }
