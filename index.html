@@ -106,7 +106,7 @@ function getLatestVersion(type,extn){
 <h3>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
 
-<p>Start the self executing Publish-cli JAR</p>
+<p>Start the self executing JAR</p>
 <pre>java -jar publish-cli.jar</pre>
 
 
@@ -158,26 +158,24 @@ usage: java -jar
 <pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
 </code></pre>
 
-<p><strong>For loading protocol jars other than eiffelsemantics :</strong></p>
+<p><strong>For loading protocol jars other than eiffelsemantics:</strong></p>
 
 <pre><code> $ java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp protocolType
 </code></pre>
-<strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
+<p><strong>NOTE:</strong> in the above example, protocol jar file must be present inside "/path/to/jars/" folder.</p>
 <p><strong>If you want to have the message publishing logs add d flag:</strong></p>
 
 <pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
 </code></pre>
 
-<p><strong>If you want to have the message publishing on RabbitMq secured port(5671):</strong></p>
-
-<p>tls option is used to run REMReM on RabbitMq secured port(5671)</p>
-
-<p>tls option value is either 'default'or &lt;version&gt; for secured port.</p>
+<p><strong>If you want to have the message publishing on RabbitMq secured port(5671):</strong><br>
+    tls option is used to run REMReM on RabbitMq secured port(5671)<br>
+    tls option value is either 'default'or &lt;version&gt; for secured port.</p>
 
 <pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2
 </code></pre>
 
-<strong>Note: For Rabbitmq default port 5672, No need to pass tls option.</strong>
+<p><strong>NOTE:</strong> for RabbitMq default port 5672, no need to pass tls option.</p>
 
 <p><strong>If you want to have the message publishing on RabbitMq with given routing key:</strong></p>
 
@@ -194,10 +192,13 @@ usage: java -jar
 
 <p>REMReM Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an end point that must be called using a relative link <code>producer/msg</code>.</p>
 
-<h3>
+<p>We can get information about the REMReM Publish Service all endpoints and easily access them from here:<br>
+    <em>http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/</em> or <<em>http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/swagger-ui.html</em></p>
+
+    <h3>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
 
-<p>Deploy the self executing Publish-Service WAR in Tomcat to use REST services.</p>
+<p>Deploy the publish-service.war in Tomcat to use REST services.</p>
 
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
@@ -220,7 +221,7 @@ usage: java -jar
 
 <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
 
-<p>protocol is name of the protocol used. Eg: eiffelsemantics</p>
+<p><code>&lt;protocol&gt;</code> is name of the protocol used. Eg: eiffelsemantics.</p>
 
 <p>For any protocol, need to configure above RabbitMq properties in <strong>tomcat/conf/config.properties</strong> file.</p>
 <p>classpath:config.properties file is for reference only. Will not pick any values from that file.</p>
@@ -245,7 +246,7 @@ usage: java -jar
 
 <pre> <code> $ curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json http://localhost:8080/publish/producer/msg?mp=eiffelsemantics </code></pre>
 
-<p><strong>Note: Assuming the publish-service is deployed in tomcat as publish</strong></p>
+<p><strong>NOTE:</strong> assuming the publish-service is deployed in tomcat as publish</p>
 
 <h3>
 <a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST methods</h3>
@@ -261,7 +262,7 @@ usage: java -jar
 
 <h3>GenerateAndPublish end point:</h3>
 The service works on the relative link <code>/generateAndPublish</code> if run as standalone application or <code>/publish/generateAndPublish</code> if run as tomcat app and supports POST requests.<br>
-This controller provides single RemRem REST API End Point for both RemRem Generate and Publish.<br>
+This controller provides single REMReM REST API End Point for both REMReM Generate and Publish.<br>
 
 Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
 
@@ -342,11 +343,10 @@ A typical output of executing the above curl command with an arbitrary JSON:</p>
 
 
 <h3>Versions End point:</h3>
-"/versions" end point is used to get the versions of messaging protocols along with the current version of publish in a JSON format.<br>
+<p>"/versions" end point is used to get the versions of messaging protocols along with the current version of publish in a JSON format.<br>
+    URL:  http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/versions/</p>
 
-URL:  http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/versions/ <br>
-
-Sample Result:
+<p>Sample result:</p>
 
 <pre>
         {
@@ -361,8 +361,7 @@ Sample Result:
 
 <hr>
 
-<h2>
-<a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
+<h2><a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
 
 
 <p>You can use command-line tools like <a href="https://en.wikipedia.org/wiki/CURL">curl</a> or some plugin for your favorite browser. For example:</p>
@@ -409,9 +408,9 @@ Sample Result:
 
 <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
-<p><strong>NOTE:</strong> For any protocol, provide the Java opts as: </p>
+<p><strong>NOTE:</strong> for any protocol, provide the Java opts as: </p>
 <pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/jars/" in catalina.sh</pre>
-<strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
+<p><strong>NOTE:</strong> in the above example, protocol jar file must be present inside "/path/to/jars/" folder.</p>
 <p><strong>Reading data from a file:</strong></p>
 
 <pre><code>$ echo '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}, {"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440998,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' > test.data
@@ -430,9 +429,10 @@ $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" ht
 
 <pre>{"timestamp":"Dec 27, 2017 3:34:11 PM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: ..."}</pre>
 
-<p><strong>Status Codes:</strong></p>
-<p>The response generated will have internal status codes for each and every event based on the input JSON provided.Status codes are generated according to the below tables: </p>
-<p><strong> Note: </strong>We have a status code on the HTTP response and an internal status code.</p>
+<h2><a id="statusCodes" class="anchor" href="#statusCodes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Status Codes</h2>
+
+<p>The response generated will have internal status codes for each and every event based on the input JSON provided. Status codes are generated according to the below tables.</p>
+<p><strong>NOTE:</strong> we have a status code on the HTTP response and an internal status code.</p>
 <p><strong>HTTP response codes:</strong></p>
 <table class="wikitable">
 <tr>
@@ -557,8 +557,8 @@ Incase of Multiple events in the body JSON, if a event is given internal status 
 </td>
 </tr></table>
 
-<p><strong>Status Codes Explanation:</strong></p>
-<p><strong>200:</strong>When all the events are sent successfully, then the internal status code for each event and status code for HTTP response will be 200.</p>
+<p><strong>Status Codes explanation:</strong></p>
+<p><strong>200:</strong> when all the events are sent successfully, then the internal status code for each event and status code for HTTP response will be 200.</p>
 <pre><code><strong>HTTP Response:</strong> 200 :OK
 [
 	{
@@ -575,7 +575,7 @@ Incase of Multiple events in the body JSON, if a event is given internal status 
 	}
 ]
 </code></pre>
-<p><strong>400:</strong>When the input JSON is malformated, that particular events internal status code will be 400. </p>
+<p><strong>400:</strong> when the input JSON is malformated, that particular events internal status code will be 400.</p>
 <pre><code><strong>HTTP Response:</strong> 400 :Bad Request
 [
 	{
@@ -585,7 +585,7 @@ Incase of Multiple events in the body JSON, if a event is given internal status 
 	}
 ]
 </code></pre>
-<p><strong>207:</strong>When the events are having different internal status codes, then the status code of HTTP response will be 207.</p>
+<p><strong>207:</strong> when the events are having different internal status codes, then the status code of HTTP response will be 207.</p>
 <pre><code><strong>HTTP Response:</strong> 207 :Multi Status
 [
 	{
@@ -601,7 +601,7 @@ Incase of Multiple events in the body JSON, if a event is given internal status 
 	}
 ]
 </code></pre>
-<p><strong>500:</strong>We will get this status code, when the event is failed to send because of internal server error.</p>
+<p><strong>500:</strong> we will get this status code, when the event is failed to send because of internal server error.</p>
 <pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
 [
 	{
@@ -612,7 +612,7 @@ Incase of Multiple events in the body JSON, if a event is given internal status 
 	}
 ]
 </code></pre>
-<p><strong>503:</strong>Event will have this status code when the previous event is failed to send.</br>
+<p><strong>503:</strong> event will have this status code when the previous event is failed to send.</br>
 For example,Consider you have 5 events.</br>
 E1<-E2<-E3<-E4<-E5</br>
 You send them all to publish in a batch command.</br>
@@ -649,7 +649,7 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 	 "message":"Please check previous event and try again later"
 	}
 ]</code></pre>
-<p><strong>404:</strong>We will get this status code, when RabbitMq properties not configured in tomcat/conf/config.properties file for the protocol.</p>
+<p><strong>404:</strong> we will get this status code, when RabbitMq properties not configured in tomcat/conf/config.properties file for the protocol.</p>
 <pre><code><strong>HTTP Response:</strong> 404 :Not Found
 [
 	{
@@ -659,7 +659,7 @@ If we send E4 and E5 we will have a broken chain so that is not a good option. I
 	}
 ]
 </code></pre>
-<p><strong>500:</strong>We will get this status code, when cannot prepare routing key.</p>
+<p><strong>500:</strong> we will get this status code, when cannot prepare routing key.</p>
 <pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
 [
 	{
