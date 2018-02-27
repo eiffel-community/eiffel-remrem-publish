@@ -1,5 +1,5 @@
 /*
- Copyright 2017 Ericsson AB.
+ Copyright 2018 Ericsson AB.
  For a full list of individual contributors, please see the commit history.
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.5.3"
+    version = "0.5.4"
 
     //Declare where to find the dependencies of project here
     repositories {
@@ -94,7 +94,7 @@ subprojects {
         compile("org.springframework.boot:spring-boot:$springBootVersion")
         
         //To process Json content
-        compile 'com.google.code.gson:gson:2.3.1'
+        compile 'com.google.code.gson:gson:2.6.2'
         //To Inject annotations, For eg: @Autowired/@Resource/@Inject
         compile 'javax.inject:javax.inject:1'
         

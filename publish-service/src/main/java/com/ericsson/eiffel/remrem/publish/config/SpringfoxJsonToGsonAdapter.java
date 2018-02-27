@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Ericsson AB.
+    Copyright 2018 Ericsson AB.
     For a full list of individual contributors, please see the commit history.
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -14,17 +14,19 @@
 */
 package com.ericsson.eiffel.remrem.publish.config;
 
-import org.springframework.context.annotation.Bean;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import springfox.documentation.spring.web.json.Json;
 
-@EnableSwagger2 public class SwaggerConfig {
-    @Bean public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2).select()
-            .apis(RequestHandlerSelectors.basePackage("com.ericsson.eiffel.remrem.producer"))
-            .paths(PathSelectors.any()).build();
-    }
+import java.lang.reflect.Type;
+
+public class SpringfoxJsonToGsonAdapter implements JsonSerializer<Json> {
+
+        @Override
+        public JsonElement serialize(Json json, Type type, JsonSerializationContext context) {
+                final JsonParser parser = new JsonParser();
+                return parser.parse(json.value());
+        }
 }

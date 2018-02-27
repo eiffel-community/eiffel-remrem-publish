@@ -12,24 +12,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.ericsson.eiffel.remrem.publish.cli;
+package com.ericsson.eiffel.remrem.publish.constants;
 
-import org.apache.commons.cli.MissingOptionException;
+public class RemremPublishServiceConstants {
 
-public class CLIExitCodes {
-    public static int CLI_EXCEPTION=1;
-    public static int CLI_MISSING_OPTION_EXCEPTION=2;
-    public static int HANDLE_CONTENT_FAILED=3;
-    public static int HANDLE_CONTENT_FILE_NOT_FOUND_FAILED=4;
-    public static int HANDLE_CONTENT_FILE_COULD_NOT_READ_FAILED=5;
-    public static int READ_JSON_FROM_CONSOLE_FAILED=6;
+        public static final String DOCUMENTATION_URL = "http://ericsson.github.io/eiffel-remrem-publish/index.html";
 
-
-
-    public static int getExceptionCode(Exception e) {
-        if (e instanceof MissingOptionException) {
-            return CLI_MISSING_OPTION_EXCEPTION;
-        }
-        return CLI_EXCEPTION;
-    }
 }
