@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
+<head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="Eiffel RemRem Publish Service : ">
@@ -9,282 +9,311 @@
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>Eiffel REMReM Publish</title>
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
 
-          <h1 id="project_title">Eiffel REMReM Publish</h1>
-          <h2 id="project_tagline"></h2>
+        <h1 id="project_title">Eiffel REMReM Publish</h1>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <p>REMReM (<strong>REST Mailbox for Registered Messages</strong>) is a set of tools that can be used to generate validated Eiffel messages and publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a></p>
-
-<h1>
-<a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REMReM Publish</h1>
-
-<hr>
-
-<h2>
-<a id="components" class="anchor" href="#components" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Components</h2>
-
-<ul>
-<li>REMReM Publish CLI (Command Line Interface)</li>
-<li>REMReM Publish Service</li>
-
-</ul>
-
-<h2>
-
-<h2>
-<a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compatibility</h2>
-
-<ul>
-<li>JDK 8</li>
-<li>Tomcat 8</li>
-</ul>
-
-<hr>
-
-<h2>
-<a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Install?</h2>
-
-<p>Binary is released via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
-<p><b>Download the latest REMReM Publish CLI Binary via </b><a onClick="getLatestVersion('cli','jar');" href="#">publish-cli.jar</a></p>
-<p><b>Download the latest REMReM Publish Service Binary via </b><a onClick="getLatestVersion('service','war');" href="#">publish-service.war</a></p>
-<div id="downloadLink" style="visibility: hidden;color: red;font-size: 14px;">
+        <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
+        </section>
+    </header>
 </div>
-<script type="text/javascript">
-function getLatestVersion(type,extn){
-	var xhr = new XMLHttpRequest(); 
-	xhr.open("GET", "https://jitpack.io/v/Ericsson/eiffel-remrem-publish.svg"); 
- 	xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
- 	xhr.onload = function() 
- 	{
- 		var blob = xhr.response;
- 		var reader = new FileReader();
- 		reader.addEventListener("loadend", function() {
-			var result = reader.result;
-			if(result=="Repo not found or no access token provided"){
-				document.getElementById("downloadLink").innerHTML = result;
-				document.getElementById("downloadLink").style.visibility = "";
-			}
-			else{
-				document.getElementById("downloadLink").innerHTML = result;
-				var val = document.getElementsByTagName("text")[2].innerHTML;
-				val = val.trim();
-				urlLink = "https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/publish-"+type +"/"+val+"/publish-"+type +"-"+val+"."+extn;
-				var link = document.createElement("a");
-				link.setAttribute('id',"MYLINK");
-				link.href = urlLink;
-				document.body.appendChild(link);
-                link.setAttribute("type", "hidden");
-				link.click();
-				
-				
-				}
-	 	});
- 		reader.readAsBinaryString(blob);
- 	}
- 	xhr.send();
-}
-</script>
 
-<h3>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+        <p>REMReM (<strong>REST Mailbox for Registered Messages</strong>) is a set of tools that can be used to generate validated Eiffel messages and
+            publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro
+            services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a>
+        </p>
 
-<p>Start the self executing Publish-cli JAR</p>
-<pre>java -jar publish-cli.jar</pre>
+        <h1>
+            <a id="remrem-publish" class="anchor" href="#remrem-publish" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>REMReM Publish
+        </h1>
 
+        <hr>
 
+        <h2>
+            <a id="components" class="anchor" href="#components" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Components
+        </h2>
 
-<hr>
+        <ul>
+            <li>REMReM Publish CLI (Command Line Interface)</li>
+            <li>REMReM Publish Service</li>
+        </ul>
 
-<h2>
-<a id="usage-cli-command-line-interface" class="anchor" href="#usage-cli-command-line-interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage CLI (Command Line Interface)</h2>
+        <h2>
+            <a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Compatibility
+        </h2>
 
-<pre>$ java -jar publish-cli.jar -h
+        <ul>
+            <li>JDK 8</li>
+            <li>Tomcat 8</li>
+        </ul>
+
+        <hr>
+
+        <h2>
+            <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>How to Install?
+        </h2>
+
+        <p>Binary is released via <a href="https://jitpack.io/#Ericsson/eiffel-remrem-publish">jitPack</a></p>
+        <p>Download the latest REMReM Publish CLI Binary via <a onClick="getLatestVersion('cli','jar');" href="#">publish-cli.jar</a></p>
+        <p>Download the latest REMReM Publish Service Binary via <a onClick="getLatestVersion('service','war');" href="#">publish-service.war</a></p>
+        <div id="downloadLink" style="visibility: hidden;color: red;font-size: 14px;"></div>
+        <script type="text/javascript">
+             function getLatestVersion(type,extn) {
+                 var xhr = new XMLHttpRequest();
+                 xhr.open("GET", "https://jitpack.io/v/Ericsson/eiffel-remrem-publish.svg");
+                 xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
+                 xhr.onload = function() {
+                    var blob = xhr.response;
+                    var reader = new FileReader();
+                    reader.addEventListener("loadend", function() {
+                        var result = reader.result;
+                        if(result=="Repo not found or no access token provided"){
+                            document.getElementById("downloadLink").innerHTML = result;
+                            document.getElementById("downloadLink").style.visibility = "";
+                        } else {
+                            document.getElementById("downloadLink").innerHTML = result;
+                            var val = document.getElementsByTagName("text")[2].innerHTML;
+                            val = val.trim();
+                            urlLink = "https://jitpack.io/com/github/Ericsson/eiffel-remrem-publish/publish-"+type +"/"+val+"/publish-"+type +"-"+val+"."+extn;
+                            var link = document.createElement("a");
+                            link.setAttribute('id',"MYLINK");
+                            link.href = urlLink;
+                            document.body.appendChild(link);
+                            link.setAttribute("type", "hidden");
+                            link.click();
+                        }
+                    });
+                    reader.readAsBinaryString(blob);
+                 }
+                 xhr.send();
+             }
+        </script>
+
+        <h3>
+            <a id="installation" class="anchor" href="#installation" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Installation (Micro service)
+        </h3>
+
+        <p>Start the self executing JAR</p>
+        <pre>java -jar publish-cli.jar</pre>
+
+        <hr>
+
+        <h2>
+            <a id="usage-cli-command-line-interface" class="anchor" href="#usage-cli-command-line-interface" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Usage CLI (Command Line Interface)
+        </h2>
+
+        <pre>$ java -jar publish-cli.jar -h
 You passed help flag.
 usage: java -jar
- -d,--debug                     enable debug traces
- -domain,--domainId &lt;arg&gt;       identifies the domain that produces the event.
- -en,--exchange_name &lt;arg&gt;      exchange name
- -f,--content_file &lt;arg&gt;        event content file
- -h,--help                      show help.
- -json,--json_content &lt;arg&gt;     event content in json string. The value can
-                                also be a dash(-) and the json will be read
-                                from the output of other programs if piped. Multiple
-                                json events are also supported.
- -mb,--message_bus &lt;arg&gt;        host of message bus to use
- -mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
-                                eiffelsemantics, default is eiffelsemantics
- -np,--non_persistent           remove persistence from message sending
- -tls,--tls &lt;arg&gt;               tls version, specify a valid tls version: '1', '1.1',
-                                '1.2' or default.
-                                It is required for RabbitMq secured port(5671).
- -port,--port &lt;arg&gt;             port to connect to message bus, default
-                                is 5672
- -ud,--user_domain_suffix &lt;arg&gt; user domain suffix
- -rk,--routing_key &lt;arg&gt;        routing key of the eiffel message. When provided
-                                routing key is not generated and the value provided is used.
- -tag,--tag &lt;arg&gt;               tag to be used in routing key
- -v,--list_versions             lists the versions of publish and all loaded protocols</pre>
+-d,--debug                     enable debug traces
+-domain,--domainId &lt;arg&gt;       identifies the domain that produces the event.
+-en,--exchange_name &lt;arg&gt;      exchange name
+-f,--content_file &lt;arg&gt;        event content file
+-h,--help                      show help.
+-json,--json_content &lt;arg&gt;     event content in json string. The value can
+                               also be a dash(-) and the json will be read
+                               from the output of other programs if piped. Multiple
+                               json events are also supported.
+-mb,--message_bus &lt;arg&gt;        host of message bus to use
+-mp,--message_protocol &lt;arg&gt;   name of messaging protocol to be used, e.g. eiffel3,
+                               eiffelsemantics, default is eiffelsemantics
+-np,--non_persistent           remove persistence from message sending
+-tls,--tls &lt;arg&gt;               tls version, specify a valid tls version: '1', '1.1',
+                               '1.2' or default.
+                               It is required for RabbitMQ secured port(5671).
+-port,--port &lt;arg&gt;             port to connect to message bus, default is 5672
+-ud,--user_domain_suffix &lt;arg&gt; user domain suffix
+-rk,--routing_key &lt;arg&gt;        routing key of the eiffel message. When provided
+                               routing key is not generated and the value provided is used.
+-tag,--tag &lt;arg&gt;               tag to be used in routing key
+-v,--list_versions             lists the versions of publish and all loaded protocols
+        </pre>
 
-<p>For publish we have input only from file that can contain one or more messages in a JSON array (surrounded with square brackets) separated by comma. </p>
+        <p>For publish we have input only from file that can contain one or more messages in a JSON array (surrounded with square brackets)
+            separated by comma.</p>
 
-<p>The routing key is generated in the protocol library based on the event type.<br>
-   For more information on routing key, see <a href="http://ericsson.github.io/eiffel-remrem-semantics/" target="_blank">this link</a></p>
+        <p>The routing key is generated in the protocol library based on the event type.<br>
+            For more information on routing key, see <a href="http://ericsson.github.io/eiffel-remrem-semantics/" target="_blank">this link</a>
+        </p>
 
-<p><strong>Publish on a given host, given exchange, given domain and given user domain suffix:</strong></p>
+        <p><strong>Publish on a given host, given exchange, given domain and given user domain suffix:</strong></p>
+        <pre><code>$ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics</code></pre>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics
-</code></pre>
+        <p><strong>If you want to have the message non persistent add np flag:</strong></p>
+        <pre><code>$ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics</code></pre>
 
-<p><strong>If you want to have the message non persistent add np flag:</strong></p>
+        <p><strong>For loading protocol jars other than eiffelsemantics:</strong></p>
+        <pre><code>$ java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp protocolType</code></pre>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics
-</code></pre>
+        <p><strong>NOTE:</strong> in the above example, protocol jar file must be present inside "/path/to/jars/" folder.</p>
 
-<p><strong>For loading protocol jars other than eiffelsemantics :</strong></p>
+        <p><strong>If you want to have the message publishing logs add d flag:</strong></p>
+        <pre><code>$ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d</code></pre>
 
-<pre><code> $ java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp protocolType
-</code></pre>
-<strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
-<p><strong>If you want to have the message publishing logs add d flag:</strong></p>
+        <p><strong>If you want to have the message publishing on RabbitMQ secured port(5671):</strong><br>
+            tls option is used to run REMReM on RabbitMQ secured port(5671)<br>
+            tls option value is either 'default' or &lt;version&gt; for secured port.
+        </p>
+        <pre><code>$ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2</code></pre>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d
-</code></pre>
+        <p><strong>NOTE:</strong> for RabbitMQ default port 5672, no need to pass tls option.</p>
 
-<p><strong>If you want to have the message publishing on RabbitMq secured port(5671):</strong></p>
+        <p><strong>If you want to have the message publishing on RabbitMQ with given routing key:</strong></p>
+        <pre><code>$ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -rk myroutingkey</code></pre>
 
-<p>tls option is used to run REMReM on RabbitMq secured port(5671)</p>
+        <p><strong>If you want to have the message publishing on RabbitMQ with given tag:</strong></p>
+        <pre><code>$ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tag production</code></pre>
 
-<p>tls option value is either 'default'or &lt;version&gt; for secured port.</p>
+        <h2>
+            <a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Usage service
+        </h2>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2
-</code></pre>
+        <p>REMReM Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an end point that must
+            be called using a relative link <code>producer/msg</code>.
+        </p>
 
-<strong>Note: For Rabbitmq default port 5672, No need to pass tls option.</strong>
+        <p>We can get information about the REMReM Publish Service all endpoints and easily access them from here:<br>
+            <em>http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/</em> or <em>http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/swagger-ui.html</em>
+        </p>
 
-<p><strong>If you want to have the message publishing on RabbitMq with given routing key:</strong></p>
+        <h3>
+            <a id="installation" class="anchor" href="#installation" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Installation (Micro service)
+        </h3>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -rk myroutingkey
-</code></pre>
+        <p>Deploy the publish-service.war in Tomcat to use REST services.</p>
 
-<p><strong>If you want to have the message publishing on RabbitMq with given tag:</strong></p>
+        <h3>
+            <a id="configuration" class="anchor" href="#configuration" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Configuration
+        </h3>
 
-<pre><code> $ java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tag production
-</code></pre>
+        <p>Configuration is done in tomcat using a config.properties file: tomcat/conf/config.properties</p>
 
-<h2>
-<a id="usage-service" class="anchor" href="#usage-service" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage service</h2>
+        <h3>Exchange configurations:</h3>
 
-<p>REMReM Publish microservice allows for sending messages to a topic-based exchange on a RabbitMQ Server. It has an end point that must be called using a relative link <code>producer/msg</code>.</p>
+        <p>These parameters need to be provided to start the service:</p>
 
-<h3>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation (Micro service)</h3>
+        <ul>
+            <li><code> &lt;protocol&gt;.rabbitmq.host (String)</code></li>
+            <li><code> &lt;protocol&gt;.rabbitmq.port (Optional)</code></li>
+            <li><code> &lt;protocol&gt;.rabbitmq.username (Optional)</code></li>
+            <li><code> &lt;protocol&gt;.rabbitmq.password (Optional)</code></li>
+            <li><code> &lt;protocol&gt;.rabbitmq.tls (Optional)</code></li>
+            <li><code> &lt;protocol&gt;.rabbitmq.exchangeName (String)</code></li>
+            <li><code> &lt;protocol&gt;.rabbitmq.domainId (String)</code></li>
+        </ul>
 
-<p>Deploy the self executing Publish-Service WAR in Tomcat to use REST services.</p>
+        <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
 
-<h3>
-<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
+        <p><code>&lt;protocol&gt;</code> is name of the protocol used. Eg: eiffelsemantics.</p>
 
-<p>Configuration is done in tomcat using a config.properties file: tomcat/conf/config.properties</p>
+        <p>For any protocol, need to configure above RabbitMQ properties in <strong>tomcat/conf/config.properties</strong> file.</p>
+        <p>classpath:config.properties file is for reference only. Will not pick any values from that file.</p>
 
-<h3>Exchange configurations:</h3>
+        <h3>Ldap configurations:</h3>
 
-<p>These parameters need to be provided to start the service:</p>
+        <p align="justify">Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property
+            <code>activedirectory.publish.enabled=true</code>.
+        </p>
 
-<ul>
-<li><code> &lt;protocol&gt;.rabbitmq.host (String)</code></li>
-<li><code> &lt;protocol&gt;.rabbitmq.port (Optional)</code></li>
-<li><code> &lt;protocol&gt;.rabbitmq.username (Optional)</code></li>
-<li><code> &lt;protocol&gt;.rabbitmq.password (Optional)</code></li>
-<li><code> &lt;protocol&gt;.rabbitmq.tls (Optional)</code></li>
-<li><code> &lt;protocol&gt;.rabbitmq.exchangeName (String)</code></li>
-<li><code> &lt;protocol&gt;.rabbitmq.domainId (String)</code></li>
-</ul>
+        <p>To authenticate with active ldap server we have to provide the following configurations in the
+            <strong>tomcat/conf/config.properties</strong> file.
+        </p>
 
-<p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before you start the service.</p>
+        <pre>
+activedirectory.ldapUrl         : &lt;LDAP server url&gt;
+activedirectory.managerPassword : &lt;LDAP server manager password(must be base64 Encrypted format)&gt;
+activedirectory.managerDn       : &lt;LDAP managerDn pattern&gt;
+activedirectory.rootDn          : &lt;LDAP rootDn pattern&gt;
+activedirectory.userSearchFilter: &lt;LDAP userSearchFilter pattern&gt;
+        </pre>
 
-<p>protocol is name of the protocol used. Eg: eiffelsemantics</p>
+        <p><strong> LDAP authentication without Base64 encryption:</strong></p>
+        <pre><code> $ curl -XPOST -H "Content-Type: application/json" --user username:password --data @ActivityCanceled.json http://localhost:8080/publish/producer/msg?mp=eiffelsemantics</code></pre>
 
-<p>For any protocol, need to configure above RabbitMq properties in <strong>tomcat/conf/config.properties</strong> file.</p>
-<p>classpath:config.properties file is for reference only. Will not pick any values from that file.</p>
-</code></pre>
+        <p align="justify">Each HTTP request must then include an Authorization header with value
+            <code>Basic &lt;Base64 encoded username:password&gt;</code>.
+        </p>
 
-<h3>Ldap configurations:</h3>
-<p align="justify">Active Directory authentication can be enabled for the REMReM REST service by setting the configuration property <code>activedirectory.enabled=true</code>.</p>
-<p>To authenticate with active ldap server we have to provide the following configurations in the <strong>tomcat/conf/config.properties</strong> file.</P>
-<pre>
-  activedirectory.ldapUrl         : &lt;LDAP server url&gt;
-  activedirectory.managerPassword : &lt;LDAP server manager password(must be base64 Encrypted format)&gt;
-  activedirectory.managerDn       : &lt;LDAP managerDn pattern&gt;
-  activedirectory.rootDn          : &lt;LDAP rootDn pattern&gt;
-  activedirectory.userSearchFilter: &lt;LDAP userSearchFilter pattern&gt;
-</pre>
+        <p><strong>LDAP authentication with Base64 encryption:</strong></p>
+        <pre><code>$ curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json http://localhost:8080/publish/producer/msg?mp=eiffelsemantics</code></pre>
 
-<p><strong> LDAP authentication without Base64 encryption: </strong></p>
-<pre> <code> $ curl -XPOST -H "Content-Type: application/json" --user username:password --data @ActivityCanceled.json http://localhost:8080/publish/producer/msg?mp=eiffelsemantics </code></pre>
+        <p><strong>NOTE:</strong> assuming the publish-service is deployed in tomcat as publish.</p>
 
-<p align="justify">Each HTTP request must then include an Authorization header with value <code>Basic &lt;Base64 encoded username:password&gt;</code>.</p>
-<p><strong> LDAP authentication with Base64 encryption: </strong></p>
+        <h3>
+            <a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>REST methods
+        </h3>
 
-<pre> <code> $ curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json http://localhost:8080/publish/producer/msg?mp=eiffelsemantics </code></pre>
+        <p>The service works on the relative link <code>producer/msg</code> and supports POST requests.</p>
 
-<p><strong>Note: Assuming the publish-service is deployed in tomcat as publish</strong></p>
+        <p>You have to specify a user domain suffix using <code>ud</code> URL parameter.</p>
 
-<h3>
-<a id="rest-methods" class="anchor" href="#rest-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST methods</h3>
+        <p>You have to specify a messaging protocol using <code>mp</code> URL parameter.</p>
 
-<p>The service works on the relative link <code>producer/msg</code> and supports POST requests.</p>
-
-<p>You have to specify a user domain suffix</a> using <code><b>ud</b></code> URL parameter.</p>
-
-<p>You have to specify a messaging protocol using <code><b>mp</b></code> URL parameter.</p>
-
-<p>The request's body must contain a <strong>JSON Object or JSON Array</strong> with the messages.</p>
+        <p>The request's body must contain a <strong>JSON Object or JSON Array</strong> with the messages.</p>
 
 
-<h3>GenerateAndPublish end point:</h3>
-The service works on the relative link <code>/generateAndPublish</code> if run as standalone application or <code>/publish/generateAndPublish</code> if run as tomcat app and supports POST requests.<br>
-This controller provides single RemRem REST API End Point for both RemRem Generate and Publish.<br>
+        <h3>GenerateAndPublish end point:</h3>
 
-Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
+        <p>The service works on the relative link <code>/generateAndPublish</code> if run as standalone application or
+            <code>/publish/generateAndPublish</code> if run as tomcat app and supports POST requests.<br>
+            This controller provides single REMReM REST API End Point for both REMReM Generate and Publish.
+        </p>
 
- </p>Parameters:<br>
-     * @param mp<br>
-     * @param message protocol (required)<br>
-     * @param msgType message type (required)<br>
-     * @param ud user domain (not required)<br>
-     * @param tag (not required)<br>
-     * @param rk (not required)<br>
-     * @return A response entity which contains https status and result<br></p>
+        <p>Ex: <code>http://localhost:8080/generateAndPublish/</code></p>
 
-<b>Usage: A typical CURL command:</b>
-<pre>
-         curl -H "Content-Type: application/json" -X POST --data "@inputGenerate_activity_finished.txt"  "http://localhost:8986/publish/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"
-</pre>
-<p>Where, "inputGenerate_activity_finished.txt" is:</p>
+        <p>Parameters:<br>
+            * @param mp<br>
+            * @param message protocol (required)<br>
+            * @param msgType message type (required)<br>
+            * @param ud user domain (not required)<br>
+            * @param tag (not required)<br>
+            * @param rk (not required)<br>
+            * @return A response entity which contains https status and result
+        </p>
 
-<pre>
+        <strong>Usage: a typical CURL command:</strong>
+
+        <pre><code>curl -H "Content-Type: application/json" -X POST --data "@inputGenerate_activity_finished.txt"  "http://localhost:8986/publish/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"</code></pre>
+
+        <p>Where, "inputGenerate_activity_finished.txt" is:</p>
+
+        <pre>
 {
   "msgParams": {
     "meta": {
-    "type": "EiffelActivityFinishedEvent",
+      "type": "EiffelActivityFinishedEvent",
       "tags": [
         "tag1",
         "tag2"
@@ -314,9 +343,9 @@ Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
         "conclusion": "SUCCESSFUL"
       },
       "persistentLogs": [{
-          "name": "firstLog",
-          "uri": "http://myHost.com/firstLog"
-        },
+        "name": "firstLog",
+        "uri": "http://myHost.com/firstLog"
+      },
         {
           "name": "otherLog",
           "uri": "isbn:0-486-27557-4"
@@ -324,31 +353,28 @@ Ex: <code> http://localhost:8080/generateAndPublish/ </code><br>
       ]
     },
     "links": [
-        {
-            "type": "ACTIVITY_EXECUTION",
-            "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
-        }
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+      }
     ]
   }
-}
-</pre>
+}       </pre>
 
-<p>RESULT:<br>
+        <p>RESULT:<br>
+            A typical output of executing the above curl command with an arbitrary JSON:
+        </p>
 
-A typical output of executing the above curl command with an arbitrary JSON:</p>
-<pre>
-{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}
-</pre>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
+        <h3>Versions End point:</h3>
+        <p>"/versions" end point is used to get the versions of messaging protocols along with the current version of publish in a JSON format.<br>
+                URL: http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/versions/
+        </p>
 
-<h3>Versions End point:</h3>
-"/versions" end point is used to get the versions of messaging protocols along with the current version of publish in a JSON format.<br>
+        <p>Sample result:</p>
 
-URL:  http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/versions/ <br>
-
-Sample Result:
-
-<pre>
+        <pre>
         {
             "serviceVersion": {
                 "version": "x.x.x"
@@ -356,351 +382,319 @@ Sample Result:
             "endpointVersions": {
                 "semanticsVersion": "x.x.x",
             }
-        }
-</pre>
+        }</pre>
 
-<hr>
+        <hr>
 
-<h2>
-<a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
+        <h2>
+            <a id="testing" class="anchor" href="#testing" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Testing
+        </h2>
 
+        <p>You can use command-line tools like <a href="https://en.wikipedia.org/wiki/CURL">curl</a> or some plugin for your favorite browser. For example:</p>
 
-<p>You can use command-line tools like <a href="https://en.wikipedia.org/wiki/CURL">curl</a> or some plugin for your favorite browser. For example:</p>
+        <ul>
+            <li>
+                <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">Postman</a> for Chromium-based browsers
+            </li>
+            <li>
+                <a href="https://addons.mozilla.org/en-US/firefox/addon/httprequester/">HttpRequester</a> for Firefox
+            </li>
+        </ul>
 
-<ul>
-<li>
-<a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">Postman</a> for Chromium-based browsers</li>
-<li>
-<a href="https://addons.mozilla.org/en-US/firefox/addon/httprequester/">HttpRequester</a> for Firefox</li>
-</ul>
+        <h3>
+            <a id="a-few-examples-with-curl" class="anchor" href="#a-few-examples-with-curl" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>A few examples with <code>curl</code>:
+        </h3>
 
-<h3>
-<a id="a-few-examples-with-curl" class="anchor" href="#a-few-examples-with-curl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A few examples with <code>curl</code>:</h3>
+        <p><strong>One message:</strong></p>
+        <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics</code></pre>
 
-<p><strong>One message:</strong></p>
+        <p>Gives:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics</code></pre>
+        <p><strong>Two messages/objects and given user domain suffix:</strong></p>
+        <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]},{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440998,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics</code></pre>
 
-<p>Gives:</p>
+        <p>Gives:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
-<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+        <p><strong>One message and given tag:</strong></p>
+        <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&tag=production</code></pre>
 
-<p><strong>Two messages/objects and given user domain suffix:</strong></p>
+        <p>Gives:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]},{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440998,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics</code></pre>
+        <p><strong>One message and given routing key:</strong></p>
+        <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&rk=myroutingkey</code></pre>
 
-<p>Gives:</p>
+        <p>Gives:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
-<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+        <p><strong>NOTE:</strong> for any protocol, provide the Java opts as: </p>
+        <pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/jars/" in catalina.sh</pre>
+        <p><strong>NOTE:</strong> in the above example, protocol jar file must be present inside "/path/to/jars/" folder.</p>
 
-<p><strong>One message and given tag:</strong></p>
+        <p><strong>Reading data from a file:</strong></p>
+        <pre><code>$ echo '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}, {"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440998,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' > test.data
+            $ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/publish/producer/msg?mp=eiffelsemantics
+        </code></pre>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&tag=production</code></pre>
+        <p>Gives:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
-<p>Gives:</p>
+        <p><strong>Malformed input:</strong></p>
+        <pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{Message}]' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffel3</code></pre>
 
-<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+        <p>Gives:</p>
+        <pre>{"timestamp":"Dec 27, 2017 3:34:11 PM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: ..."}</pre>
 
-<p><strong>One message and given routing key:</strong></p>
+        <h2>
+            <a id="statusCodes" class="anchor" href="#statusCodes" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Status Codes
+        </h2>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&rk=myroutingkey</code></pre>
+        <p>The response generated will have internal status codes for each and every event based on the input JSON provided.
+            Status codes are generated according to the below tables.
+        </p>
+        <p><strong>NOTE:</strong> we have a status code on the HTTP response and an internal status code.</p>
 
-<p>Gives:</p>
+        <p><strong>HTTP response codes:</strong></p>
+        <table class="wikitable">
+            <tr>
+                <th style="text-align:left;">Status code</th>
+                <th style="text-align:left;">HTTP response</th>
+                <th style="text-align:left;">Comment</th>
+            </tr>
+            <tr>
+                <td>200</td>
+                <td>OK</td>
+                <td>Status code of 200 is returned if the event is published successfully.</td>
+            </tr>
+            <tr>
+                <td>207</td>
+                <td>Multi Status</td>
+                <td>Status code of 207 is returned if we have a mix of internal status codes, i.e. Publish of few events was successful and few
+                    events was a failure. It is only applicable for batch publishing.<br>
+                    Incase of Multiple events in the body JSON, if a event is given internal status code of 400 or 500 rest events will not be
+                    published and will be given a internal status code of 503, which will result in overall HTTP response code of 207.
+                </td>
+            </tr>
+            <tr>
+                <td>400</td>
+                <td>Bad Request</td>
+                <td> Status code of 400 is returned if the request body JSON is malformed. i.e. Unable to parse the body JSON. This status code is
+                    applicable if request body JSON is a single event or multiple events.
+                </td>
+            </tr>
+            <tr>
+                <td>404</td>
+                <td>Not Found</td>
+                <td>Status code of 404 is returned if RabbitMQ message broker properties are not found for the requested protocol. This status
+                        code is applicable if request body JSON is a single event or multiple events.
+                </td>
+            </tr>
+            <tr>
+                <td>500</td>
+                <td>Internal Server Error</td>
+                <td>Status code of 500 is returned if RabbitMQ is down or could not prepare routing key to publish the eiffel event. This status
+                    code is applicable if request body JSON is a single event.
+                </td>
+            </tr>
+        </table>
 
-<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+        <p><strong>Internal status codes:</strong></p>
+        <table class="wikitable">
+            <tr>
+                <th style="text-align:left;">Status code</th>
+                <th style="text-align:left;">Result</th>
+                <th style="text-align:left;">Message</th>
+                <th style="text-align:left;">Comment</th>
+            </tr>
+            <tr>
+                <td>200</td>
+                <td>SUCCESS</td>
+                <td>Event sent successfully</td>
+                <td>Status code of 200 is returned if the request is completed successfully.</td>
+            </tr>
+            <tr>
+                <td>400</td>
+                <td>Bad Request</td>
+                <td>Invalid event content, client need to fix problem in event before submitting again</td>
+                <td>Status code of 400 is returned if the request body JSON is malformed. i.e. Unable to parse the body JSON.
+                    Applicable to single and multiple events in JSON (or) an event has a missing ID field.
+                </td>
+            </tr>
+            <tr>
+                <td>404</td>
+                <td>RabbitMQ properties not found</td>
+                <td>RabbitMQ properties not configured for the protocol &lt;protocol&gt;</td>
+                <td>Status code of 404 is returned if RabbitMQ message broker properties are not found for the event.</td>
+            </tr>
+            <tr>
+                <td rowspan="2">500</td>
+                <td rowspan="2">Internal Server Error</td>
+                <td>RabbitMQ is down. Please try later</td>
+                <td>Status code of 500 is returned if RabbitMQ is down.</td>
+            </tr>
+            <tr>
+                <td>Could not prepare Routing key to publish message.</td>
+                <td>Status code of 500 is returned if could not prepare routing key to publish the eiffel event.</td>
+            </tr>
+            <tr>
+                <td>503</td>
+                <td>Service Unavailable</td>
+                <td>Please check previous event and try again later</td>
+                <td>Status code of 503 is returned if there is a failure in publishing previous event with 400, 404 or 500 error.</td>
+            </tr>
+        </table>
 
-<p><strong>NOTE:</strong> For any protocol, provide the Java opts as: </p>
-<pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/jars/" in catalina.sh</pre>
-<strong>Note: In the above example, protocol jar file must be present inside "/path/to/jars/" folder</strong>
-<p><strong>Reading data from a file:</strong></p>
+        <p><strong>Status Codes explanation:</strong></p>
 
-<pre><code>$ echo '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}, {"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"1.0.0","time":1513758440998,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' > test.data
-$ curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" http://localhost:8080/publish/producer/msg?mp=eiffelsemantics
-</code></pre>
+        <p><strong>200:</strong> when all the events are sent successfully, then the internal status code for each event and status code for HTTP
+                response will be 200.
+        </p>
+        <pre><code><strong>HTTP Response:</strong> 200 :OK
+            [
+                {
+                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+                 "status_code":200,
+                 "result":"SUCCESS",
+                 "message":"Event sent successfully"
+                },
+                {
+                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
+                 "status_code":200,
+                 "result":"SUCCESS",
+                 "message":"Event sent successfully"
+                }
+            ]</code></pre>
 
-<p>Gives:</p>
+        <p><strong>400:</strong> when the input JSON is malformated, that particular events internal status code will be 400.</p>
+        <pre><code><strong>HTTP Response:</strong> 400 :Bad Request
+            [
+                {
+                 "status_code":400,
+                 "result":"Bad Request",
+                 "message":"Invalid event content, client need to fix problem in event before submitting again"
+                }
+            ]</code></pre>
 
-<pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+        <p><strong>207:</strong> when the events are having different internal status codes, then the status code of HTTP response will be 207.</p>
+        <pre><code><strong>HTTP Response:</strong> 207 :Multi Status
+            [
+                {
+                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+                 "status_code":200,
+                 "result":"SUCCESS",
+                 "message":"Event sent successfully"
+                },
+                {
+                 "status_code":400,
+                 "result":"Bad Request",
+                 "message":"Invalid event content, client need to fix problem in event before submitting again"
+                }
+            ]</code></pre>
 
-<p><strong>Malformed input:</strong></p>
+        <p><strong>500:</strong> we will get this status code, when the event is failed to send because of internal server error.</p>
+        <pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
+            [
+                {
+                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+                 "status_code":500,
+                 "result":"Internal Server Error",
+                 "message":"RabbitMQ is down. Please try later"
+                }
+            ]</code></pre>
 
-<pre><code>$ curl -H "Content-Type: application/json" -X POST -d '[{Message}]' http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffel3</code></pre>
+        <p><strong>503:</strong> event will have this status code when the previous event is failed to send.</p>
+        <p>For example, consider you have 5 events.<br>
+            E1<-E2<-E3<-E4<-E5<br>
+            You send them all to publish in a batch command.<br>
+            E1 and E2 is successful. (200)<br>
+            E3 is malformatted. (400)<br>
+            If we send E4 and E5 we will have a broken chain so that is not a good option. In this case we should skip sending E4 and E5 and have status code 503 for those.
+        </p>
+        <pre><code><Strong>HTTP Response</strong>: 207 :Multi Status
+            [
+                {
+                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+                 "status_code":200,
+                 "result":"SUCCESS",
+                 "message":"Event sent successfully"
+                },
+                {
+                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
+                 "status_code":200,
+                 "result":"SUCCESS",
+                 "message":"Event sent successfully"
+                },
+                {
+                 "status_code":400,
+                 "result":"Bad Request",
+                 "message":"Invalid event content, client need to fix problem in event before submitting again"
+                },
+                {
+                 "status_code":503,
+                 "result":"Service Unavailable",
+                 "message":"Please check previous event and try again later"
+                },
+                {
+                 "status_code":503,
+                 "result":"Service Unavailable",
+                 "message":"Please check previous event and try again later"
+                }
+            ]</code></pre>
 
-<p>Gives:</p>
+        <p><strong>404:</strong> we will get this status code, when RabbitMQ properties not configured in tomcat/conf/config.properties file for the protocol.</p>
+        <pre><code><strong>HTTP Response:</strong> 404 :Not Found
+            [
+                {
+                "status_code": 404,
+                "result": "RabbitMQ properties not found",
+                "message": "RabbitMQ properties not configured for the protocol &lt;protocol&gt;"
+                }
+            ]</code></pre>
 
-<pre>{"timestamp":"Dec 27, 2017 3:34:11 PM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: ..."}</pre>
+        <p><strong>500:</strong> we will get this status code, when cannot prepare routing key.</p>
+        <pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
+            [
+                {
+                "status_code": 500,
+                "result": "Internal Server Error",
+                "message": "Could not prepare Routing key to publish message"
+                }
+            ]</code></pre>
 
-<p><strong>Status Codes:</strong></p>
-<p>The response generated will have internal status codes for each and every event based on the input JSON provided.Status codes are generated according to the below tables: </p>
-<p><strong> Note: </strong>We have a status code on the HTTP response and an internal status code.</p>
-<p><strong>HTTP response codes:</strong></p>
-<table class="wikitable">
-<tr>
-<th style="text-align:left;"> Status code
-</th>
-<th style="text-align:left;"> HTTP response
-</th>
-<th style="text-align:left;"> Comment
-</th>
+        <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
 
-</tr>
-<tr>
-<td>200
-</td>
-<td>OK
-</td>
-<td> Status code of 200 is returned if the event is published successfully.
-</td>
-</tr>
-<tr>
-<td>207
-</td>
-<td> Multi Status
-</td>
-<td> Status code of 207 is returned if we have a mix of internal status codes, i.e. Publish of few events was successful and few events was a failure. It is only applicable for batch publishing.<br>
-Incase of Multiple events in the body JSON, if a event is given internal status code of 400 or 500 rest events will not be published and will be given a internal status code of 503, which will result in overall HTTP response code of 207.
-</td>
-</tr>
-<tr>
-<td>400
-</td>
-<td> Bad Request
-</td>
-<td> Status code of 400 is returned if the request body JSON is malformed. i.e. Unable to parse the body JSON. This status code is applicable if request body JSON is a single event or multiple events.
-</td>
-</tr>
-<tr>
-<td>404
-</td>
-<td> Not Found
-</td>
-<td> Status code of 404 is returned if RabbitMQ message broker properties are not found for the requested protocol. This status code is applicable if request body JSON is a single event or multiple events.
-</td>
-<tr>
-<td>500
-</td>
-<td> Internal Server Error
-</td>
-<td> Status code of 500 is returned if RabbitMq is down or could not prepare routing key to publish the eiffel event. This status code is applicable if request body JSON is a single event.
-</td>
-</tr></table>
+        <h2>Logging</h2>
 
+        <p>REMReM Publish application logging is implemented using the logback-classic. It requires user to configure the logback.xml file.<br>
+            When used without logback.xml log messages will look as below:</p>
 
-<p><strong>Internal status codes:</strong></p>
-<table class="wikitable">
-<tr>
-<th style="text-align:left;"> Status code
-</th>
-<th style="text-align:left;"> Result
-</th>
-<th style="text-align:left;"> Message
-</th>
-<th style="text-align:left;"> Comment
-</th>
+        <pre><code>%PARSER_ERROR[wEx]%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr]
+            <br>%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr]</code></pre>
 
-</tr>
-<tr>
-<td>200
-</td>
-<td>SUCCESS
-</td>
-<td>Event sent successfully
-</td>
-<td> Status code of 200 is returned if the request is completed successfully.
-</td>
-</tr>
-<tr>
-<td>400
-</td>
-<td> Bad Request
-</td>
-<td> Invalid event content, client need to fix problem in event before submitting again
-</td>
-<td> Status code of 400 is returned if the request body JSON is malformed. i.e. Unable to parse the body JSON. Applicable to single and multiple events in JSON (or) an event has a missing ID field.
-</td>
-</tr>
-<tr>
-<td>404
-</td>
-<td> RabbitMq properties not found
-</td>
-<td> RabbitMq properties not configured for the protocol &lt;protocol&gt;
-</td>
-<td> Status code of 404 is returned if RabbitMQ message broker properties are not found for the event.
-</td>
-</tr>
-<tr>
+        <p>To configure the logback.xml file use <strong>-Dlogging.config=path/logback.xml</strong></p>
 
-<td rowspan="2">500
-</td>
-<td rowspan="2"> Internal Server Error
-</td>
-<td> RabbitMQ is down. Please try later
-</td>
-<td> Status code of 500 is returned if RabbitMq is down.
-</td>
-</tr>
-<tr>
-<td> Could not prepare Routing key to publish message
-</td>
-<td> Status code of 500 is returned if could not prepare routing key to publish the eiffel event.
-</td>
-</tr>
-<tr>
-<td>503
-</td>
-<td> Service Unavailable
-</td>
-<td> Please check previous event and try again later
-</td>
-<td> Status code of 503 is returned if there is a failure in publishing previous event with 400, 404 or 500 error.
-</td>
-</tr></table>
+        <p><a href="https://logback.qos.ch/manual/configuration.html">Click here</a> for info about logback configurations</p>
 
-<p><strong>Status Codes Explanation:</strong></p>
-<p><strong>200:</strong>When all the events are sent successfully, then the internal status code for each event and status code for HTTP response will be 200.</p>
-<pre><code><strong>HTTP Response:</strong> 200 :OK
-[
-	{
-	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-	 "status_code":200,
-	 "result":"SUCCESS",
-	 "message":"Event sent successfully"
-	},
-	{
-	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
-	 "status_code":200,
-	 "result":"SUCCESS",
-	 "message":"Event sent successfully"
-	}
-]
-</code></pre>
-<p><strong>400:</strong>When the input JSON is malformated, that particular events internal status code will be 400. </p>
-<pre><code><strong>HTTP Response:</strong> 400 :Bad Request
-[
-	{
-	 "status_code":400,
-	 "result":"Bad Request",
-	 "message":"Invalid event content, client need to fix problem in event before submitting again"
-	}
-]
-</code></pre>
-<p><strong>207:</strong>When the events are having different internal status codes, then the status code of HTTP response will be 207.</p>
-<pre><code><strong>HTTP Response:</strong> 207 :Multi Status
-[
-	{
-	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-	 "status_code":200,
-	 "result":"SUCCESS",
-	 "message":"Event sent successfully"
-	},
-	{
-	 "status_code":400,
-	 "result":"Bad Request",
-	 "message":"Invalid event content, client need to fix problem in event before submitting again"
-	}
-]
-</code></pre>
-<p><strong>500:</strong>We will get this status code, when the event is failed to send because of internal server error.</p>
-<pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
-[
-	{
-	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-	 "status_code":500,
-	 "result":"Internal Server Error",
-	 "message":"RabbitMQ is down. Please try later"
-	}
-]
-</code></pre>
-<p><strong>503:</strong>Event will have this status code when the previous event is failed to send.</br>
-For example,Consider you have 5 events.</br>
-E1<-E2<-E3<-E4<-E5</br>
-You send them all to publish in a batch command.</br>
-E1 and E2 is successful. (200)</br>
-E3 is malformatted. (400)</br>
-If we send E4 and E5 we will have a broken chain so that is not a good option. In this case we should skip sending E4 and E5 and have status code 503 for those.</p>
-<pre><code><Strong>HTTP Response</strong>: 207 :Multi Status
-[	
-	{
-	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-	 "status_code":200,
-	 "result":"SUCCESS",
-	 "message":"Event sent successfully"
-	},
-	{
-	 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
-	 "status_code":200,
-	 "result":"SUCCESS",
-	 "message":"Event sent successfully"
-	},
-	{
-	 "status_code":400,
-	 "result":"Bad Request",
-	 "message":"Invalid event content, client need to fix problem in event before submitting again"
-	},
-	{
-	 "status_code":503,
-	 "result":"Service Unavailable",
-	 "message":"Please check previous event and try again later"
-	},
-	{
-	 "status_code":503,
-	 "result":"Service Unavailable",
-	 "message":"Please check previous event and try again later"
-	}
-]</code></pre>
-<p><strong>404:</strong>We will get this status code, when RabbitMq properties not configured in tomcat/conf/config.properties file for the protocol.</p>
-<pre><code><strong>HTTP Response:</strong> 404 :Not Found
-[
-	{
-	"status_code": 404,
-	"result": "RabbitMq properties not found",
-	"message": "RabbitMq properties not configured for the protocol &lt;protocol&gt;"
-	}
-]
-</code></pre>
-<p><strong>500:</strong>We will get this status code, when cannot prepare routing key.</p>
-<pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
-[
-	{
-	"status_code": 500,
-	"result": "Internal Server Error",
-	"message": "Could not prepare Routing key to publish message"
-	}
-]
-</code></pre>
-<p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
+        <p>To get sample logback.xml to use <a target="_blank" href="logback/logback-sample.xml">Click Here</a></p>
 
-<h2>Logging</h2>
+    </section>
+</div>
 
-
-<p>REMReM Publish application logging is implemented using the logback-classic. It requires user to configure the logback.xml file.<br/>
-When used without logback.xml log messages will look as below: <br/>
-<pre><code>%PARSER_ERROR[wEx]%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] 
-  <br/>%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr]
-</code></pre>
-<br/>To configure the logback.xml file use <strong>-Dlogging.config=path/logback.xml</strong>
- <br/> 
-
-
-<a href="https://logback.qos.ch/manual/configuration.html">Click here</a> for info about logback configurations
-
-<br/>To get sample logback.xml to use  <a target="_blank" href="logback/logback-sample.xml">Click Here</a>
-</p>
-
-</p>
-      </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Eiffel REMReM Publish Service maintained by <a href="https://github.com/evasiba-ericsson">evasiba-ericsson</a></p>
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+    <footer class="inner">
+        <p class="copyright">Eiffel REMReM Publish maintained by <a href="https://github.com/evasiba-ericsson">evasiba-ericsson</a></p>
         <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+    </footer>
+</div>
 
-    
-
-  </body>
+</body>
 </html>
