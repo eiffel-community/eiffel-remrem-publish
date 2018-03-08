@@ -1,4 +1,9 @@
 
+## 0.5.5
+- Fixed generate service link in /generateAndPublish endpoint
+- Added few messages in case error in generate happen
+- Uplifted semantics version to 0.4.0
+
 ## 0.5.4
 - Added swagger for publish service
 - Changed year in copyright headers from 2017 to 2018

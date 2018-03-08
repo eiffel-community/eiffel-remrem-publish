@@ -20,37 +20,17 @@ public class URLTemplate {
         return map;
     }
 
-    public void generate(String mp, String msgType, String userDomain, String routingKey, String tag,  String generateServerHost, String generateServerPort) {
+    public void generate(String mp, String msgType, String generateServerHost, String generateServerPort, String generateServerAppName) {
 
-        url = "http://{generateServerHost}:{generateServerPort}/{mp}?msgType={msgType}";
+        url = "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
 
-        map = new HashMap<String, String>();
+        map = new HashMap<>();
         map.put("mp", mp);
         map.put("msgType", msgType);
         map.put("generateServerHost", generateServerHost);
         map.put("generateServerPort", generateServerPort);
-        
-        if (userDomain == null) {userDomain = "";}
-        if (tag == null) {tag = "";}
-        if (routingKey == null) {routingKey = "";}
-        
-        
-        
+        map.put("generateServerAppName", generateServerAppName);
 
-        if (!userDomain.isEmpty()) {
-            url += "&ud={ud}";
-            map.put("ud", userDomain);
-        }
-
-        if (!tag.isEmpty()) {
-            url += "&tag={tag}";
-            map.put("tag", tag);
-        }
-
-        if (!routingKey.isEmpty()) {
-            url += "&rk={rk}";
-            map.put("rk", routingKey);
-        }
     }
 
 }

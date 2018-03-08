@@ -31,14 +31,12 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.*;
 
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import com.ericsson.eiffel.remrem.publish.controller.ProducerController;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
@@ -141,28 +139,20 @@ public class EiffelRemremCommonControllerUnitTest {
     @Test
     public void testURLTemplate() throws Exception {
 
-        Map<String, String> mapTest = new HashMap<String, String>();
-        Map<String, String> map = new HashMap<String, String>();
-
         String mp = "eiffeldemantics";
         String msgType = "eiffelactivityfinished";
-        String ud = "userDomain";
-        String rk = "routingKey";
-        String tag = "tag";
 
-        map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("mp", mp);
         map.put("msgType", msgType);
-        map.put("ud", ud);
-        map.put("tag", tag);
-        map.put("rk", rk);
 
         String generateServerHost = "localhost";
         String generateServerPort = "8987";
-        String correctURL = "http://{generateServerHost}:{generateServerPort}/{mp}?msgType={msgType}&ud={ud}&tag={tag}&rk={rk}";
+        String generateServerAppName = "generate";
+        String correctURL = "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
 
-        urlT.generate(mp, msgType, ud, rk, tag, generateServerHost, generateServerPort);
-        mapTest = urlT.getMap();
+        urlT.generate(mp, msgType, generateServerHost, generateServerPort, generateServerAppName);
+        Map<String, String> mapTest = urlT.getMap();
 
         assertEquals(mapTest.get("mp"), map.get("mp"));
         assertEquals(mapTest.get("msgType"), map.get("msgType"));

@@ -16,6 +16,18 @@ package com.ericsson.eiffel.remrem.publish.constants;
 
 public class RemremPublishServiceConstants {
 
+        public static final String GENERATE_NO_SERVICE_ERROR = "{\"status_code\": 503, \"result\": \"FAIL\", "
+                + "\"message\": \"Message protocol is invalid\"}";
+
+        public static final String GENERATE_BAD_REQUEST = "{\"status_code\": 400, \"result\": \"FAIL\", "
+                + "\"message\": \"Malformed JSON or incorrect type of event\"}";
+
+        public static final String GENERATE_UNAUTHORIZED = "{\"status_code\": 401, \"result\": \"FAIL\", "
+                + "\"message\": \"Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled\"}";
+
+        public static final String GENERATE_INTERNAL_ERROR = "{\"status_code\": 500, \"result\": \"FAIL\", "
+                + "\"message\": \"Internal server error\", \"reason\": \"HERE SHOULD BE REASON\"}";
+
         public static final String DOCUMENTATION_URL = "http://ericsson.github.io/eiffel-remrem-publish/index.html";
 
 }
