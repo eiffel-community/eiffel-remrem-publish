@@ -1,4 +1,4 @@
-# REMReM Publish
+# Eiffel REMReM Publish
 
 [![Build Status](https://travis-ci.org/Ericsson/eiffel-remrem-publish.svg?branch=master)](https://travis-ci.org/Ericsson/eiffel-remrem-publish)
 [![Coverage Status](https://coveralls.io/repos/github/Ericsson/eiffel-remrem-publish/badge.svg?branch=master)](https://coveralls.io/github/Ericsson/eiffel-remrem-publish?branch=master)

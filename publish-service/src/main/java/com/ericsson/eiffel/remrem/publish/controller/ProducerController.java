@@ -160,20 +160,25 @@ public class ProducerController {
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(postURL, entity, String.class, map);
-            log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
 
-            // publishing requires an array if you want status code
-            String responseBody = "[" + response.getBody() + "]";
-            MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
+            if(response.getStatusCode() == HttpStatus.OK) {
+                log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
 
-            log.debug("mp: " + msgProtocol);
-            log.debug("body: " + responseBody);
-            log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
-            if (msgService != null && msgProtocol != null) {
-                rmqHelper.rabbitMqPropertiesInit(msgProtocol);
+                // publishing requires an array if you want status code
+                String responseBody = "[" + response.getBody() + "]";
+                MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
+
+                log.debug("mp: " + msgProtocol);
+                log.debug("body: " + responseBody);
+                log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
+                if (msgService != null && msgProtocol != null) {
+                    rmqHelper.rabbitMqPropertiesInit(msgProtocol);
+                }
+                SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
+                return new ResponseEntity(result, messageService.getHttpStatus());
+            } else {
+                return response;
             }
-            SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
-            return new ResponseEntity(result, messageService.getHttpStatus());
         } catch (Exception e) {
             log.info("The result from REMReM Generate is not OK and have value: " + e.getMessage());
             if (e.getMessage().startsWith(Integer.toString(HttpStatus.BAD_REQUEST.value()))) {
