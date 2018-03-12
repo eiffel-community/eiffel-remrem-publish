@@ -18,7 +18,7 @@
 	}],
 	"meta": {
 		"type": "eiffelactivityfinished",
-		"version": "1.0.0",
+		"version": "1.1.0",
 		"time": 1478780245184,
 		"tags": ["tag1", "tag2"],
 		"source": {
