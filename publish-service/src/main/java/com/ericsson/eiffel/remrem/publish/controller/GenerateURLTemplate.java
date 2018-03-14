@@ -22,14 +22,12 @@ public class GenerateURLTemplate {
     @Value("${generate.server.appName}")
     private String generateServerAppName;
 
-    private String url = "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
-    private Map<String, String> map = new HashMap<>();
-
     public String getUrl() {
-        return url;
+        return "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
     }
 
     public Map<String, String> getMap(final String mp, final String msgType) {
+        Map<String, String> map = new HashMap<>();
         map.put("mp", mp);
         map.put("msgType", msgType);
         map.put("generateServerHost", generateServerHost);
