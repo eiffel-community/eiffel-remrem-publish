@@ -52,15 +52,6 @@ import ch.qos.logback.classic.Logger;
 @Api(value = "REMReM Publish Service", description = "REST API for publishing Eiffel messages to message bus")
 public class ProducerController {
 
-    @Value("${generate.server.host}")
-    private String generateServerHost;
-
-    @Value("${generate.server.port}")
-    private String generateServerPort;
-
-    @Value("${generate.server.appName}")
-    private String generateServerAppName;
-
     @Autowired
     private MsgService msgServices[];
 
@@ -70,6 +61,9 @@ public class ProducerController {
 
     @Autowired
     private RMQHelper rmqHelper;
+
+    @Autowired
+    private GenerateURLTemplate generateURLTemplate;
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -148,7 +142,7 @@ public class ProducerController {
                                              @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
 
-        GenerateURLTemplate generateURLTemplate = new GenerateURLTemplate(msgProtocol, msgType, generateServerHost, generateServerPort, generateServerAppName);
+        generateURLTemplate.generate(msgProtocol, msgType);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -187,8 +181,7 @@ public class ProducerController {
             } else if (e.getMessage().startsWith(Integer.toString(HttpStatus.UNAUTHORIZED.value()))) {
                 return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
             } else {
-                String errorMessage = RemremPublishServiceConstants.GENERATE_INTERNAL_ERROR.replace("HERE SHOULD BE REASON", e.getMessage());
-                return new ResponseEntity(parser.parse(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_INTERNAL_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
     }

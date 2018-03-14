@@ -52,6 +52,9 @@ public class EiffelRemremCommonControllerUnitTest {
     RestTemplate restTemplate;
 
     @InjectMocks
+    GenerateURLTemplate generateURLTemplate = new GenerateURLTemplate();
+
+    @InjectMocks
     ProducerController unit = new ProducerController();
 
     @Mock
@@ -134,27 +137,24 @@ public class EiffelRemremCommonControllerUnitTest {
     }
 
     @Test
-    public void testURLTemplate() throws Exception {
+    public void testGenerateURLTemplate() throws Exception {
 
-        String mp = "eiffeldemantics";
+        String mp = "eiffelsemantics";
         String msgType = "eiffelactivityfinished";
 
         Map<String, String> map = new HashMap<>();
         map.put("mp", mp);
         map.put("msgType", msgType);
 
-        String generateServerHost = "localhost";
-        String generateServerPort = "8987";
-        String generateServerAppName = "generate";
         String correctURL = "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
 
-        GenerateURLTemplate urlT = new GenerateURLTemplate(mp, msgType, generateServerHost, generateServerPort, generateServerAppName);
-        Map<String, String> mapTest = urlT.getMap();
+        generateURLTemplate.generate(mp, msgType);
+        Map<String, String> mapTest = generateURLTemplate.getMap();
 
         assertEquals(mapTest.get("mp"), map.get("mp"));
         assertEquals(mapTest.get("msgType"), map.get("msgType"));
 
-        assertEquals(urlT.getUrl(), correctURL);
+        assertEquals(generateURLTemplate.getUrl(), correctURL);
 
     }
 

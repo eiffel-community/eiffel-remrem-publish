@@ -26,7 +26,7 @@ public class RemremPublishServiceConstants {
                 + "\"message\": \"Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled\"}";
 
         public static final String GENERATE_INTERNAL_ERROR = "{\"status_code\": 500, \"result\": \"FAIL\", "
-                + "\"message\": \"Internal server error\", \"reason\": \"HERE SHOULD BE REASON\"}";
+                + "\"message\": \"Internal server error\"}";
 
         public static final String DOCUMENTATION_URL = "http://ericsson.github.io/eiffel-remrem-publish/index.html";
 
