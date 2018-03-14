@@ -146,11 +146,9 @@ public class ProducerController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(bodyJson.toString(), headers);
 
-        String postURL = generateURLTemplate.getUrl();
-        Map<String, String> map = generateURLTemplate.getMap(msgProtocol, msgType);
-
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(postURL, entity, String.class, map);
+            ResponseEntity<String> response = restTemplate.postForEntity(generateURLTemplate.getUrl(),
+                    entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
             if(response.getStatusCode() == HttpStatus.OK) {
                 log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
