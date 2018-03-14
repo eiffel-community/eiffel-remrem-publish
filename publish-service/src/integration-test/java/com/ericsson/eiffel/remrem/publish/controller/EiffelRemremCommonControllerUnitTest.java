@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.*;
@@ -51,8 +52,8 @@ public class EiffelRemremCommonControllerUnitTest {
     @Mock
     RestTemplate restTemplate;
 
-    @InjectMocks
-    GenerateURLTemplate generateURLTemplate = new GenerateURLTemplate();
+    @Spy
+    GenerateURLTemplate generateURLTemplate;
 
     @InjectMocks
     ProducerController unit = new ProducerController();
@@ -148,9 +149,9 @@ public class EiffelRemremCommonControllerUnitTest {
 
         String correctURL = "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
 
-        generateURLTemplate.generate(mp, msgType);
-        Map<String, String> mapTest = generateURLTemplate.getMap();
+        Map<String, String> mapTest = generateURLTemplate.getMap(mp, msgType);
 
+        assertEquals(generateURLTemplate.getUrl(), correctURL);
         assertEquals(mapTest.get("mp"), map.get("mp"));
         assertEquals(mapTest.get("msgType"), map.get("msgType"));
 
