@@ -54,9 +54,6 @@ public class EiffelRemremCommonControllerUnitTest {
     @InjectMocks
     ProducerController unit = new ProducerController();
 
-    @InjectMocks
-    URLTemplate urlT = new URLTemplate();
-
     @Mock
     MsgService service;
 
@@ -151,7 +148,7 @@ public class EiffelRemremCommonControllerUnitTest {
         String generateServerAppName = "generate";
         String correctURL = "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
 
-        urlT.generate(mp, msgType, generateServerHost, generateServerPort, generateServerAppName);
+        GenerateURLTemplate urlT = new GenerateURLTemplate(mp, msgType, generateServerHost, generateServerPort, generateServerAppName);
         Map<String, String> mapTest = urlT.getMap();
 
         assertEquals(mapTest.get("mp"), map.get("mp"));

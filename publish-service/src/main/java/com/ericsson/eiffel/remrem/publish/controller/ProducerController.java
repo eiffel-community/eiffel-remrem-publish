@@ -148,15 +148,14 @@ public class ProducerController {
                                              @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
 
-        URLTemplate urlTemplate = new URLTemplate();
-        urlTemplate.generate(msgProtocol, msgType, generateServerHost, generateServerPort, generateServerAppName);
+        GenerateURLTemplate generateURLTemplate = new GenerateURLTemplate(msgProtocol, msgType, generateServerHost, generateServerPort, generateServerAppName);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(bodyJson.toString(), headers);
 
-        String postURL = urlTemplate.getUrl();
-        Map<String, String> map = urlTemplate.getMap();
+        String postURL = generateURLTemplate.getUrl();
+        Map<String, String> map = generateURLTemplate.getMap();
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(postURL, entity, String.class, map);
