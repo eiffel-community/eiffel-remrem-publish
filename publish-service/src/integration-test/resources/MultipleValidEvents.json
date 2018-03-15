@@ -19,7 +19,7 @@
 	"meta": {
 		"id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
 		"type": "EiffelActivityFinishedEvent",
-		"version": "1.0.0",
+		"version": "1.1.0",
 		"time": 1478780245184,
 		"tags": ["tag1", "tag2"],
 		"source": {
@@ -55,7 +55,7 @@
 	"meta": {
 		"id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a2",
 		"type": "EiffelActivityFinishedEvent",
-		"version": "1.0.0",
+		"version": "1.1.0",
 		"time": 1478780245184,
 		"tags": ["tag1", "tag2"],
 		"source": {
@@ -91,7 +91,7 @@
 	"meta": {
 		"id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a3",
 		"type": "EiffelActivityFinishedEvent",
-		"version": "1.0.0",
+		"version": "1.1.0",
 		"time": 1478780245184,
 		"tags": ["tag1", "tag2"],
 		"source": {
