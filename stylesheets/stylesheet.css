@@ -299,12 +299,16 @@ Full-Width Styles
   padding: 50px 10px 30px 10px;
 }
 
-#project_title {
+.project_title {
   margin: 0;
-  color: #fff;
+  color: #fff !important;
   font-size: 42px;
   font-weight: 700;
   text-shadow: #111 0px 0px 10px;
+}
+
+.project_title:hover {
+  text-decoration: none;
 }
 
 #project_tagline {

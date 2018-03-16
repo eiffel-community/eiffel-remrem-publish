@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Eiffel RemRem Publish Service : ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Eiffel REMReM Publish</title>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
+
+        <h1><a class="project_title" href="index.html#project_title"></a>Eiffel REMReM Publish</h1>
+
+        <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
+        </section>
+    </header>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+
+        <h1>
+            <a id="remrem-publish-cli" class="anchor" href="#remrem-publish-cli" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>REMReM Publish CLI
+        </h1>
+
+        <p>REMReM (<strong>REST Mailbox for Registered Messages</strong>) is a set of tools that can be used to generate validated Eiffel messages and
+            publish them on a RabbitMQ message bus. They can be run as micro services or as stand-alone CLI versions. For more details on the micro
+            services and the REMReM design, see <a href="https://github.com/Ericsson/eiffel-remrem">https://github.com/Ericsson/eiffel-remrem</a>
+        </p>
+
+        <h2>
+            <a id="usage" class="anchor" href="#usage" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Usage
+        </h2>
+
+        <p>For using Eiffel REMReM Publish CLI self executing <strong>publish-cli.jar</strong> file should be executed in command line with parameters described below.</p>
+
+        <pre>$ java -jar publish-cli.jar -h
+
+You passed help flag.
+usage: java -jar
+
+-d,--debug                        Enable debug traces.
+
+-domain,--domainId &lt;arg&gt;          Identifies the domain that produces the event.
+
+-en,--exchange_name &lt;arg&gt;         Exchange name.
+
+-f,--content_file &lt;arg&gt;           Event content file.
+
+-h,--help                         Show help.
+
+-json,--json_content &lt;arg&gt;        Event content in JSON string. The value can also be a dash (-)
+                                  and the JSON will be read from the output of other programs if piped.
+                                  Multiple JSON events are also supported.
+
+-mb,--message_bus &lt;arg&gt;           Host of message bus to use.
+
+-mp,--message_protocol &lt;arg&gt;      Name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics.
+                                  Default is eiffelsemantics.
+
+-np,--non_persistent              Remove persistence from message sending.
+
+-tls,--tls &lt;arg&gt;                  tls version, specify a valid tls version: '1', '1.1', '1.2' or default.
+                                  It is required for RabbitMQ secured port (5671).
+
+-port,--port &lt;arg&gt;                Port to connect to message bus, default is 5672.
+
+-ud,--user_domain_suffix &lt;arg&gt;    User domain suffix.
+
+-rk,--routing_key &lt;arg&gt;           Routing key of the eiffel message.
+                                  When provided routing key is not generated and the value provided is used.
+
+-tag,--tag &lt;arg&gt;                  Tag to be used in routing key.
+
+-v,--list_versions                Lists the versions of publish and all loaded protocols.
+        </pre>
+
+        <p>For publish we have input only from file that can contain one or more messages in a JSON array (surrounded with square brackets)
+            separated by comma.</p>
+
+        <p>The routing key is generated in the protocol library based on the event type.<br>
+            To get more information on routing key see <a href="http://ericsson.github.io/eiffel-remrem-semantics/" target="_blank">here</a>.
+        </p>
+
+        <h2>
+            <a id="examples" class="anchor" href="#examples" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Examples
+        </h2>
+
+        <p>Typical examples of usage Eiffel REMReM Publish CLI are described below.</p>
+
+        <h5>Publish on a given host, given exchange, given domain and given user domain suffix:</h5>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics</code></pre>
+
+        <h5>If you want to have the message non persistent add np flag:</h5>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics</code></pre>
+
+        <h5>For loading protocol jars other than eiffelsemantics:</h5>
+        <pre><code>java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp protocolType</code></pre>
+
+        <p><strong>NOTE:</strong> in the above example, protocol jar file must be present inside "/path/to/jars/" folder.</p>
+
+        <h5>If you want to have the message publishing logs add d flag:</h5>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d</code></pre>
+
+        <h5>If you want to have the message publishing on RabbitMQ secured port (5671):</h5>
+        <ul>
+            <li>tls option is used to run REMReM on RabbitMQ secured port (5671).</li>
+            <li>tls option value is either 'default' or &lt;version&gt; for secured port.</li>
+        </ul>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2</code></pre>
+
+        <p><strong>NOTE:</strong> for RabbitMQ default port 5672, no need to pass tls option.</p>
+
+        <h5>If you want to have the message publishing on RabbitMQ with given routing key:</h5>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -rk myroutingkey</code></pre>
+
+        <h5>If you want to have the message publishing on RabbitMQ with given tag:</h5>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tag production</code></pre>
+
+    </section>
+</div>
+
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+    <footer class="inner">
+        <p class="copyright">Eiffel REMReM Publish maintained by <a href="https://github.com/ericsson">Ericsson</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+    </footer>
+</div>
+
+</body>
+</html>
