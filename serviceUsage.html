@@ -18,7 +18,7 @@
     <header class="inner">
         <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
 
-        <h1><a class="project_title" href="index.html#project_title"></a>Eiffel REMReM Publish</h1>
+        <h1><a class="project_title" href="index.html">Eiffel REMReM Publish</a></h1>
 
         <section id="downloads">
             <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
@@ -59,7 +59,7 @@
 
         <p><strong>NOTE:</strong> in each example assuming the publish-service.war is deployed in tomcat as <strong>publish</strong>.</p>
 
-        <h3>Exchange configurations:</h3>
+        <h3>Exchange configurations</h3>
 
         <p>These parameters are related to RabbitMQ Server, which will be used for publishing events:</p>
 
@@ -80,7 +80,7 @@
 
         <p><strong>NOTE:</strong> properties above should be configured for each protocol, that users are going to use.</p>
 
-        <h3>Ldap authentication configurations:</h3>
+        <h3>Ldap authentication configurations</h3>
 
         <p>Active Directory authentication can be enabled for the REMReM Publish Service by setting the configuration property
             <code>activedirectory.publish.enabled=true</code>.
@@ -127,8 +127,8 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
                 <th>Resource</th>
                 <th>Method</th>
                 <th>Parameters</th>
-                <th>Request body</th>
-                <th>Description</th>
+                <th style="margin:0px;">Request body</th>
+                <th width="20%">Description</th>
             </tr>
             <tr>
                 <td>/generateAndPublish</td>
@@ -140,7 +140,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
                     <p>tag - not required</p>
                     <p>rk - routing key, not required</p>
                 </td>
-                <td style="margin:0px;">
+                <td>
 <pre>{
   "meta": {
     # Matches the meta object
@@ -153,7 +153,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
   }
 }</pre>
                 </td>
-                <td width="20%">This endpoint is used to publish already generated Eiffel event to message bus.</td>
+                <td>This endpoint is used to publish already generated Eiffel event to message bus.</td>
             </tr>
             <tr>
                 <td>/eiffelsemantics</td>
@@ -164,7 +164,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
                     <p>tag - not required</p>
                     <p>rk - routing key, not required</p>
                 </td>
-                <td style="margin:0px;">
+                <td>
 <pre>{
   "msgParams": {
     "meta": {
@@ -181,7 +181,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
   }
 }</pre>
                 </td>
-                <td width="20%">
+                <td>
                     <p>This endpoint is used to generate and publish Eiffel events to message bus.
                         It provides single endpoint for both REMReM Generate and REMReM Publish.</p>
                     <p>The service works on the relative link <code>/generateAndPublish</code> if run as standalone application or
@@ -192,8 +192,8 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
                 <td>/versions</td>
                 <td>GET</td>
                 <td></td>
-                <td style="margin:0px;"></td>
-                <td width="20%">This endpoint is used to get versions of publish service and all loaded  protocols.</td>
+                <td></td>
+                <td>This endpoint is used to get versions of publish service and all loaded  protocols.</td>
             </tr>
         </table>
 
@@ -217,7 +217,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
         <h3>
             <a id="examples1" class="anchor" href="#examples1" aria-hidden="true">
                 <span aria-hidden="true" class="octicon octicon-link"></span>
-            </a>Examples for <code>/producer/msg</code> endpoint:
+            </a>Examples for <code>/producer/msg</code> endpoint
         </h3>
 
         <h5>One message:</h5>
@@ -257,7 +257,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
         <h3>
             <a id="examples2" class="anchor" href="#examples2" aria-hidden="true">
                 <span aria-hidden="true" class="octicon octicon-link"></span>
-            </a>Examples for <code>/generateAndPublish</code> endpoint:
+            </a>Examples for <code>/generateAndPublish</code> endpoint
         </h3>
 
         <h5>Correct message:</h5>
@@ -278,7 +278,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
         <h3>
             <a id="examples3" class="anchor" href="#examples3" aria-hidden="true">
                 <span aria-hidden="true" class="octicon octicon-link"></span>
-            </a>Examples for <code>/versions</code> endpoint:
+            </a>Examples for <code>/versions</code> endpoint
         </h3>
         <pre><code>curl -H "Content-Type: application/json" -X GET http://localhost:8080/generate/versions</code></pre>
         <p>Result:</p>
@@ -290,219 +290,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
             </a>Status Codes
         </h2>
 
-        <p>The response generated will have internal status codes for each and every event based on the input JSON provided.
-            Status codes are generated according to the below tables.
-        </p>
-        <p><strong>NOTE:</strong> we have a status code on the HTTP response and an internal status code.</p>
-
-        <p><strong>HTTP response codes:</strong></p>
-        <table class="wikitable">
-            <tr>
-                <th style="text-align:left;">Status code</th>
-                <th style="text-align:left;">HTTP response</th>
-                <th style="text-align:left;">Comment</th>
-            </tr>
-            <tr>
-                <td>200</td>
-                <td>OK</td>
-                <td>Status code of 200 is returned if the event is published successfully.</td>
-            </tr>
-            <tr>
-                <td>207</td>
-                <td>Multi Status</td>
-                <td>Status code of 207 is returned if we have a mix of internal status codes, i.e. Publish of few events was successful and few
-                    events was a failure. It is only applicable for batch publishing.<br>
-                    Incase of Multiple events in the body JSON, if a event is given internal status code of 400 or 500 rest events will not be
-                    published and will be given a internal status code of 503, which will result in overall HTTP response code of 207.
-                </td>
-            </tr>
-            <tr>
-                <td>400</td>
-                <td>Bad Request</td>
-                <td> Status code of 400 is returned if the request body JSON is malformed. i.e. Unable to parse the body JSON. This status code is
-                    applicable if request body JSON is a single event or multiple events.
-                </td>
-            </tr>
-            <tr>
-                <td>404</td>
-                <td>Not Found</td>
-                <td>Status code of 404 is returned if RabbitMQ message broker properties are not found for the requested protocol. This status
-                        code is applicable if request body JSON is a single event or multiple events.
-                </td>
-            </tr>
-            <tr>
-                <td>500</td>
-                <td>Internal Server Error</td>
-                <td>Status code of 500 is returned if RabbitMQ is down or could not prepare routing key to publish the eiffel event. This status
-                    code is applicable if request body JSON is a single event.
-                </td>
-            </tr>
-        </table>
-
-        <p><strong>Internal status codes:</strong></p>
-        <table class="wikitable">
-            <tr>
-                <th style="text-align:left;">Status code</th>
-                <th style="text-align:left;">Result</th>
-                <th style="text-align:left;">Message</th>
-                <th style="text-align:left;">Comment</th>
-            </tr>
-            <tr>
-                <td>200</td>
-                <td>SUCCESS</td>
-                <td>Event sent successfully</td>
-                <td>Status code of 200 is returned if the request is completed successfully.</td>
-            </tr>
-            <tr>
-                <td>400</td>
-                <td>Bad Request</td>
-                <td>Invalid event content, client need to fix problem in event before submitting again</td>
-                <td>Status code of 400 is returned if the request body JSON is malformed. i.e. Unable to parse the body JSON.
-                    Applicable to single and multiple events in JSON (or) an event has a missing ID field.
-                </td>
-            </tr>
-            <tr>
-                <td>404</td>
-                <td>RabbitMQ properties not found</td>
-                <td>RabbitMQ properties not configured for the protocol &lt;protocol&gt;</td>
-                <td>Status code of 404 is returned if RabbitMQ message broker properties are not found for the event.</td>
-            </tr>
-            <tr>
-                <td rowspan="2">500</td>
-                <td rowspan="2">Internal Server Error</td>
-                <td>RabbitMQ is down. Please try later</td>
-                <td>Status code of 500 is returned if RabbitMQ is down.</td>
-            </tr>
-            <tr>
-                <td>Could not prepare Routing key to publish message.</td>
-                <td>Status code of 500 is returned if could not prepare routing key to publish the eiffel event.</td>
-            </tr>
-            <tr>
-                <td>503</td>
-                <td>Service Unavailable</td>
-                <td>Please check previous event and try again later</td>
-                <td>Status code of 503 is returned if there is a failure in publishing previous event with 400, 404 or 500 error.</td>
-            </tr>
-        </table>
-
-        <p><strong>Status Codes explanation:</strong></p>
-
-        <p><strong>200:</strong> when all the events are sent successfully, then the internal status code for each event and status code for HTTP
-                response will be 200.
-        </p>
-        <pre><code><strong>HTTP Response:</strong> 200 :OK
-            [
-                {
-                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-                 "status_code":200,
-                 "result":"SUCCESS",
-                 "message":"Event sent successfully"
-                },
-                {
-                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
-                 "status_code":200,
-                 "result":"SUCCESS",
-                 "message":"Event sent successfully"
-                }
-            ]</code></pre>
-
-        <p><strong>400:</strong> when the input JSON is malformated, that particular events internal status code will be 400.</p>
-        <pre><code><strong>HTTP Response:</strong> 400 :Bad Request
-            [
-                {
-                 "status_code":400,
-                 "result":"Bad Request",
-                 "message":"Invalid event content, client need to fix problem in event before submitting again"
-                }
-            ]</code></pre>
-
-        <p><strong>207:</strong> when the events are having different internal status codes, then the status code of HTTP response will be 207.</p>
-        <pre><code><strong>HTTP Response:</strong> 207 :Multi Status
-            [
-                {
-                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-                 "status_code":200,
-                 "result":"SUCCESS",
-                 "message":"Event sent successfully"
-                },
-                {
-                 "status_code":400,
-                 "result":"Bad Request",
-                 "message":"Invalid event content, client need to fix problem in event before submitting again"
-                }
-            ]</code></pre>
-
-        <p><strong>500:</strong> we will get this status code, when the event is failed to send because of internal server error.</p>
-        <pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
-            [
-                {
-                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-                 "status_code":500,
-                 "result":"Internal Server Error",
-                 "message":"RabbitMQ is down. Please try later"
-                }
-            ]</code></pre>
-
-        <p><strong>503:</strong> event will have this status code when the previous event is failed to send.</p>
-        <p>For example, consider you have 5 events.<br>
-            E1<-E2<-E3<-E4<-E5<br>
-            You send them all to publish in a batch command.<br>
-            E1 and E2 is successful. (200)<br>
-            E3 is malformatted. (400)<br>
-            If we send E4 and E5 we will have a broken chain so that is not a good option. In this case we should skip sending E4 and E5 and have status code 503 for those.
-        </p>
-        <pre><code><Strong>HTTP Response</strong>: 207 :Multi Status
-            [
-                {
-                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-                 "status_code":200,
-                 "result":"SUCCESS",
-                 "message":"Event sent successfully"
-                },
-                {
-                 "id":"9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
-                 "status_code":200,
-                 "result":"SUCCESS",
-                 "message":"Event sent successfully"
-                },
-                {
-                 "status_code":400,
-                 "result":"Bad Request",
-                 "message":"Invalid event content, client need to fix problem in event before submitting again"
-                },
-                {
-                 "status_code":503,
-                 "result":"Service Unavailable",
-                 "message":"Please check previous event and try again later"
-                },
-                {
-                 "status_code":503,
-                 "result":"Service Unavailable",
-                 "message":"Please check previous event and try again later"
-                }
-            ]</code></pre>
-
-        <p><strong>404:</strong> we will get this status code, when RabbitMQ properties not configured in tomcat/conf/config.properties file for the protocol.</p>
-        <pre><code><strong>HTTP Response:</strong> 404 :Not Found
-            [
-                {
-                "status_code": 404,
-                "result": "RabbitMQ properties not found",
-                "message": "RabbitMQ properties not configured for the protocol &lt;protocol&gt;"
-                }
-            ]</code></pre>
-
-        <p><strong>500:</strong> we will get this status code, when cannot prepare routing key.</p>
-        <pre><code><strong>HTTP Response:</strong> 500 :Internal Server Error
-            [
-                {
-                "status_code": 500,
-                "result": "Internal Server Error",
-                "message": "Could not prepare Routing key to publish message"
-                }
-            ]</code></pre>
-
-        <p>You can open the RabbitMQ's management console and find these messages in a queue.</p>
+        <p>To get information about internal status codes see <a href="statusCodes.html">here</a>.</p>
 
     </section>
 </div>
