@@ -32,21 +32,15 @@
     <section id="main_content" class="inner">
 
         <h1>
-            <a id="remrem-publish-service" class="anchor" href="#remrem-publish-service" aria-hidden="true">
-                <span aria-hidden="true" class="octicon octicon-link"></span>
-            </a>REMReM Publish Service
-        </h1>
-
-        <h2>
             <a id="statusCodes" class="anchor" href="#statusCodes" aria-hidden="true">
                 <span aria-hidden="true" class="octicon octicon-link"></span>
             </a>Status Codes
-        </h2>
+        </h1>
 
         <p>The response generated will have internal status codes for each and every event based on the input JSON provided.</p>
         <p>Status codes are generated according to the below tables.</p>
 
-        <h3>Internal status codes</h3>
+        <h2>Internal status codes</h2>
         <table class="wikitable">
             <tr>
                 <th style="text-align:left;">Status code</th>
@@ -100,7 +94,7 @@
             </tr>
         </table>
 
-        <h4>Status codes explanation</h4>
+        <h3>Status codes explanation</h3>
 
         <h5>200 OK</h5>
         <p>All the events are sent successfully.</p>
@@ -216,7 +210,7 @@
 
         <p><strong>NOTE:</strong> you can open the RabbitMQ's management console and find these messages in a queue.</p>
 
-        <h3>Status codes related to failures in Eiffel REMReM Generate Service</h3>
+        <h2>Status codes related to failures in Eiffel REMReM Generate Service</h2>
         <p>These response can be generated only when <code>/generateAndPublish</code> endpoint is used.</p>
 
         <table class="wikitable">
@@ -252,7 +246,7 @@
             </tr>
         </table>
 
-        <h4>Status codes explanation</h4>
+        <h3>Status codes explanation</h3>
 
         <h5>400 Bad Request</h5>
         <p>The input JSON is malformed or entered incorrect type of event.</p>
