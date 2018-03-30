@@ -60,7 +60,7 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.5.5"
+    version = "0.5.6"
 
     //Declare where to find the dependencies of project here
     repositories {
@@ -110,10 +110,9 @@ subprojects {
         
         //Injectable Message Library and its Implementation
         compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.5'
-        compile 'com.github.Ericsson:eiffel-remrem-protocol-interface:0.0.7'
         //For publishing eiffel2.0 events
 
-        compile("com.github.Ericsson:eiffel-remrem-semantics:0.4.0"){
+        compile("com.github.Ericsson:eiffel-remrem-semantics:0.4.1"){
 
                 exclude group: 'org.apache.commons'
         }
