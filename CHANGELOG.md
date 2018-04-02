@@ -1,6 +1,6 @@
 ## 0.5.6
 - Removed Protocol Interface dependency
-- Uplifted the semantics version to 0.4.1
+- Uplifted semantics version to 0.4.1
 
 ## 0.5.5
 - Fixed generate service link in /generateAndPublish endpoint
