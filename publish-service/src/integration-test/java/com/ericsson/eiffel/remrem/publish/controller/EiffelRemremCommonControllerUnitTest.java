@@ -147,7 +147,7 @@ public class EiffelRemremCommonControllerUnitTest {
         map.put("mp", mp);
         map.put("msgType", msgType);
 
-        String correctURL = "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
+        String correctURL = "{generateServerUri}{generateServerPath}/{mp}?msgType={msgType}";
 
         Map<String, String> mapTest = generateURLTemplate.getMap(mp, msgType);
 
