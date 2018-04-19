@@ -1,3 +1,6 @@
+## 0.5.7
+- Changed way of passing REMReM Generate Service uri and path from configs
+
 ## 0.5.6
 - Removed Protocol Interface dependency
 - Uplifted semantics version to 0.4.1
