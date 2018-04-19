@@ -13,26 +13,22 @@ import java.util.Map;
 @Component
 public class GenerateURLTemplate {
 
-    @Value("${generate.server.host}")
-    private String generateServerHost;
+    @Value("${generate.server.uri}")
+    private String generateServerUri;
 
-    @Value("${generate.server.port}")
-    private String generateServerPort;
-
-    @Value("${generate.server.appName}")
-    private String generateServerAppName;
+    @Value("${generate.server.path}")
+    private String generateServerPath;
 
     public String getUrl() {
-        return "http://{generateServerHost}:{generateServerPort}/{generateServerAppName}/{mp}?msgType={msgType}";
+        return "{generateServerUri}{generateServerPath}/{mp}?msgType={msgType}";
     }
 
     public Map<String, String> getMap(final String mp, final String msgType) {
         Map<String, String> map = new HashMap<>();
         map.put("mp", mp);
         map.put("msgType", msgType);
-        map.put("generateServerHost", generateServerHost);
-        map.put("generateServerPort", generateServerPort);
-        map.put("generateServerAppName", generateServerAppName);
+        map.put("generateServerUri", generateServerUri);
+        map.put("generateServerPath", generateServerPath);
 
         return map;
     }
