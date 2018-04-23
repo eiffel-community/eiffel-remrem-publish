@@ -117,7 +117,7 @@ public class EiffelRemremCommonControllerUnitTest {
         when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>>any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOK);
 
-        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",
+        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",false,
                 body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.OK);
 
@@ -131,7 +131,7 @@ public class EiffelRemremCommonControllerUnitTest {
         when(restTemplate.postForEntity(Mockito.contains(inCorrectURL), Mockito.<HttpEntity<String>>any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseBad);
 
-        ResponseEntity<?> elem = unit.generateAndPublish("eiffel3", "eiffelactivityfinished", "", "", "",
+        ResponseEntity<?> elem = unit.generateAndPublish("eiffel3", "eiffelactivityfinished", "", "", "",false,
                 body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.BAD_REQUEST);
 
