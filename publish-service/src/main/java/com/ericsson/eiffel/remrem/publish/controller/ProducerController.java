@@ -147,20 +147,20 @@ public class ProducerController {
                                              @ApiParam(value = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
 
-        String bodyJSON_in = null;
+        String bodyJsonOut = null;
         if(parseData) {
             // -- parse params in incoming request -> body -------------
             EventTemplateHandler eventTemplateHandler = new EventTemplateHandler();
             JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(bodyJson.toString(), msgType);
-            bodyJSON_in = parsedTemplate.toString();
-            log.info("Parsed template: " + bodyJSON_in);
+            bodyJsonOut = parsedTemplate.toString();
+            log.info("Parsed template: " + bodyJsonOut);
         }else{
-            bodyJSON_in = bodyJson.toString();
+            bodyJsonOut = bodyJson.toString();
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(bodyJSON_in, headers);
+        HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(generateURLTemplate.getUrl(),

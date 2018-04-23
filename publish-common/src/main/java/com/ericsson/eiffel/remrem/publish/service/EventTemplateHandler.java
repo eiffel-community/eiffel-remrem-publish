@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.ericsson.eiffel.remrem.semantics.SemanticsService.log;
+
 public class EventTemplateHandler {
     private final Configuration configuration = Configuration.builder()
             .jsonProvider(new JacksonJsonNodeJsonProvider())
@@ -42,22 +44,21 @@ public class EventTemplateHandler {
     // Paths in Semantics JAR
     private final String EVENT_TEMPLATE_PATH = "templates/";
     private final String EVENT_SCHEMA_PATH = "schemas/input/";
-
-    //private JsonNode updatedJson;
+    private static final String REGEXP_END_DIGITS = "\\[\\d+\\]$";
 
     // eventTemplateParser
-    public JsonNode eventTemplateParser(String json_data , String event_name){
+    public JsonNode eventTemplateParser(String jsonData , String eventName){
         JsonNode updatedJson = null;
         JsonFactory factory = new JsonFactory();
         ObjectMapper mapper = new ObjectMapper(factory);
         JsonNode rootNode = null;
         try {
-            String event_template = accessFileInSemanticJar(EVENT_TEMPLATE_PATH + event_name.toLowerCase() + ".json");
+            String eventTemplate = accessFileInSemanticJar(EVENT_TEMPLATE_PATH + eventName.toLowerCase() + ".json");
 
-            rootNode = mapper.readTree(json_data);
-            updatedJson = mapper.readValue(event_template, JsonNode.class);
+            rootNode = mapper.readTree(jsonData);
+            updatedJson = mapper.readValue(eventTemplate, JsonNode.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
         // For each key/value pair for parsing to template
@@ -66,76 +67,71 @@ public class EventTemplateHandler {
             Map.Entry<String, JsonNode> field = fieldsIterator.next();
             // Parse values to template
             // Check if POJO required for update in event template
-            Pattern p = Pattern.compile("\\[\\d+\\]$");  // if ends with [d+]
+            Pattern p = Pattern.compile(REGEXP_END_DIGITS);  // if ends with [d+]
             Matcher m = p.matcher(field.getKey());
 
-            String mykey = "$." + templateParamHandler(field.getKey());
+            String myKey = "$." + templateParamHandler(field.getKey());
 
                 if(field.getValue().toString().equals("\"<%DELETE%>\"")){
-                    updatedJson = jsonPathHandlerDelete(updatedJson, mykey);
+                    updatedJson = jsonPathHandlerDelete(updatedJson, myKey);
                 }else if (m.find()) {
-                    String myvalue = field.getValue().toString();
+                    String myValue = field.getValue().toString();
                     try {
                         // Fetch Class name in Event Schema
-                        String event_schema = accessFileInSemanticJar(EVENT_SCHEMA_PATH + event_name + ".json");
+                        String eventSchema = accessFileInSemanticJar(EVENT_SCHEMA_PATH + eventName + ".json");
                         // Filter javatype from Event Schema = class name
-                        JsonNode Json_from_schema = JsonPath.using(configuration).parse(event_schema.toString()).read(schemaClassPathHandler(field.getKey().replaceAll("\\[\\d+\\]$", "")));
-                        String myclass = Json_from_schema.toString().replace("[", "").replace("]", "").replace("\"", "");  // Ex ["com.ericsson.eiffel.semantics.events.PersistentLog"] to com.ericsson.eiffel.semantics.events.PersistentLog
+                        JsonNode jsonFromSchema = JsonPath.using(configuration).parse(eventSchema.toString()).read(schemaClassPathHandler(field.getKey().replaceAll(REGEXP_END_DIGITS, "")));
+                        String myClassName = jsonFromSchema.toString().replace("[", "").replace("]", "").replace("\"", "");  // Ex ["com.ericsson.eiffel.semantics.events.PersistentLog"] to com.ericsson.eiffel.semantics.events.PersistentLog
                         // Initiate Class via reflection and map values - POJO
-                        Class myClass = Class.forName(myclass);
-                        Object mapped_2_pojo = mapper.readValue(myvalue, myClass);
-                        updatedJson = jsonPathHandlerSet(updatedJson, mykey, mapped_2_pojo);
+                        Class myClass = Class.forName(myClassName);
+                        Object mapped2Pojo = mapper.readValue(myValue, myClass);
+                        updatedJson = jsonPathHandlerSet(updatedJson, myKey, mapped2Pojo);
                     } catch (ClassNotFoundException e) {
-                        //e.printStackTrace();
                         // No POJO required for adding new item in Array (ie no key/value pairs)
-                        updatedJson = jsonPathHandlerSet(updatedJson, mykey, myvalue.toString().replace("\"", ""));
-                    } catch (JsonParseException e) {
-                        e.printStackTrace();
-                    } catch (JsonMappingException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        updatedJson = jsonPathHandlerSet(updatedJson, myKey, myValue.toString().replace("\"", ""));
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
                     }
 
                 } else {  // No POJO needed for update
-                    Object myvalue = field.getValue();
-                    updatedJson = jsonPathHandlerSet(updatedJson, mykey, myvalue);
+                    Object myValue = field.getValue();
+                    updatedJson = jsonPathHandlerSet(updatedJson, myKey, myValue);
                 }
         } // while
         return updatedJson;
     }
 
-    public JsonNode jsonPathHandlerAdd(JsonNode updated_Json, String jsonkey, Object pojo){
-        updated_Json = JsonPath.using(configuration).parse(updated_Json.toString()).add(jsonkey, pojo).json();
-        return updated_Json;
+    public JsonNode jsonPathHandlerAdd(JsonNode updatedJson, String jsonKey, Object pojo){
+        updatedJson = JsonPath.using(configuration).parse(updatedJson.toString()).add(jsonKey, pojo).json();
+        return updatedJson;
     }
 
-    public JsonNode jsonPathHandlerSet(JsonNode updated_Json, String jsonkey, Object Jsonvalue){
-        updated_Json = JsonPath.using(configuration).parse(updated_Json.toString()).set(jsonkey, Jsonvalue).json();
-        return updated_Json;
+    public JsonNode jsonPathHandlerSet(JsonNode updatedJson, String jsonKey, Object JsonValue){
+        updatedJson = JsonPath.using(configuration).parse(updatedJson.toString()).set(jsonKey, JsonValue).json();
+        return updatedJson;
     }
 
-    public JsonNode jsonPathHandlerDelete(JsonNode updated_Json, String jsonkey){
-        updated_Json = JsonPath.using(configuration).parse(updated_Json.toString()).delete(jsonkey).json();
-        return updated_Json;
+    public JsonNode jsonPathHandlerDelete(JsonNode updatedJson, String jsonkey){
+        updatedJson = JsonPath.using(configuration).parse(updatedJson.toString()).delete(jsonkey).json();
+        return updatedJson;
     }
 
-    public String templateParamHandler(String jsonkey){
-        String[] strArray = jsonkey.split("\\.");
+    public String templateParamHandler(String jsonKey){
+        String[] strArray = jsonKey.split("\\.");
         Pattern p = Pattern.compile("links\\[\\d+\\]$");  // if ends with [d+]
         Matcher m = p.matcher(strArray[0]);
         try {
             if (strArray != null && strArray.length >0 && strArray[0].equals("meta")) {
-                jsonkey = "msgParams." + jsonkey;
+                jsonKey = "msgParams." + jsonKey;
             } else if (strArray != null && strArray.length >0 && strArray[0].equals("data") || m.find()) {
-                jsonkey = "eventParams." + jsonkey;
+                jsonKey = "eventParams." + jsonKey;
             } else {
-                throw new IllegalArgumentException("jsonkey in data to be parsed is not valid : " + jsonkey);
+                throw new IllegalArgumentException("jsonKey in data to be parsed is not valid : " + jsonKey);
             }
         }catch (ArrayIndexOutOfBoundsException e){
-            throw new IllegalArgumentException("jsonkey in data to be parsed is not valid : " + jsonkey);
+            throw new IllegalArgumentException("jsonKey in data to be parsed is not valid : " + jsonKey);
         }
-      return jsonkey;
+      return jsonKey;
     }
 
     public String schemaClassPathHandler(String jsonkey){
@@ -156,7 +152,7 @@ public class EventTemplateHandler {
             try {
                 result= IOUtils.toString(input, StandardCharsets.UTF_8);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             } catch (NullPointerException e){
                 throw new NullPointerException("Can not find path: " + path);
             }
