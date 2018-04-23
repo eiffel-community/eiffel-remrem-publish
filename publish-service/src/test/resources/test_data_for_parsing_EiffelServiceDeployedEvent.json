@@ -1,0 +1,18 @@
+{
+  "meta.tags[0]":"my_meta[0]tags",
+  "meta.tags[1]":"my_meta[1]tags",
+  "meta.source.domainId":"my_meta.source.domainId",
+  "meta.source.host":"my_meta.source.host",
+  "meta.source.name":"my_meta.source.name",
+  "meta.source.uri":"my_meta.source.uri",
+  "meta.security.sdm.authorIdentity":"my_meta.security.sdm.authorIdentity",
+  "meta.security.sdm.encryptedDigest":"my_meta.security.sdm.encryptedDigest",
+  "data.servicename":"my_data.servicename",
+  "data.instancename":"my_data.instancename",
+  "data.owner":"my_data.owner",
+  "data.deploymentType":"my_data.deploymentType",
+  "data.uri":"my_data.uri",
+  "data.uri":"my_data.uri",
+  "links[0]": {"type" : "CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48d"},
+  "links[1]": {"type" : "FLOW_CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48e"}
+}

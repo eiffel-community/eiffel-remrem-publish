@@ -22,4 +22,5 @@ dependencies {
     //To publish messages to RabbitMQ
     compile 'com.rabbitmq:amqp-client:3.5.7'
     compile 'javax.servlet:javax.servlet-api:3.0.1'
+    compile 'com.jayway.jsonpath:json-path-assert:2.4.0'
 }
