@@ -17,6 +17,8 @@ package com.ericsson.eiffel.remrem.publish.controller;
 import java.util.Map;
 
 import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
+import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +121,8 @@ public class ProducerController {
      *            (not required)
      * @param routingKey
      *            (not required)
+     * @param parseData
+     *            (not required, default=false)
      * @return A response entity which contains http status and result
      *
      * @use A typical CURL command: curl -H "Content-Type: application/json" -X POST
@@ -140,11 +144,23 @@ public class ProducerController {
                                              @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
                                              @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
                                              @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
+                                             @ApiParam(value = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
+
+        String bodyJsonOut = null;
+        if(parseData) {
+            // -- parse params in incoming request -> body -------------
+            EventTemplateHandler eventTemplateHandler = new EventTemplateHandler();
+            JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(bodyJson.toString(), msgType);
+            bodyJsonOut = parsedTemplate.toString();
+            log.info("Parsed template: " + bodyJsonOut);
+        }else{
+            bodyJsonOut = bodyJson.toString();
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(bodyJson.toString(), headers);
+        HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(generateURLTemplate.getUrl(),

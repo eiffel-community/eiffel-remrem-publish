@@ -60,7 +60,7 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.5.7"
+    version = "0.5.8"
 
     //Declare where to find the dependencies of project here
     repositories {
@@ -123,6 +123,6 @@ subprojects {
         testCompile 'junit:junit:4.12'
         testCompile 'org.assertj:assertj-core:3.4.1'
         testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
-        testCompile 'com.jayway.jsonpath:json-path-assert:2.2.0'
+        testCompile 'com.jayway.jsonpath:json-path-assert:2.4.0'
     }
 }
