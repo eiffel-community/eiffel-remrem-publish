@@ -35,7 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EventTemplateHandler {
-    Logger log = (Logger) LoggerFactory.getLogger(EventTemplateHandler.class);
+    private static final Logger log = (Logger) LoggerFactory.getLogger(EventTemplateHandler.class);
 
     // Paths in Semantics JAR
     private static final String EVENT_TEMPLATE_PATH = "templates/";
