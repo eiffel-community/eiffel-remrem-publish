@@ -24,7 +24,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +31,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import static com.ericsson.eiffel.remrem.semantics.SemanticsService.log;
 
 public class EventTemplateHandler {
@@ -101,22 +99,22 @@ public class EventTemplateHandler {
         return updatedJson;
     }
 
-    public JsonNode jsonPathHandlerAdd(JsonNode updatedJson, String jsonKey, Object pojo){
+    private JsonNode jsonPathHandlerAdd(JsonNode updatedJson, String jsonKey, Object pojo){
         updatedJson = JsonPath.using(configuration).parse(updatedJson.toString()).add(jsonKey, pojo).json();
         return updatedJson;
     }
 
-    public JsonNode jsonPathHandlerSet(JsonNode updatedJson, String jsonKey, Object JsonValue){
+    private JsonNode jsonPathHandlerSet(JsonNode updatedJson, String jsonKey, Object JsonValue){
         updatedJson = JsonPath.using(configuration).parse(updatedJson.toString()).set(jsonKey, JsonValue).json();
         return updatedJson;
     }
 
-    public JsonNode jsonPathHandlerDelete(JsonNode updatedJson, String jsonkey){
+    private JsonNode jsonPathHandlerDelete(JsonNode updatedJson, String jsonkey){
         updatedJson = JsonPath.using(configuration).parse(updatedJson.toString()).delete(jsonkey).json();
         return updatedJson;
     }
 
-    public String templateParamHandler(String jsonKey){
+    private String templateParamHandler(String jsonKey){
         String[] strArray = jsonKey.split("\\.");
         Pattern p = Pattern.compile("links\\[\\d+\\]$");  // if ends with [d+]
         Matcher m = p.matcher(strArray[0]);
@@ -134,7 +132,7 @@ public class EventTemplateHandler {
       return jsonKey;
     }
 
-    public String schemaClassPathHandler(String jsonkey){
+    private String schemaClassPathHandler(String jsonkey){
         String[] strArray = jsonkey.split("\\.");
         jsonkey = "";
         for (String s: strArray) {
@@ -144,7 +142,7 @@ public class EventTemplateHandler {
         return jsonkey;
     }
 
-    public String accessFileInSemanticJar(String path) {
+    private String accessFileInSemanticJar(String path) {
         String result="";
         InputStream input = EventTemplateHandler.class.getResourceAsStream(path);
         if (input == null) {

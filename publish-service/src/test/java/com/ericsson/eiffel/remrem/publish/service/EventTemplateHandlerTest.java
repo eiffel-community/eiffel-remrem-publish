@@ -33,45 +33,308 @@ public class EventTemplateHandlerTest {
     static private final String inputFilePathData = "src/test/resources/testDataForParsingEvents/";
     static private final String inputFilePathExpectedData = "src/test/resources/expectedParsedEvents/";
 
+
+
     @Test
-    public void testEventParserWithEvents() {
+    public void testEventParserWithEventEiffelActivityFinishedEvent() {
         try {
             testParser("EiffelActivityFinishedEvent");
-            testParser("EiffelSourceChangeCreatedEvent");
-            testParser("EiffelSourceChangeSubmittedEvent");
-            testParser("EiffelCompositionDefinedEvent");
-            testParser("EiffelActivityTriggeredEvent");
-            testParser("EiffelActivityStartedEvent");
-            testParser("EiffelActivityCanceledEvent");
-            testParser("EiffelArtifactCreatedEvent");
-            testParser("EiffelTestCaseTriggeredEvent");
-            testParser("EiffelTestCaseStartedEvent");
-            testParser("EiffelTestCaseFinishedEvent");
-            testParser("EiffelConfidenceLevelModifiedEvent");
-            testParser("EiffelAnnouncementPublishedEvent");
-            testParser("EiffelArtifactReusedEvent");
-            testParser("EiffelEnvironmentDefinedEvent");
-            testParser("EiffelFlowContextDefinedEvent");
-            testParser("EiffelIssueVerifiedEvent");
-            testParser("EiffelTestCaseCanceledEvent");
-            testParser("EiffelTestExecutionRecipeCollectionCreatedEvent");
-            testParser("EiffelTestSuiteFinishedEvent");
-            testParser("EiffelTestSuiteStartedEvent");
-            testParser("EiffelAlertAcknowledgedEvent");
-            testParser("EiffelAlertCeasedEvent");
-            testParser("EiffelAlertRaisedEvent");
-            testParser("EiffelArtifactDeployedEvent");
-            testParser("EiffelServiceAllocatedEvent");
-            testParser("EiffelServiceDeployedEvent");
-            testParser("EiffelServiceDiscontinuedEvent");
-            testParser("EiffelServiceReturnedEvent");
-            testParser("EiffelServiceStartedEvent");
-            testParser("EiffelServiceStoppedEvent");
-
         } catch (Exception e) {
             log.info(e.getMessage(),e);
         }
+    }
 
+
+    @Test
+    public void testEventParserWithEventEiffelSourceChangeCreatedEvent() {
+        try {
+            testParser("EiffelSourceChangeCreatedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelSourceChangeSubmittedEvent() {
+        try {
+            testParser("EiffelSourceChangeSubmittedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+
+    @Test
+    public void testEventParserWithEventEiffelActivityTriggeredEvent() {
+        try {
+            testParser("EiffelActivityTriggeredEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelActivityStartedEvent() {
+        try {
+            testParser("EiffelActivityStartedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelActivityCanceledEvent() {
+        try {
+            testParser("EiffelActivityCanceledEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelArtifactCreatedEvent() {
+        try {
+            testParser("EiffelArtifactCreatedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelTestCaseTriggeredEvent() {
+        try {
+            testParser("EiffelTestCaseTriggeredEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelTestCaseStartedEvent() {
+        try {
+            testParser("EiffelTestCaseStartedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelTestCaseFinishedEvent() {
+        try {
+            testParser("EiffelTestCaseFinishedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelConfidenceLevelModifiedEvent() {
+        try {
+            testParser("EiffelConfidenceLevelModifiedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelAnnouncementPublishedEvent() {
+        try {
+            testParser("EiffelAnnouncementPublishedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+
+    @Test
+    public void testEventParserWithEventEiffelCompositionDefinedEvent() {
+        try {
+            testParser("EiffelCompositionDefinedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelArtifactReusedEvent() {
+        try {
+            testParser("EiffelArtifactReusedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelEnvironmentDefinedEvent() {
+        try {
+            testParser("EiffelEnvironmentDefinedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelFlowContextDefinedEvent() {
+        try {
+            testParser("EiffelFlowContextDefinedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelIssueVerifiedEvent() {
+        try {
+            testParser("EiffelIssueVerifiedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelServiceAllocatedEvent() {
+        try {
+            testParser("EiffelServiceAllocatedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelTestCaseCanceledEvent() {
+        try {
+            testParser("EiffelTestCaseCanceledEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelTestExecutionRecipeCollectionCreatedEvent() {
+        try {
+            testParser("EiffelTestExecutionRecipeCollectionCreatedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelTestSuiteFinishedEvent() {
+        try {
+            testParser("EiffelTestSuiteFinishedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelTestSuiteStartedEvent() {
+        try {
+            testParser("EiffelTestSuiteStartedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelAlertAcknowledgedEvent() {
+        try {
+            testParser("EiffelAlertAcknowledgedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelAlertCeasedEvent() {
+        try {
+            testParser("EiffelAlertCeasedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelAlertRaisedEvent() {
+        try {
+            testParser("EiffelAlertRaisedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelArtifactDeployedEvent() {
+        try {
+            testParser("EiffelArtifactDeployedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelServiceDeployedEvent() {
+        try {
+            testParser("EiffelServiceDeployedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+    @Test
+    public void testEventParserWithEventEiffelServiceDiscontinuedEvent() {
+        try {
+            testParser("EiffelServiceDiscontinuedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelServiceReturnedEvent() {
+        try {
+            testParser("EiffelServiceReturnedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelServiceStartedEvent() {
+        try {
+            testParser("EiffelServiceStartedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
+    }
+
+
+    @Test
+    public void testEventParserWithEventEiffelServiceStoppedEvent() {
+        try {
+            testParser("EiffelServiceStoppedEvent");
+        } catch (Exception e) {
+            log.info(e.getMessage(),e);
+        }
     }
 
     public void testParser(String EventName) {
