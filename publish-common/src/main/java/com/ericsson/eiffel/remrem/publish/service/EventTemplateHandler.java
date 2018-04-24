@@ -14,6 +14,7 @@
 */
 package com.ericsson.eiffel.remrem.publish.service;
 
+import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -24,6 +25,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -31,18 +33,20 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static com.ericsson.eiffel.remrem.semantics.SemanticsService.log;
 
 public class EventTemplateHandler {
+    Logger log = (Logger) LoggerFactory.getLogger(EventTemplateHandler.class);
+
+    // Paths in Semantics JAR
+    private static final String EVENT_TEMPLATE_PATH = "templates/";
+    private static final String EVENT_SCHEMA_PATH = "schemas/input/";
+
+    private static final String REGEXP_END_DIGITS = "\\[\\d+\\]$";
+
     private final Configuration configuration = Configuration.builder()
             .jsonProvider(new JacksonJsonNodeJsonProvider())
             .mappingProvider(new JacksonMappingProvider())
             .build();
-
-    // Paths in Semantics JAR
-    private final String EVENT_TEMPLATE_PATH = "templates/";
-    private final String EVENT_SCHEMA_PATH = "schemas/input/";
-    private static final String REGEXP_END_DIGITS = "\\[\\d+\\]$";
 
     // eventTemplateParser
     public JsonNode eventTemplateParser(String jsonData , String eventName){

@@ -29,9 +29,9 @@ import java.io.File;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class EventTemplateHandlerTest {
 
-    private static Logger log = LoggerFactory.getLogger(EventTemplateHandlerTest.class);
-    static private final String inputFilePathData = "src/test/resources/testDataForParsingEvents/";
-    static private final String inputFilePathExpectedData = "src/test/resources/expectedParsedEvents/";
+    private static final Logger LOG = LoggerFactory.getLogger(EventTemplateHandlerTest.class);
+    private static final String INPUT_FILE_PATH_DATA = "src/test/resources/testDataForParsingEvents/";
+    private static final String INPUT_FILE_PATH_EXPECTED_DATA = "src/test/resources/expectedParsedEvents/";
 
 
 
@@ -40,7 +40,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelActivityFinishedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -50,7 +50,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelSourceChangeCreatedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -60,7 +60,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelSourceChangeSubmittedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -71,7 +71,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelActivityTriggeredEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -81,7 +81,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelActivityStartedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -91,7 +91,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelActivityCanceledEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -100,7 +100,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelArtifactCreatedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -110,7 +110,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelTestCaseTriggeredEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -120,7 +120,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelTestCaseStartedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -129,7 +129,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelTestCaseFinishedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -138,7 +138,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelConfidenceLevelModifiedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -148,7 +148,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelAnnouncementPublishedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -159,7 +159,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelCompositionDefinedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -168,7 +168,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelArtifactReusedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -177,7 +177,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelEnvironmentDefinedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -187,7 +187,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelFlowContextDefinedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -197,7 +197,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelIssueVerifiedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -206,7 +206,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelServiceAllocatedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -216,7 +216,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelTestCaseCanceledEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -225,7 +225,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelTestExecutionRecipeCollectionCreatedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -235,7 +235,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelTestSuiteFinishedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -245,7 +245,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelTestSuiteStartedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -255,7 +255,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelAlertAcknowledgedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -265,7 +265,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelAlertCeasedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -274,7 +274,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelAlertRaisedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -284,7 +284,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelArtifactDeployedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -294,7 +294,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelServiceDeployedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -303,7 +303,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelServiceDiscontinuedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -313,7 +313,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelServiceReturnedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -323,7 +323,7 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelServiceStartedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
@@ -333,15 +333,15 @@ public class EventTemplateHandlerTest {
         try {
             testParser("EiffelServiceStoppedEvent");
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
     }
 
-    public void testParser(String EventName) {
+    private void testParser(String EventName) {
         try {
             EventTemplateHandler eventTemplateHandler = new EventTemplateHandler();
-            String dataToBeParsed = FileUtils.readFileToString(new File(inputFilePathData+"test_data_for_parsing_"+EventName+".json"), "UTF-8");
-            String expectedDocument = FileUtils.readFileToString(new File(inputFilePathExpectedData+"expected_parsed_"+EventName+".json"), "UTF-8");
+            String dataToBeParsed = FileUtils.readFileToString(new File(INPUT_FILE_PATH_DATA +"test_data_for_parsing_"+EventName+".json"), "UTF-8");
+            String expectedDocument = FileUtils.readFileToString(new File(INPUT_FILE_PATH_EXPECTED_DATA +"expected_parsed_"+EventName+".json"), "UTF-8");
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode expectedJson = mapper.readTree(expectedDocument);
@@ -354,7 +354,7 @@ public class EventTemplateHandlerTest {
             JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), true);
 
         } catch (Exception e) {
-            log.info(e.getMessage(),e);
+            LOG.error(e.getMessage(),e);
         }
 
     }
