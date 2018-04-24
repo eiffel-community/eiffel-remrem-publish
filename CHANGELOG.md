@@ -1,3 +1,6 @@
+## 0.5.8
+- EventParser functionality added to endpoint /generateAndPublish (@param parseData added) 
+
 ## 0.5.7
 - Changed way of passing REMReM Generate Service uri and path from configs
 
