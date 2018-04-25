@@ -68,14 +68,13 @@
 &lt;protocol&gt;.rabbitmq.port:          &lt;port, eg: 5672&gt;
 &lt;protocol&gt;.rabbitmq.username:      &lt;username, default for RabbitMQ Server: guest&gt;
 &lt;protocol&gt;.rabbitmq.password:      &lt;password, default for RabbitMQ Server: guest&gt;
-&lt;protocol&gt;.rabbitmq.tls:           &lt;tls, is optional&gt;
+&lt;protocol&gt;.rabbitmq.tls:           &lt;tls version, is optional&gt;
 &lt;protocol&gt;.rabbitmq.exchangeName:  &lt;exchange name, exchange should be already created on RabbitMQ Server&gt;
 &lt;protocol&gt;.rabbitmq.domainId:      &lt;domain id, any string&gt;</pre>
 
         <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before starting the service.</p>
 
-        <p><code>&lt;protocol&gt;</code> is name of the protocol used.
-            For now two protocols are used: <code>eiffel3</code> (for Eiffel1.0 events) and <code>eiffelsemantics</code> (for Eiffel2.0 events).
+        <p><code>&lt;protocol&gt;</code> is name of the protocol used (eg: <code>eiffelsemantics</code>).
         </p>
 
         <p><strong>NOTE:</strong> properties above should be configured for each protocol, that users are going to use.</p>
@@ -250,7 +249,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
         <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
 
         <h5>Malformed input:</h5>
-        <pre><code>curl -H "Content-Type: application/json" -X POST -d '[{Message}]' "http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffel3"</code></pre>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '[{Message}]' "http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics"</code></pre>
         <p>Result:</p>
         <pre>{"timestamp":"Dec 27, 2017 3:34:11 PM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: ..."}</pre>
 
@@ -282,7 +281,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
         </h3>
         <pre><code>curl -H "Content-Type: application/json" -X GET http://localhost:8080/generate/versions</code></pre>
         <p>Result:</p>
-        <pre>{"serviceVersion":{"version":"x.x.x"},"endpointVersions":{"semanticsVersion":"x.x.x","eiffel3MessagingVersion":"x.x.x"}}</pre>
+        <pre>{"serviceVersion":{"version":"x.x.x"},"endpointVersions":{"semanticsVersion":"x.x.x"}}</pre>
 
         <h2>
             <a id="statusCodes" class="anchor" href="#statusCodes" aria-hidden="true">
