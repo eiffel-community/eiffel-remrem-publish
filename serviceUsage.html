@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Eiffel RemRem Publish Service : ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Eiffel REMReM Publish</title>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
+
+        <h1><a class="project_title" href="index.html">Eiffel REMReM Publish</a></h1>
+
+        <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
+        </section>
+    </header>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+
+        <h1>
+            <a id="remrem-publish-service" class="anchor" href="#remrem-publish-service" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>REMReM Publish Service
+        </h1>
+
+        <p>REMReM Publish Service allows for sending messages to a topic-based exchange on a RabbitMQ Server.</p>
+
+        <p>Information about the REMReM Publish Service all endpoints can be got and easily accessed using next links:</p>
+        <pre>http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/</pre> or <pre>http://&lt;host&gt;:&lt;port&gt;/&lt;application name&gt;/swagger-ui.html</pre>
+
+        <p>Example:</p>
+        <pre>http://localhost:8080/publish/</pre>
+
+        <h2>
+            <a id="configuration" class="anchor" href="#configuration" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Configuration
+        </h2>
+
+        <p>For using Eiffel REMReM Service <strong>publish-service.war</strong> file should be deployed in Tomcat Server.
+            For doing this, publish-service.war file should locate in next directory: <em>tomcat/webapps</em>.
+        </p>
+
+        <p>Configuration is done in Tomcat using a config.properties file: <em>tomcat/conf/config.properties</em>.</p>
+
+        <p><strong>NOTE:</strong> in each example assuming the publish-service.war is deployed in tomcat as <strong>publish</strong>.</p>
+
+        <h3>Exchange configurations</h3>
+
+        <p>These parameters are related to RabbitMQ Server, which will be used for publishing events:</p>
+
+        <pre>
+&lt;protocol&gt;.rabbitmq.host:          &lt;host name, eg: localhost&gt;
+&lt;protocol&gt;.rabbitmq.port:          &lt;port, eg: 5672&gt;
+&lt;protocol&gt;.rabbitmq.username:      &lt;username, default for RabbitMQ Server: guest&gt;
+&lt;protocol&gt;.rabbitmq.password:      &lt;password, default for RabbitMQ Server: guest&gt;
+&lt;protocol&gt;.rabbitmq.tls:           &lt;tls version, is optional&gt;
+&lt;protocol&gt;.rabbitmq.exchangeName:  &lt;exchange name, exchange should be already created on RabbitMQ Server&gt;
+&lt;protocol&gt;.rabbitmq.domainId:      &lt;domain id, any string&gt;</pre>
+
+        <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before starting the service.</p>
+
+        <p><code>&lt;protocol&gt;</code> is name of the protocol used (eg: <code>eiffelsemantics</code>).
+        </p>
+
+        <p><strong>NOTE:</strong> properties above should be configured for each protocol, that users are going to use.</p>
+
+        <h3>Ldap authentication configurations</h3>
+
+        <p>Active Directory authentication can be enabled for the REMReM Publish Service by setting the configuration property
+            <code>activedirectory.publish.enabled: true</code>.
+        </p>
+
+        <pre>
+activedirectory.publish.enabled:  &lt;true|false&gt;
+activedirectory.ldapUrl:          &lt;LDAP server url&gt;
+activedirectory.managerPassword:  &lt;LDAP server manager password(must be base64 Encrypted format)&gt;
+activedirectory.managerDn:        &lt;LDAP managerDn pattern&gt;
+activedirectory.rootDn:           &lt;LDAP rootDn pattern&gt;
+activedirectory.userSearchFilter: &lt;LDAP userSearchFilter pattern&gt;</pre>
+
+        <p><strong>LDAP authentication without Base64 encryption:</strong></p>
+        <pre><code>curl -XPOST -H "Content-Type: application/json" --user username:password --data @ActivityCanceled.json "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics"</code></pre>
+
+        <p><strong>NOTE:</strong> each HTTP request must then include an Authorization header with value
+            <code>Basic &lt;Base64 encoded username:password&gt;</code>.
+        </p>
+
+        <p><strong>LDAP authentication with Base64 encryption:</strong></p>
+        <pre><code>curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics"</code></pre>
+
+        <h3>Generate Service configurations for Publish Service</h3>
+
+        <p>Properties below are important for correct work of <code>/generateAndPublish</code> endpoint.</p>
+
+        <pre>
+generate.server.host:    &lt;host, where generate service is deployed, eg: localhost&gt;
+generate.server.port:    &lt;port, eg: 8080&gt;
+generate.server.appName: &lt;application name of generate service, eg: generate&gt;</pre>
+
+
+        <h2>
+            <a id="usage" class="anchor" href="#usage" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Usage
+        </h2>
+        <p>Available REST resources for REMReM Generate Service are described below.</p>
+
+        <table style="width:100%">
+            <tr>
+                <th>Resource</th>
+                <th>Method</th>
+                <th>Parameters</th>
+                <th style="margin:0px;">Request body</th>
+                <th width="20%">Description</th>
+            </tr>
+            <tr>
+                <td>/producer/msg</td>
+                <td>POST</td>
+                <td>
+                    <p>mp - message protocol, required</p>
+                    <p>msgType - message type, required</p>
+                    <p>ud - user domain, not required</p>
+                    <p>tag - not required</p>
+                    <p>rk - routing key, not required</p>
+                </td>
+                <td>
+<pre>{
+  "meta": {
+    # Matches the meta object
+  },
+  "data": {
+    # Matches the data object
+  },
+  "links": {
+    # Matches the links object
+  }
+}</pre>
+                </td>
+                <td>This endpoint is used to publish already generated Eiffel event to message bus.</td>
+            </tr>
+            <tr>
+                <td>/generateAndPublish</td>
+                <td>POST</td>
+                <td>
+                    <p>mp - message protocol, required</p>
+                    <p>ud - user domain, not required</p>
+                    <p>tag - not required</p>
+                    <p>rk - routing key, not required</p>
+                </td>
+                <td>
+<pre>{
+  "msgParams": {
+    "meta": {
+      # Matches the meta object
+    }
+  },
+  "eventParams": {
+    "data": {
+      # Matches the data object
+    },
+    "links": {
+      # Matches the links object
+    }
+  }
+}</pre>
+                </td>
+                <td>
+                    <p>This endpoint is used to generate and publish Eiffel events to message bus.
+                        It provides single endpoint for both REMReM Generate and REMReM Publish.</p>
+                    <p>The service works on the relative link <code>/generateAndPublish</code> if run as standalone application or
+                        <code>/publish/generateAndPublish</code> if run as tomcat app.</p>
+                </td>
+            </tr>
+            <tr>
+                <td>/versions</td>
+                <td>GET</td>
+                <td></td>
+                <td></td>
+                <td>This endpoint is used to get versions of publish service and all loaded  protocols.</td>
+            </tr>
+        </table>
+
+        <h2>
+            <a id="examples" class="anchor" href="#examples" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Examples
+        </h2>
+        <p>Typical examples of usage Eiffel REMReM Publish Service endpoints are described below.</p>
+
+        <p>You can use command line tools like <a href="https://en.wikipedia.org/wiki/CURL">curl</a> or some plugin for your favorite browser. For example:</p>
+
+        <ul>
+            <li>
+                <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop">Postman</a> for Chromium-based browsers
+            </li>
+            <li>
+                <a href="https://addons.mozilla.org/en-US/firefox/addon/httprequester/">HttpRequester</a> for Firefox
+            </li>
+        </ul>
+
+        <h3>
+            <a id="examples1" class="anchor" href="#examples1" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Examples for <code>/producer/msg</code> endpoint
+        </h3>
+
+        <h5>One message:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.1.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics"</code></pre>
+        <p>Result:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+
+        <h5>Two messages/objects and given user domain suffix:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.1.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]},{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"1.1.0","time":1513758440998,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' "http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics"</code></pre>
+        <p>Result:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+
+        <h5>One message and given tag:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.1.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&tag=production"</code></pre>
+        <p>Result:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+
+        <h5>One message and given routing key:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"1.1.0","time":1513758440588,"tags":["tag1","tag2"],"source":{"domainId":"example.domain","host":"host","name":"name","serializer":{"groupId":"com.github.Ericsson","artifactId":"eiffel-remrem-semantics","version":"0.3.1"},"uri":"http://java.sun.com/j2se/1.3/"},"security":{"sdm":{"authorIdentity":"test","encryptedDigest":"sample"}}},"data":{"outcome":{"conclusion":"SUCCESSFUL"},"persistentLogs":[{"name":"firstLog","uri":"http://myHost.com/firstLog"},{"name":"otherLog","uri":"isbn:0-486-27557-4"}],"customData":[]},"links":[{"type":"ACTIVITY_EXECUTION","target":"aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}]' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&rk=myroutingkey"</code></pre>
+        <p>Result:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+
+        <p><strong>NOTE:</strong> for any protocol, provide the Java opts as: </p>
+        <pre>set JAVA_OPTS="-Djava.ext.dirs=/path/to/jars/" in catalina.sh</pre>
+        <p><strong>NOTE:</strong> in the above example, protocol jar file must be present inside "/path/to/jars/" folder.</p>
+
+        <h5>Reading data from a file:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST --data-binary "@test.data" "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics"</code></pre>
+        <p>Result:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"},{"id":"963da060-f2cf-4370-a68d-67fd872dek89","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+
+        <h5>Malformed input:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '[{Message}]' "http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics"</code></pre>
+        <p>Result:</p>
+        <pre>{"timestamp":"Dec 27, 2017 3:34:11 PM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: ..."}</pre>
+
+        <h3>
+            <a id="examples2" class="anchor" href="#examples2" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Examples for <code>/generateAndPublish</code> endpoint
+        </h3>
+
+        <h5>Correct message:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '{"msgParams": {"meta": {"type": "EiffelActivityFinishedEvent", "tags": ["tag1","tag2"], "source": {"domainId": "example.domain", "host": "host", "name": "name", "uri": "http://java.sun.com/j2se/1.3/", "gav": {"groupId": "com.github.Ericsson", "artifactId": "eiffel-remrem-semantics", "version": "0.2.9"}}, "security": {"sdm": {"authorIdentity": "test", "encryptedDigest": "sample"}}}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://myHost.com/firstLog"}, {"name": "otherLog", "uri": "isbn:0-486-27557-4"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}}' "http://localhost:8080/publish/generateAndPublish?mp=eiffelsemantics&msgType=EiffelActivityFinished"</code></pre>
+        <p>Result:</p>
+        <pre>{"events":[{"id":"963da060-f2cf-4370-a68d-67fd872def36","status_code":200,"result":"SUCCESS","message":"Event sent successfully"}]}</pre>
+
+        <h5>Incorrect message protocol:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '{"msgParams": {"meta": {"type": "EiffelActivityFinishedEvent", "tags": ["tag1","tag2"], "source": {"domainId": "example.domain", "host": "host", "name": "name", "uri": "http://java.sun.com/j2se/1.3/", "gav": {"groupId": "com.github.Ericsson", "artifactId": "eiffel-remrem-semantics", "version": "0.2.9"}}, "security": {"sdm": {"authorIdentity": "test", "encryptedDigest": "sample"}}}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://myHost.com/firstLog"}, {"name": "otherLog", "uri": "isbn:0-486-27557-4"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}}' "http://localhost:8080/publish/generateAndPublish?mp=incorrecteiffelprotocol&msgType=EiffelActivityFinished"</code></pre>
+        <p>Result:</p>
+        <pre>{"status_code":503,"result":"FAIL","message":"Message protocol is invalid"}</pre>
+
+        <h5>Incorrect message type:</h5>
+        <pre><code>curl -H "Content-Type: application/json" -X POST -d '{"msgParams": {"meta": {"type": "EiffelActivityFinishedEvent", "tags": ["tag1","tag2"], "source": {"domainId": "example.domain", "host": "host", "name": "name", "uri": "http://java.sun.com/j2se/1.3/", "gav": {"groupId": "com.github.Ericsson", "artifactId": "eiffel-remrem-semantics", "version": "0.2.9"}}, "security": {"sdm": {"authorIdentity": "test", "encryptedDigest": "sample"}}}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://myHost.com/firstLog"}, {"name": "otherLog", "uri": "isbn:0-486-27557-4"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]}}' "http://localhost:8080/publish/generateAndPublish?mp=eiffelsemantics&msgType=incorrectmessagetype"</code></pre>
+        <p>Result:</p>
+        <pre>{"status_code":400,"result":"FAIL","message":"Malformed JSON or incorrect type of event"}</pre>
+
+        <h3>
+            <a id="examples3" class="anchor" href="#examples3" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Examples for <code>/versions</code> endpoint
+        </h3>
+        <pre><code>curl -H "Content-Type: application/json" -X GET http://localhost:8080/generate/versions</code></pre>
+        <p>Result:</p>
+        <pre>{"serviceVersion":{"version":"x.x.x"},"endpointVersions":{"semanticsVersion":"x.x.x"}}</pre>
+
+        <h2>
+            <a id="statusCodes" class="anchor" href="#statusCodes" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Status Codes
+        </h2>
+
+        <p>For each user request Eiffel REMReM Publish generate response in JSON with internal status code and message.</p>
+        <p>To get information about internal status codes see <a href="statusCodes.html">here</a>.</p>
+
+    </section>
+</div>
+
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+    <footer class="inner">
+        <p class="copyright">Eiffel REMReM Publish maintained by <a href="https://github.com/ericsson">Ericsson</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+    </footer>
+</div>
+
+</body>
+</html>

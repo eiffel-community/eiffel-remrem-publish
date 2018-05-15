@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Eiffel RemRem Publish Service : ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Eiffel REMReM Publish</title>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <a id="forkme_banner" href="https://github.com/Ericsson/eiffel-remrem-publish">View on GitHub</a>
+
+        <h1><a class="project_title" href="index.html">Eiffel REMReM Publish</a></h1>
+
+        <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/Ericsson/eiffel-remrem-publish/tarball/master">Download this project as a tar.gz file</a>
+        </section>
+    </header>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+
+        <h1>
+            <a id="statusCodes" class="anchor" href="#statusCodes" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Status Codes
+        </h1>
+
+        <p>The response generated will have internal status codes for each and every event based on the input JSON provided.</p>
+        <p>Status codes are generated according to the below tables.</p>
+
+        <h2>Internal status codes</h2>
+        <table class="wikitable">
+            <tr>
+                <th style="text-align:left;">Status code</th>
+                <th style="text-align:left;">Result</th>
+                <th style="text-align:left;">Message</th>
+                <th style="text-align:left;">Comment</th>
+            </tr>
+            <tr>
+                <td>200</td>
+                <td>SUCCESS</td>
+                <td>Event sent successfully</td>
+                <td>Is returned if the request is completed successfully.</td>
+            </tr>
+            <tr>
+                <td>207</td>
+                <td>Multi-Status</td>
+                <td></td>
+                <td>Is returned if we have a mix of internal status codes.<br>
+                    Eg: publish of few events was successful and few events was a failure.<br>
+                    In case of multiple events in the body JSON, if a event is given internal status code of 400 or 500 rest events will not be
+                    published and will be given a internal status code of 503, which will result in overall HTTP response code of 207.
+                </td>
+            </tr>
+            <tr>
+                <td>400</td>
+                <td>Bad Request</td>
+                <td>Invalid event content, client need to fix problem in event before submitting again</td>
+                <td>Is returned if the request body JSON is malformed. Eg: unable to parse the body JSON.</td>
+            </tr>
+            <tr>
+                <td>404</td>
+                <td>RabbitMQ properties not found</td>
+                <td>RabbitMQ properties not configured for the protocol &lt;protocol&gt;</td>
+                <td>Is returned if RabbitMQ message broker properties are not found for the protocol used by event.</td>
+            </tr>
+            <tr>
+                <td rowspan="2">500</td>
+                <td rowspan="2">Internal Server Error</td>
+                <td>RabbitMQ is down. Please try later</td>
+                <td>Is returned if RabbitMQ is down.</td>
+            </tr>
+            <tr>
+                <td>Could not prepare Routing key to publish message.</td>
+                <td>Is returned if could not prepare routing key to publish the eiffel event.</td>
+            </tr>
+            <tr>
+                <td>503</td>
+                <td>Service Unavailable</td>
+                <td>Please check previous event and try again later</td>
+                <td>Is returned if there is a failure in publishing previous event with status code 400, 404 or 500.</td>
+            </tr>
+        </table>
+
+        <h3>Status codes explanation</h3>
+
+        <h5>200 OK</h5>
+        <p>All the events are sent successfully.</p>
+<pre>[
+    {
+     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+     "status_code": 200,
+     "result": "SUCCESS",
+     "message": "Event sent successfully"
+    },
+    {
+     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
+     "status_code": 200,
+     "result": "SUCCESS",
+     "message": "Event sent successfully"
+    }
+]</pre>
+
+        <h5>207 Multi-Status</h5>
+        <p>Events are having different internal status codes.</p>
+        <pre>[
+    {
+     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+     "status_code": 200,
+     "result": "SUCCESS",
+     "message": "Event sent successfully"
+    },
+    {
+     "status_code": 400,
+     "result": "Bad Request",
+     "message": "Invalid event content, client need to fix problem in event before submitting again"
+    }
+]</pre>
+
+        <h5>400 Bad Request</h5>
+        <p>The input JSON is malformed.</p>
+<pre>[
+    {
+     "status_code": 400,
+     "result": "Bad Request",
+     "message": "Invalid event content, client need to fix problem in event before submitting again"
+    }
+]</pre>
+
+        <h5>404 Not Found</h5>
+        <p>RabbitMQ properties not configured in tomcat/conf/config.properties file for the protocol.</p>
+<pre>[
+    {
+     "status_code": 404,
+     "result": "RabbitMQ properties not found",
+     "message": "RabbitMQ properties not configured for the protocol &lt;protocol&gt;"
+    }
+]</pre>
+
+        <h5>500 Internal Server Error</h5>
+        <p>Cannot prepare routing key.</p>
+<pre>[
+    {
+     "status_code": 500,
+     "result": "Internal Server Error",
+     "message": "Could not prepare Routing key to publish message"
+    }
+]</pre>
+
+        <p>Event is failed to send because of internal server error.</p>
+        <pre>[
+    {
+     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+     "status_code": 500,
+     "result": "Internal Server Error",
+     "message": "RabbitMQ is down. Please try later"
+    }
+]</pre>
+
+        <h5>503 Service Unavailable</h5>
+        <p>Event will have this status code when the previous event is failed to send.</p>
+        <p>For example, consider you have 5 events: <strong>E1<-E2<-E3<-E4<-E5</strong><br>
+            You send them all to publish in a batch command.<br>
+            <strong>E1</strong> and <strong>E2</strong> are sent successfully <strong>(200 OK)</strong>.<br>
+            <strong>E3</strong> is malformed <strong>(400 Bad Request)</strong>.<br>
+            If we send <strong>E4</strong> and <strong>E5</strong> we will have a broken chain so that is not a good option.<br>
+            In this case we should skip sending <strong>E4</strong> and <strong>E5</strong> and have status code <strong>503</strong> for those.
+        </p>
+        <pre>[
+     {
+      "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+      "status_code": 200,
+      "result": "SUCCESS",
+      "message": "Event sent successfully"
+     },
+     {
+      "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a1",
+      "status_code": 200,
+      "result": "SUCCESS",
+      "message": "Event sent successfully"
+     },
+     {
+      "status_code": 400,
+      "result": "Bad Request",
+      "message": "Invalid event content, client need to fix problem in event before submitting again"
+     },
+     {
+      "status_code": 503,
+      "result": "Service Unavailable",
+      "message": "Please check previous event and try again later"
+     },
+     {
+      "status_code": 503,
+      "result": "Service Unavailable",
+      "message": "Please check previous event and try again later"
+     }
+]</pre>
+
+        <p><strong>NOTE:</strong> you can open the RabbitMQ's management console and find these messages in a queue.</p>
+
+        <h2>Status codes related to failures in Eiffel REMReM Generate Service</h2>
+        <p>These response can be generated only when <code>/generateAndPublish</code> endpoint is used.</p>
+
+        <table class="wikitable">
+            <tr>
+                <th style="text-align:left;">Status code</th>
+                <th style="text-align:left;">Result</th>
+                <th style="text-align:left;">Message</th>
+                <th style="text-align:left;">Comment</th>
+            </tr>
+            <tr>
+                <td>400</td>
+                <td>Bad Request</td>
+                <td>Malformed JSON or incorrect type of event</td>
+                <td>Is returned if the request body JSON is malformed or entered incorrect type of event.</td>
+            </tr>
+            <tr>
+                <td>401</td>
+                <td>Unauthorized</td>
+                <td>Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled</td>
+                <td>Is returned if LDAP for REMReM Generate Service is enabled and REMReM Generate Publish have not access to it.</td>
+            </tr>
+            <tr>
+                <td>500</td>
+                <td>Internal Server Error</td>
+                <td>Internal server error in Generate Service</td>
+                <td>Is returned if REMReM Generate Service is not started or in case of others internal errors in REMReM Generate Service.</td>
+            </tr>
+            <tr>
+                <td>503</td>
+                <td>Service Unavailable</td>
+                <td>Message protocol is invalid</td>
+                <td>Is returned if there is no such message protocol loaded.</td>
+            </tr>
+        </table>
+
+        <h3>Status codes explanation</h3>
+
+        <h5>400 Bad Request</h5>
+        <p>The input JSON is malformed or entered incorrect type of event.</p>
+<pre>[
+    {
+     "status_code": 400,
+     "result": "FAIL",
+     "message": "Malformed JSON or incorrect type of event"
+    }
+]</pre>
+
+        <h5>401 Unauthorized</h5>
+        <p>LDAP for REMReM Generate Service is enabled and REMReM Generate Publish have not access to it.</p>
+<pre>[
+    {
+     "status_code": 401,
+     "result": "FAIL",
+     "message": "Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled"
+    }
+]</pre>
+
+        <h5>500 Internal Server Error</h5>
+        <p>REMReM Generate Service is not started or in case of others internal errors in REMReM Generate Service.</p>
+<pre>[
+    {
+     "status_code": 500,
+     "result": "FAIL",
+     "message": "Internal server error in Generate Service"
+    }
+]</pre>
+
+        <h5>503 Service Unavailable</h5>
+        <p>There is no such message protocol loaded..</p>
+<pre>[
+     {
+      "status_code": 503,
+      "result": "FAIL",
+      "message": "Message protocol is invalid"
+     }
+]</pre>
+
+    </section>
+</div>
+
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+    <footer class="inner">
+        <p class="copyright">Eiffel REMReM Publish maintained by <a href="https://github.com/ericsson">Ericsson</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+    </footer>
+</div>
+
+</body>
+</html>
