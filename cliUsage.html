@@ -112,6 +112,10 @@ usage: java -jar
         <pre><code>java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp protocolType</code></pre>
 
         <p><strong>NOTE:</strong> in the above example, protocol jar file must be present inside "/path/to/jars/" folder.</p>
+        <p><strong>NOTE:</strong> <code>-Djava.ext.dirs</code> is no longer working in some JAVA8 versions and in JAVA9.
+            So users should create a wrapper project to include both Generate/Publish and their protocol in
+            or place the protocol library in the folder for external dependencies of their JVM installation.
+        </p>
 
         <h5>If you want to have the message publishing logs add d flag:</h5>
         <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d</code></pre>
@@ -142,12 +146,49 @@ usage: java -jar
 ]</pre>
 
         <h2>
+            <a id="exitCodes" class="anchor" href="#exitCodes" aria-hidden="true">
+                <span aria-hidden="true" class="octicon octicon-link"></span>
+            </a>Exit Codes
+        </h2>
+        <p>If CLI fails internally before trying to publish Eiffel message, user will get exit code. Exit codes are described in the table below.</p>
+
+        <table class="wikitable">
+            <tr>
+                <th style="text-align: left;">Exit code</th>
+                <th style="text-align: left;">Description</th>
+            <tr>
+                <td>1</td>
+                <td>User will get this exit code in case of some error that is not described below</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Some CLI options are missed</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Passed message protocol or message bus configuration are not correct</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Passed file path is wrong. File is not found</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Unable to read content from passed file path</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Unable to read passed JSON string from command line</td>
+            </tr>
+        </table>
+
+        <h2>
             <a id="statusCodes" class="anchor" href="#statusCodes" aria-hidden="true">
                 <span aria-hidden="true" class="octicon octicon-link"></span>
             </a>Status Codes
         </h2>
 
-        <p>For each user request Eiffel REMReM Publish generate response in JSON with internal status code and message.</p>
+        <p>For each user request Eiffel REMReM Publish generate response in JSON with internal status code and message, when publishing takes place.</p>
         <p>To get information about internal status codes see <a href="statusCodes.html">here</a>.</p>
 
     </section>
