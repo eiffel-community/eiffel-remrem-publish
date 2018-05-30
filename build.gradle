@@ -39,6 +39,9 @@ repositories {
     maven {
         url 'https://jitpack.io'
     }
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
 }
     ext {
     springBootVersion = "1.4.1.RELEASE"
@@ -60,14 +63,19 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.5.8"
+    version = "0.5.9"
 
     //Declare where to find the dependencies of project here
     repositories {
         // Use 'jcenter' for resolving your dependencies.
         // You can declare any Maven/Ivy/file repository here.
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven {
+             url 'https://jitpack.io'
+             }
+        maven {
+            url 'https://repo.spring.io/libs-milestone'
+        }
     }
 
     apply plugin: 'spring-boot'
@@ -111,6 +119,8 @@ subprojects {
         //Injectable Message Library and its Implementation
         compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.5'
         //For publishing eiffel2.0 events
+        
+        compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:2.0.0'
 
         compile("com.github.Ericsson:eiffel-remrem-semantics:0.4.1"){
 
