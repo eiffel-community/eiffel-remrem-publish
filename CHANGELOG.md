@@ -1,3 +1,6 @@
+## 0.5.9
+- Added jasypt-spring-boot-starter dependency to support open text encryption
+
 ## 0.5.8
 - EventParser functionality added to endpoint /generateAndPublish (@param parseData added) 
 
