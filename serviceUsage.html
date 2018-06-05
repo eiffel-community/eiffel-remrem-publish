@@ -58,7 +58,50 @@
         <p>Configuration is done in Tomcat using a config.properties file: <em>tomcat/conf/config.properties</em>.</p>
 
         <p><strong>NOTE:</strong> in each example assuming the publish-service.war is deployed in tomcat as <strong>publish</strong>.</p>
+		<h3>Jasypt configurations</h3>
+        <p>Jasypt Spring Boot provides Encryption support for property sources(passwords, secret info ..etc) in Spring Boot Applications.
+        To support this functionality in our application we need to add the following property in property file</p>
 
+		<code>jasypt.encryptor.password: The key value which was used while encrypting the original password</code>
+
+		<p>The above encryptor password must be same for both encryption and decryption of the original password(ldap,rabbitmq...etc) <br>
+		The encryptor password  will be used by jasypt-spring-boot library in application to decrypt the encrypted password at runtime.</p>
+		<h4>How to encrypt the password:</h4>
+<pre>
+1) Download the jasypt jar file from any of the below locations
+<a href="http://www.jasypt.org/download.html">Link to Jasypt</a> (or) <a href = "https://mvnrepository.com/artifact/org.jasypt/jasypt/1.9.2">Link to Maven</a>
+
+2) Execute the below command to generate Jasypt encrypted password
+    java -cp jasypt-1.9.2.jar org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="any password" password=any intermediate key
+
+input   : any password which we want to encrypt(Ex: rabbitmq password, ldap user password, etc...)
+password: A Jasypt key used to encrypt the above input( The Jasypt key can be anything, but make sure same key to be used for decryption)
+
+Example:
+    Run the below command in Command line
+
+    java -cp jasypt-1.9.2.jar org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dummyPassword" password=dummy
+
+output:
+    ----ENVIRONMENT-----------------
+
+    Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.144-b01
+
+    ----ARGUMENTS-------------------
+
+    algorithm: PBEWithMD5AndDES
+    input: dummyPassword
+    password: dummy
+
+    ----OUTPUT----------------------
+
+    euJcvto7NtCDiWT7BKFW0A==
+</pre>
+	<p>Use the above encrypted password in your property file like this <strong>ENC(&lt;encrypted password&gt)</strong></p>
+	<code>Ex:rabbitmq.password: ENC(euJcvto7NtCDiWT7BKFW0A ==)</code>
+	<p><strong>Note: REMReM will work without jasypt encryption also but if you have encrypted any text using jasypt library 
+	then </strong><em>jasypt.encryptor.password </em> <strong>property should be present in property file </strong></p> 
+	
         <h3>Exchange configurations</h3>
 
         <p>These parameters are related to RabbitMQ Server, which will be used for publishing events:</p>
@@ -88,19 +131,19 @@
         <pre>
 activedirectory.publish.enabled:  &lt;true|false&gt;
 activedirectory.ldapUrl:          &lt;LDAP server url&gt;
-activedirectory.managerPassword:  &lt;LDAP server manager password(must be base64 Encrypted format)&gt;
+activedirectory.managerPassword:  &lt;LDAP server manager password &gt;
 activedirectory.managerDn:        &lt;LDAP managerDn pattern&gt;
 activedirectory.rootDn:           &lt;LDAP rootDn pattern&gt;
 activedirectory.userSearchFilter: &lt;LDAP userSearchFilter pattern&gt;</pre>
 
-        <p><strong>LDAP authentication without Base64 encryption:</strong></p>
+        <p><strong>LDAP authentication without Base64 encryption of user details:</strong></p>
         <pre><code>curl -XPOST -H "Content-Type: application/json" --user username:password --data @ActivityCanceled.json "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics"</code></pre>
 
         <p><strong>NOTE:</strong> each HTTP request must then include an Authorization header with value
             <code>Basic &lt;Base64 encoded username:password&gt;</code>.
         </p>
 
-        <p><strong>LDAP authentication with Base64 encryption:</strong></p>
+        <p><strong>LDAP authentication with Base64 encryption of user details:</strong></p>
         <pre><code>curl -XPOST -H "Content-Type: application/json" -H 'Authorization: Basic cGFzc3dvcmQ=' --data @ActivityCanceled.json "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics"</code></pre>
 
         <h3>Generate Service configurations for Publish Service</h3>
