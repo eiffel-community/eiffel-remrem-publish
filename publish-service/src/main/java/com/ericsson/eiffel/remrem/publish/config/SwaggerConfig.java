@@ -25,6 +25,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfiguration.Constants;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
@@ -43,9 +44,8 @@ public class SwaggerConfig {
 
         @Bean
         public UiConfiguration uiConfig() {
-                return new UiConfiguration(
-                        null, "list", "alpha", "schema",false, true
-                );
+        	return new UiConfiguration(null, "list", "alpha", "schema", Constants.DEFAULT_SUBMIT_METHODS, false, true,
+    				null);
         }
 
         private ApiInfo metaData() {
