@@ -1,4 +1,4 @@
-## 0.6.0
+## 0.6.1
 - Updated versions of few dependencies
 
 ## 0.6.0
