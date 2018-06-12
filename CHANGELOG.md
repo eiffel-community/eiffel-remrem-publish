@@ -1,3 +1,6 @@
+## 0.6.1
+- Updated versions of few dependencies
+
 ## 0.6.0
 - Removed based64 encryption mechanism for ldap manager password
 

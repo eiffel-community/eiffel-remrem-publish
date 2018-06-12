@@ -63,7 +63,7 @@ subprojects {
     apply plugin: 'java'
 
     //Latest version for publish
-    version = "0.6.0"
+    version = "0.6.1"
 
     //Declare where to find the dependencies of project here
     repositories {
@@ -91,7 +91,7 @@ subprojects {
     //Declare the dependencies for all subprojects and test code
     dependencies {
         // The code uses the SLF4J logging API at compile time
-        compile 'org.slf4j:slf4j-api:1.7.21'
+        compile 'org.slf4j:slf4j-api:1.7.25'
         compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
         }
@@ -102,7 +102,7 @@ subprojects {
         compile("org.springframework.boot:spring-boot:$springBootVersion")
         
         //To process Json content
-        compile 'com.google.code.gson:gson:2.6.2'
+        compile 'com.google.code.gson:gson:2.8.1'
         //To Inject annotations, For eg: @Autowired/@Resource/@Inject
         compile 'javax.inject:javax.inject:1'
         
@@ -112,17 +112,16 @@ subprojects {
 
         //Swagger is a specification for documenting REST API.
         //It specifies the format (URL, method, and representation) to describe REST web services
-        compile 'io.springfox:springfox-swagger2:2.4.0'
-        compile 'io.springfox:springfox-swagger-ui:2.4.0'
-        compile 'org.apache.commons:commons-lang3:3.5'
-        
+        compile 'io.springfox:springfox-swagger2:2.6.1'
+        compile 'io.springfox:springfox-swagger-ui:2.6.1'
+        compile 'org.apache.commons:commons-lang3:3.7'
         //Injectable Message Library and its Implementation
-        compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.5'
+        compile 'com.github.Ericsson:eiffel-remrem-shared:0.3.6'
         //For publishing eiffel2.0 events
         
         compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:2.0.0'
 
-        compile("com.github.Ericsson:eiffel-remrem-semantics:0.4.1"){
+        compile("com.github.Ericsson:eiffel-remrem-semantics:0.4.4"){
 
                 exclude group: 'org.apache.commons'
         }

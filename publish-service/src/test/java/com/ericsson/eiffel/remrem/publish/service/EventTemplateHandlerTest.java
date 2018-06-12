@@ -348,8 +348,8 @@ public class EventTemplateHandlerTest {
 
             JsonNode actualParsedEventJson = eventTemplateHandler.eventTemplateParser(dataToBeParsed, EventName);
 
-            System.out.println("expectedJsonString: " + expectedJson.toString());
-            System.out.println("actualParsedEventJson: " + actualParsedEventJson.toString());
+            LOG.info("expectedJsonString: " + expectedJson.toString());
+            LOG.info("actualParsedEventJson: " + actualParsedEventJson.toString());
 
             JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), true);
 
