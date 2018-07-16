@@ -12,7 +12,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.ericsson.eiffel.remrem.publish.controller;
+package com.ericsson.eiffel.remrem.publish.integrationtest;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
@@ -50,7 +50,7 @@ import com.jayway.restassured.RestAssured;
 @ActiveProfiles("integration-test")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-public class ProducerControllerIntegrationTest {
+public class EiffelRemRemPublishIT {
     @Value("${local.server.port}")
     int port;
     @Autowired
@@ -78,7 +78,7 @@ public class ProducerControllerIntegrationTest {
         MsgService msgService = PublishUtils.getMessageService("eiffel3", msgServices);
         if (msgService != null) {
             JsonArray jarray = new JsonArray();
-            String jsonString = FileUtils.readFileToString(new File("src/integration-test/resources/EiffelJobFinishedEvent.json"));
+            String jsonString = FileUtils.readFileToString(new File("src/test/resources/EiffelJobFinishedEvent.json"));
             SendResult results = messageService.send(jsonString, msgService, "fem001", null, null);
             for (PublishResultItem result : results.getEvents()) {
                 jarray.add(result.toJsonObject());
@@ -90,7 +90,7 @@ public class ProducerControllerIntegrationTest {
     
     @Test
     public void testFailSingleEvent() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/integration-test/resources/Invalid_EiffelActivityFinishedEvent.json"));
+        String body = FileUtils.readFileToString(new File("src/test/resources/Invalid_EiffelActivityFinishedEvent.json"));
 
         given().header("Authorization", credentials)
                .contentType("application/json").body(body).when().post("/producer/msg?mp=eiffelsemantics").then()
@@ -104,7 +104,7 @@ public class ProducerControllerIntegrationTest {
     public void testGenerateRoutingKey() throws Exception {
         MsgService messageService = PublishUtils.getMessageService("", msgServices);
         if (messageService != null) {
-            File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
+            File file = new File("src/test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             String routingKey = messageService.generateRoutingKey(json.getAsJsonObject(), null, null, null);

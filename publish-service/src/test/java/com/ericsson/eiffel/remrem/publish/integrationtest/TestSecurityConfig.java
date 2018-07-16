@@ -12,7 +12,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.ericsson.eiffel.remrem.publish.config;
+package com.ericsson.eiffel.remrem.publish.integrationtest;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -30,7 +30,7 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
         auth
                 .inMemoryAuthentication()
                 .withUser("user")
-                .password("secret")
+                .password("{noop}secret")
                 .roles("USER");
     }
 

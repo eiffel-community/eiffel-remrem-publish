@@ -12,9 +12,11 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.ericsson.eiffel.remrem.publish.controller;
+package com.ericsson.eiffel.remrem.publish.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileReader;
@@ -27,24 +29,26 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
-
+import org.mockito.Spy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.controller.GenerateURLTemplate;
+import com.ericsson.eiffel.remrem.publish.controller.ProducerController;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ericsson.eiffel.remrem.protocol.MsgService;
+
 
 @RunWith(SpringRunner.class)
 public class EiffelRemremCommonControllerUnitTest {
@@ -91,7 +95,7 @@ public class EiffelRemremCommonControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         unit.setRestTemplate(restTemplate);
 
-        File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
+        File file = new File("src/test/resources/EiffelActivityFinishedEvent.json");
         JsonParser parser = new JsonParser();
         JsonObject json = parser.parse(new FileReader(file)).getAsJsonObject();
 
@@ -139,15 +143,16 @@ public class EiffelRemremCommonControllerUnitTest {
 
     @Test
     public void testGenerateURLTemplate() throws Exception {
-
         String mp = "eiffelsemantics";
         String msgType = "eiffelactivityfinished";
+        String generateServerUri = null;
+        String generateServerPath = null;
 
         Map<String, String> map = new HashMap<>();
         map.put("mp", mp);
         map.put("msgType", msgType);
 
-        String correctURL = "{generateServerUri}{generateServerPath}/{mp}?msgType={msgType}";
+        String correctURL = generateServerUri + generateServerPath + "/{mp}?msgType={msgType}";
 
         Map<String, String> mapTest = generateURLTemplate.getMap(mp, msgType);
 
