@@ -16,14 +16,9 @@ package com.ericsson.eiffel.remrem.publish.controller;
 
 import java.util.Map;
 
-import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
-import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,16 +33,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
+import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.ericsson.eiffel.remrem.shared.VersionService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import ch.qos.logback.classic.Logger;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/*")

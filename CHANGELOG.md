@@ -1,3 +1,6 @@
+## 0.6.2
+- migrated from gradle to maven
+
 ## 0.6.1
 - Updated versions of few dependencies
 

@@ -14,22 +14,17 @@
 */
 package com.ericsson.eiffel.remrem.publish.config;
 
+import java.io.Reader;
+import java.lang.reflect.Type;
+
+import org.apache.commons.io.IOUtils;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
-import org.apache.commons.io.IOUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Type;
-import java.nio.charset.Charset;
 
 
 /**
@@ -50,37 +45,19 @@ public class GsonHttpMessageConverterWithValidate extends GsonHttpMessageConvert
                 this.gson = gson;
         }
 
-        @Override
-        public Object read(final Type type, final Class<?> contextClass, final HttpInputMessage inputMessage)
-                throws IOException, HttpMessageNotReadableException {
-
-                final TypeToken<?> token = getTypeToken(type);
-                return readTypeToken(token, inputMessage);
+    @Override
+    protected Object readInternal(Type resolvedType, Reader reader) throws Exception {
+        try {
+            final String json = IOUtils.toString(reader);
+            // do the actual validation
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY);
+            mapper.readTree(json);
+            return this.gson.fromJson(json, resolvedType);
+        } catch (JsonParseException ex) {
+            throw new HttpMessageNotReadableException("Could not read JSON: " + ex.getMessage(), ex);
         }
-
-        private Object readTypeToken(final TypeToken<?> token, final HttpInputMessage inputMessage) throws IOException {
-                final Reader reader = new InputStreamReader(inputMessage.getBody(), getCharset(inputMessage.getHeaders()));
-
-                try {
-                        final String json = IOUtils.toString(reader);
-                        reader.close();
-
-                        // do the actual validation
-                        final ObjectMapper mapper = new ObjectMapper();
-                        mapper.enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY);
-                        mapper.readTree(json);
-
-                        return this.gson.fromJson(json, token.getType());
-                } catch (JsonParseException ex) {
-                        throw new HttpMessageNotReadableException("Could not read JSON: " + ex.getMessage(), ex);
-                }
-        }
-
-        private Charset getCharset(final HttpHeaders headers) {
-                if (headers == null || headers.getContentType() == null || headers.getContentType().getCharset() == null) {
-                        return DEFAULT_CHARSET;
-                }
-                return headers.getContentType().getCharset();
-        }
+        
+    }
 
 }

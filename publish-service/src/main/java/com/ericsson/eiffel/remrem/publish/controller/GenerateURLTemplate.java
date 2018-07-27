@@ -20,16 +20,13 @@ public class GenerateURLTemplate {
     private String generateServerPath;
 
     public String getUrl() {
-        return "{generateServerUri}{generateServerPath}/{mp}?msgType={msgType}";
+        return generateServerUri + generateServerPath + "/{mp}?msgType={msgType}";
     }
 
     public Map<String, String> getMap(final String mp, final String msgType) {
         Map<String, String> map = new HashMap<>();
         map.put("mp", mp);
         map.put("msgType", msgType);
-        map.put("generateServerUri", generateServerUri);
-        map.put("generateServerPath", generateServerPath);
-
         return map;
     }
 

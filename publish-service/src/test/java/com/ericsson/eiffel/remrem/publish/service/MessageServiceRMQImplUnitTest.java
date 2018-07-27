@@ -79,7 +79,7 @@ public class MessageServiceRMQImplUnitTest {
     }
     
     @Test public void testSingleSuccessfulEvent() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/integration-test/resources/EiffelActivityFinishedEvent.json"));
+        String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test", null, null);
@@ -91,7 +91,7 @@ public class MessageServiceRMQImplUnitTest {
     }
     
     @Test public void testSingleFailedEvent() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/integration-test/resources/Invalid_EiffelActivityFinishedEvent.json"));
+        String body = FileUtils.readFileToString(new File("src/test/resources/Invalid_EiffelActivityFinishedEvent.json"));
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         JsonArray jarray = new JsonArray();
         SendResult result = messageService.send(body, msgService, "test", null, null);
@@ -103,7 +103,7 @@ public class MessageServiceRMQImplUnitTest {
     }
     
     @Test public void testMultipleFailedEvents() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/integration-test/resources/MultipleInvalidEvents.json"));
+        String body = FileUtils.readFileToString(new File("src/test/resources/MultipleInvalidEvents.json"));
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test", null, null);
@@ -115,7 +115,7 @@ public class MessageServiceRMQImplUnitTest {
         assertEquals(Expected, jarray.toString());
     }
     @Test public void testMultipleSuccessfulEvents() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/integration-test/resources/MultipleValidEvents.json"));
+        String body = FileUtils.readFileToString(new File("src/test/resources/MultipleValidEvents.json"));
         String Expected="[{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a1\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a2\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a3\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
@@ -147,7 +147,7 @@ public class MessageServiceRMQImplUnitTest {
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         String routingKey;
         if (msgService != null) {
-            File file = new File("src/integration-test/resources/EiffelActivityFinishedEvent.json");
+            File file = new File("src/test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001", null, null);
