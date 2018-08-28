@@ -1,3 +1,6 @@
+## 0.6.3
+- Updated parent version
+
 ## 0.6.2
 - migrated from gradle to maven
 
