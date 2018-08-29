@@ -1,0 +1,22 @@
+{
+  "meta.tags[0]":"my_meta[0]tags",
+  "meta.tags[1]":"my_meta[1]tags",
+  "meta.source.domainId":"my_meta.source.domainId",
+  "meta.source.host":"my_meta.source.host",
+  "meta.source.name":"my_meta.source.name",
+  "meta.source.uri":"my_meta.source.uri",
+  "meta.security.sdm.authorIdentity":"my_meta.security.sdm.authorIdentity",
+  "meta.security.sdm.encryptedDigest":"my_meta.security.sdm.encryptedDigest",
+  "data.outcome.verdict": "PASSED",
+  "data.outcome.conclusion": "SUCCESSFUL",
+  "data.outcome.description": "my_data.outcome.description",
+  "data.outcome.metrics[0]":{"name" : "data.outcome.metrics[0].name", "value" : "data.outcome.metrics[0].value"},
+  "data.outcome.metrics[1]":{"name" : "data.outcome.metrics[1].name", "value" : "data.outcome.metrics[1].value"},
+  "data.persistentLogs[0]":{"name" : "data.outcome.persistentLogs[0].name", "uri" : "data.outcome.persistentLogs[0].uri"},
+  "data.persistentLogs[1]":{"name" : "data.outcome.persistentLogs[1].name", "uri" : "data.outcome.persistentLogs[1].uri"},
+  "data.customData[0]": {"key" : "my.data.customData[0]key", "value" : "my.data.customData[0]value"},
+  "data.customData[1]": {"key" : "my.data.customData[1]key", "value" : "my.data.customData[1]value"},
+  "links[0]": {"type" : "TEST_CASE_EXECUTION", "target" : "e269b37d-17a1-4a10-aafb-c108735ee51f"},
+  "links[1]": {"type" : "CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee50a"},
+  "links[2]": {"type" : "FLOW_CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48a"}
+}

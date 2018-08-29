@@ -1,1 +1,13 @@
 /bin/
+/target/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+#Ignore Eclipse generated files
+.classpath
+.project
+.settings/

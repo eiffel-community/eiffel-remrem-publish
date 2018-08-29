@@ -1,3 +1,36 @@
+## 0.6.3
+- Updated parent version
+
+## 0.6.2
+- migrated from gradle to maven
+
+## 0.6.1
+- Updated versions of few dependencies
+
+## 0.6.0
+- Removed based64 encryption mechanism for ldap manager password
+
+## 0.5.9
+- Added jasypt-spring-boot-starter dependency to support open text encryption
+
+## 0.5.8
+- EventParser functionality added to endpoint /generateAndPublish (@param parseData added) 
+
+## 0.5.7
+- Changed way of passing REMReM Generate Service uri and path from configs
+
+## 0.5.6
+- Removed Protocol Interface dependency
+- Uplifted semantics version to 0.4.1
+
+## 0.5.5
+- Fixed generate service link in /generateAndPublish endpoint
+- Added few messages in case error in generate happen
+- Uplifted semantics version to 0.4.0
+
+## 0.5.4
+- Added swagger for publish service
+- Changed year in copyright headers from 2017 to 2018
 
 ## 0.5.3
 - added logback support to remrem publish

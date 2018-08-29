@@ -1,0 +1,22 @@
+{
+  "meta.tags[0]":"my_meta[0]tags",
+  "meta.tags[1]":"my_meta[1]tags",
+  "meta.source.domainId":"my_meta.source.domainId",
+  "meta.source.host":"my_meta.source.host",
+  "meta.source.name":"my_meta.source.name",
+  "meta.source.uri":"my_meta.source.uri",
+  "meta.security.sdm.authorIdentity":"my_meta.security.sdm.authorIdentity",
+  "meta.security.sdm.encryptedDigest":"my_meta.security.sdm.encryptedDigest",
+  "data.testCase":{"tracker" : "my_data.testCase.tracker", "id" : "my_data.testCase.tracker.id", "uri" : "my_data.testCase.tracker.uri", "version" : "my_data.testCase.tracker.version"},
+  "data.recipeId":"e269b37d-17a1-4a10-aafb-c108735ee48a",
+  "data.triggers[0]":{"type" : "SOURCE_CHANGE", "description" : "my_data.triggers[0].description"},
+  "data.triggers[1]":{"type" : "OTHER", "description" : "my_data.triggers[1].description"},
+  "data.executionType":"AUTOMATED",
+  "data.parameters[0]":{"name" : "data.parameters[0].name", "value" : "data.parameters[0].value"},
+  "data.parameters[1]":{"name" : "data.parameters[1].name", "value" : "data.parameters[1].value"},
+  "data.customData[0]": {"key" : "my.data.customData[0]key", "value" : "my.data.customData[0]value"},
+  "data.customData[1]": {"key" : "my.data.customData[1]key", "value" : "my.data.customData[1]value"},
+  "links[0]": {"type" : "IUT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee51f"},
+  "links[1]": {"type" : "CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee50a"},
+  "links[2]": {"type" : "FLOW_CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48a"}
+}

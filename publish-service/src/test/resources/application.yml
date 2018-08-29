@@ -1,7 +1,7 @@
 generate:
-  server:
-    host: 127.0.0.1
-    port: 8987
+  server:    
+    uri: http://rermemgenerate:8443
+    path: /generate
 rabbitmq:
   host: 127.0.0.1
   port:

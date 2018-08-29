@@ -1,0 +1,21 @@
+{
+  "meta.tags[0]":"my_meta[0]tags",
+  "meta.tags[1]":"my_meta[1]tags",
+  "meta.source.domainId":"my_meta.source.domainId",
+  "meta.source.host":"my_meta.source.host",
+  "meta.source.name":"my_meta.source.name",
+  "meta.source.uri":"my_meta.source.uri",
+  "meta.security.sdm.authorIdentity":"my_meta.security.sdm.authorIdentity",
+  "meta.security.sdm.encryptedDigest":"my_meta.security.sdm.encryptedDigest",
+  "data.issues[0].type":"IMPROVEMENT",
+  "data.issues[0].tracker":"my_data.issues.tracker",
+  "data.issues[0].id":"my_data.issues.id",
+  "data.issues[0].uri":"my_data.issues.uri",
+  "data.issues[0].value":"SUCCESS",
+  "links[0]": {"type" : "IUT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee50a"},
+  "links[1]": {"type" : "VERIFICATION_BASIS", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48a"},
+  "links[2]": {"type" : "ENVIRONMENT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48b"},
+  "links[3]": {"type" : "CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48c"},
+  "links[4]": {"type" : "FLOW_CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48d"}
+
+}

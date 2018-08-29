@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Ericsson AB.
+    Copyright 2018 Ericsson AB.
     For a full list of individual contributors, please see the commit history.
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@ package com.ericsson.eiffel.remrem.publish.config;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
-import org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer;
+import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -34,8 +34,8 @@ public class SpringLoggingInitializer implements ApplicationContextInitializer {
 	 */
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		Class[] loggers = {SpringApplication.class, /*App.class,*/ ConfigFileApplicationListener.class, EndpointMBeanExporter.class,
-				AutoConfigurationReportLoggingInitializer.class};
+		Class[] loggers = {SpringApplication.class, /*App.class,*/ ConfigFileApplicationListener.class, EndpointMBean.class,
+		        ConditionEvaluationReportLoggingListener.class};
 		Logger log = (Logger) LoggerFactory.getLogger("ROOT");
 		log.setLevel(Level.ERROR);
 		for (Class logger : loggers) {
