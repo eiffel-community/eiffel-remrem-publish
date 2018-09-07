@@ -9,11 +9,12 @@
         <version>0.0.4</version>
     </parent>
     <properties>
-        <eiffel-remrem-shared.version>0.3.6</eiffel-remrem-shared.version>
-        <eiffel-remrem-semantics.version>0.4.8</eiffel-remrem-semantics.version>
+        <eiffel-remrem-publish.version>0.6.4</eiffel-remrem-publish.version>
+        <eiffel-remrem-shared.version>0.3.8</eiffel-remrem-shared.version>
+        <eiffel-remrem-semantics.version>0.4.9</eiffel-remrem-semantics.version>
     </properties>
     <artifactId>eiffel-remrem-publish</artifactId>
-    <version>0.6.3</version>
+    <version>${eiffel-remrem-publish.version}</version>
     <packaging>pom</packaging>
     <modules>
         <module>publish-common</module>
