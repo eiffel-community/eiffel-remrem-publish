@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.Ericsson</groupId>
         <artifactId>eiffel-remrem-publish</artifactId>
-        <version>0.6.3</version>
+        <version>${eiffel-remrem-publish.version}</version>
     </parent>
     <artifactId>publish-cli</artifactId>
     <packaging>jar</packaging>
