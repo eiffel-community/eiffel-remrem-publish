@@ -6,12 +6,12 @@
     <parent>
         <groupId>com.github.Ericsson</groupId>
         <artifactId>eiffel-remrem-parent</artifactId>
-        <version>0.0.4</version>
+        <version>0.0.5</version>
     </parent>
     <properties>
-        <eiffel-remrem-publish.version>0.6.4</eiffel-remrem-publish.version>
-        <eiffel-remrem-shared.version>0.3.8</eiffel-remrem-shared.version>
-        <eiffel-remrem-semantics.version>0.4.9</eiffel-remrem-semantics.version>
+        <eiffel-remrem-publish.version>0.6.5</eiffel-remrem-publish.version>
+        <eiffel-remrem-shared.version>0.3.9</eiffel-remrem-shared.version>
+        <eiffel-remrem-semantics.version>0.5.0</eiffel-remrem-semantics.version>
     </properties>
     <artifactId>eiffel-remrem-publish</artifactId>
     <version>${eiffel-remrem-publish.version}</version>
