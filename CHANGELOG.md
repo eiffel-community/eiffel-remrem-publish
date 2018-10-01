@@ -1,3 +1,6 @@
+## 0.6.5
+- Updated parent, shared and semantics version
+
 ## 0.6.4
 - Updated shared and semantics version
 
