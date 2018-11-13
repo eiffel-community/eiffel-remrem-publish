@@ -1,3 +1,7 @@
+## 0.6.6
+- Updated parent, shared and semantics version
+- Updated amqp-client version from 5.0.0 to 5.4.0
+
 ## 0.6.5
 - Updated parent, shared and semantics version
 
