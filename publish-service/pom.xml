@@ -10,7 +10,7 @@
 		<version>${eiffel-remrem-publish.version}</version>
 	</parent>
 	<properties>
-		<start-class>com.ericsson.eiffel.remrem.publish.App</start-class>
+		<start-class>com.ericsson.eiffel.remrem.publish</start-class>
 	</properties>
 	<artifactId>publish-service</artifactId>
 	<packaging>war</packaging>
@@ -163,6 +163,16 @@
 
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+		        <configuration>    
+                    <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
+                </configuration>
+                      <executions>
+        <execution>
+          <goals>
+            <goal>repackage</goal>
+          </goals>
+        </execution>
+      </executions>
 				<!-- <dependencies> <dependency> <groupId>org.springframework</groupId> 
 					<artifactId>springloaded</artifactId> <version>1.2.1.RELEASE</version> </dependency> 
 					</dependencies> -->
@@ -196,6 +206,7 @@
 						<manifestEntries>
 							<serviceVersion>${project.version}</serviceVersion>
 							<remremVersionKey>serviceVersion</remremVersionKey>
+							<mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
 						</manifestEntries>
 					</archive>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
@@ -203,7 +214,7 @@
 			</plugin>
 
 
-			<plugin>
+<!-- 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<archive>
@@ -215,16 +226,27 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+
+			</plugin> -->
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                	<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Class-Path>.</Class-Path>
+						</manifestEntries>
+					</archive>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <finalName>publish-service/publish-service</finalName>
+                </configuration>
+            </plugin>
+			
 		</plugins>
 	</build>
 </project>
