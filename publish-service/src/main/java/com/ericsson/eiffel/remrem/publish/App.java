@@ -37,7 +37,6 @@ public class App extends SpringBootServletInitializer {
         application.setBannerMode(Banner.Mode.OFF);
         application.setLogStartupInfo(false);
         application.setWebEnvironment(true);
-//        ApplicationContext ctx = application.run(App.class, args);
         SpringApplication.run(App.class, args);
     }
 }
