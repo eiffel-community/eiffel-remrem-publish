@@ -217,6 +217,8 @@
                 <configuration>
                 	<archive>
 						<manifest>
+<!-- 						    <serviceVersion>${project.version}</serviceVersion>
+						    <remremVersionKey>serviceVersion</remremVersionKey> -->
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
 							<mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
