@@ -175,9 +175,6 @@
                     </goals>
                   </execution>
                 </executions>
-				<!-- <dependencies> <dependency> <groupId>org.springframework</groupId> 
-					<artifactId>springloaded</artifactId> <version>1.2.1.RELEASE</version> </dependency> 
-					</dependencies> -->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
