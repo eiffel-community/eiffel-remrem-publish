@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -34,6 +35,28 @@ public class RabbitMqPropertiesConfig {
     @Autowired
     Environment env;
 
+    @Value("${eiffelsemantics.rabbitmq.host}")
+    private String rabbitmqHost;
+    
+    @Value("${eiffelsemantics.rabbitmq.port}")
+    private String rabbitmqPort;
+
+    @Value("${eiffelsemantics.rabbitmq.username}")
+    private String rabbitmqUsername;
+
+    @Value("${eiffelsemantics.rabbitmq.password}")
+    private String rabbitmqPassword;
+    
+    @Value("${eiffelsemantics.rabbitmq.tls}")
+    private String rabbitmqTls;
+    
+    @Value("${eiffelsemantics.rabbitmq.exchangeName}")
+    private String rabbitmqExchangeName;
+    
+    @Value("${eiffelsemantics.rabbitmq.domainId}")
+    private String rabbitmqDomainId;
+    
+    
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     /***
@@ -51,28 +74,43 @@ public class RabbitMqPropertiesConfig {
                 }
             }
         }
-        for (Entry<String, Object> entry : map.entrySet())
-        {
-            String key = entry.getKey();
-            if (key.contains("rabbitmq")) {
-                String protocol = key.split("\\.")[0];
-                if (rabbitMqPropertiesMap.get(protocol) == null) {
-                    rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
-                }
-                if (key.contains("rabbitmq.host")) {
-                    rabbitMqPropertiesMap.get(protocol).setHost(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.port")) {
-                    rabbitMqPropertiesMap.get(protocol).setPort(Integer.getInteger(entry.getValue().toString()));
-                } else if (key.contains("rabbitmq.username")) {
-                    rabbitMqPropertiesMap.get(protocol).setUsername(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.password")) {
-                    rabbitMqPropertiesMap.get(protocol).setPassword(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.tls")) {
-                    rabbitMqPropertiesMap.get(protocol).setTlsVer(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.exchangeName")) {
-                    rabbitMqPropertiesMap.get(protocol).setExchangeName(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.domainId")) {
-                    rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
+        if (map.isEmpty()) {
+            String protocolName = "eiffelsemantics";
+            if (rabbitMqPropertiesMap.get(protocolName) == null) {
+                rabbitMqPropertiesMap.put(protocolName, new RabbitMqProperties());
+            }
+            rabbitMqPropertiesMap.get(protocolName).setHost(rabbitmqHost);
+            rabbitMqPropertiesMap.get(protocolName).setPort(Integer.getInteger(rabbitmqPort));
+            rabbitMqPropertiesMap.get(protocolName).setUsername(rabbitmqUsername);
+            rabbitMqPropertiesMap.get(protocolName).setPassword(rabbitmqPassword);
+            rabbitMqPropertiesMap.get(protocolName).setTlsVer(rabbitmqTls);
+            rabbitMqPropertiesMap.get(protocolName).setExchangeName(rabbitmqExchangeName);
+            rabbitMqPropertiesMap.get(protocolName).setDomainId(rabbitmqDomainId);
+            System.out.println("RABBIT MQ MAP: " + rabbitMqPropertiesMap.toString());
+            
+        } else {
+            for (Entry<String, Object> entry : map.entrySet()) {
+                String key = entry.getKey();
+                if (key.contains("rabbitmq")) {
+                    String protocol = key.split("\\.")[0];
+                    if (rabbitMqPropertiesMap.get(protocol) == null) {
+                        rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
+                    }
+                    if (key.contains("rabbitmq.host")) {
+                        rabbitMqPropertiesMap.get(protocol).setHost(entry.getValue().toString());
+                    } else if (key.contains("rabbitmq.port")) {
+                        rabbitMqPropertiesMap.get(protocol).setPort(Integer.getInteger(entry.getValue().toString()));
+                    } else if (key.contains("rabbitmq.username")) {
+                        rabbitMqPropertiesMap.get(protocol).setUsername(entry.getValue().toString());
+                    } else if (key.contains("rabbitmq.password")) {
+                        rabbitMqPropertiesMap.get(protocol).setPassword(entry.getValue().toString());
+                    } else if (key.contains("rabbitmq.tls")) {
+                        rabbitMqPropertiesMap.get(protocol).setTlsVer(entry.getValue().toString());
+                    } else if (key.contains("rabbitmq.exchangeName")) {
+                        rabbitMqPropertiesMap.get(protocol).setExchangeName(entry.getValue().toString());
+                    } else if (key.contains("rabbitmq.domainId")) {
+                        rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
+                    }
                 }
             }
         }

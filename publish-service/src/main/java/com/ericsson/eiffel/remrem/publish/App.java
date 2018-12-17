@@ -22,21 +22,29 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableAsync;
 
+import com.ericsson.eiffel.remrem.publish.App;
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
+
+@Configuration
 @SpringBootApplication
+@EnableAsync
 @ComponentScan("com.ericsson.eiffel.remrem")
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 @PropertySource(value = "file:${catalina.home}/conf/config.properties", ignoreResourceNotFound = true)
 public class App extends SpringBootServletInitializer {
+ 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App.class);
         application.addInitializers(new SpringLoggingInitializer());
         application.setBannerMode(Banner.Mode.OFF);
         application.setLogStartupInfo(false);
         application.setWebEnvironment(true);
-        SpringApplication.run(App.class, args);
+        
+        ApplicationContext ctx = application.run(args); 
     }
 }
