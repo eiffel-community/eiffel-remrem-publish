@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.json.JSONArray;
+import org.json.JSONException;import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.AbstractEnvironment;
@@ -35,27 +37,8 @@ public class RabbitMqPropertiesConfig {
     @Autowired
     Environment env;
 
-    @Value("${eiffelsemantics.rabbitmq.host}")
-    private String rabbitmqHost;
-    
-    @Value("${eiffelsemantics.rabbitmq.port}")
-    private String rabbitmqPort;
-
-    @Value("${eiffelsemantics.rabbitmq.username}")
-    private String rabbitmqUsername;
-
-    @Value("${eiffelsemantics.rabbitmq.password}")
-    private String rabbitmqPassword;
-    
-    @Value("${eiffelsemantics.rabbitmq.tls}")
-    private String rabbitmqTls;
-    
-    @Value("${eiffelsemantics.rabbitmq.exchangeName}")
-    private String rabbitmqExchangeName;
-    
-    @Value("${eiffelsemantics.rabbitmq.domainId}")
-    private String rabbitmqDomainId;
-    
+    @Value("${rabbitmq.instances.jsonlist}")
+    private String rabbitmqInstancesJsonListContent;
     
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
@@ -75,19 +58,28 @@ public class RabbitMqPropertiesConfig {
             }
         }
         if (map.isEmpty()) {
-            String protocolName = "eiffelsemantics";
-            if (rabbitMqPropertiesMap.get(protocolName) == null) {
-                rabbitMqPropertiesMap.put(protocolName, new RabbitMqProperties());
+            JSONArray rabbitmqInstancesJsonListJsonArray = null;
+            try {
+                rabbitmqInstancesJsonListJsonArray = new JSONArray(rabbitmqInstancesJsonListContent);
+
+                for (int i = 0; i < rabbitmqInstancesJsonListJsonArray.length(); i++) {
+                    JSONObject rabbitmqInstanceObject = (JSONObject)rabbitmqInstancesJsonListJsonArray.get(i);
+                    String protocol= rabbitmqInstanceObject.get("mp").toString();
+                    System.out.println("PROTOCOL: " + protocol);
+                  rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
+                  rabbitMqPropertiesMap.get(protocol).setHost(rabbitmqInstanceObject.get("host").toString());
+                  rabbitMqPropertiesMap.get(protocol).setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").toString()));
+                  rabbitMqPropertiesMap.get(protocol).setUsername(rabbitmqInstanceObject.get("username").toString());
+                  rabbitMqPropertiesMap.get(protocol).setPassword(rabbitmqInstanceObject.get("password").toString());
+                  rabbitMqPropertiesMap.get(protocol).setTlsVer(rabbitmqInstanceObject.get("tls").toString());
+                  rabbitMqPropertiesMap.get(protocol).setExchangeName(rabbitmqInstanceObject.get("exchangeName").toString());
+                  rabbitMqPropertiesMap.get(protocol).setDomainId(rabbitmqInstanceObject.get("domainId").toString());
+                
+                }
+            } catch (JSONException | NullPointerException e) {
+                System.out.println("CONFIG JSON ERROR: " + e.getMessage());
+                e.printStackTrace();
             }
-            rabbitMqPropertiesMap.get(protocolName).setHost(rabbitmqHost);
-            rabbitMqPropertiesMap.get(protocolName).setPort(Integer.getInteger(rabbitmqPort));
-            rabbitMqPropertiesMap.get(protocolName).setUsername(rabbitmqUsername);
-            rabbitMqPropertiesMap.get(protocolName).setPassword(rabbitmqPassword);
-            rabbitMqPropertiesMap.get(protocolName).setTlsVer(rabbitmqTls);
-            rabbitMqPropertiesMap.get(protocolName).setExchangeName(rabbitmqExchangeName);
-            rabbitMqPropertiesMap.get(protocolName).setDomainId(rabbitmqDomainId);
-            System.out.println("RABBIT MQ MAP: " + rabbitMqPropertiesMap.toString());
-            
         } else {
             for (Entry<String, Object> entry : map.entrySet()) {
                 String key = entry.getKey();
