@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.json.JSONArray;
-import org.json.JSONException;import org.json.JSONObject;
+import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.AbstractEnvironment;
@@ -31,9 +32,13 @@ import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
 
+import ch.qos.logback.classic.Logger;
+
 @Component
 public class RabbitMqPropertiesConfig {
 
+    Logger log = (Logger) LoggerFactory.getLogger(RabbitMqPropertiesConfig.class);
+    
     @Autowired
     Environment env;
 
@@ -65,7 +70,7 @@ public class RabbitMqPropertiesConfig {
                 for (int i = 0; i < rabbitmqInstancesJsonListJsonArray.length(); i++) {
                     JSONObject rabbitmqInstanceObject = (JSONObject)rabbitmqInstancesJsonListJsonArray.get(i);
                     String protocol= rabbitmqInstanceObject.get("mp").toString();
-                    System.out.println("PROTOCOL: " + protocol);
+                    log.info("Configuring RabbitMq instance for Eiffel message protocol: " + protocol);
                   rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
                   rabbitMqPropertiesMap.get(protocol).setHost(rabbitmqInstanceObject.get("host").toString());
                   rabbitMqPropertiesMap.get(protocol).setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").toString()));
@@ -76,9 +81,8 @@ public class RabbitMqPropertiesConfig {
                   rabbitMqPropertiesMap.get(protocol).setDomainId(rabbitmqInstanceObject.get("domainId").toString());
                 
                 }
-            } catch (JSONException | NullPointerException e) {
-                System.out.println("CONFIG JSON ERROR: " + e.getMessage());
-                e.printStackTrace();
+            } catch (Exception e) {
+                log.error("Failure when initiating RabbitMq Java Spring properties: " + e.getMessage(), e);
             }
         } else {
             for (Entry<String, Object> entry : map.entrySet()) {
