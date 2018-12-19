@@ -24,7 +24,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
-import com.ericsson.eiffel.remrem.publish.App;
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
 @SpringBootApplication
