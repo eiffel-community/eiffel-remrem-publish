@@ -197,33 +197,19 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<serviceVersion>${project.version}</serviceVersion>
-							<remremVersionKey>serviceVersion</remremVersionKey>
-							<mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
-						</manifestEntries>
-					</archive>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version>
                 <configuration>
                 	<archive>
 						<manifest>
-<!-- 						    <serviceVersion>${project.version}</serviceVersion>
-						    <remremVersionKey>serviceVersion</remremVersionKey> -->
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
 							<mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
 						</manifest>
 						<manifestEntries>
+							<serviceVersion>${project.version}</serviceVersion>
+						    <remremVersionKey>serviceVersion</remremVersionKey>
 							<Class-Path>.</Class-Path>
 						</manifestEntries>
 					</archive>
