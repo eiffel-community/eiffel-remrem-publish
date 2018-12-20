@@ -163,18 +163,18 @@
 
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-		        <configuration>    
-                    <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
-                    <fork>true</fork>
-                    <skip>false</skip>
-                </configuration>
-                <executions>
-                  <execution>
-                    <goals>
-                      <goal>repackage</goal>
-                    </goals>
-                  </execution>
-                </executions>
+				<configuration>
+					<mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
+					<fork>true</fork>
+					<skip>false</skip>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -197,11 +197,11 @@
 				</executions>
 			</plugin>
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                	<archive>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
@@ -209,15 +209,15 @@
 						</manifest>
 						<manifestEntries>
 							<serviceVersion>${project.version}</serviceVersion>
-						    <remremVersionKey>serviceVersion</remremVersionKey>
+							<remremVersionKey>serviceVersion</remremVersionKey>
 							<Class-Path>.</Class-Path>
 						</manifestEntries>
 					</archive>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <finalName>publish-service/publish-service</finalName>
-                </configuration>
-            </plugin>
-			
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<finalName>publish-service/publish-service</finalName>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 </project>

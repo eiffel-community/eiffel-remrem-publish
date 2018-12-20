@@ -71,15 +71,17 @@ public class RabbitMqPropertiesConfig {
                     JSONObject rabbitmqInstanceObject = (JSONObject)rabbitmqInstancesJsonListJsonArray.get(i);
                     String protocol= rabbitmqInstanceObject.get("mp").toString();
                     log.info("Configuring RabbitMq instance for Eiffel message protocol: " + protocol);
-                  rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
-                  rabbitMqPropertiesMap.get(protocol).setHost(rabbitmqInstanceObject.get("host").toString());
-                  rabbitMqPropertiesMap.get(protocol).setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").toString()));
-                  rabbitMqPropertiesMap.get(protocol).setUsername(rabbitmqInstanceObject.get("username").toString());
-                  rabbitMqPropertiesMap.get(protocol).setPassword(rabbitmqInstanceObject.get("password").toString());
-                  rabbitMqPropertiesMap.get(protocol).setTlsVer(rabbitmqInstanceObject.get("tls").toString());
-                  rabbitMqPropertiesMap.get(protocol).setExchangeName(rabbitmqInstanceObject.get("exchangeName").toString());
-                  rabbitMqPropertiesMap.get(protocol).setDomainId(rabbitmqInstanceObject.get("domainId").toString());
-                
+                    
+                    RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
+                    rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").toString());
+                    rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").toString()));
+                    rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").toString());
+                    rabbitMqProperties.setPassword(rabbitmqInstanceObject.get("password").toString());
+                    rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").toString());
+                    rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").toString());
+                    rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").toString());
+                    
+                    rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
                 }
             } catch (Exception e) {
                 log.error("Failure when initiating RabbitMq Java Spring properties: " + e.getMessage(), e);
