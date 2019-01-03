@@ -54,15 +54,8 @@ public class RabbitMqPropertiesConfig {
      */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
-        String catalina_home = System.getProperty("catalina.home").replace('\\', '/');
-        for (Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext();) {
-            PropertySource propertySource = (PropertySource) it.next();
-            if (propertySource instanceof MapPropertySource) {
-                if (propertySource.getName().contains("[file:" + catalina_home + "/conf/config.properties]")) {
-                    map.putAll(((MapPropertySource) propertySource).getSource());
-                }
-            }
-        }
+        readCatalinaProperties(map);
+
         if (map.isEmpty()) {
             log.info("Catalina Properties configuration not provided. Trying to initiate Spring properties instead.");
             readSpringProperties();
@@ -73,7 +66,24 @@ public class RabbitMqPropertiesConfig {
         }
         return rabbitMqPropertiesMap;
     }
-    
+
+    /***
+     * Reads catalina properties to a map object.
+     * 
+     * @param map  RabbitMq instances map object.
+     */
+    private void readCatalinaProperties(Map<String, Object> map) {
+        String catalina_home = System.getProperty("catalina.home").replace('\\', '/');
+        for (Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext();) {
+            PropertySource propertySource = (PropertySource) it.next();
+            if (propertySource instanceof MapPropertySource) {
+                if (propertySource.getName().contains("[file:" + catalina_home + "/conf/config.properties]")) {
+                    map.putAll(((MapPropertySource) propertySource).getSource());
+                }
+            }
+        }
+    }
+
     /***
      * Reads Spring Properties and writes RabbitMq properties to RabbitMq instances properties map object.
      */
@@ -106,6 +116,8 @@ public class RabbitMqPropertiesConfig {
 
     /***
      * Writes RabbitMq catalina properties to RabbitMq instances properties map object.
+     * 
+     * @param map  RabbitMq instances map object.
      */
     private void populateRabbitMqConfigurationsBasedOnCatalinaProperties(Map<String, Object> map) {
         for (Entry<String, Object> entry : map.entrySet()) {
