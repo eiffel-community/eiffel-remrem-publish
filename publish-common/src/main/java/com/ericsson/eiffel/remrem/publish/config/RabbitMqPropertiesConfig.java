@@ -19,8 +19,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +29,8 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.qos.logback.classic.Logger;
 
@@ -63,18 +63,20 @@ public class RabbitMqPropertiesConfig {
             }
         }
         if (map.isEmpty()) {
-            JSONArray rabbitmqInstancesJsonListJsonArray = null;
+//            JSONArray rabbitmqInstancesJsonListJsonArray = null;
+            JsonNode rabbitmqInstancesJsonListJsonArray = null;
+            final ObjectMapper objMapper = new ObjectMapper();
             try {
-                rabbitmqInstancesJsonListJsonArray = new JSONArray(rabbitmqInstancesJsonListContent);
+                rabbitmqInstancesJsonListJsonArray = objMapper.readTree(rabbitmqInstancesJsonListContent);
 
-                for (int i = 0; i < rabbitmqInstancesJsonListJsonArray.length(); i++) {
-                    JSONObject rabbitmqInstanceObject = (JSONObject)rabbitmqInstancesJsonListJsonArray.get(i);
+                for (int i = 0; i < rabbitmqInstancesJsonListJsonArray.size(); i++) {
+                    JsonNode rabbitmqInstanceObject = rabbitmqInstancesJsonListJsonArray.get(i);
                     String protocol= rabbitmqInstanceObject.get("mp").toString();
                     log.info("Configuring RabbitMq instance for Eiffel message protocol: " + protocol);
                     
                     RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
-                    rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").toString());
-                    rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").toString()));
+                    rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").asText());
+                    rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").asText()));
                     rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").toString());
                     rabbitMqProperties.setPassword(rabbitmqInstanceObject.get("password").toString());
                     rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").toString());
