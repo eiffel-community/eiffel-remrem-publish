@@ -56,7 +56,9 @@
         </p>
 
         <p>Configuration is done in Tomcat using a config.properties file: <em>tomcat/conf/config.properties</em>.</p>
+        <p><strong>NOTE:</strong> in each example assuming the publish-service.war is deployed in tomcat as <strong>publish</strong>.</p>
 
+        <h4>Running and configuring RemRem-Publish without Tomcat installation</h4>
         <p>It is also possible to execute RemRem-Publish without external Tomcat installation and using the embedded tomcat in Spring application instead.</p>
         <p>If RemRem-Publish is executed without external Tomcat installation, the configuration should be based on Spring applciation properties, see publish-service/src/main/resources/application.properties file for available properties.</p>
         
@@ -70,7 +72,6 @@
         <p>When using maven command, Spring properties can also be changed by editing publish-service/src/main/resources/application.properties file.</p>
 
 
-        <p><strong>NOTE:</strong> in each example assuming the publish-service.war is deployed in tomcat as <strong>publish</strong>.</p>
 		<h3>Jasypt configurations</h3>
         <p>Jasypt Spring Boot provides Encryption support for property sources(passwords, secret info ..etc) in Spring Boot Applications.
         To support this functionality in our application we need to add the following property in property file</p>
