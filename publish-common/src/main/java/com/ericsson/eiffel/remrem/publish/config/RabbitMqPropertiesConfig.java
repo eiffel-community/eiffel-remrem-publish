@@ -73,7 +73,10 @@ public class RabbitMqPropertiesConfig {
         }
         return rabbitMqPropertiesMap;
     }
-
+    
+    /***
+     * Reads Spring Properties and writes RabbitMq properties to RabbitMq instances properties map object.
+     */
     private void readSpringProperties() {
         JsonNode rabbitmqInstancesJsonListJsonArray = null;
         final ObjectMapper objMapper = new ObjectMapper();
@@ -101,6 +104,9 @@ public class RabbitMqPropertiesConfig {
         }
     }
 
+    /***
+     * Writes RabbitMq catalina properties to RabbitMq instances properties map object.
+     */
     private void populateRabbitMqConfigurationsBasedOnCatalinaProperties(Map<String, Object> map) {
         for (Entry<String, Object> entry : map.entrySet()) {
             String key = entry.getKey();
