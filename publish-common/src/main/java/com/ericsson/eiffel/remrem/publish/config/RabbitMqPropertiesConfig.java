@@ -38,82 +38,93 @@ import ch.qos.logback.classic.Logger;
 public class RabbitMqPropertiesConfig {
 
     Logger log = (Logger) LoggerFactory.getLogger(RabbitMqPropertiesConfig.class);
-    
+
     @Autowired
     Environment env;
 
     @Value("${rabbitmq.instances.jsonlist}")
     private String rabbitmqInstancesJsonListContent;
-    
+
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     /***
      * This method is used to give RabbitMq properties based on protocol
+     * 
      * @return protocol specific RabbitMq properties in map
      */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
         String catalina_home = System.getProperty("catalina.home").replace('\\', '/');
-        for(Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext(); ) {
+        for (Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext();) {
             PropertySource propertySource = (PropertySource) it.next();
             if (propertySource instanceof MapPropertySource) {
-                if(propertySource.getName().contains("[file:"+catalina_home+"/conf/config.properties]")) {
+                if (propertySource.getName().contains("[file:" + catalina_home + "/conf/config.properties]")) {
                     map.putAll(((MapPropertySource) propertySource).getSource());
                 }
             }
         }
         if (map.isEmpty()) {
-//            JSONArray rabbitmqInstancesJsonListJsonArray = null;
-            JsonNode rabbitmqInstancesJsonListJsonArray = null;
-            final ObjectMapper objMapper = new ObjectMapper();
-            try {
-                rabbitmqInstancesJsonListJsonArray = objMapper.readTree(rabbitmqInstancesJsonListContent);
-
-                for (int i = 0; i < rabbitmqInstancesJsonListJsonArray.size(); i++) {
-                    JsonNode rabbitmqInstanceObject = rabbitmqInstancesJsonListJsonArray.get(i);
-                    String protocol= rabbitmqInstanceObject.get("mp").toString();
-                    log.info("Configuring RabbitMq instance for Eiffel message protocol: " + protocol);
-                    
-                    RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
-                    rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").asText());
-                    rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").asText()));
-                    rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").toString());
-                    rabbitMqProperties.setPassword(rabbitmqInstanceObject.get("password").toString());
-                    rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").toString());
-                    rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").toString());
-                    rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").toString());
-                    
-                    rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
-                }
-            } catch (Exception e) {
-                log.error("Failure when initiating RabbitMq Java Spring properties: " + e.getMessage(), e);
-            }
+            log.info("Catalina Properties configuration not provided. Trying to initiate Spring properties instead.");
+            readSpringProperties();
         } else {
-            for (Entry<String, Object> entry : map.entrySet()) {
-                String key = entry.getKey();
-                if (key.contains("rabbitmq")) {
-                    String protocol = key.split("\\.")[0];
-                    if (rabbitMqPropertiesMap.get(protocol) == null) {
-                        rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
-                    }
-                    if (key.contains("rabbitmq.host")) {
-                        rabbitMqPropertiesMap.get(protocol).setHost(entry.getValue().toString());
-                    } else if (key.contains("rabbitmq.port")) {
-                        rabbitMqPropertiesMap.get(protocol).setPort(Integer.getInteger(entry.getValue().toString()));
-                    } else if (key.contains("rabbitmq.username")) {
-                        rabbitMqPropertiesMap.get(protocol).setUsername(entry.getValue().toString());
-                    } else if (key.contains("rabbitmq.password")) {
-                        rabbitMqPropertiesMap.get(protocol).setPassword(entry.getValue().toString());
-                    } else if (key.contains("rabbitmq.tls")) {
-                        rabbitMqPropertiesMap.get(protocol).setTlsVer(entry.getValue().toString());
-                    } else if (key.contains("rabbitmq.exchangeName")) {
-                        rabbitMqPropertiesMap.get(protocol).setExchangeName(entry.getValue().toString());
-                    } else if (key.contains("rabbitmq.domainId")) {
-                        rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
-                    }
+            log.info("Catalina Properties configuration provided. Populating Rabbitmq properties to rabbitMqPropertiesMap object.");
+            populateRabbitMqConfigurationsBasedOnCatalinaProperties(map);
+
+        }
+        return rabbitMqPropertiesMap;
+    }
+
+    private void readSpringProperties() {
+        JsonNode rabbitmqInstancesJsonListJsonArray = null;
+        final ObjectMapper objMapper = new ObjectMapper();
+        try {
+            rabbitmqInstancesJsonListJsonArray = objMapper.readTree(rabbitmqInstancesJsonListContent);
+
+            for (int i = 0; i < rabbitmqInstancesJsonListJsonArray.size(); i++) {
+                JsonNode rabbitmqInstanceObject = rabbitmqInstancesJsonListJsonArray.get(i);
+                String protocol = rabbitmqInstanceObject.get("mp").asText();
+                log.info("Configuring RabbitMq instance for Eiffel message protocol: " + protocol);
+
+                RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
+                rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").asText());
+                rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").asText()));
+                rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").asText());
+                rabbitMqProperties.setPassword(rabbitmqInstanceObject.get("password").asText());
+                rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").asText());
+                rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
+                rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").asText());
+
+                rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
+            }
+        } catch (Exception e) {
+            log.error("Failure when initiating RabbitMq Java Spring properties: " + e.getMessage(), e);
+        }
+    }
+
+    private void populateRabbitMqConfigurationsBasedOnCatalinaProperties(Map<String, Object> map) {
+        for (Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            if (key.contains("rabbitmq")) {
+                String protocol = key.split("\\.")[0];
+                if (rabbitMqPropertiesMap.get(protocol) == null) {
+                    rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
+                }
+                if (key.contains("rabbitmq.host")) {
+                    rabbitMqPropertiesMap.get(protocol).setHost(entry.getValue().toString());
+                } else if (key.contains("rabbitmq.port")) {
+                    rabbitMqPropertiesMap.get(protocol).setPort(Integer.getInteger(entry.getValue().toString()));
+                } else if (key.contains("rabbitmq.username")) {
+                    rabbitMqPropertiesMap.get(protocol).setUsername(entry.getValue().toString());
+                } else if (key.contains("rabbitmq.password")) {
+                    rabbitMqPropertiesMap.get(protocol).setPassword(entry.getValue().toString());
+                } else if (key.contains("rabbitmq.tls")) {
+                    rabbitMqPropertiesMap.get(protocol).setTlsVer(entry.getValue().toString());
+                } else if (key.contains("rabbitmq.exchangeName")) {
+                    rabbitMqPropertiesMap.get(protocol).setExchangeName(entry.getValue().toString());
+                } else if (key.contains("rabbitmq.domainId")) {
+                    rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
                 }
             }
         }
-        return rabbitMqPropertiesMap;
     }
 }
