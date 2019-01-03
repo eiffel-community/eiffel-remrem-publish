@@ -63,9 +63,9 @@
         <p>If RemRem-Publish is executed without external Tomcat installation, the configuration should be based on Spring application properties, see publish-service/src/main/resources/application.properties file for available properties.</p>
         
         <p>If running with java command, example:</p>
-        <pre>java -jar target/publish-service.war -Dproperties.parameter1="value" -Dproperties.parameter2="value" -Dproperties.parameter3="value" ......</pre>
+        <pre>java -jar publish-service/target/publish-service.war -Dproperties.parameter1="value" -Dproperties.parameter2="value" -Dproperties.parameter3="value" ......</pre>
         <p>It is also possible to provide path to the spring properties file:</p>
-        <pre>java -jar target/publish-service.war -Dspring.config.location=path/to/applicattion.propeties</pre>
+        <pre>java -jar publish-service/target/publish-service.war -Dspring.config.location=path/to/applicattion.propeties</pre>
 
         <p>Second option to execute RemRem-Publish is to execute maven commands from the source code, example:</p>
         <pre>mvn spring-boot:run -Dproperties.parameter1="value" -Dproperties.parameter2="value" -Dproperties.parameter3="value" ......</pre>
