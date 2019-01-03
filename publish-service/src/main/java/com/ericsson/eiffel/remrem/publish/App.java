@@ -31,12 +31,13 @@ import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 @PropertySource(value = "file:${catalina.home}/conf/config.properties", ignoreResourceNotFound = true)
 public class App extends SpringBootServletInitializer {
+ 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App.class);
         application.addInitializers(new SpringLoggingInitializer());
         application.setBannerMode(Banner.Mode.OFF);
         application.setLogStartupInfo(false);
-        application.setWebEnvironment(true);
-        ApplicationContext ctx = application.run(args);
+        application.setWebEnvironment(true);    
+        ApplicationContext ctx = application.run(args); 
     }
 }

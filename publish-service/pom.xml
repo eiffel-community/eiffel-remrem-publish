@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.Ericsson</groupId>
         <artifactId>eiffel-remrem-publish</artifactId>
         <version>${eiffel-remrem-publish.version}</version>
     </parent>
+    <properties>
+        <start-class>com.ericsson.eiffel.remrem.publish</start-class>
+    </properties>
     <artifactId>publish-service</artifactId>
     <packaging>war</packaging>
     <dependencies>
@@ -127,6 +131,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${springboot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <version>${springboot.version}</version>
             <scope>provided</scope>
@@ -150,6 +159,22 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
+                    <fork>true</fork>
+                    <skip>false</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -176,14 +201,22 @@
                 <version>2.2</version>
                 <configuration>
                     <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
+                        </manifest>
                         <manifestEntries>
                             <serviceVersion>${project.version}</serviceVersion>
                             <remremVersionKey>serviceVersion</remremVersionKey>
+                            <Class-Path>.</Class-Path>
                         </manifestEntries>
                     </archive>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <finalName>publish-service/publish-service</finalName>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

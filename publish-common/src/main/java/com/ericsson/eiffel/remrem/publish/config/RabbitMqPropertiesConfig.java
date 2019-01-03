@@ -19,7 +19,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -27,32 +29,98 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ch.qos.logback.classic.Logger;
 
 @Component
 public class RabbitMqPropertiesConfig {
 
+    Logger log = (Logger) LoggerFactory.getLogger(RabbitMqPropertiesConfig.class);
+
     @Autowired
     Environment env;
+
+    @Value("${rabbitmq.instances.jsonlist}")
+    private String rabbitmqInstancesJsonListContent;
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     /***
      * This method is used to give RabbitMq properties based on protocol
+     * 
      * @return protocol specific RabbitMq properties in map
      */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
+        readCatalinaProperties(map);
+
+        if (map.isEmpty()) {
+            log.info("Catalina Properties configuration not provided. Trying to initiate Spring properties instead.");
+            readSpringProperties();
+        } else {
+            log.info("Catalina Properties configuration provided. Populating Rabbitmq properties to rabbitMqPropertiesMap object.");
+            populateRabbitMqConfigurationsBasedOnCatalinaProperties(map);
+
+        }
+        return rabbitMqPropertiesMap;
+    }
+
+    /***
+     * Reads catalina properties to a map object.
+     * 
+     * @param map  RabbitMq instances map object.
+     */
+    private void readCatalinaProperties(Map<String, Object> map) {
         String catalina_home = System.getProperty("catalina.home").replace('\\', '/');
-        for(Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext(); ) {
+        for (Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext();) {
             PropertySource propertySource = (PropertySource) it.next();
             if (propertySource instanceof MapPropertySource) {
-                if(propertySource.getName().contains("[file:"+catalina_home+"/conf/config.properties]")) {
+                if (propertySource.getName().contains("[file:" + catalina_home + "/conf/config.properties]")) {
                     map.putAll(((MapPropertySource) propertySource).getSource());
                 }
             }
         }
-        for (Entry<String, Object> entry : map.entrySet())
-        {
+    }
+
+    /***
+     * Reads Spring Properties and writes RabbitMq properties to RabbitMq instances properties map object.
+     */
+    private void readSpringProperties() {
+        JsonNode rabbitmqInstancesJsonListJsonArray = null;
+        final ObjectMapper objMapper = new ObjectMapper();
+        try {
+            rabbitmqInstancesJsonListJsonArray = objMapper.readTree(rabbitmqInstancesJsonListContent);
+
+            for (int i = 0; i < rabbitmqInstancesJsonListJsonArray.size(); i++) {
+                JsonNode rabbitmqInstanceObject = rabbitmqInstancesJsonListJsonArray.get(i);
+                String protocol = rabbitmqInstanceObject.get("mp").asText();
+                log.info("Configuring RabbitMq instance for Eiffel message protocol: " + protocol);
+
+                RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
+                rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").asText());
+                rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").asText()));
+                rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").asText());
+                rabbitMqProperties.setPassword(rabbitmqInstanceObject.get("password").asText());
+                rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").asText());
+                rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
+                rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").asText());
+
+                rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
+            }
+        } catch (Exception e) {
+            log.error("Failure when initiating RabbitMq Java Spring properties: " + e.getMessage(), e);
+        }
+    }
+
+    /***
+     * Writes RabbitMq catalina properties to RabbitMq instances properties map object.
+     * 
+     * @param map  RabbitMq instances map object.
+     */
+    private void populateRabbitMqConfigurationsBasedOnCatalinaProperties(Map<String, Object> map) {
+        for (Entry<String, Object> entry : map.entrySet()) {
             String key = entry.getKey();
             if (key.contains("rabbitmq")) {
                 String protocol = key.split("\\.")[0];
@@ -76,6 +144,5 @@ public class RabbitMqPropertiesConfig {
                 }
             }
         }
-        return rabbitMqPropertiesMap;
     }
 }
