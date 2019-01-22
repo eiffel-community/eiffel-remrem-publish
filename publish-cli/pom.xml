@@ -132,16 +132,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.ericsson.eiffel.remrem.publish.cli.CLI</mainClass>
+                    <fork>true</fork>
+                    <skip>false</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
-                        <configuration>
-                            <skip><!-- true or the result of a Maven/system 
-                                    property for example -->
-                            </skip>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

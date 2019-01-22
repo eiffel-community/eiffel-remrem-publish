@@ -1,3 +1,8 @@
+## 0.6.9
+- Upgraded eiffel-remrem-parent version from 0.0.7 to 0.0.8.
+- Upgraded eiffel-remrem-shared version from 0.4.1 to 0.4.2.
+- Upgraded eiffel-remrem-semantics version from 0.5.2 to 0.5.3.
+
 ## 0.6.8
 - Adaptation of Spring application to execute without external Tomcat installation.
 
