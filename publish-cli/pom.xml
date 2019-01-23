@@ -93,16 +93,6 @@
             <artifactId>eiffel-remrem-semantics</artifactId>
             <version>${eiffel-remrem-semantics.version}</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>logback-classic</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
