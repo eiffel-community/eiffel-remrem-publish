@@ -42,7 +42,7 @@ public class RabbitMqPropertiesConfig {
     @Autowired
     Environment env;
 
-    @Value("${rabbitmq.instances.jsonlist}")
+    @Value("${rabbitmq.instances.jsonlist:{null}}")
     private String rabbitmqInstancesJsonListContent;
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
