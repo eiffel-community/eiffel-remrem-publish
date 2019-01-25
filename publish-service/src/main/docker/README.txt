@@ -5,7 +5,7 @@ docker build -t remrem-publish:0.6.8 --build-arg URL=https://jitpack.io/com/gith
 
 
 B: Build RemRem-Publish based on local RemRem-Publish source code changes
-1. Build RemRem-publish service artiface:
+1. Build RemRem-Publish service artifact:
 cd (git root dir)
 mvn package -DskipTests
 
