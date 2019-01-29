@@ -1,3 +1,8 @@
+## 1.0.0
+- Upgraded eiffel-remrem-parent version from 0.0.8 to 1.0.0.
+- Upgraded eiffel-remrem-shared version from 0.4.2 to 1.0.0.
+- Upgraded eiffel-remrem-semantics version from 0.5.3 to 1.0.0.
+
 ## 0.6.10
 - Fixed the publish-Cli logger and lang3 jar issues and property loading errors.  
 
