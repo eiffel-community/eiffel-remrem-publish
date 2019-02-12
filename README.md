@@ -27,7 +27,7 @@ REMReM Publish is a microservice allowing sending of messages to a topic based e
 
 # Documentation
 
-1. [**Running RemRem-Publish service**]
+1. [**Running RemRem-Publish service**]()
     - [**Run in Docker**](wiki/markdown/docker.md)
 
 
