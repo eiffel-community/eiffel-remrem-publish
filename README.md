@@ -25,6 +25,12 @@
 
 REMReM Publish is a microservice allowing sending of messages to a topic based exchange on a RabbitMQ Server. It has endpoints that must be called as a relative links. Further documentation is provided at the following link: http://eiffel-community.github.io/eiffel-remrem-publish
 
+# Documentation
+
+1. [**Running RemRem-Publish service**]
+    - [**Run in Docker**](publish-service/wiki/markdown/docker.md)
+
+
 # About this repository
 The contents of this repository are licensed under the [Apache License 2.0](./LICENSE).
 

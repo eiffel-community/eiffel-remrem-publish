@@ -1,7 +1,7 @@
 # Docker
 
-In Eiffel-Intelligence source code a Dockerfile is provided which helps the developer or user to build the local Eiffel-Intellegence source code repository changes to a Docker image.
-With the Docker image user can try-out the Eiffel-Intelligence on a Docker Host or in a Kubernetes cluster.
+In RemRem-Publish source code a Dockerfile is provided which helps the developer or user to build the local RemRem-Publish source code repository changes to a Docker image.
+With the Docker image user can try-out the RemRem-Publish on a Docker Host or in a Kubernetes cluster.
 
 ## Requirements
 - Docker 
@@ -37,16 +37,16 @@ To run the produced docker image on the local Docker host, execute this command:
 
 `docker run -p 8080:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG remrem-publish:0.6.9`
 
-RabbitMq and other Eiffel-Intelligence required components need to running and configured via these application properties that is provided to the docker command above. See the application.properties file for all available/required properties:
+RabbitMq and other RemRem-Publish required components need to running and configured via these application properties that is provided to the docker command above. See the application.properties file for all available/required properties:
 [application.properties](https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/publish-service/src/main/resources/application.properties)
 
 # Some info of all flags to this command
 
 
-## Eiffel Intelligence Spring Properties
+## RemRem-Publish Spring Properties
 
 
-<B>"-e server.port=8080"</B> - Is the Spring property setting for Eiffel-Intelligence applications web port.
+<B>"-e server.port=8080"</B> - Is the Spring property setting for RemRem-Publish applications web port.
 
 
 <B>"-e logging.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e 
