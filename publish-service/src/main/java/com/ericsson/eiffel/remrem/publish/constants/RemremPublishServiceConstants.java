@@ -28,6 +28,6 @@ public class RemremPublishServiceConstants {
         public static final String GENERATE_INTERNAL_ERROR = "{\"status_code\": 500, \"result\": \"FAIL\", "
                 + "\"message\": \"Internal server error\"}";
 
-        public static final String DOCUMENTATION_URL = "http://ericsson.github.io/eiffel-remrem-publish/index.html";
+        public static final String DOCUMENTATION_URL = "https://eiffel-community.github.io/eiffel-remrem-publish/index.html";
 
 }

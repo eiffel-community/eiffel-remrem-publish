@@ -23,7 +23,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/eiffel-community/eiffel-remrem-publish/badge.svg?branch=master)](https://coveralls.io/github/eiffel-community/eiffel-remrem-publish?branch=master)
 [![](https://jitpack.io/v/eiffel-community/eiffel-remrem-publish.svg)](https://jitpack.io/#eiffel-community/eiffel-remrem-publish)
 
-REMReM Publish is a microservice allowing sending of messages to a topic based exchange on a RabbitMQ Server. It has endpoints that must be called as a relative links. Further documentation is provided at the following link: http://eiffel-community.github.io/eiffel-remrem-publish
+REMReM Publish is a microservice allowing sending of messages to a topic based exchange on a RabbitMQ Server. It has endpoints that must be called as a relative links. Further documentation is provided at the following link: [https://eiffel-community.github.io/eiffel-remrem-publish](https://eiffel-community.github.io/eiffel-remrem-publish)
 
 # About this repository
 The contents of this repository are licensed under the [Apache License 2.0](./LICENSE).
