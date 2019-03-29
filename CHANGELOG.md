@@ -1,3 +1,6 @@
+## 1.0.2
+- Fixed broken expected_parsed json files for some events.
+
 ## 1.0.1
 - Changed link from http://ericsson.github.io to https://eiffel-community.github.io.
 - Upgraded eiffel-remrem-semantics version from 1.0.0 to 1.0.1.
