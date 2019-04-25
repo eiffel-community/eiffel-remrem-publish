@@ -1,3 +1,6 @@
+## 1.0.3
+- Fixed broken application properties while encrypting/decrypting open text properties.
+
 ## 1.0.2
 - Fixed broken expected_parsed json files for some events.
 
