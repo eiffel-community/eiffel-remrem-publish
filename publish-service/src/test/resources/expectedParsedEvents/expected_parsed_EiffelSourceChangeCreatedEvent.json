@@ -1,1 +1,65 @@
-{"msgParams":{"meta":{"type":"EiffelSourceChangeCreatedEvent","version":"1.1.0","tags":["my_meta[0]tags","my_meta[1]tags"],"source":{"domainId":"my_meta.source.domainId","host":"my_meta.source.host","name":"my_meta.source.name","uri":"my_meta.source.uri"},"security":{"sdm":{"authorIdentity":"my_meta.security.sdm.authorIdentity","encryptedDigest":"my_meta.security.sdm.encryptedDigest"}}}},"eventParams":{"data":{"author":{"name":"my_data.author.name","email":"my_data.author.email","id":"my_data.author.id","group":"my_data.author.group"},"change":{"insertions":10,"deletions":2,"files":"my_data.change.files","tracker":"my_data.change.tracker","details":"my_data.change.details","id":"my_data.change.id"},"issues":[{"type":"BUG","tracker":"my_data.issues.tracker","id":"my_data.issues.id","uri":"my_data.issues.uri","transition":"RESOLVED"}],"gitIdentifier":{"commitId":"my_data.gitIdentifier.commitId","branch":"my_data.gitIdentifier.branch","repoName":"my_data.gitIdentifier.repoName","repoUri":"my_data.gitIdentifier.repoUri"},"customData":[{"key":"my.data.customData[0]key","value":"my.data.customData[0]value"},{"key":"my.data.customData[1]key","value":"my.data.customData[1]value"}]},"links":[{"type":"BASE","target":"e269b37d-17a1-4a10-aafb-c108735ee51f"},{"type":"PREVIOUS_VERSION","target":"e269b37d-17a1-4a10-aafb-c108735ee51a"},{"type":"PREVIOUS_VERSION","target":"e269b37d-17a1-4a10-aafb-c108735ee51b"},{"type":"CAUSE","target":"e269b37d-17a1-4a10-aafb-c108735ee51c"},{"type":"CAUSE","target":"e269b37d-17a1-4a10-aafb-c108735ee50a"},{"type":"FLOW_CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48a"}]}}
+{
+	"msgParams": {
+		"meta": {
+			"type": "EiffelSourceChangeCreatedEvent",
+			"version": "4.0.0",
+			"tags": ["product_development","product_staging"],
+			"source": {
+				"domainId": "eiffeltest",
+				"host": "localhost",
+				"name": "LOCALHOST",
+				"uri": "https://localhost:8080/jenkins/job"
+			}
+		}
+	},
+	"eventParams": {
+		"data": {
+			"author": {
+				"name": "fem",
+				"email": "adfs",
+				"id": "645641",
+				"group": "rem78946"
+			},
+			"change": {
+				"insertions": 10,
+				"deletions": 2,
+				"files": "rem4568954",
+				"tracker": "inprogress",
+				"details": "fem45612",
+				"id": "7897614564"
+			},
+			"gitIdentifier": {
+				"commitId": "454164641",
+				"branch": "fem456",
+				"repoName": "testremtem",
+				"repoUri": "https://localhost:8080/fem"
+			},
+			"customData": [{
+				"key": "EIFFELVERSION",
+				"value": "eiffel2.0"
+			}, {
+				"key": "COMPNAME",
+				"value": "master"
+			}]
+		},
+		"links": [{
+			"type": "BASE",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee51f"
+		}, {
+			"type": "PREVIOUS_VERSION",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee51a"
+		}, {
+			"type": "PREVIOUS_VERSION",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee51b"
+		}, {
+			"type": "CAUSE",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee51c"
+		}, {
+			"type": "CAUSE",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+		}, {
+			"type": "FLOW_CONTEXT",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee48a"
+		}]
+	}
+}

@@ -1,1 +1,34 @@
-{"msgParams":{"meta":{"type":"EiffelAlertCeasedEvent","version":"1.0.0","tags":["my_meta[0]tags","my_meta[1]tags"],"source":{"domainId":"my_meta.source.domainId","host":"my_meta.source.host","name":"my_meta.source.name","uri":"my_meta.source.uri"},"security":{"sdm":{"authorIdentity":"my_meta.security.sdm.authorIdentity","encryptedDigest":"my_meta.security.sdm.encryptedDigest"}}}},"eventParams":{"data":{"entity":"my.data.entity","customData":[{"key":"required if customData present","value":"required if customData present"}]},"links":[{"type":"ALERT","target":"e269b37d-17a1-4a10-aafb-c108735ee48c"},{"type":"CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48d"},{"type":"FLOW_CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48e"}]}}
+{
+	"msgParams": {
+		"meta": {
+			"type": "EiffelAlertCeasedEvent",
+			"version": "2.0.0",
+			"tags": ["product_development","product_feature1"],
+			"source": {
+				"domainId": "eiffeltest",
+				"host": "localhost",
+				"name": "LOCALHOST",
+				"uri": "https://localhost:8080/jenkins/job"
+			}
+		}
+	},
+	"eventParams": {
+		"data": {
+			"entity": "my.data.entity",
+			"customData": [{
+            "key": "EIFFELVERSION",
+            "value": "eiffel2.0"
+          }]
+		},
+		"links": [{
+			"type": "ALERT",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee48c"
+		}, {
+			"type": "CONTEXT",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee48d"
+		}, {
+			"type": "FLOW_CONTEXT",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee48e"
+		}]
+	}
+}

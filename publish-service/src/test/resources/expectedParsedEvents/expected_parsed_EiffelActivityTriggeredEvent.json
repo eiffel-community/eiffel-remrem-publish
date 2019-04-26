@@ -1,0 +1,43 @@
+{
+    "msgParams": {
+        "meta": {
+            "type": "EiffelActivityTriggeredEvent",
+            "version": "3.0.0",
+            "tags": ["product_master","product_feature1"],
+			"source": {
+				"domainId": "eiffeltest",
+				"host": "localhost",
+				"name": "LOCALHOST",
+				"uri": "https://localhost:8080/jenkins/job"
+			}
+        }
+    },
+    "eventParams": {
+        "data": {
+            "name": "testrem",
+            "executionType":"AUTOMATED",
+            "categories": [
+            "my_data.categories[0]",
+            "my_data.categories[1]"
+            ],
+            "triggers": [{
+            "type": "MANUAL",
+            "description": "Started by user anonymous"
+          }{
+            "type": "SOURCE_CHANGE", 
+            "description": "data.triggers[1]"
+            }],
+            "customData": [ {
+            "key": "EIFFELVERSION",
+            "value": "eiffel2.0"
+          },{
+            "key": "FLOWCONTEXT",
+            "value": "master"
+          }]
+        },
+        "links": [{
+            "type": "CAUSE or CONTEXT or FLOW_CONTEXT - optional",
+            "target": "required - UUID if type is present"
+        }]
+    }
+}

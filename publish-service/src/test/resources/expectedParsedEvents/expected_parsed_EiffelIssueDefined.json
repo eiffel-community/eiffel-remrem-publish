@@ -1,0 +1,32 @@
+{
+    "msgParams": {
+        "meta": {
+            "type": "EiffelIssueDefinedEvent",
+            "version": "3.0.0",
+            "tags": ["product_deployment","product_feature1"],
+			"source": {
+				"domainId": "eiffeltest",
+				"host": "localhost",
+				"name": "LOCALHOST",
+				"uri": "https://localhost:8080/jenkins/job"
+			}
+        }
+    },
+    "eventParams": {
+        "data": {
+            "type" : "IMPROVEMENT",
+            "tracker":"INPROGRESS",
+            "id":"56565",
+            "uri": "https://localhost:8080/fem",
+            "title": "FEATURE", 
+            "customData": [{
+				"key": "EIFFELVERSON",
+				"value": "eiffel2.0"
+			}]
+        },
+        "links": [{
+            "type": "CAUSE or CONTEXT or FLOW_CONTEXT - optional",
+            "target": "required - UUID if type is present"
+        }]
+    }
+}

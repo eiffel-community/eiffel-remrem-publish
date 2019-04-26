@@ -1,13 +1,12 @@
 {
- "meta.tags[0]":"product_development",
+  "meta.tags[0]":"product_development",
   "meta.tags[1]":"product_feature1",
   "meta.source.domainId":"eiffeltest",,
   "meta.source.host":"localhost",
   "meta.source.name":"LOCALHOST",
   "meta.source.uri":"https://localhost:8080/jenkins/job",
+  "data.locations[0]":{"type":"my.data.locations[0]type","uri":""}
   "data.customData[0]": {"key" : "EIFFELVERSION", "value" : "eiffel2.0"},
-  "links[0]": {"type" : "COMPOSITION", "target" : "e269b37d-17a1-4a10-aafb-c108735ee51f"},
-  "links[1]": {"type" : "REUSED_ARTIFACT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee50a"},
+  "links[0]": {"type" : "ARTIFACT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee51f"},
   "links[2]": {"type" : "CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee50a"},
-  "links[3]": {"type" : "FLOW_CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48a"}
 }

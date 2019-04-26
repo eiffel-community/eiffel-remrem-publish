@@ -1,1 +1,41 @@
-{"msgParams":{"meta":{"type":"EiffelEnvironmentDefinedEvent","version":"1.1.0","tags":["my_meta[0]tags","my_meta[1]tags"],"source":{"domainId":"my_meta.source.domainId","host":"my_meta.source.host","name":"my_meta.source.name","uri":"my_meta.source.uri"},"security":{"sdm":{"authorIdentity":"my_meta.security.sdm.authorIdentity","encryptedDigest":"my_meta.security.sdm.encryptedDigest"}}}},"eventParams":{"data":{"name":"my_data.name","version":"my_data.version","image":"my_data.image","customData":[{"key":"required if customData present","value":"required if customData present"}],"host":{"name":"my_data.host.name","user":"my_data.host.user"},"uri":"my_data.uri"},"links":[{"type":"PREVIOUS_VERSION","target":"e269b37d-17a1-4a10-aafb-c108735ee51f"},{"type":"CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee50a"},{"type":"FLOW_CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48a"}]}}
+{
+	"msgParams": {
+		"meta": {
+			"type": "EiffelEnvironmentDefinedEvent",
+			"version": "3.0.0",
+			"tags": ["product_development","product_feature1"],
+			"source": {
+				"domainId": "eiffeltest",
+				"host": "localhost",
+				"name": "LOCALHOST",
+				"uri": "https://localhost:8080/jenkins/job"
+			}
+		}
+	},
+	"eventParams": {
+		"data": {
+			"name": "ERC",
+			"version": "2.0.0",
+			"image": "486464",
+			"customData": [{
+            "key": "COMPNAME",
+            "value": "rem"
+          }],
+			"host": {
+				"name": "localhost",
+				"user": "testrem"
+			},
+			"uri": "https://localhost:8080/fem"
+		},
+		"links": [{
+			"type": "PREVIOUS_VERSION",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee51f"
+		}, {
+			"type": "CONTEXT",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+		}, {
+			"type": "FLOW_CONTEXT",
+			"target": "e269b37d-17a1-4a10-aafb-c108735ee48a"
+		}]
+	}
+}
