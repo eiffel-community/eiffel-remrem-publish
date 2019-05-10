@@ -45,6 +45,9 @@ public class RabbitMqPropertiesConfig {
     @Value("${rabbitmq.instances.jsonlist:{null}}")
     private String rabbitmqInstancesJsonListContent;
 
+    @Value("${jasypt.encryptor.password}")
+    private String jasyptPassword;
+
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     /***
@@ -70,7 +73,8 @@ public class RabbitMqPropertiesConfig {
     /***
      * Reads catalina properties to a map object.
      * 
-     * @param map  RabbitMq instances map object.
+     * @param map
+     *            RabbitMq instances map object.
      */
     private void readCatalinaProperties(Map<String, Object> map) {
         String catalina_home = System.getProperty("catalina.home").replace('\\', '/');
@@ -102,7 +106,7 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").asText());
                 rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").asText()));
                 rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").asText());
-                rabbitMqProperties.setPassword(rabbitmqInstanceObject.get("password").asText());
+                rabbitMqProperties.setPassword(DecryptionUtils.decryptString(rabbitmqInstanceObject.get("password").asText(), jasyptPassword));
                 rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").asText());
                 rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
                 rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").asText());
@@ -117,11 +121,13 @@ public class RabbitMqPropertiesConfig {
     /***
      * Writes RabbitMq catalina properties to RabbitMq instances properties map object.
      * 
-     * @param map  RabbitMq instances map object.
+     * @param map
+     *            RabbitMq instances map object.
      */
     private void populateRabbitMqConfigurationsBasedOnCatalinaProperties(Map<String, Object> map) {
+        final String jasyptSecretPassword = (String) map.get("jasypt.encryptor.password");
         for (Entry<String, Object> entry : map.entrySet()) {
-            String key = entry.getKey();
+            final String key = entry.getKey();
             if (key.contains("rabbitmq")) {
                 String protocol = key.split("\\.")[0];
                 if (rabbitMqPropertiesMap.get(protocol) == null) {
@@ -134,7 +140,7 @@ public class RabbitMqPropertiesConfig {
                 } else if (key.contains("rabbitmq.username")) {
                     rabbitMqPropertiesMap.get(protocol).setUsername(entry.getValue().toString());
                 } else if (key.contains("rabbitmq.password")) {
-                    rabbitMqPropertiesMap.get(protocol).setPassword(entry.getValue().toString());
+                    rabbitMqPropertiesMap.get(protocol).setPassword(DecryptionUtils.decryptString(entry.getValue().toString(), jasyptSecretPassword));
                 } else if (key.contains("rabbitmq.tls")) {
                     rabbitMqPropertiesMap.get(protocol).setTlsVer(entry.getValue().toString());
                 } else if (key.contains("rabbitmq.exchangeName")) {
