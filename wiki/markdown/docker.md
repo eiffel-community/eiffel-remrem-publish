@@ -74,8 +74,8 @@ When RemRem-Publish container is running on your local Docker host, RemRem-Publi
 Another option to configure RemRem-Publish is to provide the application properties file into the container, which can be made in two ways:
 1. Put application.properties file in Tomcat Catalina config folder in container and run RemRem-Publish:
 
-`docker run -p 8080:8080 --expose 8080 --volume /path/to/application.properties:/usr/local/tomcat/config/application.properties remrem-publish:0.6.9`
+`docker run -p 8080:8080 --expose 8080 --volume /path/to/application.properties:/usr/local/tomcat/config/application.properties remrem-publish`
 
 2. Put application.properties file in a different folder in container and tell RemRem-Publish where the application.properties is located in the container:
 
-`docker run -p 8080:8080 --expose 8080 --volume /path/to/application.properties:/tmp/application.properties -e spring.config.location=/tmp/application.properties remrem-publish:0.6.9`
+`docker run -p 8080:8080 --expose 8080 --volume /path/to/application.properties:/tmp/application.properties -e spring.config.location=/tmp/application.properties remrem-publish`
