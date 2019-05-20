@@ -26,18 +26,18 @@ This will produce a war file in the "publish-service/target" folder.
 3. Build the Docker image with the war file that was produced from previous step: 
 
 
-`docker build -t remrem-publish:0.6.9 --build-arg URL=./target/publish-service-0.6.9.war -f src/main/docker/Dockerfile .` 
+`docker build -t remrem-publish --build-arg URL=./target/publish-service-<version>.war -f src/main/docker/Dockerfile .` 
 
 
-Now docker image has build with tag "remrem-publish:0.6.9"
+Now docker image is built with tag "remrem-publish"
 
 ## Run Docker image on local Docker Host
 To run the produced docker image on the local Docker host, execute this command: 
 
 
-`docker run -p 8080:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG remrem-publish:0.6.9`
+`docker run -p 8080:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG remrem-publish`
 
-RabbitMq and other RemRem-Publish required components need to running and configured via these application properties that is provided to the docker command above. See the application.properties file for all available/required properties:
+RabbitMq and other RemRem-Publish required components need to be running and configured via application properties that is provided to the docker command above. See the application.properties file for all available/required properties:
 [application.properties](https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/publish-service/src/main/resources/application.properties)
 
 # Some info of all flags to this command
@@ -46,7 +46,7 @@ RabbitMq and other RemRem-Publish required components need to running and config
 ## RemRem-Publish Spring Properties
 
 
-<B>"-e server.port=8080"</B> - Is the Spring property setting for RemRem-Publish applications web port.
+<B>"-e server.port=8080"</B> - Is the Spring property setting for RemRem-Publish application web port.
 
 
 <B>"-e logging.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e 
