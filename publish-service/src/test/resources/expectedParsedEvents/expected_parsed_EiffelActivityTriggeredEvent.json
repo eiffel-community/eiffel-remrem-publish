@@ -1,7 +1,7 @@
 {
   "msgParams": {
     "meta": {
-      "type": "EiffelActivityFinishedEvent",
+      "type": "EiffelActivityTriggeredEvent",
       "version": "3.0.0",
       "tags": [
         "product_master",
@@ -17,31 +17,32 @@
   },
   "eventParams": {
     "data": {
-      "outcome": {
-        "conclusion": "SUCCESSFUL",
-        "description": "DONE"
-      },
-      "persistentLogs": [
+      "name": "testrem",
+      "executionType": "AUTOMATED",
+      "categories": [
+        "System X Component Y Build"
+      ],
+      "triggers": [
         {
-          "name": "firstLog",
-          "uri": "http://localhost:8080/firstLog"
+          "type": "MANUAL",
+          "description": "Started by user anonymous"
         }
       ],
       "customData": [
         {
           "key": "EIFFELVERSION",
           "value": "eiffel2.0"
+        },
+        {
+          "key": "FLOWCONTEXT",
+          "value": "master"
         }
       ]
     },
     "links": [
       {
-        "type": "ACTIVITY_EXECUTION",
-        "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"
-      },
-      {
         "type": "CAUSE",
-        "target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee48e"
       }
     ]
   }

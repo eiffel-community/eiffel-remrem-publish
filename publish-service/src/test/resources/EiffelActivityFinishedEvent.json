@@ -1,37 +1,51 @@
 {
-	"data": {
-		"outcome": {
-			"conclusion": "TIMED_OUT",
-			"description": "Compilation timed out."
-		},
-		"persistentLogs": [{
-			"name": "firstLog",
-			"uri": "http://myHost.com/firstLog"
-		}, {
-			"name": "otherLog",
-			"uri": "isbn:0-486-27557-4"
-		}]
-	},
-	"links": [{
-		"type": "ACTIVITY_EXECUTION",
-		"target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
-	}],
-	"meta": {
-		"id": "1afffd13-04ae-4638-97f1-aaeed78a28c7",
-		"type": "EiffelActivityFinishedEvent",
-		"version": "1.1.0",
-		"time": 1481628758807,
-		"tags": ["tag1", "tag2"],
-		"source": {
-			"domainId": "example.domain",
-			"host": "host",
-			"name": "name",
-			"uri": "http://java.sun.com/j2se/1.3/",
-			"serializer": {
-				"groupId": "G",
-				"artifactId": "A",
-				"version": "V"
-			}
-		}
-	}
+  "meta": {
+    "id": "0238a8bd-9bdf-4161-aeff-b00eccf92983",
+    "type": "EiffelActivityFinishedEvent",
+    "version": "3.0.0",
+    "time": 1554385219068,
+    "tags": [
+     "product.development",
+     "product.feature1"
+    ],
+    "source": {
+      "domainId": "eiffeltest",
+      "host": "localhost",
+      "name": "LOCALHOST",
+      "serializer": "pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2",
+      "uri": "https://localhost:8080/jenkins/job"
+    }
+  },
+  "data": {
+    "outcome": {
+      "conclusion": "TIMED_OUT",
+      "description": "Compilation timed out."
+    },
+    "persistentLogs": [
+      {
+        "name": "firstLog",
+        "uri": "http://localhost:8080/firstLog"
+      },
+      {
+        "name": "secondLog",
+        "uri": "http://localhost:8080/secondLogs"
+      }
+    ],
+    "customData": [
+      {
+        "key": "EIFFELVERSION",
+        "value": "eiffel2.0"
+      },
+      {
+        "key": "FLOWCONTEXT",
+        "value": "master"
+      }
+    ]
+  },
+  "links": [
+    {
+      "type": "ACTIVITY_EXECUTION",
+      "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"
+    }
+  ]
 }
