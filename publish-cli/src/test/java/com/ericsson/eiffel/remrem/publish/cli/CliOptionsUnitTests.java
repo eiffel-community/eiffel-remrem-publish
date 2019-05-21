@@ -29,8 +29,8 @@ import com.ericsson.eiffel.remrem.publish.cli.CliOptions;;
 public class CliOptionsUnitTests {
     private PrintStream console;
     private ByteArrayOutputStream bytes;
-	
-	@Before public void setUp() throws Exception {
+
+    @Before public void setUp() throws Exception {
         String key = PropertiesConfig.TEST_MODE;
         System.setProperty(key, "true");
         //Switch std out to another stream
@@ -46,10 +46,10 @@ public class CliOptionsUnitTests {
         // reset error code since it is static
         CliOptions.cleanErrorCodes();
     }
-    
+
     @Test
-    public void testParseEmptyCLIOptionsFails() throws Exception {	
-        String[] args = new String[0];	    
+    public void testParseEmptyCLIOptionsFails() throws Exception {
+        String[] args = new String[0];
 
         CliOptions.parse(args);
         int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
@@ -63,14 +63,14 @@ public class CliOptionsUnitTests {
         assertTrue(CliOptions.getErrorCodes().contains(0));
         assertTrue(CliOptions.getErrorCodes().size() == 1);
     }
-    
+
     @Test
     public void testTlsOption() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-tls", "1"};
         CliOptions.parse(args);
         assertTrue(CliOptions.getErrorCodes().isEmpty());
     }
-    
+
     @Test
     public void testTlsOptionFails() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-tlsa", "1.2"};
@@ -94,7 +94,15 @@ public class CliOptionsUnitTests {
         System.out.println(CliOptions.getErrorCodes());
         assertTrue(CliOptions.getErrorCodes().isEmpty());
     }
-    
+
+    @Test
+    public void testCreateExchangeOption() throws Exception {
+        String[] args = {"-f", "/a/b/c/test.file",  "test", "-ce", "false"};
+        CliOptions.parse(args);
+        System.out.println(CliOptions.getErrorCodes());
+        assertTrue(CliOptions.getErrorCodes().isEmpty());
+    }
+
     @Test
     public void testMbOptionFails() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-mbe", "MbInstance1"};
@@ -102,13 +110,13 @@ public class CliOptionsUnitTests {
         int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
         assertTrue(CliOptions.getErrorCodes().contains(code));
     }
-    
+
     public void testEnOption() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-en", "exchange_name1"};
         CliOptions.parse(args);
         assertTrue(CliOptions.getErrorCodes().isEmpty());
     }
-    
+
     @Test
     public void testEnOptionFails() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-enf", "exchange_name1"};
@@ -116,13 +124,13 @@ public class CliOptionsUnitTests {
         int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
         assertTrue(CliOptions.getErrorCodes().contains(code));
     }
-    
+
     public void testNpOption() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-np", "non_persistent"};
         CliOptions.parse(args);
         assertTrue(CliOptions.getErrorCodes().isEmpty());
     }
-    
+
     @Test
     public void testNpOptionFails() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-npf", "non_persistent"};
@@ -144,7 +152,7 @@ public class CliOptionsUnitTests {
         int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
         assertTrue(CliOptions.getErrorCodes().contains(code));
     }
-    
+
     public void testFOption() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-port", "portA"};
         CliOptions.parse(args);
@@ -158,5 +166,4 @@ public class CliOptionsUnitTests {
         int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
         assertTrue(CliOptions.getErrorCodes().contains(code));
     }
-    
 }

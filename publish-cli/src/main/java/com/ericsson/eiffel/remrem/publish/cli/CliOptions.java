@@ -31,9 +31,9 @@ import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.shared.VersionService;
 
 public class CliOptions {
-	
-	static private Options options=null;
-	static private CommandLine commandLine;
+
+    static private Options options=null;
+    static private CommandLine commandLine;
 
     //Used for testing purposes
     private static ArrayList<Integer> testErrorCodes = new ArrayList<>();
@@ -42,28 +42,27 @@ public class CliOptions {
     return testErrorCodes;
     }
 
-	public static void addErrorCode(int errorCode) {
-		testErrorCodes.add(errorCode);
-	}
+    public static void addErrorCode(int errorCode) {
+        testErrorCodes.add(errorCode);
+    }
 
-	public static void cleanErrorCodes() {
-		testErrorCodes.clear();
-	}
+    public static void cleanErrorCodes() {
+        testErrorCodes.clear();
+    }
 
     private static OptionGroup contentGroup = null;
 
-	
-	public static CommandLine getCommandLine() {
-		return commandLine;
-	}
+    public static CommandLine getCommandLine() {
+        return commandLine;
+    }
 
-	public static Options createHelpOptions() {
-		Options hOptions = new Options();
-		hOptions.addOption(createHelpOption());
-		return hOptions;
-	}
-	
-	/**
+    public static Options createHelpOptions() {
+        Options hOptions = new Options();
+        hOptions.addOption(createHelpOption());
+        return hOptions;
+    }
+
+    /**
      * Creates the options needed by command line interface
      * @return the options this CLI can handle
      */
@@ -73,6 +72,7 @@ public class CliOptions {
         options.addOption("d", "debug", false, "enable debug traces");
         options.addOption("mb", "message_bus", true, "host of message bus to use");
         options.addOption("en", "exchange_name", true, "exchange name");
+        options.addOption("ce", "create_exchange", true, "option to denote if we need to create an exchange eg: -ce true or --create_exchange true");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus, default is 5672");
         options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'. It is required for RabbitMq secured port.");
@@ -82,60 +82,60 @@ public class CliOptions {
         options.addOption("v", "lists the versions of publish and all loaded protocols");
         options.addOption("tag", "tag", true, "tag to be used in routing key");
         options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
+
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }
-  
+
     private static Option createJsonOption() {
-    	return new Option("json", "json_content", true, "event content in json string. The value can also be a dash(-) and the json will be read from the output of other programs if piped.");
+        return new Option("json", "json_content", true, "event content in json string. The value can also be a dash(-) and the json will be read from the output of other programs if piped.");
     }
-    
+
     private static Option createFileOption() {
-    	return new Option("f", "content_file", true, "event content file");
+        return new Option("f", "content_file", true, "event content file");
     }
-    
+
     private static Option createHelpOption() {
-    	return new Option("h", "help", false, "show help");
+        return new Option("h", "help", false, "show help");
     }
-    
+
     private static OptionGroup createContentGroup() {
-    	OptionGroup group = new OptionGroup();
-    	group.addOption(createFileOption());
-    	group.addOption(createJsonOption());    	
-    	return group;
+        OptionGroup group = new OptionGroup();
+        group.addOption(createFileOption());
+        group.addOption(createJsonOption());
+        return group;
     }
-    
-    
+
     /**
      * Parse the given arguments and act on them
      * @param args command line arguments
      * @return if the service should start or not
      */
     public static void parse(String[] args) {
-    	    createCLIOptions();
-    	    CommandLineParser parser = new DefaultParser(); 
-    	    try {
-    		    commandLine = parser.parse(options, args); 
-    		    afterParseChecks();
-    		    handleMessageBusOptions();
-    		    handleDebugOptions();
-    	    } catch (Exception e) {
-    	    	System.out.println(e.getMessage());
-    	    	help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
-    	    }        
-    }    
-    
+            createCLIOptions();
+            CommandLineParser parser = new DefaultParser();
+            try {
+                commandLine = parser.parse(options, args);
+                afterParseChecks();
+                handleMessageBusOptions();
+                handleDebugOptions();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
+            }
+    }
+
     public static void afterParseChecks() throws MissingOptionException {
         if (commandLine.hasOption("h")) {
-    	    System.out.println("You passed help flag.");
-    	    help(0);
+            System.out.println("You passed help flag.");
+            help(0);
         } else if (commandLine.hasOption("v")) {
             printVersions();
         }else {
             checkRequiredOptions();
         }
     }
-    
+
     public static void checkRequiredOptions() throws MissingOptionException {
         OptionGroup[] groups = {contentGroup};
         for(OptionGroup group : groups) {
@@ -152,15 +152,15 @@ public class CliOptions {
             }
         }
     }
-    
+
     /**
      * Checks if any options that CLI can handle have been passed
      * @return true if any valid options have been 
-     * 			passed as arguments otherwise false
+     *             passed as arguments otherwise false
      */
     public static boolean hasParsedOptions() {
         if (commandLine == null)
-    	    return false;
+            return false;
 
         Option[] existingOptions = commandLine.getOptions(); 
         return existingOptions.length > 0;
@@ -171,13 +171,13 @@ public class CliOptions {
      * @param options the options to print usage help for
      */
     public static void help(int errorCode) {
-    	CliOptions.clearSystemProperties();
-        // This prints out some help    	
+        CliOptions.clearSystemProperties();
+        // This prints out some help
         HelpFormatter formater = new HelpFormatter();
         formater.printHelp("java -jar", options);
         exit(errorCode);
     }
-    
+
     /**
      * Sets the system properties with values passed for 
      * message bus host and exchange name
@@ -202,6 +202,12 @@ public class CliOptions {
             System.setProperty(key, port);
         }
 
+        if (commandLine.hasOption("ce")) {
+            String createExchange = commandLine.getOptionValue("ce");
+            String key = PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING;
+            System.setProperty(key, createExchange);
+        }
+
         if (commandLine.hasOption("domain")) {
             String domain = commandLine.getOptionValue("domain");
             String key = PropertiesConfig.DOMAIN_ID;
@@ -218,12 +224,12 @@ public class CliOptions {
                 throw new HandleMessageBusException("Specified TLS version is not valid! Specify a valid TLS version!");
             }
             String key = PropertiesConfig.TLS;
-            System.setProperty(key, tls_ver);	
+            System.setProperty(key, tls_ver);
         }
 
         String usePersistance = "true";
         if (commandLine.hasOption("np")) {
-            usePersistance = "false";    		
+            usePersistance = "false";
         }
         String key = PropertiesConfig.USE_PERSISTENCE;
         System.setProperty(key, usePersistance);
@@ -261,7 +267,7 @@ public class CliOptions {
         key = PropertiesConfig.DOMAIN_ID;
         System.clearProperty(key);
     }
-    
+
     /**
      * Wrapper to call system exit making class easier to test.
      * @param errorCode
@@ -273,7 +279,7 @@ public class CliOptions {
       else
         System.exit(errorCode);
     }
-    
+
     /**
      * Lists the versions of publish and all loaded protocols  
      */

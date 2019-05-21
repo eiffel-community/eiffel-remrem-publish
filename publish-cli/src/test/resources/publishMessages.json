@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "id": "29f9b8b1-9d4b-41cf-9f42-4e6157850755",
+    "type": "EiffelActivityFinishedEvent",
+    "version": "1.1.0",
+    "time": 1499076743638,
+    "tags": ["tag1", "tag2"],
+    "source": {
+      "domainId": "domainID",
+      "host": "host",
+      "name": "name",
+      "serializer": {
+        "groupId": "G",
+        "artifactId": "A",
+        "version": "V"
+      },
+      "uri": "http://java.sun.com/j2se/1.3/"
+    },
+    "security": {
+      "sdm": {
+        "authorIdentity": "test",
+        "encryptedDigest": "sample"
+      }
+    }
+  },
+  "data": {
+    "outcome": {
+      "conclusion": "TIMED_OUT",
+      "description": "Compilation timed out."
+    },
+    "persistentLogs": [{
+      "name": "firstLog",
+      "uri": "http://myHost.com/firstLog"
+    }, {
+      "name": "otherLog",
+      "uri": "http://myHost.com/firstLog33"
+    }],
+    "customData": [{
+      "key": "firstLog",
+      "value": "http://myHost.com/firstLog"
+    }, {
+      "key": "otherLog",
+      "value": "http://myHost.com/firstLog33"
+    }]
+  },
+  "links": [{
+      "type": "ACTIVITY_EXECUTION",
+      "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"
+    }]
+}

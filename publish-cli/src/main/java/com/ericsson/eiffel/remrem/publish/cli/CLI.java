@@ -38,6 +38,7 @@ import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 
@@ -58,53 +59,56 @@ import ch.qos.logback.classic.Logger;
 @SpringBootApplication
 @ComponentScan(basePackages = "com.ericsson.eiffel.remrem")
 public class CLI implements CommandLineRunner{
-    
-	@Autowired @Qualifier("messageServiceRMQImpl") MessageService messageService;
-	@Autowired
+
+    @Autowired
+    @Qualifier("messageServiceRMQImpl")
+    MessageService messageService;
+
+    @Autowired
     private MsgService[] msgServices;
+
     @Autowired
     RMQHelper rmqHelper;
-	Logger log = (Logger) LoggerFactory.getLogger(CLI.class);
-	
+
+    Logger log = (Logger) LoggerFactory.getLogger(CLI.class);
+
     /**
      * Delegates actions depending on the passed arguments
      * @param commandLine command line arguments
      */
     private void handleOptions() {
-    	CommandLine commandLine = CliOptions.getCommandLine();    	
-    	if (commandLine.hasOption("h")) {
-    		System.out.println("You passed help flag.");
-    		CliOptions.help(0);
-    	} else if (commandLine.hasOption("f")) {
+        CommandLine commandLine = CliOptions.getCommandLine();
+        if (commandLine.hasOption("h")) {
+            System.out.println("You passed help flag.");
+            CliOptions.help(0);
+        } else if (commandLine.hasOption("f")) {
             String filePath = commandLine.getOptionValue("f");
             handleContentFile(filePath);
         } else if (commandLine.hasOption("json")) {
             String content = getJsonString(commandLine);
             handleContent(content);
         } else {
-        	System.out.println("Missing arguments, please review your arguments" + 
-        						" and check if any mandatory argument is missing");        	
-        	CliOptions.help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
+            System.out.println("Missing arguments, please review your arguments" +
+                                " and check if any mandatory argument is missing");
+            CliOptions.help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
         }    
     }
-    
+
     private String getJsonString(CommandLine commandLine) {
-    	String jsonContent = commandLine.getOptionValue("json");
-    	
-    	if (jsonContent.equals("-")) {
-    		try {
-    			InputStreamReader isReader = new InputStreamReader(System.in);
-    			BufferedReader bufReader = new BufferedReader(isReader);
-    			jsonContent =  bufReader.readLine();
-    		} catch (Exception e) {
-    			  e.printStackTrace();
-    	          CliOptions.exit(CLIExitCodes.READ_JSON_FROM_CONSOLE_FAILED);
-    		}
-    		
-    	}
-    	return jsonContent;
+        String jsonContent = commandLine.getOptionValue("json");
+        if (jsonContent.equals("-")) {
+            try {
+                InputStreamReader isReader = new InputStreamReader(System.in);
+                BufferedReader bufReader = new BufferedReader(isReader);
+                jsonContent =  bufReader.readLine();
+            } catch (Exception e) {
+                  e.printStackTrace();
+                  CliOptions.exit(CLIExitCodes.READ_JSON_FROM_CONSOLE_FAILED);
+            }
+        }
+        return jsonContent;
     }
-    
+
     /**
      * Handle event from file
      * @param filePath the path of the file where the messages reside
@@ -123,12 +127,13 @@ public class CLI implements CommandLineRunner{
             CliOptions.exit(CLIExitCodes.HANDLE_CONTENT_FILE_COULD_NOT_READ_FAILED);
         }
     }
-    
+
     /**
      * Handle event from file
      * @param filePath the path of the file where the messages reside
      */
     public void handleContent(String content) {
+        String exchangeName = CliOptions.getCommandLine().getOptionValue("en");
         try {
             String msgProtocol = CliOptions.getCommandLine().getOptionValue("mp");
             MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
@@ -146,6 +151,13 @@ public class CLI implements CommandLineRunner{
             } else {
                 throw new Exception();
             }
+        }catch (RemRemPublishException e) {
+            JsonArray errorResponse = new JsonArray();
+            PublishResultItem result = new PublishResultItem(null, 404,
+                 null,e.getMessage());
+            errorResponse.add(result.toJsonObject());
+            System.err.println(new GsonBuilder().setPrettyPrinting().create().toJson(errorResponse));
+            CliOptions.exit(CLIExitCodes.HANDLE_CONTENT_FAILED);
         } catch (Exception e) {
             log.debug("Exception: ", e);
             System.err.println("Exception: " + e.getMessage());
@@ -153,22 +165,22 @@ public class CLI implements CommandLineRunner{
         }
     }
 
-	@Override
-	public void run(String... args) throws Exception {
-		if (CliOptions.hasParsedOptions())
-			handleOptions();
-		boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+    @Override
+    public void run(String... args) throws Exception {
+        if (CliOptions.hasParsedOptions())
+            handleOptions();
+        boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
         if (cliMode) 
-        	CliOptions.help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
-	}
-	
-	public static void main(String args[]) {
-		SpringApplication application = new SpringApplication(CLI.class);
-		application.addInitializers(new SpringLoggingInitializer());
-		application.setBannerMode(Banner.Mode.OFF);
-		application.setLogStartupInfo(false);
-		application.setWebEnvironment(false);
-		CliOptions.parse(args);
-		application.run(args);
-	}
+            CliOptions.help(CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION);
+    }
+
+    public static void main(String args[]) {
+        SpringApplication application = new SpringApplication(CLI.class);
+        application.addInitializers(new SpringLoggingInitializer());
+        application.setBannerMode(Banner.Mode.OFF);
+        application.setLogStartupInfo(false);
+        application.setWebEnvironment(false);
+        CliOptions.parse(args);
+        application.run(args);
+    }
 }

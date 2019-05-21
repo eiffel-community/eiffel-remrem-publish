@@ -15,7 +15,6 @@
 package com.ericsson.eiffel.remrem.publish.controller;
 
 import java.util.Map;
-
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,13 +32,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
-import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.ericsson.eiffel.remrem.shared.VersionService;
+import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
+import com.ericsson.eiffel.remrem.publish.controller.GenerateURLTemplate;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -99,12 +100,15 @@ public class ProducerController {
                                @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
                                @ApiParam(value = "eiffel event", required = true) @RequestBody final JsonElement body) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
-
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
         log.debug("user domain suffix: " + userDomain + " tag: " + tag + " Routing Key: " + routingKey);
         if (msgService != null && msgProtocol != null) {
-            rmqHelper.rabbitMqPropertiesInit(msgProtocol);
+            try {
+                rmqHelper.rabbitMqPropertiesInit(msgProtocol);
+            } catch (RemRemPublishException e) {
+                return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
+            }
         }
         SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
         return new ResponseEntity(result, messageService.getHttpStatus());
@@ -187,7 +191,10 @@ public class ProducerController {
             } else {
                 return response;
             }
-        } catch (Exception e) {
+        }
+        catch (RemRemPublishException e) {
+                return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (Exception e) {
             log.info("The result from REMReM Generate is not OK and have value: " + e.getMessage());
             if (e.getMessage().startsWith(Integer.toString(HttpStatus.BAD_REQUEST.value()))) {
                 return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_BAD_REQUEST), HttpStatus.BAD_REQUEST);

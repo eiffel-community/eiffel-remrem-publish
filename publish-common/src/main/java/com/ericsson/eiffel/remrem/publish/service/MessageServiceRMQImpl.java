@@ -30,6 +30,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.google.gson.JsonArray;
@@ -200,7 +201,11 @@ import ch.qos.logback.classic.Logger;
 
     private String sendMessage(String routingKey, String msg, MsgService msgService) {
         String resultMsg = PropertiesConfig.SUCCESS;
-        instantiateRmqHelper();
+        try {
+            instantiateRmqHelper();
+        } catch (RemRemPublishException e) {
+            log.error("RemRemPublishException occurred::" + e.getMessage());
+        }
         try {
             rmqHelper.send(routingKey, msg, msgService);
         } catch (Exception e) {
@@ -210,7 +215,7 @@ import ch.qos.logback.classic.Logger;
         return resultMsg;
     }
     
-    private void instantiateRmqHelper() {
+    private void instantiateRmqHelper() throws RemRemPublishException {
         if (rmqHelper == null) {
             rmqHelper = new RMQHelper();
             rmqHelper.init();
