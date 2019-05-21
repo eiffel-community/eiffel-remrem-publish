@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# These two varibales need to be set from Docker-compose or K8S at startup if MB and/or DB healthcheck should be used.
+# These two variables need to be set from Docker-compose or K8S at startup if MB and/or DB healthcheck should be used.
 #WAIT_MB_HOSTS="localhost:15672 localhost:15672"
 
 if [ ! -z "$WAIT_MB_HOSTS" ]

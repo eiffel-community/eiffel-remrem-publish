@@ -6,7 +6,7 @@ SLEEP_LENGTH=8
 
 WAIT_HOSTS="${@}"
 
-echo "Will wait for fallowing hosts getting started:"
+echo "Will wait for following hosts getting started:"
 echo "${WAIT_HOSTS}"
 
 wait_for_service() {
