@@ -16,7 +16,7 @@
   "data.change.details": "fem45612",
   "data.change.id": "7897614564",
   "data.gitIdentifier.commitId": "454164641",
-  "data.gitIdentifier.repoUri":"my_data.gitIdentifier.repoUri",
+  "data.gitIdentifier.repoName":"testremtem",
   "data.gitIdentifier.branch": "fem456",
   "data.gitIdentifier.repoUri": "https://localhost:8080/fem",
   "data.customData[0]": {"key" : "EIFFELVERSION", "value" : "eiffel2.0"},
