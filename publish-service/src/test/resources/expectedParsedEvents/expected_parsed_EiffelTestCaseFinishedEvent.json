@@ -23,12 +23,8 @@
         "description": "SUCCESSFUL",
         "metrics": [
           {
-            "name": "rem",
-            "value": "fem"
-          },
-          {
-            "name": "eiffel",
-            "value": "rem"
+            "name": "restartedtime",
+            "value": "120ms"
           }
         ]
       },
