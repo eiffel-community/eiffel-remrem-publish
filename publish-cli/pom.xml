@@ -4,7 +4,7 @@
     xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.Ericsson</groupId>
+        <groupId>com.github.eiffel-community</groupId>
         <artifactId>eiffel-remrem-publish</artifactId>
         <version>${eiffel-remrem-publish.version}</version>
     </parent>
@@ -89,7 +89,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.Ericsson</groupId>
+            <groupId>com.github.eiffel-community</groupId>
             <artifactId>eiffel-remrem-semantics</artifactId>
             <version>${eiffel-remrem-semantics.version}</version>
             <scope>compile</scope>
@@ -101,7 +101,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.Ericsson</groupId>
+            <groupId>com.github.eiffel-community</groupId>
             <artifactId>publish-common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

@@ -1,10 +1,10 @@
 {
   "msgParams": {
     "meta": {
-      "type": "EiffelActivityFinishedEvent",
+      "type": "EiffelArtifactReusedEvent",
       "version": "3.0.0",
       "tags": [
-        "product_master",
+        "product_development",
         "product_feature1"
       ],
       "source": {
@@ -17,16 +17,6 @@
   },
   "eventParams": {
     "data": {
-      "outcome": {
-        "conclusion": "SUCCESSFUL",
-        "description": "DONE"
-      },
-      "persistentLogs": [
-        {
-          "name": "firstLog",
-          "uri": "http://localhost:8080/firstLog"
-        }
-      ],
       "customData": [
         {
           "key": "EIFFELVERSION",
@@ -36,12 +26,20 @@
     },
     "links": [
       {
-        "type": "ACTIVITY_EXECUTION",
+        "type": "COMPOSITION",
         "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"
       },
       {
-        "type": "CAUSE",
+        "type": "REUSED_ARTIFACT",
         "target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+      },
+      {
+        "type": "CONTEXT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+      },
+      {
+        "type": "FLOW_CONTEXT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee48a"
       }
     ]
   }

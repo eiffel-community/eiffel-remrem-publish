@@ -4,14 +4,14 @@
     xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.Ericsson</groupId>
+        <groupId>com.github.eiffel-community</groupId>
         <artifactId>eiffel-remrem-parent</artifactId>
-        <version>1.0.0</version>
+        <version>2.0.0</version>
     </parent>
     <properties>
-        <eiffel-remrem-publish.version>1.0.3</eiffel-remrem-publish.version>
-        <eiffel-remrem-shared.version>1.0.0</eiffel-remrem-shared.version>
-        <eiffel-remrem-semantics.version>1.0.1</eiffel-remrem-semantics.version>
+        <eiffel-remrem-publish.version>2.0.0</eiffel-remrem-publish.version>
+        <eiffel-remrem-shared.version>2.0.0</eiffel-remrem-shared.version>
+        <eiffel-remrem-semantics.version>2.0.3</eiffel-remrem-semantics.version>
     </properties>
     <artifactId>eiffel-remrem-publish</artifactId>
     <version>${eiffel-remrem-publish.version}</version>

@@ -1,1 +1,57 @@
-{"msgParams":{"meta":{"type":"EiffelActivityStartedEvent","version":"1.1.0","tags":["my_meta[0]tags","my_meta[1]tags"],"source":{"domainId":"my_meta.source.domainId","host":"my_meta.source.host","name":"my_meta.source.name","uri":"my_meta.source.uri"},"security":{"sdm":{"authorIdentity":"my_meta.security.sdm.authorIdentity","encryptedDigest":"my_meta.security.sdm.encryptedDigest"}}}},"eventParams":{"data":{"executionUri":"my_data.executionUri","liveLogs":[{"name":"my.data.data.liveLogs[0]name","uri":"my.data.data.liveLogs[0]uri"}],"customData":[{"key":"my.data.customData[0]key","value":"my.data.customData[0]value"},{"key":"my.data.customData[1]key","value":"my.data.customData[1]value"}]},"links":[{"type":"ACTIVITY_EXECUTION","target":"e269b37d-17a1-4a10-aafb-c108735ee51f"},{"type":"PREVIOUS_ACTIVITY_EXECUTION","target":"e269b37d-17a1-4a10-aafb-c108735ee51c"},{"type":"CAUSE","target":"e269b37d-17a1-4a10-aafb-c108735ee50a"},{"type":"FLOW_CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48a"}]}}
+{
+  "msgParams": {
+    "meta": {
+      "type": "EiffelActivityStartedEvent",
+      "version": "3.0.0",
+      "tags": [
+        "product_development",
+        "product_feature1"
+      ],
+      "source": {
+        "domainId": "eiffeltest",
+        "host": "localhost",
+        "name": "LOCALHOST",
+        "uri": "https://localhost:8080/jenkins/job"
+      }
+    }
+  },
+  "eventParams": {
+    "data": {
+      "executionUri": "http://localhost:8080/job/dsd",
+      "liveLogs": [
+        {
+          "name": "console",
+          "uri": "http://localhost:8085/job/dsd/9/console"
+        }
+      ],
+      "customData": [
+        {
+          "key": "EIFFELVERSION",
+          "value": "eiffel2.0"
+        },
+        {
+          "key": "FLOWCONTEXT",
+          "value": "master"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "ACTIVITY_EXECUTION",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"
+      },
+      {
+        "type": "PREVIOUS_ACTIVITY_EXECUTION",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee51c"
+      },
+      {
+        "type": "CAUSE",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+      },
+      {
+        "type": "FLOW_CONTEXT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee48a"
+      }
+    ]
+  }
+}

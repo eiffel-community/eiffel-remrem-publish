@@ -1,1 +1,58 @@
-{"msgParams":{"meta":{"type":"EiffelSourceChangeSubmittedEvent","version":"1.1.0","tags":["my_meta[0]tags","my_meta[1]tags"],"source":{"domainId":"my_meta.source.domainId","host":"my_meta.source.host","name":"my_meta.source.name","uri":"my_meta.source.uri"},"security":{"sdm":{"authorIdentity":"my_meta.security.sdm.authorIdentity","encryptedDigest":"my_meta.security.sdm.encryptedDigest"}}}},"eventParams":{"data":{"submitter":{"name":"my_data.submitter.name","email":"my_data.submitter.email","id":"my_data.submitter.id","group":"my_data.submitter.group"},"gitIdentifier":{"commitId":"my_data.gitIdentifier.commitId","repoUri":"my_data.gitIdentifier.repoUri","branch":"my_data.gitIdentifier.branch","repoName":"my_data.gitIdentifier.repoName"},"customData":[{"key":"my.data.customData[0]key","value":"my.data.customData[0]value"},{"key":"my.data.customData[1]key","value":"my.data.customData[1]value"}]},"links":[{"type":"CHANGE","target":"e269b37d-17a1-4a10-aafb-c108735ee51f"},{"type":"PREVIOUS_VERSION","target":"e269b37d-17a1-4a10-aafb-c108735ee51a"},{"type":"PREVIOUS_VERSION","target":"e269b37d-17a1-4a10-aafb-c108735ee51b"},{"type":"CAUSE","target":"e269b37d-17a1-4a10-aafb-c108735ee51c"},{"type":"CAUSE","target":"e269b37d-17a1-4a10-aafb-c108735ee50a"},{"type":"FLOW_CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48a"}]}}
+{
+  "msgParams": {
+    "meta": {
+      "type": "EiffelSourceChangeSubmittedEvent",
+      "version": "3.0.0",
+      "tags": [
+        "product_development",
+        "product_feature1"
+      ],
+      "source": {
+        "domainId": "eiffeltest",
+        "host": "localhost",
+        "name": "LOCALHOST",
+        "uri": "https://localhost:8080/jenkins/job"
+      }
+    }
+  },
+  "eventParams": {
+    "data": {
+      "submitter": {
+        "name": "eiffeltest",
+        "email": "rem",
+        "id": "4564654",
+        "group": "eiffelrem"
+      },
+      "gitIdentifier": {
+        "commitId": "364613469416csd3646",
+        "repoUri": "https://localhost:8989/git4564",
+        "branch": "fem456",
+        "repoName": "eiffeltest"
+      },
+      "customData": [
+        {
+          "key": "EIFFELVERSION",
+          "value": "eiffel2.0"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "CHANGE",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"
+      },
+      {
+        "type": "PREVIOUS_VERSION",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee51b"
+      },
+      {
+        "type": "CAUSE",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee51c"
+      },
+      {
+        "type": "FLOW_CONTEXT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee48a"
+      }
+    ]
+  }
+}

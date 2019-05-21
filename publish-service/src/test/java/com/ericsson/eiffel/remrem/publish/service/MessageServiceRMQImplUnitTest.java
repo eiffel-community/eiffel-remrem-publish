@@ -83,7 +83,7 @@ public class MessageServiceRMQImplUnitTest {
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test", null, null);
-        String Expected="[{\"id\":\"1afffd13-04ae-4638-97f1-aaeed78a28c7\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
+        String Expected="[{\"id\":\"0238a8bd-9bdf-4161-aeff-b00eccf92983\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         for (PublishResultItem results : result.getEvents()) {
             jarray.add(results.toJsonObject());
         }
@@ -152,7 +152,7 @@ public class MessageServiceRMQImplUnitTest {
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001", null, null);
             if(routingKey != null) {
-                assertEquals("eiffel.activity.finished.notag.example.domain.fem001", routingKey);
+                assertEquals("eiffel.activity.finished.notag.eiffeltest.fem001", routingKey);
             }
         }
     }

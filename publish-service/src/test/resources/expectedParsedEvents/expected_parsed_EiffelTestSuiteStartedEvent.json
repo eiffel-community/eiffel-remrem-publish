@@ -1,1 +1,53 @@
-{"msgParams":{"meta":{"type":"EiffelTestSuiteStartedEvent","version":"1.1.0","tags":["my_meta[0]tags","my_meta[1]tags"],"source":{"domainId":"my_meta.source.domainId","host":"my_meta.source.host","name":"my_meta.source.name","uri":"my_meta.source.uri"},"security":{"sdm":{"authorIdentity":"my_meta.security.sdm.authorIdentity","encryptedDigest":"my_meta.security.sdm.encryptedDigest"}}}},"eventParams":{"data":{"name":"my_data.name","categories":["my.data.categories[0]","my.data.categories[1]"],"types":["BACKUP_RECOVERY"],"liveLogs":[{"name":"my_data.liveLogs[0].name","uri":"my_data.liveLogs[0].uri"}],"customData":[{"key":"required if customData present","value":"required if customData present"}]},"links":[{"type":"TERC","target":"e269b37d-17a1-4a10-aafb-c108735ee48c"},{"type":"CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48d"},{"type":"FLOW_CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48e"}]}}
+{
+  "msgParams": {
+    "meta": {
+      "type": "EiffelTestSuiteStartedEvent",
+      "version": "3.0.0",
+      "tags": [
+        "product_staging",
+        "product_deployment"
+      ],
+      "source": {
+        "domainId": "eiffeltest",
+        "host": "localhost",
+        "name": "LOCALHOST",
+        "uri": "https://localhost:8080/jenkins/job"
+      }
+    }
+  },
+  "eventParams": {
+    "data": {
+      "name": "ERC",
+      "categories": ["System X Component Y Build"],
+      "types": [
+        "BACKUP_RECOVERY"
+      ],
+      "liveLogs": [
+        {
+          "name": "localhost",
+          "uri": "https://localhost:8080/fem"
+        }
+      ],
+      "customData": [
+        {
+          "key": "EIFFELVERSION",
+          "value": "eiffel2.0"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "TERC",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee48c"
+      },
+      {
+        "type": "CONTEXT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee48d"
+      },
+      {
+        "type": "FLOW_CONTEXT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee48e"
+      }
+    ]
+  }
+}

@@ -1,1 +1,72 @@
-{"msgParams":{"meta":{"type":"EiffelArtifactCreatedEvent","version":"1.1.0","tags":["my_meta[0]tags","my_meta[1]tags"],"source":{"domainId":"my_meta.source.domainId","host":"my_meta.source.host","name":"my_meta.source.name","uri":"my_meta.source.uri"},"security":{"sdm":{"authorIdentity":"my_meta.security.sdm.authorIdentity","encryptedDigest":"my_meta.security.sdm.encryptedDigest"}}}},"eventParams":{"data":{"gav":{"groupId":"my_data.gav.groupId","artifactId":"my_data.gav.artifactId","version":"my_data.gav.version"},"fileInformation":[{"classifier":"my_data.fileInformation[0].classifier","extension":"my_data.fileInformation[0].extension"},{"classifier":"my_data.fileInformation[1].classifier","extension":"my_data.fileInformation[1].extension"}],"buildCommand":"my_data.buildCommand","requiresImplementation":"NONE","name":"my_data.name","dependsOn":[{"groupId":"my_data.name.dependsOn[0].groupId","artifactId":"my_data.name.dependsOn[0].artifactId","version":"my_data.name.dependsOn[0].version"},{"groupId":"my_data.name.dependsOn[1].groupId","artifactId":"my_data.name.dependsOn[1].artifactId","version":"my_data.name.dependsOn[0].version"}],"implements":[{"groupId":"my_data.name.dependsOn[0].groupId","artifactId":"my_data.name.dependsOn[0].artifactId","version":"my_data.name.dependsOn[0].version"},{"groupId":"my_data.name.dependsOn[1].groupId","artifactId":"my_data.name.dependsOn[1].artifactId","version":"my_data.name.dependsOn[1].version"}],"customData":[{"key":"my.data.customData[0]key","value":"my.data.customData[0]value"},{"key":"my.data.customData[1]key","value":"my.data.customData[1]value"}]},"links":[{"type":"COMPOSITION","target":"e269b37d-17a1-4a10-aafb-c108735ee51f"},{"type":"ENVIRONMENT","target":"e269b37d-17a1-4a10-aafb-c108735ee50a"},{"type":"PREVIOUS_VERSION","target":"e269b37d-17a1-4a10-aafb-c108735ee50a"},{"type":"CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee50a"},{"type":"FLOW_CONTEXT","target":"e269b37d-17a1-4a10-aafb-c108735ee48a"}]}}
+{
+  "msgParams": {
+    "meta": {
+      "type": "EiffelArtifactCreatedEvent",
+      "version": "3.0.0",
+      "tags": [
+        "product_development",
+        "product_feature1"
+      ],
+      "source": {
+        "domainId": "eiffeltest",
+        "host": "localhost",
+        "name": "LOCALHOST",
+        "uri": "https://localhost:8080/jenkins/job"
+      }
+    }
+  },
+  "eventParams": {
+    "data": {
+      "fileInformation": [
+        {
+          "name": "debug/launch",
+          "tags": [
+            "debug",
+            "launcher"
+          ]
+        }
+      ],
+      "buildCommand": "/my/build/command with arguments",
+      "requiresImplementation": "NONE",
+      "name": "CMPAC",
+      "dependsOn": [
+        "pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"
+      ],
+      "implements": [
+        "pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"
+      ],
+      "customData": [
+        {
+          "key": "EIFFELVERSION",
+          "value": "eiffel2.0"
+        },
+        {
+          "key": "FLOWCONTEXT",
+          "value": "master"
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "COMPOSITION",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"
+      },
+      {
+        "type": "ENVIRONMENT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+      },
+      {
+        "type": "PREVIOUS_VERSION",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+      },
+      {
+        "type": "CONTEXT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee50a"
+      },
+      {
+        "type": "FLOW_CONTEXT",
+        "target": "e269b37d-17a1-4a10-aafb-c108735ee48a"
+      }
+    ]
+  }
+}

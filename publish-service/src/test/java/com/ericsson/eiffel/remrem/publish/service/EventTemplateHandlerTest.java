@@ -66,14 +66,14 @@ public class EventTemplateHandlerTest {
 
 
 
-    /*@Test
+    @Test
     public void testEventParserWithEventEiffelActivityTriggeredEvent() {
         try {
             testParser("EiffelActivityTriggeredEvent");
         } catch (Exception e) {
             LOG.error(e.getMessage(),e);
         }
-    }*/
+    }
 
 
     @Test
@@ -163,14 +163,14 @@ public class EventTemplateHandlerTest {
         }
     }
 
-    /*@Test
+    @Test
     public void testEventParserWithEventEiffelArtifactReusedEvent() {
         try {
             testParser("EiffelArtifactReusedEvent");
         } catch (Exception e) {
             LOG.error(e.getMessage(),e);
         }
-    }*/
+    }
 
     @Test
     public void testEventParserWithEventEiffelEnvironmentDefinedEvent() {
@@ -332,6 +332,24 @@ public class EventTemplateHandlerTest {
     public void testEventParserWithEventEiffelServiceStoppedEvent() {
         try {
             testParser("EiffelServiceStoppedEvent");
+        } catch (Exception e) {
+            LOG.error(e.getMessage(),e);
+        }
+    }
+    
+    @Test
+    public void testEventParserWithEventEiffelArtifactPublishedEvent() {
+        try {
+            testParser("EiffelArtifactPublishedEvent");
+        } catch (Exception e) {
+            LOG.error(e.getMessage(),e);
+        }
+    }
+    
+    @Test
+    public void testEventParserWithEventEiffelIssueDefinedEvent() {
+        try {
+            testParser("EiffelIssueDefinedEvent");
         } catch (Exception e) {
             LOG.error(e.getMessage(),e);
         }
