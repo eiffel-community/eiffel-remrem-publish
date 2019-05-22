@@ -56,6 +56,9 @@ usage: java -jar
 
 -en,--exchange_name &lt;arg&gt;         Exchange name.
 
+-ce,--create_exchange &lt;arg&gt;       option to denote if we need to create an exchange
+                                  create_exchange or ce to true eg: -ce true or --create_exchange false.
+
 -f,--content_file &lt;arg&gt;           Event content file.
 
 -h,--help                         Show help.
@@ -103,13 +106,13 @@ usage: java -jar
         <p>Typical examples of usage Eiffel REMReM Publish CLI are described below.</p>
 
         <h5>Publish on a given host, given exchange, given domain and given user domain suffix:</h5>
-        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics</code></pre>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en mb101-eiffel1001 -mb mb101 -domain eiffel001 -ud fem001 -mp eiffelsemantics</code></pre>
 
         <h5>If you want to have the message non persistent add np flag:</h5>
-        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -np -mp eiffelsemantics</code></pre>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en mb101-eiffel1001 -mb mb101 -domain eiffel001 -np -mp eiffelsemantics</code></pre>
 
         <h5>For loading protocol jars other than eiffelsemantics:</h5>
-        <pre><code>java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp protocolType</code></pre>
+        <pre><code>java -Djava.ext.dirs="/path/to/jars/" -jar publish-cli.jar -f publishMessages.json -en mb101-eiffel1001 -mb mb101 -domain eiffel001 -mp protocolType</code></pre>
 
         <p><strong>NOTE:</strong> in the above example, protocol jar file must be present inside "/path/to/jars/" folder.</p>
         <p><strong>NOTE:</strong> <code>-Djava.ext.dirs</code> is no longer working in some JAVA8 versions and in JAVA9.
@@ -118,30 +121,41 @@ usage: java -jar
         </p>
 
         <h5>If you want to have the message publishing logs add d flag:</h5>
-        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -d</code></pre>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en mb101-eiffel1001 -mb mb101 -domain eiffel001 -mp eiffelsemantics -d</code></pre>
 
         <h5>If you want to have the message publishing on RabbitMQ secured port (5671):</h5>
         <ul>
             <li>tls option is used to run REMReM on RabbitMQ secured port (5671).</li>
             <li>tls option value is either 'default' or &lt;version&gt; for secured port.</li>
         </ul>
-        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tls 1.2</code></pre>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en mb101-eiffel1001 -mb mb101 -domain eiffel001 -mp eiffelsemantics -tls 1.2</code></pre>
 
         <p><strong>NOTE:</strong> for RabbitMQ default port 5672, no need to pass -tls option.</p>
 
         <h5>If you want to have the message publishing on RabbitMQ with given routing key:</h5>
-        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -rk myroutingkey</code></pre>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en mb101-eiffel1001 -mb mb101 -domain eiffel001 -mp eiffelsemantics -rk myroutingkey</code></pre>
 
         <h5>If you want to have the message publishing on RabbitMQ with given tag:</h5>
-        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en rabbit -mb mb123 -mp eiffelsemantics -tag production</code></pre>
+        <pre><code>java -jar publish-cli.jar -f publishMessages.json -en mb101-eiffel1001 -mb mb101 -domain eiffel001 -mp eiffelsemantics -tag production</code></pre>
 
-        <p>Typical output for these examples is:</p>
+        <h5>To create an exchange passed while publishing the messages use --create_exchange or -ce property to true. Example:</h5>
+        <pre><code>java -jar publish-cli.jar -f EiffelActivityStartedEvent.json -en mb101-eiffel1001 -ce true -mb mb101 -domain eiffel001 -mp eiffelsemantics</code></pre>
+
+        <p>Output for these Example:</p>
 <pre>[
   {
     "id": "963da060-f2cf-4370-a68d-67fd872def36",
     "status_code": 200,
     "result": "SUCCESS",
     "message": "Event sent successfully"
+  }
+]</pre>
+
+        <p>Output when exchange is not found in RabbitMQ, --create_exchange is set to false , Example:</p>
+<pre>[
+  {
+    "status_code": 404,
+    "message": "<ExchangeName> Unavailable. To create the exchange specify -ce or --create_exchange to true
   }
 ]</pre>
 
