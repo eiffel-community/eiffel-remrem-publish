@@ -1,3 +1,6 @@
+## 2.0.1
+- Upgraded eiffel-remrem-semantics version from 2.0.3 to 2.0.4
+
 ## 2.0.0
 - Upgraded eiffel-remrem-semantics version from 1.0.1 to 2.0.3
 - Modified test cases as per agen version and tested with proper data
