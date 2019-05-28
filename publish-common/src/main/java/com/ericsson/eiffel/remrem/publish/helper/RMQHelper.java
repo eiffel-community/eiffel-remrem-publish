@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -53,7 +54,7 @@ import ch.qos.logback.classic.Logger;
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws RemRemPublishException {
         if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
             log.info("RMQHelper init ...");
             rabbitMqPropertiesMap = rabbitMqPropertiesConfig.getRabbitMqProperties();
@@ -63,22 +64,24 @@ import ch.qos.logback.classic.Logger;
         }
     }
 
-    /***
+    /**
      * This method is used to set protocol specific RabbitMQ properties
      * @param protocol name
+     * @throws RemRemPublishException
      */
-    public void rabbitMqPropertiesInit(String protocol) {
+    public void rabbitMqPropertiesInit(String protocol) throws RemRemPublishException{
         if(!rabbitMqPropertiesMap.containsKey(protocol)) {
             rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
             protocolInit(protocol);
         }
     }
 
-    /***
+    /**
      * This method is used to set the values of protocol and initialize the RabbitMq properties
      * @param protocol name
+     * @throws RemRemPublishException
      */
-    private void protocolInit(String protocol) {
+    private void protocolInit(String protocol) throws RemRemPublishException{
         rabbitMqPropertiesMap.get(protocol).setProtocol(protocol);
         rabbitMqPropertiesMap.get(protocol).init();
     }

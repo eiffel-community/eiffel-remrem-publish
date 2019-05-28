@@ -25,10 +25,10 @@ public class PropertiesConfig {
     public static final String DEBUG = "Debug";
     public static final String DOMAIN_ID = "com.ericsson.eiffel.remrem.publish.domain";
 
-	public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
-	public static final String INVALID_MESSAGE = "Bad Request";
-	public static final String SUCCESS = "SUCCESS";
-    
+    public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
+    public static final String INVALID_MESSAGE = "Bad Request";
+    public static final String SUCCESS = "SUCCESS";
+
     public static final String EVENT_ID = "eventId";
     public static final String ID = "id";
     public static final String META = "meta";
@@ -36,6 +36,11 @@ public class PropertiesConfig {
 
     public static final String SUCCESS_MESSAGE = "Event sent successfully";
     public static final String SERVICE_UNAVAILABLE = "Service Unavailable";
+
+    public static final String CREATE_EXCHANGE_IF_NOT_EXISTING = "com.ericsson.eiffel.remrem.publish.messagebus.createExchange";
+    public static final String INVALID_EXCHANGE = "Exchange not found, Please check exchange configuration and try again";
+    public static final String INVALID_EXCHANGE_MESSAGE_CLI = " Unavailable. To create the exchange specify -ce or --create_exchange to true )";
+    public static final String INVALID_EXCHANGE_MESSAGE_SERVICE = " ExchangeName is not present, To create the exchange specify createExchangeIfNotExisting in application configuration";
 
     public static final String SERVER_DOWN = "Internal Server Error";
     public static final String SERVER_DOWN_MESSAGE = "RabbitMQ is down. Please try later";

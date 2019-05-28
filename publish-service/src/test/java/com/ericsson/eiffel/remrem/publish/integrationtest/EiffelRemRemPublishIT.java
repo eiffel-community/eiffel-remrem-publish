@@ -37,6 +37,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
@@ -65,7 +66,7 @@ public class EiffelRemRemPublishIT {
     RMQHelper rmqHelper;
 
     @Before
-    public void setUp() {
+    public void setUp() throws RemRemPublishException {
         RestAssured.port = port;
         rmqHelper.rabbitMqPropertiesInit(protocol);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);

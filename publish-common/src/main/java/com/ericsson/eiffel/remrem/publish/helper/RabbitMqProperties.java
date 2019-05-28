@@ -25,6 +25,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -48,6 +49,7 @@ public class RabbitMqProperties {
     private String username;
     private String password;
     private String domainId;
+    private boolean createExchangeIfNotExisting;
 
     private Connection rabbitConnection;
     private String protocol;
@@ -112,6 +114,14 @@ public class RabbitMqProperties {
         this.domainId = domainId;
     }
 
+    public boolean isCreateExchangeIfNotExisting() {
+        return createExchangeIfNotExisting;
+    }
+
+    public void setCreateExchangeIfNotExisting(boolean createExchangeIfNotExisting) {
+        this.createExchangeIfNotExisting = createExchangeIfNotExisting;
+    }
+
     public RMQBeanConnectionFactory getFactory() {
         return factory;
     }
@@ -136,14 +146,13 @@ public class RabbitMqProperties {
         this.rabbitConnection = rabbitConnection;
     }
 
-    public void init() {
+    public void init() throws RemRemPublishException {
         log.info("RabbitMqProperties init ...");
         if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
             initCli();
         } else {
             initService();
         }
-
         madatoryParametersCheck();
         try {
             factory.setHost(host);  
@@ -182,6 +191,7 @@ public class RabbitMqProperties {
         } catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage(), e);            
         }
+        checkAndCreateExchangeIfNeeded();
     }
 
     /**
@@ -242,13 +252,14 @@ public class RabbitMqProperties {
         tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
         exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
+        createExchangeIfNotExisting = Boolean.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
     }
 
     private String getValuesFromSystemProperties(String propertyName) {
         return System.getProperty(propertyName);
     }
 
-    /****
+    /**
      * This method is used to check mandatory RabbitMQ properties.
      */
     private void madatoryParametersCheck() {
@@ -259,7 +270,96 @@ public class RabbitMqProperties {
             }
         }
     }
-    /****
+
+    /**
+     * This method is used to check for checking exchange availability, if
+     * exchange is not available creates a new exchange based on isCreateExchangeIfNotExisting true boolean property  .
+     * @throws RemRemPublishException
+     * @throws TimeoutException
+     * @throws IOException
+     */
+    public void checkAndCreateExchangeIfNeeded() throws RemRemPublishException {
+        final boolean exchangeAlreadyExist = hasExchange();
+        if (!exchangeAlreadyExist) {
+            if (isCreateExchangeIfNotExisting()) {
+                Connection connection = null;
+                try {
+                    connection = factory.newConnection();
+                } catch (final IOException | TimeoutException e) {
+                    throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::" + factory.getHost() + ":" + factory.getPort() + e.getMessage());
+                }
+                Channel channel = null;
+                try {
+                    channel = connection.createChannel();
+                } catch (final IOException e) {
+                    throw new RemRemPublishException("Exception occurred while creating Channel with Rabbitmq connection ::" + factory.getHost() + ":" + factory.getPort() + e.getMessage());
+                }
+                try {
+                    channel.exchangeDeclare(exchangeName, "topic", true);
+                } catch (final IOException e) {
+                    log.info(exchangeName + "failed to create an exchange");
+                    throw new RemRemPublishException("Unable to create Exchange with Rabbitmq connection " + exchangeName + factory.getHost() + ":" + factory.getPort() + e.getMessage());
+                } finally {
+                    if (channel == null || channel.isOpen()) {
+                        try {
+                            channel.close();
+                            connection.close();
+                        } catch (IOException | TimeoutException e) {
+                            log.warn("Exception occurred while closing the channel" + e.getMessage());
+                        }
+                    }
+                }
+            } else {
+                if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+                    throw new RemRemPublishException(exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_SERVICE);
+                } else {
+                    throw new RemRemPublishException("Exchange " + exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_CLI);
+                }
+            }
+        }
+    }
+
+    /**
+     * This method is used to check exchange exists or not
+     * @return Boolean
+     * @throws RemRemPublishException
+     * @throws TimeoutException
+     * @throws IOException
+     */
+    private boolean hasExchange() throws RemRemPublishException {
+        log.info("Exchange is: " + exchangeName);
+        Connection connection;
+        try {
+            connection = factory.newConnection();
+        } catch (final IOException | TimeoutException e) {
+            throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::" + factory.getHost() + factory.getPort() + e.getMessage());
+        }
+        Channel channel = null;
+        try {
+            channel = connection.createChannel();
+        } catch (final IOException e) {
+            log.info("Exchange " + exchangeName + " does not Exist");
+            throw new RemRemPublishException("Exception occurred while creating Channel with Rabbitmq connection ::" + factory.getHost() + factory.getPort() + e.getMessage());
+        }
+        try {
+            channel.exchangeDeclarePassive(exchangeName);
+            return true;
+        } catch (final IOException e) {
+            log.info("Exchange " + exchangeName + " does not Exist");
+            return false;
+        } finally {
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                    connection.close();
+                } catch (IOException | TimeoutException e) {
+                    log.warn("Exception occurred while closing the channel" + e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
      * This method is used to publish the message to RabbitMQ
      * @param routingKey
      * @param msg is Eiffel Event
@@ -293,7 +393,7 @@ public class RabbitMqProperties {
                 exchangeName, routingKey);
     }
 
-    /***
+    /**
      * This method is used to give random channel
      * @return channel
      */

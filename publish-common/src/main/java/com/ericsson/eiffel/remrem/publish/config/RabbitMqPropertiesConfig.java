@@ -45,7 +45,7 @@ public class RabbitMqPropertiesConfig {
     @Value("${rabbitmq.instances.jsonlist:{null}}")
     private String rabbitmqInstancesJsonListContent;
 
-    @Value("${jasypt.encryptor.password}")
+    @Value("${jasypt.encryptor.password:{null}}")
     private String jasyptPassword;
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
@@ -109,6 +109,7 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setPassword(DecryptionUtils.decryptString(rabbitmqInstanceObject.get("password").asText(), jasyptPassword));
                 rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").asText());
                 rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
+                rabbitMqProperties.setCreateExchangeIfNotExisting(rabbitmqInstanceObject.get("createExchangeIfNotExisting").asBoolean());
                 rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").asText());
 
                 rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
@@ -147,6 +148,9 @@ public class RabbitMqPropertiesConfig {
                     rabbitMqPropertiesMap.get(protocol).setExchangeName(entry.getValue().toString());
                 } else if (key.contains("rabbitmq.domainId")) {
                     rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
+                }
+                else if (key.contains("rabbitmq.createExchangeIfNotExisting")) {
+                    rabbitMqPropertiesMap.get(protocol).setCreateExchangeIfNotExisting(Boolean.parseBoolean(entry.getValue().toString()));
                 }
             }
         }

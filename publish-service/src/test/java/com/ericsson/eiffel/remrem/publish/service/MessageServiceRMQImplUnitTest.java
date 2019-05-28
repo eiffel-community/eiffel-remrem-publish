@@ -15,6 +15,7 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -37,6 +38,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
@@ -50,17 +52,19 @@ public class MessageServiceRMQImplUnitTest {
     
     @Autowired
     private MsgService msgServices[];
-    
-    @Autowired
+
+    @Autowired 
     @Qualifier("messageServiceRMQImpl")
     MessageService messageService;
-    
-    @Autowired @Qualifier("rmqHelper") 
+
+    @Autowired
+    @Qualifier("rmqHelper") 
     RMQHelper rmqHelper;
     private static final String protocol = "eiffelsemantics";
     private static final String host= "127.0.0.1";
     private static final String exchangeName= "amq.direct";
     private static final String domainId= "eiffelxxx";
+    private boolean createExchangeIfNotExisting = true;
 
     @PostConstruct public void setUp() throws Exception {
         rmqHelper.getRabbitMqPropertiesMap().put(protocol, new RabbitMqProperties());
@@ -70,14 +74,52 @@ public class MessageServiceRMQImplUnitTest {
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
     }
-    
+
+    /**
+     * This test case is used to check and create an exchange based on
+     * createExchangeIfNotExisting value If createExchangeIfNotExisting is true and
+     * exchange is not available then exchange is created. If it fails to create an
+     * exchange it will throw an Exception.
+     */
+    @Test
+    public void testCreateExchangeIfNotExistingEnable() throws RemRemPublishException {
+        boolean ExceptionOccured = false;
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName("nonexistexchangename");
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setCreateExchangeIfNotExisting(createExchangeIfNotExisting);
+        try {
+            rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+        } catch (RemRemPublishException e) {
+            ExceptionOccured = true;
+        } finally {
+            rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
+            rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+        }
+        assertFalse("An exception occured while creating a exchange", ExceptionOccured);
+    }
+
+    /**
+     * This test case is used to check whether it will throw
+     * RemRemPublishException when CreateExchangeIfNotExisting is false and
+     * exchange is not available.
+     */
+    @Test(expected = RemRemPublishException.class)
+    public void testCreateExchangeIfNotExistingDisable() throws RemRemPublishException  {
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName("test76888");
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setCreateExchangeIfNotExisting(false);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+
+    }
+
     @Test public void sendNormal() throws Exception {
         Map<String, String> map = new HashMap<String, String>();
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         map.put("test", "test");
         messageService.send(map, map, msgService);
     }
-    
+
     @Test public void testSingleSuccessfulEvent() throws Exception {
         String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         JsonArray jarray = new JsonArray();
@@ -89,7 +131,7 @@ public class MessageServiceRMQImplUnitTest {
         }
         assertEquals(Expected, jarray.toString());
     }
-    
+
     @Test public void testSingleFailedEvent() throws Exception {
         String body = FileUtils.readFileToString(new File("src/test/resources/Invalid_EiffelActivityFinishedEvent.json"));
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
@@ -101,7 +143,7 @@ public class MessageServiceRMQImplUnitTest {
         }
         assertEquals(Expected, jarray.toString());
     }
-    
+
     @Test public void testMultipleFailedEvents() throws Exception {
         String body = FileUtils.readFileToString(new File("src/test/resources/MultipleInvalidEvents.json"));
         JsonArray jarray = new JsonArray();
@@ -114,6 +156,7 @@ public class MessageServiceRMQImplUnitTest {
         }
         assertEquals(Expected, jarray.toString());
     }
+
     @Test public void testMultipleSuccessfulEvents() throws Exception {
         String body = FileUtils.readFileToString(new File("src/test/resources/MultipleValidEvents.json"));
         String Expected="[{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a1\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a2\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a3\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";

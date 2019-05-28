@@ -26,16 +26,21 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 import com.rabbitmq.client.Connection;
 
-
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ RabbitMqProperties.class, RMQHelper.class })
 public class RMQHelperUnitTest {
 
     private static final String mBusHost= "HostA";
@@ -47,6 +52,7 @@ public class RMQHelperUnitTest {
     private static final String usePersistence= "1.2";
     private static final String domainId= "eiffelxxx";
     private String protocol = "eiffelsemantics";
+    private String createExchange = "true";
 
     @InjectMocks
     RMQHelper rmqHelper;
@@ -54,8 +60,8 @@ public class RMQHelperUnitTest {
     @Mock RMQBeanConnectionFactory factory;
     @Mock Connection mockConnection;
     @Mock com.rabbitmq.client.Channel mockChannel;
-    RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
     @Mock RabbitMqPropertiesConfig rabbitMqPropertiesConfig;
+    RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
 
     Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
@@ -64,9 +70,10 @@ public class RMQHelperUnitTest {
         Mockito.doNothing().when(factory).useSslProtocol();
         Mockito.when(factory.newConnection()).thenReturn(mockConnection);
         Mockito.when(mockConnection.createChannel()).thenReturn(mockChannel);
+        PowerMockito.whenNew(RabbitMqProperties.class).withNoArguments().thenReturn(rabbitMqProperties);
         initProperties();
+        rabbitMqProperties.setFactory(factory);
         rmqHelper.rabbitMqPropertiesInit(protocol);
-        rmqHelper.rabbitMqPropertiesMap.get(protocol).setFactory(factory);
     }
 
     @After public void tearDown() throws Exception {
@@ -89,6 +96,8 @@ public class RMQHelperUnitTest {
         System.setProperty(key, tlsVer);
         key = PropertiesConfig.USE_PERSISTENCE;
         System.setProperty(key, usePersistence);
+        key = PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING;
+        System.setProperty(key, createExchange);
         key = PropertiesConfig.DOMAIN_ID;
         System.setProperty(key, domainId);
     }
@@ -108,6 +117,8 @@ public class RMQHelperUnitTest {
         System.clearProperty(key);
         key = PropertiesConfig.USE_PERSISTENCE;
         System.clearProperty(key);
+        key = PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING;
+        System.setProperty(key, createExchange);
         key = PropertiesConfig.DOMAIN_ID;
         System.clearProperty(key);
     }
