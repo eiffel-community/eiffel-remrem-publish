@@ -58,11 +58,16 @@
         <p>If running with java command, example:</p>
         <pre>java -jar publish-service/target/publish-service-x.x.x.war --properties.parameter1=value --properties.parameter2=value --properties.parameter3=value ......</pre>
         <p>It is also possible to provide path to the spring properties file:</p>
-        <pre>java -jar publish-service/target/publish-service-x.x.x.war --spring.config.location=path/to/applicattion.propeties</pre>
+        <pre>java -jar publish-service/target/publish-service-x.x.x.war --spring.config.location=path/to/application.properties</pre>
 
         <p>Second option to execute RemRem-Publish is to execute maven commands from the source code root folder, example:</p>
         <pre>mvn spring-boot:run -Dspring-boot.run.arguments=--properties.parameter1=value,--properties.parameter2=value,--properties.parameter3=value,--properties.parameter4=value ......</pre>
         <p>When using maven command, Spring properties can also be changed by editing publish-service/src/main/resources/application.properties file.</p>
+       
+        <p>Application launch is terminated if exchange is unavailable and createExchangeIfNotExisting is set to false.
+        Application can create exchange by adding createExchangeIfNotExisting property in existing rabbitmq.instances.jsonlist in application.properties file.
+        </p>
+       <p>eg: rabbitmq.instances.jsonlist=[{"existing properties": "values","createExchangeIfNotExisting":false }].</p>
 
         <h4>Running and configuring in Tomcat</h4>
         <p>Eiffel REMReM Service <strong>publish-service.war</strong> file is deployed in Tomcat Server.
@@ -73,15 +78,15 @@
         <p><strong>NOTE:</strong> in each example assuming the publish-service.war is deployed in tomcat as <strong>publish</strong>.</p>
 
 
-		<h3>Jasypt configurations</h3>
+        <h3>Jasypt configurations</h3>
         <p>Jasypt Spring Boot provides Encryption support for property sources(passwords, secret info ..etc) in Spring Boot Applications.
         To support this functionality in our application we need to add the following property in property file</p>
 
-		<code>jasypt.encryptor.password: The key value which was used while encrypting the original password</code>
+        <code>jasypt.encryptor.password: The key value which was used while encrypting the original password</code>
 
-		<p>The above encryptor password must be same for both encryption and decryption of the original password(ldap,rabbitmq...etc) <br>
-		The encryptor password  will be used by jasypt-spring-boot library in application to decrypt the encrypted password at runtime.</p>
-		<h4>How to encrypt the password:</h4>
+        <p>The above encryptor password must be same for both encryption and decryption of the original password(ldap,rabbitmq...etc) <br>
+        The encryptor password  will be used by jasypt-spring-boot library in application to decrypt the encrypted password at runtime.</p>
+        <h4>How to encrypt the password:</h4>
 <pre>
 1) Download the jasypt jar file from any of the below locations
 <a href="http://www.jasypt.org/download.html">Link to Jasypt</a> (or) <a href = "https://mvnrepository.com/artifact/org.jasypt/jasypt/1.9.2">Link to Maven</a>
@@ -112,11 +117,11 @@ output:
 
     euJcvto7NtCDiWT7BKFW0A==
 </pre>
-	<p>Use the above encrypted password in your property file like this <strong>ENC(&lt;encrypted password&gt)</strong></p>
-	<code>Ex:rabbitmq.password: ENC(euJcvto7NtCDiWT7BKFW0A ==)</code>
-	<p><strong>Note: REMReM will work without jasypt encryption also but if you have encrypted any text using jasypt library 
-	then </strong><em>jasypt.encryptor.password </em> <strong>property should be present in property file </strong></p> 
-	
+    <p>Use the above encrypted password in your property file like this <strong>ENC(&lt;encrypted password&gt)</strong></p>
+    <code>Ex:rabbitmq.password: ENC(euJcvto7NtCDiWT7BKFW0A ==)</code>
+    <p><strong>Note: REMReM will work without jasypt encryption also but if you have encrypted any text using jasypt library 
+    then </strong><em>jasypt.encryptor.password </em> <strong>property should be present in property file </strong></p> 
+
         <h3>Exchange configurations</h3>
 
         <p>These parameters are related to RabbitMQ Server, which will be used for publishing events:</p>
@@ -128,9 +133,13 @@ output:
 &lt;protocol&gt;.rabbitmq.password:      &lt;password, default for RabbitMQ Server: guest&gt;
 &lt;protocol&gt;.rabbitmq.tls:           &lt;tls version, is optional&gt;
 &lt;protocol&gt;.rabbitmq.exchangeName:  &lt;exchange name, exchange should be already created on RabbitMQ Server&gt;
+&lt;protocol&gt;.rabbitmq.createExchangeIfNotExisting:  &lt;create Exchange if not present on RabbitMQ Server&gt;
 &lt;protocol&gt;.rabbitmq.domainId:      &lt;domain id, any string&gt;</pre>
 
-        <p>An <a href="https://www.rabbitmq.com/tutorials/tutorial-three-java.html">exchange point</a> must exist before starting the service.</p>
+        <p>Application launch is terminated if exchange is unavailable and createExchangeIfNotExisting is set to false.
+        Application can create the exchange by adding the below property in config.properties file
+        </p>
+        <p>eg: protocol.rabbitmq.createExchangeIfNotExisting: true.</p>
 
         <p><code>&lt;protocol&gt;</code> is name of the protocol used (eg: <code>eiffelsemantics</code>).
         </p>
