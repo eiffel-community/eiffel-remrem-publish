@@ -1,3 +1,6 @@
+## 1.0.4
+- Fixed publish-CLI by making necessary code change in publish-common.
+
 ## 1.0.3
 - Fixed broken application properties while encrypting/decrypting open text properties.
 

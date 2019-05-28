@@ -45,7 +45,7 @@ public class RabbitMqPropertiesConfig {
     @Value("${rabbitmq.instances.jsonlist:{null}}")
     private String rabbitmqInstancesJsonListContent;
 
-    @Value("${jasypt.encryptor.password}")
+    @Value("${jasypt.encryptor.password:{null}}")
     private String jasyptPassword;
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
