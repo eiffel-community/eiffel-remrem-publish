@@ -27,10 +27,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class GenerateURLTemplate {
 
-    @Value("${generate.server.uri}")
+    @Value("${generate.server.uri:{null}}")
     private String generateServerUri;
 
-    @Value("${generate.server.path}")
+    @Value("${generate.server.path:{null}}")
     private String generateServerPath;
 
 	public String getGenerateServerUri() {

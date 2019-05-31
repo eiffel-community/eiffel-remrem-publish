@@ -1,5 +1,5 @@
 ## 1.0.5
-- Fixed generateAndPublish endpoint.
+- Fixed generateAndPublish endpoint to load generate server properties from config.properties file.
 - Added functionality to load Generate server properties from JAVA_OPTS.
 
 ## 1.0.4

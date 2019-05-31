@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -167,11 +168,11 @@ public class RabbitMqPropertiesConfig {
      * This method is used to load generate server configuration from JAVA_OPTS.
      */
     private void loadGenerateConfigurationBasedOnSystemProperties() {
-        if (generateURLTemplate.getGenerateServerUri() == null) {
+        if (StringUtils.isBlank(generateURLTemplate.getGenerateServerUri())) {
             generateURLTemplate.setGenerateServerUri(System.getProperty(GENERATE_SERVER_URI));
         }
 
-        if (generateURLTemplate.getGenerateServerPath() == null) {
+        if (StringUtils.isBlank(generateURLTemplate.getGenerateServerPath())) {
             generateURLTemplate.setGenerateServerPath(System.getProperty(GENERATE_SERVER_PATH));
         }
     }
