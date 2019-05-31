@@ -37,6 +37,7 @@ import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstant
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
+import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.ericsson.eiffel.remrem.shared.VersionService;

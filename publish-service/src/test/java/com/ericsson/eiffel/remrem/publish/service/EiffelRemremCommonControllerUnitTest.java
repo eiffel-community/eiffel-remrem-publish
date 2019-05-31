@@ -40,7 +40,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
-import com.ericsson.eiffel.remrem.publish.controller.GenerateURLTemplate;
+import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.ericsson.eiffel.remrem.publish.controller.ProducerController;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;

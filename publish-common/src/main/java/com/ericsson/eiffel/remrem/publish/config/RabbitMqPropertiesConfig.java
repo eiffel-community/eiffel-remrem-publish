@@ -29,6 +29,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
+import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -50,6 +51,11 @@ public class RabbitMqPropertiesConfig {
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
+    @Autowired
+    private GenerateURLTemplate generateURLTemplate;
+    private static final String GENERATE_SERVER_URI = "generate.server.uri";
+    private static final String GENERATE_SERVER_PATH = "generate.server.path";
+
     /***
      * This method is used to give RabbitMq properties based on protocol
      * 
@@ -64,9 +70,9 @@ public class RabbitMqPropertiesConfig {
             readSpringProperties();
         } else {
             log.info("Catalina Properties configuration provided. Populating Rabbitmq properties to rabbitMqPropertiesMap object.");
-            populateRabbitMqConfigurationsBasedOnCatalinaProperties(map);
-
+            populateConfigurationsBasedOnCatalinaProperties(map);
         }
+        loadGenerateConfigurationBasedOnSystemProperties();
         return rabbitMqPropertiesMap;
     }
 
@@ -119,12 +125,12 @@ public class RabbitMqPropertiesConfig {
     }
 
     /***
-     * Writes RabbitMq catalina properties to RabbitMq instances properties map object.
+     * Writes RabbitMq catalina properties to RabbitMq instances properties map object and set Generate server properties.
      * 
      * @param map
      *            RabbitMq instances map object.
      */
-    private void populateRabbitMqConfigurationsBasedOnCatalinaProperties(Map<String, Object> map) {
+    private void populateConfigurationsBasedOnCatalinaProperties(Map<String, Object> map) {
         final String jasyptSecretPassword = (String) map.get("jasypt.encryptor.password");
         for (Entry<String, Object> entry : map.entrySet()) {
             final String key = entry.getKey();
@@ -149,6 +155,24 @@ public class RabbitMqPropertiesConfig {
                     rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
                 }
             }
+        }
+        final String generateServerUri = (String) map.get(GENERATE_SERVER_URI);
+        generateURLTemplate.setGenerateServerUri(generateServerUri);
+
+        final String generateServerPath = (String) map.get(GENERATE_SERVER_PATH);
+        generateURLTemplate.setGenerateServerPath(generateServerPath);
+    }
+
+    /***
+     * This method is used to load generate server configuration from JAVA_OPTS.
+     */
+    private void loadGenerateConfigurationBasedOnSystemProperties() {
+        if (generateURLTemplate.getGenerateServerUri() == null) {
+            generateURLTemplate.setGenerateServerUri(System.getProperty(GENERATE_SERVER_URI));
+        }
+
+        if (generateURLTemplate.getGenerateServerPath() == null) {
+            generateURLTemplate.setGenerateServerPath(System.getProperty(GENERATE_SERVER_PATH));
         }
     }
 }
