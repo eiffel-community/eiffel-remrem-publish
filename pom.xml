@@ -9,7 +9,7 @@
         <version>1.0.0</version>
     </parent>
     <properties>
-        <eiffel-remrem-publish.version>1.0.4</eiffel-remrem-publish.version>
+        <eiffel-remrem-publish.version>1.0.5</eiffel-remrem-publish.version>
         <eiffel-remrem-shared.version>1.0.0</eiffel-remrem-shared.version>
         <eiffel-remrem-semantics.version>1.0.1</eiffel-remrem-semantics.version>
     </properties>
