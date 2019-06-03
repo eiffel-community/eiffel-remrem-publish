@@ -33,23 +33,23 @@ public class GenerateURLTemplate {
     @Value("${generate.server.path:{null}}")
     private String generateServerPath;
 
-	public String getGenerateServerUri() {
-		return generateServerUri;
-	}
+    public String getGenerateServerUri() {
+        return generateServerUri;
+    }
 
-	public void setGenerateServerUri(String generateServerUri) {
-		this.generateServerUri = generateServerUri;
-	}
+    public void setGenerateServerUri(String generateServerUri) {
+        this.generateServerUri = generateServerUri;
+    }
 
-	public String getGenerateServerPath() {
-		return generateServerPath;
-	}
+    public String getGenerateServerPath() {
+        return generateServerPath;
+    }
 
-	public void setGenerateServerPath(String generateServerPath) {
-		this.generateServerPath = generateServerPath;
-	}
+    public void setGenerateServerPath(String generateServerPath) {
+        this.generateServerPath = generateServerPath;
+    }
 
-	public String getUrl() {
+    public String getUrl() {
         return generateServerUri + generateServerPath + "/{mp}?msgType={msgType}";
     }
 
