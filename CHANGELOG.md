@@ -1,3 +1,10 @@
+## 2.0.2
+- Uplifted eiffel-remrem-parent version from 2.0.0 to 2.0.1.
+- Uplifted eiffel-remrem-shared version from 2.0.0 to 2.0.1.
+- Uplifted eiffel-remrem-semantics version from 2.0.4 to 2.0.5.
+- Fixed generateAndPublish endpoint to load generate server properties from config.properties file.
+- Added functionality to load Generate server properties from JAVA_OPTS.
+
 ## 2.0.1
 - Fix for Invalid exchange return success. Added a createExchangeIfNotExisting property to create an exchange.
 - For CLI Added a option create_exchange or ce to create Exchange.
