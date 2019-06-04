@@ -39,7 +39,7 @@ import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.ericsson.eiffel.remrem.shared.VersionService;
 import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
-import com.ericsson.eiffel.remrem.publish.controller.GenerateURLTemplate;
+import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonElement;
