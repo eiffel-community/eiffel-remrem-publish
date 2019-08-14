@@ -74,8 +74,18 @@
             For doing this, publish-service.war file should deployed in directory: <em>tomcat/webapps</em>.
         </p>
 
-        <p>Configuration is done in Tomcat using a config.properties file: <em>tomcat/conf/config.properties</em>.</p>
+        <p>Configuration is done in Tomcat using a application.properties file: <em>tomcat/conf/application.properties</em>.</p>
+        <p>The application.properties configuration file should be passed via environmental variables.</p>
+        <p>Set Java property <em>"SPRING_CONFIG_LOCATION=%CATALINA_HOME%\conf\application.properties"</em> in setenv file in bin folder.</p>
+        <p>Start the application from Tomcat. This will read the application.properties which are given in conf folder.</p>
         <p><strong>NOTE:</strong> in each example assuming the publish-service.war is deployed in tomcat as <strong>publish</strong>.</p>
+
+        <h4>Running and configuring in Tomcat in Linux</h4>
+        <p>If you are using linux machine, please follow the below steps</p>
+        <p>Add the file <em>application.properties</em> to  <em>%CATALINA_HOME%\conf</em></p>
+        <p>Add <em>export JAVA_OPTS="$JAVA_OPTS -Dspring.config.location=/path/to/file/application.properties"</em> in setenv.sh in <em>tomcat/bin</em></p>
+        <p>Set the System_JAVA_OPTS as <em>set JAVA_OPTS = "-Dspring.config.location=$path/to/application.properties"</em> in catalina.sh in bin folder</p>
+        <p>Start the application from Tomcat</p>
 
 
         <h3>Jasypt configurations</h3>
