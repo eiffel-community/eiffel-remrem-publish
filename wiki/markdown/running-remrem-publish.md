@@ -8,7 +8,7 @@ To run RemRem-Publish from source code root directory with maven command and Rem
 
 Run RemRem-Publish with external configuration file:
 
-    mvn clean spring-boot:run -Dlogging.level.root=DEBUG -Dspring.config.location=/path/to/application.properties
+    mvn spring-boot:run -Dlogging.level.root=DEBUG -Dspring.config.location=/path/to/application.properties
 
 All available RemRem-Publihs properties can be found in [application.properties](https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/publish-service/src/main/resources/application.properties) example file.
 
