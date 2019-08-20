@@ -164,7 +164,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
-                    <fork>true</fork>
                     <skip>false</skip>
                 </configuration>
                 <executions>
