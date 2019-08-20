@@ -146,13 +146,13 @@ public class EiffelRemremCommonControllerUnitTest {
         String mp = "eiffelsemantics";
         String msgType = "eiffelactivityfinished";
         String generateServerUri = null;
-        String generateServerPath = null;
+        String generateServerContextPath = "";
 
         Map<String, String> map = new HashMap<>();
         map.put("mp", mp);
         map.put("msgType", msgType);
 
-        String correctURL = generateServerUri + generateServerPath + "/{mp}?msgType={msgType}";
+        String correctURL = generateServerUri + "/" + generateServerContextPath + "/{mp}?msgType={msgType}";
 
         Map<String, String> mapTest = generateURLTemplate.getMap(mp, msgType);
 

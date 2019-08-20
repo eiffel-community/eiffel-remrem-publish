@@ -176,7 +176,7 @@ public class RabbitMqPropertiesConfig {
             generateURLTemplate.setGenerateServerUri(System.getProperty(GENERATE_SERVER_URI));
         }
 
-        if (StringUtils.isBlank(generateURLTemplate.getGenerateServerPath())) {
+        if (StringUtils.isBlank(generateURLTemplate.getGenerateServerContextPath())) {
             generateURLTemplate.setGenerateServerPath(System.getProperty(GENERATE_SERVER_PATH));
         }
     }
