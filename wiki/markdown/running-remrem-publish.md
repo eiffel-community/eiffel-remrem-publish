@@ -20,7 +20,7 @@ It is also possible to build and run RemRem-Publish war file, from publish-servi
 
 Or:
 
-    java -jar target/publish-service.war -Dlogging.level.root=DEBUG -Dspring.config.location=/path/to/application.properties
+    java -jar target/publish-service.war --logging.level.root=DEBUG --spring.config.location=/path/to/application.properties
 
 And it also possible to execute RemRem-Publish a Tomcat instance:
 
