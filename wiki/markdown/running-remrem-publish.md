@@ -22,9 +22,9 @@ Or:
 
     java -jar publish-service/target/publish-service.war --logging.level.root=DEBUG --spring.config.location=/path/to/application.properties
 
-And it also possible to execute RemRem-Publish a Tomcat instance:
+It is also possible to execute RemRem-Publish in a Tomcat instance:
 
-**1** Place publish-serice.war in Tomcat webapp folder, often in (catalina home folder)/webapp.
+**1** Place publish-serice.war file in Tomcat webapp folder, which commonly has the path: (catalina home)/webapp.
 
 **2** Place the RemRem-Publish application.properties file in (catalina home)/config folder. Create config folder if it is not existing.
 
