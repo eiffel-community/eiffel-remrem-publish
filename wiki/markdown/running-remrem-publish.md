@@ -1,4 +1,4 @@
-## Running RemRem-Publish
+# Running RemRem-Publish
 
 RemRem-Publish can be run from source code with maven command and with RemRem-Publish artifact with Java command or in a Tomcat instance.
 
@@ -10,7 +10,7 @@ Run RemRem-Publish with external configuration file:
 
     mvn spring-boot:run -Dlogging.level.root=DEBUG -Dspring.config.location=/path/to/application.properties
 
-All available RemRem-Publihs properties can be found in [application.properties](https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/publish-service/src/main/resources/application.properties) example file.
+All available RemRem-Publish properties can be found in [application.properties](https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/publish-service/src/main/resources/application.properties) example file.
 
 
 It is also possible to build and run RemRem-Publish war file, from publish-service folder:
