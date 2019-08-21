@@ -16,11 +16,11 @@ All available RemRem-Publish properties can be found in [application.properties]
 It is also possible to build and run RemRem-Publish war file, from publish-service folder:
 
     mvn package -DskipTests
-    java -jar target/publish-service.war -Dlogging.level.root=DEBUG -Dgenerate.server.uri=http://127.0.0.1:8080
+    java -jar publish-service/target/publish-service.war -Dlogging.level.root=DEBUG -Dgenerate.server.uri=http://127.0.0.1:8080
 
 Or:
 
-    java -jar target/publish-service.war --logging.level.root=DEBUG --spring.config.location=/path/to/application.properties
+    java -jar publish-service/target/publish-service.war --logging.level.root=DEBUG --spring.config.location=/path/to/application.properties
 
 And it also possible to execute RemRem-Publish a Tomcat instance:
 
