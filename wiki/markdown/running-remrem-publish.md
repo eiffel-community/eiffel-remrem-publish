@@ -30,3 +30,5 @@ And it also possible to execute RemRem-Publish a Tomcat instance:
 
 **3** Start Tomcat instance and RemRem-Publish should be started with the provided configuration in config folder.
 
+
+RemRem-Publish and Spring properties can be loaded in several ways which is documented in [Spring documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html)
