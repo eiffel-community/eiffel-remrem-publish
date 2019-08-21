@@ -29,8 +29,8 @@ public class GenerateURLTemplate {
     @Value("${generate.server.uri:{null}}")
     private String generateServerUri;
 
-    @Value("${generate.server.path:{null}}")
-    private String generateServerPath;
+    @Value("${generate.server.contextpath:{null}}")
+    private String generateServerContextPath;
 
     public String getGenerateServerUri() {
         return generateServerUri;
@@ -40,16 +40,19 @@ public class GenerateURLTemplate {
         this.generateServerUri = generateServerUri;
     }
 
-    public String getGenerateServerPath() {
-        return generateServerPath;
+    public String getGenerateServerContextPath() {
+        return generateServerContextPath;
     }
 
-    public void setGenerateServerPath(String generateServerPath) {
-        this.generateServerPath = generateServerPath;
+    public void setGenerateServerPath(String generateServerContextPath) {
+        this.generateServerContextPath = generateServerContextPath;
     }
 
     public String getUrl() {
-        return generateServerUri + generateServerPath + "/{mp}?msgType={msgType}";
+        if (generateServerContextPath != null && generateServerContextPath.startsWith("/")) {
+            return generateServerUri + generateServerContextPath + "/{mp}?msgType={msgType}";
+        }
+        return generateServerUri + "/" + (generateServerContextPath == null ? "" : generateServerContextPath) + "/{mp}?msgType={msgType}";
     }
 
     public Map<String, String> getMap(final String mp, final String msgType) {
