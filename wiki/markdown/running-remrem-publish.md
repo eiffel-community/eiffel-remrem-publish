@@ -26,7 +26,7 @@ And it also possible to execute RemRem-Publish a Tomcat instance:
 
 **1** Place publish-serice.war in Tomcat webapp folder, often in (catalina home folder)/webapp.
 
-**2** Place the RemRem-Publish application.properties file in (catalina home folder)/config folder. Create config folder if it is not existing.
+**2** Place the RemRem-Publish application.properties file in (catalina home)/config folder. Create config folder if it is not existing.
 
 **3** Start Tomcat instance and RemRem-Publish should be started with the provided configuration in config folder.
 
