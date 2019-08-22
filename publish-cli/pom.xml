@@ -136,8 +136,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.ericsson.eiffel.remrem.publish.cli.CLI</mainClass>
-                    <fork>true</fork>
-                    <skip>false</skip>
+                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>

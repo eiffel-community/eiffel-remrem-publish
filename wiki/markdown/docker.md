@@ -15,27 +15,27 @@ With the Docker image user can try-out the RemRem-Publish on a Docker Host or in
 
 ## Follow these step to build the Docker image.
 
-1. Execute maven install to build the all components and RemRem-Publish
-`mvn install -DskipTests`
+**1** Execute maven install to build the all components and RemRem-Publish
+    
+    mvn install -DskipTests
 
 This will produce a war file in the "publish-service/target" folder.
 
-2. Change to publish-service directory: 
-`cd publish-service`
+**2** Change to publish-service directory: 
+    
+    cd publish-service
 
-3. Build the Docker image with the war file that was produced from previous step: 
-
-
-`docker build -t remrem-publish --build-arg URL=./target/publish-service-<version>.war -f src/main/docker/Dockerfile .` 
+**3** Build the Docker image with the war file that was produced from previous step: 
+    
+    docker build -t remrem-publish --build-arg URL=./target/publish-service-<version>.war -f src/main/docker/Dockerfile . 
 
 
 Now docker image is built with tag "remrem-publish"
 
 ## Run Docker image on local Docker Host
 To run the produced docker image on the local Docker host, execute this command: 
-
-
-`docker run -p 8080:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG remrem-publish`
+    
+    docker run -p 8080:8080 --expose 8080 -e server.port=8080 -e logging.level.log.level.root=DEBUG -e logging.level.org.springframework.web=DEBUG -e logging.level.com.ericsson.ei=DEBUG remrem-publish
 
 RabbitMq and other RemRem-Publish required components need to be running and configured via application properties that is provided to the docker command above. See the application.properties file for all available/required properties:
 [application.properties](https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/publish-service/src/main/resources/application.properties)
@@ -72,10 +72,11 @@ When RemRem-Publish container is running on your local Docker host, RemRem-Publi
 
 
 Another option to configure RemRem-Publish is to provide the application properties file into the container, which can be made in two ways:
-1. Put application.properties file in Tomcat Catalina config folder in container and run RemRem-Publish:
 
-`docker run -p 8080:8080 --expose 8080 --volume /path/to/application.properties:/usr/local/tomcat/config/application.properties remrem-publish`
+**1** Put application.properties file in Tomcat Catalina config folder in container and run RemRem-Publish:
+    
+    docker run -p 8080:8080 --expose 8080 --volume /path/to/application.properties:/usr/local/tomcat/config/application.properties remrem-publish
 
-2. Put application.properties file in a different folder in container and tell RemRem-Publish where the application.properties is located in the container:
-
-`docker run -p 8080:8080 --expose 8080 --volume /path/to/application.properties:/tmp/application.properties -e spring.config.location=/tmp/application.properties remrem-publish`
+**2** Put application.properties file in a different folder in container and tell RemRem-Publish where the application.properties is located in the container:
+    
+    docker run -p 8080:8080 --expose 8080 --volume /path/to/application.properties:/tmp/application.properties -e spring.config.location=/tmp/application.properties remrem-publish
