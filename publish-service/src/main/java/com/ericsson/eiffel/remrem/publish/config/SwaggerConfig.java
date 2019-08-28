@@ -15,9 +15,20 @@
 package com.ericsson.eiffel.remrem.publish.config;
 
 import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
+import com.ericsson.eiffel.remrem.publish.controller.ProducerController;
+
+import ch.qos.logback.classic.Logger;
 import io.swagger.annotations.Api;
+
+import java.io.IOException;
+import java.util.Properties;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -32,6 +43,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
+        private Logger logger = (Logger) LoggerFactory.getLogger(SwaggerConfig.class);
+        
+        @Autowired
+        Environment environment;
+        
         @Bean
         public Docket api() {
                 return new Docket(DocumentationType.SWAGGER_2)
@@ -49,6 +65,9 @@ public class SwaggerConfig {
         }
 
         private ApiInfo metaData() {
+                // Retrieving RemRem-Publish version from publish-service pom file. 
+                String version = environment.getProperty("REMREM_PUBLISH_VERSION");
+                System.out.println("Version: " + version);
                 final StringBuilder remremDescription = new StringBuilder();
                 remremDescription.append("REMReM (REST Mailbox for Registered Messages) Publish "
                         + "for publish validated Eiffel messages on a RabbitMQ message bus. ");
@@ -56,6 +75,7 @@ public class SwaggerConfig {
 
                 return new ApiInfoBuilder()
                         .title("Eiffel REMReM Publish Service")
+                        .version(version)
                         .description(remremDescription.toString())
                         .build();
         }

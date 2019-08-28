@@ -165,6 +165,9 @@
                 <configuration>
                     <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
                     <skip>false</skip>
+                    <environmentVariables>
+                        <REMREM_PUBLISH_VERSION>${eiffel-remrem-publish.version}</REMREM_PUBLISH_VERSION>
+                    </environmentVariables>
                 </configuration>
                 <executions>
                     <execution>
