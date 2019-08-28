@@ -4,17 +4,27 @@ RemRem-Publish can be run from source code with maven command and with RemRem-Pu
 
 ## Maven
 
+### Running RemRem-Publish service
+
 To run RemRem-Publish from source code root directory with maven command and RemRem-Publish Spring/Java properties provided on command line:
 
-    mvn spring-boot:run -Dlogging.level.root=DEBUG -Dgenerate.server.uri=http://127.0.0.1:8080
+    mvn -pl publish-service -am spring-boot:run -Dlogging.level.root=DEBUG -Dgenerate.server.uri=http://127.0.0.1:8080
 
 Run RemRem-Publish with external configuration file:
 
-    mvn spring-boot:run -Dlogging.level.root=DEBUG -Dspring.config.location=/path/to/application.properties
+    mvn -pl publish-service -am spring-boot:run -Dlogging.level.root=DEBUG -Dspring.config.location=/path/to/application.properties
 
 All available RemRem-Publish properties can be found in [application.properties](https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/publish-service/src/main/resources/application.properties) example file.
 
+### Running RemRem-Publish cli
+
+RemRem-Publish cli is executed with this Maven command:
+    
+    mvn -pl publish-cli -am spring-boot:run
+
 ## Java
+
+### Running RemRem-Publish service
 
 It is also possible to build and run RemRem-Publish war file, from publish-service folder:
 
@@ -24,6 +34,11 @@ It is also possible to build and run RemRem-Publish war file, from publish-servi
 Or:
 
     java -jar publish-service/target/publish-service.war --logging.level.root=DEBUG --spring.config.location=/path/to/application.properties
+
+### Running RemRem-Publish cli
+
+    java -jar publish-cli/target/publish-cli-2.0.5.jar
+
 
 ## Tomcat
 
