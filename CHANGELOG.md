@@ -1,3 +1,14 @@
+## 2.0.6
+- Uplifted eiffel-remrem-parent version from 2.0.1 to 2.0.2.
+- Uplifted eiffel-remrem-shared version from 2.0.1 to 2.0.2.
+- Uplifted eiffel-remrem-semantics version from 2.0.5 to 2.0.6.
+
+## 2.0.5
+- Fix manifest main class issue in publish cli. 
+
+## 2.0.4
+- Fix Spring and Java properties issues.
+
 ## 2.0.3
 - Fixed /generateAndPublish Endpoint when the application is started using application.properties.
 
