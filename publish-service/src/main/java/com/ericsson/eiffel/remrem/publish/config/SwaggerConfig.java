@@ -15,13 +15,9 @@
 package com.ericsson.eiffel.remrem.publish.config;
 
 import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
-
 import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
