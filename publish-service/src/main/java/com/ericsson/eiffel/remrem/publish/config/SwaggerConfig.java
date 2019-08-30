@@ -16,10 +16,7 @@ package com.ericsson.eiffel.remrem.publish.config;
 
 import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
 
-import ch.qos.logback.classic.Logger;
 import io.swagger.annotations.Api;
-
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,10 +35,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-        
-        @Autowired
-        Environment environment;
-        
+
         @Bean
         public Docket api() {
                 return new Docket(DocumentationType.SWAGGER_2)
@@ -59,9 +53,6 @@ public class SwaggerConfig {
         }
 
         private ApiInfo metaData() {
-                // Retrieving RemRem-Publish version from publish-service pom file. 
-                String version = environment.getProperty("REMREM_PUBLISH_VERSION");
-
                 final StringBuilder remremDescription = new StringBuilder();
                 remremDescription.append("REMReM (REST Mailbox for Registered Messages) Publish "
                         + "for publish validated Eiffel messages on a RabbitMQ message bus. ");
@@ -69,7 +60,6 @@ public class SwaggerConfig {
 
                 return new ApiInfoBuilder()
                         .title("Eiffel REMReM Publish Service")
-                        .version(version)
                         .description(remremDescription.toString())
                         .build();
         }
