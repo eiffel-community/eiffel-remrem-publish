@@ -1,3 +1,6 @@
+## 2.0.7
+- Remove code changes to load config.properties from Tomcat in REMReM-Publish.
+
 ## 2.0.6
 - Uplifted eiffel-remrem-parent version from 2.0.1 to 2.0.2.
 - Uplifted eiffel-remrem-shared version from 2.0.1 to 2.0.2.

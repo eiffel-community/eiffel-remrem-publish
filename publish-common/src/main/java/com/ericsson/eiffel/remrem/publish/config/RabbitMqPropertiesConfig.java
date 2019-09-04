@@ -55,7 +55,7 @@ public class RabbitMqPropertiesConfig {
     @Autowired
     private GenerateURLTemplate generateURLTemplate;
     private static final String GENERATE_SERVER_URI = "generate.server.uri";
-    private static final String GENERATE_SERVER_PATH = "generate.server.path";
+    private static final String GENERATE_SERVER_PATH = "generate.server.contextpath";
 
     /***
      * This method is used to give RabbitMq properties based on protocol
@@ -64,39 +64,15 @@ public class RabbitMqPropertiesConfig {
      */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
-        readCatalinaProperties(map);
+        readSpringProperties();
 
-        if (map.isEmpty()) {
-            log.info("Catalina Properties configuration not provided. Trying to initiate Spring properties instead.");
-            readSpringProperties();
-        } else {
-            log.info("Catalina Properties configuration provided. Populating Rabbitmq properties to rabbitMqPropertiesMap object.");
-            populateConfigurationsBasedOnCatalinaProperties(map);
-        }
         loadGenerateConfigurationBasedOnSystemProperties();
         return rabbitMqPropertiesMap;
     }
 
     /***
-     * Reads catalina properties to a map object.
-     * 
-     * @param map
-     *            RabbitMq instances map object.
-     */
-    private void readCatalinaProperties(Map<String, Object> map) {
-        String catalina_home = System.getProperty("catalina.home").replace('\\', '/');
-        for (Iterator it = ((AbstractEnvironment) env).getPropertySources().iterator(); it.hasNext();) {
-            PropertySource propertySource = (PropertySource) it.next();
-            if (propertySource instanceof MapPropertySource) {
-                if (propertySource.getName().contains("[file:" + catalina_home + "/conf/config.properties]")) {
-                    map.putAll(((MapPropertySource) propertySource).getSource());
-                }
-            }
-        }
-    }
-
-    /***
-     * Reads Spring Properties and writes RabbitMq properties to RabbitMq instances properties map object.
+     * Reads Spring Properties and writes RabbitMq properties to RabbitMq
+     * instances properties map object.
      */
     private void readSpringProperties() {
         JsonNode rabbitmqInstancesJsonListJsonArray = null;
@@ -124,48 +100,6 @@ public class RabbitMqPropertiesConfig {
         } catch (Exception e) {
             log.error("Failure when initiating RabbitMq Java Spring properties: " + e.getMessage(), e);
         }
-    }
-
-    /***
-     * Writes RabbitMq catalina properties to RabbitMq instances properties map object and set Generate server properties.
-     * 
-     * @param map
-     *            RabbitMq instances map object.
-     */
-    private void populateConfigurationsBasedOnCatalinaProperties(Map<String, Object> map) {
-        final String jasyptSecretPassword = (String) map.get("jasypt.encryptor.password");
-        for (Entry<String, Object> entry : map.entrySet()) {
-            final String key = entry.getKey();
-            if (key.contains("rabbitmq")) {
-                String protocol = key.split("\\.")[0];
-                if (rabbitMqPropertiesMap.get(protocol) == null) {
-                    rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
-                }
-                if (key.contains("rabbitmq.host")) {
-                    rabbitMqPropertiesMap.get(protocol).setHost(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.port")) {
-                    rabbitMqPropertiesMap.get(protocol).setPort(Integer.getInteger(entry.getValue().toString()));
-                } else if (key.contains("rabbitmq.username")) {
-                    rabbitMqPropertiesMap.get(protocol).setUsername(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.password")) {
-                    rabbitMqPropertiesMap.get(protocol).setPassword(DecryptionUtils.decryptString(entry.getValue().toString(), jasyptSecretPassword));
-                } else if (key.contains("rabbitmq.tls")) {
-                    rabbitMqPropertiesMap.get(protocol).setTlsVer(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.exchangeName")) {
-                    rabbitMqPropertiesMap.get(protocol).setExchangeName(entry.getValue().toString());
-                } else if (key.contains("rabbitmq.domainId")) {
-                    rabbitMqPropertiesMap.get(protocol).setDomainId(entry.getValue().toString());
-                }
-                else if (key.contains("rabbitmq.createExchangeIfNotExisting")) {
-                    rabbitMqPropertiesMap.get(protocol).setCreateExchangeIfNotExisting(Boolean.parseBoolean(entry.getValue().toString()));
-                }
-            }
-        }
-        final String generateServerUri = (String) map.get(GENERATE_SERVER_URI);
-        generateURLTemplate.setGenerateServerUri(generateServerUri);
-
-        final String generateServerPath = (String) map.get(GENERATE_SERVER_PATH);
-        generateURLTemplate.setGenerateServerPath(generateServerPath);
     }
 
     /***
