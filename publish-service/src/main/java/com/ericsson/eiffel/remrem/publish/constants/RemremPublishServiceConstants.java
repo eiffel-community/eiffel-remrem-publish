@@ -28,6 +28,12 @@ public class RemremPublishServiceConstants {
         public static final String GENERATE_INTERNAL_ERROR = "{\"status_code\": 500, \"result\": \"FAIL\", "
                 + "\"message\": \"Internal server error\"}";
 
+        public static final String ERLOOKUP_MULTIPLEFOUND = "{\"status_code\": 417, \"result\": \"FAIL\", "
+                + "\"message\": \"Muliple event ids found with ERLookup properties\"}";
+
+        public static final String ERLOOKUP_NONEFOUND = "{\"status_code\": 406, \"result\": \"FAIL\", "
+                + "\"message\": \"No event id found with ERLookup properties\"}";
+
         public static final String DOCUMENTATION_URL = "https://eiffel-community.github.io/eiffel-remrem-publish/index.html";
 
 }

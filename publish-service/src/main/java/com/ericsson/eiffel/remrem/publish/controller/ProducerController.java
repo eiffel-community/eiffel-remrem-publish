@@ -152,6 +152,8 @@ public class ProducerController {
                                              @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
                                              @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
                                              @ApiParam(value = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
+                                             @ApiParam(value = "ER lookup result multiple found, Generate will fail") @RequestParam(value = "failIfMultipleFound", required = false, defaultValue = "false") final Boolean failIfMultipleFound,
+                                             @ApiParam(value = "ER lookup result none found, Generate will fail") @RequestParam(value = "failIfNoneFound", required = false, defaultValue = "false") final Boolean failIfNoneFound,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
 
         String bodyJsonOut = null;
@@ -170,7 +172,8 @@ public class ProducerController {
         HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(generateURLTemplate.getUrl(),
+            String generateUrl=generateURLTemplate.getUrl()+"&failIfMultipleFound="+failIfMultipleFound+"&failIfNoneFound="+failIfNoneFound;
+            ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
             if(response.getStatusCode() == HttpStatus.OK) {
@@ -194,7 +197,8 @@ public class ProducerController {
         }
         catch (RemRemPublishException e) {
                 return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
-        }catch (Exception e) {
+        }
+        catch (Exception e) {
             log.info("The result from REMReM Generate is not OK and have value: " + e.getMessage());
             if (e.getMessage().startsWith(Integer.toString(HttpStatus.BAD_REQUEST.value()))) {
                 return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_BAD_REQUEST), HttpStatus.BAD_REQUEST);
@@ -202,7 +206,12 @@ public class ProducerController {
                 return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_NO_SERVICE_ERROR), HttpStatus.SERVICE_UNAVAILABLE);
             } else if (e.getMessage().startsWith(Integer.toString(HttpStatus.UNAUTHORIZED.value()))) {
                 return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
-            } else {
+            }else if (e.getMessage().startsWith(Integer.toString(HttpStatus.NOT_ACCEPTABLE.value()))) {
+                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.ERLOOKUP_NONEFOUND), HttpStatus.NOT_ACCEPTABLE);
+            }else if (e.getMessage().startsWith(Integer.toString(HttpStatus.EXPECTATION_FAILED.value()))) {
+                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.ERLOOKUP_MULTIPLEFOUND), HttpStatus.EXPECTATION_FAILED);
+            }
+            else {
                 return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_INTERNAL_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
