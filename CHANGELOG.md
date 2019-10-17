@@ -1,3 +1,6 @@
+## 2.0.8
+- Code to handle the lookup towards ER when generating events using REMReM.
+
 ## 2.0.7
 - Remove code changes to load config.properties from Tomcat in REMReM-Publish.
 
