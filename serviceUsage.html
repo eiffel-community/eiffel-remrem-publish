@@ -195,7 +195,7 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
                 <span aria-hidden="true" class="octicon octicon-link"></span>
             </a>Usage
         </h2>
-        <p>Available REST resources for REMReM Generate Service are described below.</p>
+        <p>Available REST resources for REMReM Publish Service are described below.</p>
 
         <table style="width:100%">
             <tr>
@@ -238,6 +238,8 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
                     <p>ud - user domain, not required</p>
                     <p>tag - not required</p>
                     <p>rk - routing key, not required</p>
+                    <p>failIfMultipleFound - default: false</p>
+                    <p>failIfNoneFound - default: false</p>
                 </td>
                 <td>
 <pre>{
@@ -270,6 +272,27 @@ generate.server.appName: &lt;application name of generate service, eg: generate&
                 <td></td>
                 <td>This endpoint is used to get versions of publish service and all loaded  protocols.</td>
             </tr>
+        </table>
+
+        <h5>generateAndPublish endpoint is provided with two options for Lookups in swagger page:</h5>
+        <table class="lookups">
+        <tr>
+            <th style="text-align: left;">Options</th>
+            <th style="text-align: left;">Default Value</th>
+            <th style="text-align: left;">Description</th>
+         </tr>
+        <tr>
+            <td><h6>failIfMultipleFound:</h6></td>
+            <td>False</td>
+            <td>If value is set to false, REMReM generates and publishes event if multiple event ids found from the event repository configured in generate and adds them in links section of the target field.
+                If value is set to true, if only one event is found then REMReM generates and publishes the event successfully and if multiple event ids are found then REMReM fails to publish any event and displays relevant error message to the user.</td>
+         </tr>
+         <tr>
+            <td><h6>failIfNoneFound:</h6></td>
+            <td>False</td>
+            <td>If value is set to true, if no event id fetched from configured event repository in generate, REMReM fails to publish any event and displays relevant error message to the user.
+                If value is set to false, REMReM generates and publishes event if no event found or atleast one event fetched from the event repository configured in generate.</td>
+         </tr>
         </table>
 
         <h2>

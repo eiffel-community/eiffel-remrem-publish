@@ -233,6 +233,19 @@
                 <td>Is returned if LDAP for REMReM Generate Service is enabled and REMReM Generate Publish have not access to it.</td>
             </tr>
             <tr>
+                <td>406</td>
+                <td>Not Acceptable</td>
+                <td>No event id found with ERLookup properties</td>
+                <td>Is returned if no event id fetched from configured event repository in REMReM generate.</td>
+            </tr>
+            <tr>
+            <tr>
+                <td>417</td>
+                <td>Expectation Failed</td>
+                <td>Multiple event ids found with ERLookup properties</td>
+                <td>Is returned if multiple event ids fetched from configured event repository in REMReM generate.</td>
+            </tr>
+            <tr>
                 <td>500</td>
                 <td>Internal Server Error</td>
                 <td>Internal server error in Generate Service</td>
@@ -265,6 +278,26 @@
      "status_code": 401,
      "result": "FAIL",
      "message": "Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled"
+    }
+]</pre>
+
+        <h5>406 Not Acceptable</h5>
+        <p>The Lookup properties with no event id fetched from configured event repository in generate , REMReM fails to generate.</p>
+<pre>[
+    {
+     "status_code": 406,
+     "result": "FAIL",
+     "message": "No event id found with ERLookup properties"
+    }
+]</pre>
+
+        <h5>417 Expectation Failed</h5>
+        <p>The Lookup properties with multiple event ids fetched from configured event repository in generate , REMReM fails to generate.</p>
+<pre>[
+    {
+     "status_code": 417,
+     "result": "FAIL",
+     "message": "Multiple event ids found with ERLookup properties"
     }
 ]</pre>
 
