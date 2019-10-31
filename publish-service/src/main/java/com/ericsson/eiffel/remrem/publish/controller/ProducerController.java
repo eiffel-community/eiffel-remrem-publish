@@ -14,6 +14,7 @@
 */
 package com.ericsson.eiffel.remrem.publish.controller;
 
+import java.util.EnumSet;
 import java.util.Map;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
@@ -38,7 +40,6 @@ import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.ericsson.eiffel.remrem.shared.VersionService;
-import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
 import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -170,6 +171,7 @@ public class ProducerController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
+        EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
 
         try {
             String generateUrl=generateURLTemplate.getUrl()+"&failIfMultipleFound="+failIfMultipleFound+"&failIfNoneFound="+failIfNoneFound;
@@ -198,22 +200,12 @@ public class ProducerController {
         catch (RemRemPublishException e) {
                 return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
         }
-        catch (Exception e) {
-            log.info("The result from REMReM Generate is not OK and have value: " + e.getMessage());
-            if (e.getMessage().startsWith(Integer.toString(HttpStatus.BAD_REQUEST.value()))) {
-                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_BAD_REQUEST), HttpStatus.BAD_REQUEST);
-            } else if (e.getMessage().startsWith(Integer.toString(HttpStatus.SERVICE_UNAVAILABLE.value()))) {
-                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_NO_SERVICE_ERROR), HttpStatus.SERVICE_UNAVAILABLE);
-            } else if (e.getMessage().startsWith(Integer.toString(HttpStatus.UNAUTHORIZED.value()))) {
-                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
-            }else if (e.getMessage().startsWith(Integer.toString(HttpStatus.NOT_ACCEPTABLE.value()))) {
-                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.ERLOOKUP_NONEFOUND), HttpStatus.NOT_ACCEPTABLE);
-            }else if (e.getMessage().startsWith(Integer.toString(HttpStatus.EXPECTATION_FAILED.value()))) {
-                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.ERLOOKUP_MULTIPLEFOUND), HttpStatus.EXPECTATION_FAILED);
+        catch (HttpStatusCodeException e) {
+            HttpStatus result = HttpStatus.BAD_REQUEST;
+            if (getStatus.contains(e.getStatusCode())) {
+                result = e.getStatusCode();
             }
-            else {
-                return new ResponseEntity(parser.parse(RemremPublishServiceConstants.GENERATE_INTERNAL_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return new ResponseEntity(parser.parse(e.getResponseBodyAsString()), result);
         }
     }
 
