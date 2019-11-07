@@ -1,3 +1,6 @@
+## 2.0.9
+- Implemented code changes to handle error ResponseBody in /generateAndPublish endpoint.
+
 ## 2.0.8
 - Code to handle the lookup towards ER when generating events using REMReM.
 

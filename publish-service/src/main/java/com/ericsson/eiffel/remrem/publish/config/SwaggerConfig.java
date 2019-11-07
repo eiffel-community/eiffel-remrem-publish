@@ -14,7 +14,6 @@
 */
 package com.ericsson.eiffel.remrem.publish.config;
 
-import com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants;
 import io.swagger.annotations.Api;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +51,7 @@ public class SwaggerConfig {
                 final StringBuilder remremDescription = new StringBuilder();
                 remremDescription.append("REMReM (REST Mailbox for Registered Messages) Publish "
                         + "for publish validated Eiffel messages on a RabbitMQ message bus. ");
-                remremDescription.append("<a href= " + RemremPublishServiceConstants.DOCUMENTATION_URL + ">REMReM Publish documentation</a>");
+                remremDescription.append("<a href= https://eiffel-community.github.io/eiffel-remrem-publish/index.html>REMReM Publish documentation</a>");
 
                 return new ApiInfoBuilder()
                         .title("Eiffel REMReM Publish Service")
