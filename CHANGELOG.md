@@ -1,3 +1,6 @@
+## 2.0.11
+- Uplifted eiffel-remrem-semantics version from 2.0.7 to 2.0.8.
+
 ## 2.0.10
 - Uplifted eiffel-remrem-semantics version from 2.0.6 to 2.0.7.
 
