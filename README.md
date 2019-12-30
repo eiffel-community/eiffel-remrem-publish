@@ -25,13 +25,6 @@
 
 REMReM Publish is a microservice allowing sending of messages to a topic based exchange on a RabbitMQ Server. It has endpoints that must be called as a relative links. Further documentation is provided at the following link: [https://eiffel-community.github.io/eiffel-remrem-publish](https://eiffel-community.github.io/eiffel-remrem-publish)
 
-# Documentation
-
-1. [**Running RemRem-Publish service**](wiki/markdown/running-remrem-publish.md)
-    - [**Run in Docker**](wiki/markdown/docker.md)
-    - [**Configuration**](wiki/markdown/configuration.md)
-
-
 # About this repository
 The contents of this repository are licensed under the [Apache License 2.0](./LICENSE).
 
@@ -41,3 +34,22 @@ To get involved, please see [Code of Conduct](./CODE_OF_CONDUCT.md) and [contrib
 This repository forms part of the Eiffel Community. Eiffel is a protocol for technology agnostic machine-to-machine communication in continuous integration and delivery pipelines, aimed at securing scalability, flexibility and traceability. Eiffel is based on the concept of decentralized real time messaging, both to drive the continuous integration and delivery system and to document it.
 
 Visit [Eiffel Community](https://eiffel-community.github.io) to get started and get involved.
+
+# Documentation
+
+1. [**Eiffel-RemRem-publish**](wiki/markdown/index.md)
+      - [**Introduction**](wiki/markdown/index.md#Introduction)
+      - [**Pre-requisites**](wiki/markdown/index.md#Pre-requisites)
+      - [**Components**](wiki/markdown/index.md#Components)
+      
+2. [**Installation**](wiki/markdown/installation.md)
+
+3. [**Running RemRem-Publish service**](wiki/markdown/running-remrem-publish.md)
+    - [**Run in Docker**](wiki/markdown/docker.md)
+    - [**Configuration**](wiki/markdown/configuration.md)
+    
+4. [**Usage**](wiki/markdown/usage.md)
+    - [**CLI Usage**](wiki/markdown/usage/cli.md)
+    - [**Service Usage**](wiki/markdown/usage/service.md)
+
+5. [**Logging**](wiki/markdown/logging.md)
