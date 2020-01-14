@@ -1,3 +1,7 @@
+## 2.0.12
+- Added documentation for REMReM publish in master branch.
+- Uplifted the eiffel-remrem-semantics from 2.0.8 to 2.0.9.
+
 ## 2.0.11
 - Uplifted eiffel-remrem-semantics version from 2.0.7 to 2.0.8.
 
