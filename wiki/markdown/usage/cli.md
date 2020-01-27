@@ -14,6 +14,9 @@ usage: java -jar
 
 -domain,--domainId <arg>          Identifies the domain that produces the event.
 
+ -cc,--channelsCount <arg>        Number of channels connected to message
+                                  bus, default is 1
+
 -en,--exchange_name <arg>         Exchange name.
 
 -ce,--create_exchange <arg>       option to denote if we need to create an exchange
@@ -100,6 +103,14 @@ java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -
 
 ```
 java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -rk myroutingkey
+```
+
+**If you want to change the number of channels connected to RabbitMQ to publish messages:**
+channelsCount default value is 1.
+If the number of channels increases then the CPU load and memory usage on the RabbitMq increases.
+
+```
+java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -cc numberof-channels 
 ```
 
 **If you want to have the message publishing on RabbitMQ with given tag:**

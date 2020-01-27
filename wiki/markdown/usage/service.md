@@ -141,6 +141,7 @@ These parameters are related to RabbitMQ Server, which will be used for publishi
 <protocol>.rabbitmq.exchangeName:  <exchange name, exchange should be already created on RabbitMQ Server>
 <protocol>.rabbitmq.createExchangeIfNotExisting:  <create Exchange if not present on RabbitMQ Server>
 <protocol>.rabbitmq.domainId:      <domain id, any string>
+<protocol>.rabbitmq.channelsCount: <channels count, eg: 1 (default value is 1)>
 ```
 
 ```
@@ -151,8 +152,8 @@ These parameters are related to RabbitMQ Server, which will be used for publishi
 # must exist
 #rabbitmq.exchange.name=eiffel.poc
 
-rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx","createExchangeIfNotExisting":true }, \
-{ "mp": "eiffel3", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx","createExchangeIfNotExisting":true }]
+rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }, \
+{ "mp": "eiffel3", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }]
 ```
 
 Application launch is terminated if exchange is unavailable and createExchangeIfNotExisting is set to false. Application can create the exchange by adding the below property in config.properties file

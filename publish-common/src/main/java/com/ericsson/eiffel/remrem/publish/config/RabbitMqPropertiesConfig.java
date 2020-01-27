@@ -94,7 +94,9 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
                 rabbitMqProperties.setCreateExchangeIfNotExisting(rabbitmqInstanceObject.get("createExchangeIfNotExisting").asBoolean());
                 rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").asText());
-
+                if((rabbitmqInstanceObject.get("channelsCount") != null) ) {
+                    rabbitMqProperties.setChannelsCount(Integer.parseInt(rabbitmqInstanceObject.get("channelsCount").asText()));  
+                }
                 rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
             }
         } catch (Exception e) {
