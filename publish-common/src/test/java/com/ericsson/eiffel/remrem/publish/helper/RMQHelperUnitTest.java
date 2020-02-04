@@ -51,6 +51,7 @@ public class RMQHelperUnitTest {
     private static final String tlsVer= "1.2";
     private static final String usePersistence= "1.2";
     private static final String domainId= "eiffelxxx";
+    private static final Integer channelsCount= 1;
     private String protocol = "eiffelsemantics";
     private String createExchange = "true";
 
@@ -100,6 +101,8 @@ public class RMQHelperUnitTest {
         System.setProperty(key, createExchange);
         key = PropertiesConfig.DOMAIN_ID;
         System.setProperty(key, domainId);
+        key = PropertiesConfig.CHANNELS_COUNT;
+        System.setProperty(key, Integer.toString(channelsCount));
     }
 
     private void cleanProperties() {
@@ -120,6 +123,8 @@ public class RMQHelperUnitTest {
         key = PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING;
         System.setProperty(key, createExchange);
         key = PropertiesConfig.DOMAIN_ID;
+        System.clearProperty(key);
+        key = PropertiesConfig.CHANNELS_COUNT;
         System.clearProperty(key);
     }
 

@@ -38,7 +38,6 @@ import ch.qos.logback.classic.Logger;
 public class RabbitMqProperties {
 
     private RMQBeanConnectionFactory factory = new RMQBeanConnectionFactory();
-    private static final int CHANNEL_COUNT = 100;
     private static final Random random = new Random();
     private boolean usePersitance = true;
 
@@ -49,6 +48,7 @@ public class RabbitMqProperties {
     private String username;
     private String password;
     private String domainId;
+    private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
 
     private Connection rabbitConnection;
@@ -122,6 +122,14 @@ public class RabbitMqProperties {
         this.createExchangeIfNotExisting = createExchangeIfNotExisting;
     }
 
+    public Integer getChannelsCount() {
+        return channelsCount;
+    }
+
+    public void setChannelsCount(Integer channelsCount) {
+        this.channelsCount = channelsCount;
+    }
+
     public RMQBeanConnectionFactory getFactory() {
         return factory;
     }
@@ -171,6 +179,9 @@ public class RabbitMqProperties {
                 factory.setUsername(username);
                 factory.setPassword(password);
             }
+            
+            
+           
 
             if (tlsVer != null && !tlsVer.isEmpty()) {
                 if (tlsVer.contains("default")) {
@@ -202,7 +213,10 @@ public class RabbitMqProperties {
             rabbitConnection = factory.newConnection();
             log.info("Connected to RabbitMQ.");
             rabbitChannels = new ArrayList<>();
-            for (int i = 0; i < CHANNEL_COUNT; i++) {
+            if(channelsCount == null || channelsCount == 0 ) {
+                channelsCount = 1;
+            }
+            for (int i = 0; i < channelsCount; i++) {
                 rabbitChannels.add(rabbitConnection.createChannel());
             }
         } catch (IOException | TimeoutException e) {
@@ -243,12 +257,17 @@ public class RabbitMqProperties {
             password = getValuesFromSystemProperties(protocol + ".rabbitmq.password");
         }
 
+        if (channelsCount == null ) {
+            channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
+        }
     }
+    
 
     private void setValues() {
         host = getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_HOST);
         port = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
         domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
+        channelsCount = Integer.getInteger(PropertiesConfig.CHANNELS_COUNT);
         tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
         exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
@@ -403,4 +422,5 @@ public class RabbitMqProperties {
         }
         return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
     }
+
 }

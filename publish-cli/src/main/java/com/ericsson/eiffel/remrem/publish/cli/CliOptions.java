@@ -78,6 +78,7 @@ public class CliOptions {
         options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'. It is required for RabbitMq secured port.");
         options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics, default is eiffelsemantics");
         options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
+        options.addOption("cc", "channelsCount", true, "Number of channels connected to message bus, default is 1");
         options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         options.addOption("v", "lists the versions of publish and all loaded protocols");
         options.addOption("tag", "tag", true, "tag to be used in routing key");
@@ -213,6 +214,11 @@ public class CliOptions {
             String key = PropertiesConfig.DOMAIN_ID;
             System.setProperty(key, domain);
         }
+        if (commandLine.hasOption("channelsCount")) {
+            String channelsCount = commandLine.getOptionValue("channelsCount");
+            String key = PropertiesConfig.CHANNELS_COUNT;
+            System.setProperty(key, channelsCount);
+        }
 
         if (commandLine.hasOption("tls")) {
             String tls_ver = commandLine.getOptionValue("tls");
@@ -265,6 +271,8 @@ public class CliOptions {
         key = PropertiesConfig.TLS;
         System.clearProperty(key);
         key = PropertiesConfig.DOMAIN_ID;
+        System.clearProperty(key);
+        key = PropertiesConfig.CHANNELS_COUNT;
         System.clearProperty(key);
     }
 
