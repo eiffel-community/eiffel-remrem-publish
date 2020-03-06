@@ -122,7 +122,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOK);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",false,
-                null, null, body.getAsJsonObject());
+                null, null, true, 1, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.OK);
 
     }
@@ -136,7 +136,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseBad);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffel3", "eiffelactivityfinished", "", "", "",false,
-                null, null, body.getAsJsonObject());
+                null, null, true, 1, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.BAD_REQUEST);
 
     }
