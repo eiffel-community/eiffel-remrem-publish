@@ -213,7 +213,7 @@ Available REST resources for REMReM Publish Service are described below.
 |----------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | failIfMultipleFound: | False         | If value is set to True and multiple event ids are found through any of the provided lookup definitions, then no event will be generated. |
 | failIfNoneFound:     | False         | If value is set to True and no event id is found through (at least one of) the provided lookup definitions, then no event will be generated. |
-| connectToExternalERs:             | True          | If value is set to False then REMReM will query external ERs and not just the locally used ER. The reason for the default value to be True is to decrease the load on external ERs. <add a reference to documentation about external/local ERs here as well> |
+| connectToExternalERs:             | True          | If value is set to False then REMReM will query external ERs and not just the locally used ER. The reason for the default value to be True is to decrease the load on external ERs. Here local ER means Single ER which is using REMReM generate.  External ER means multiple ER's which are configured in Local ER.|
 | limit:            | 1             | The number of events returned, through any lookup definition given, is limited to this number. |
 
 ## Examples
