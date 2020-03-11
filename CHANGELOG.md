@@ -1,3 +1,6 @@
+## 2.0.14
+- Uplifted eiffel-remrem-semantics version from 2.0.11 to 2.0.12.
+
 ## 2.0.13
 - Added new property channelCount in application.properties to customize the rabbitmq channels.
 - Added documentation for the new property.
