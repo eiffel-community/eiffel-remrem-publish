@@ -155,8 +155,8 @@ public class ProducerController {
                                              @ApiParam(value = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
                                              @ApiParam(value = "ER lookup result multiple found, Generate will fail") @RequestParam(value = "failIfMultipleFound", required = false, defaultValue = "false") final Boolean failIfMultipleFound,
                                              @ApiParam(value = "ER lookup result none found, Generate will fail") @RequestParam(value = "failIfNoneFound", required = false, defaultValue = "false") final Boolean failIfNoneFound,
-                                             @ApiParam(value = "Determines if external ER's should be used to compile the results of query.Use false to use External ER's.") @RequestParam(value = "connectToExternalERs", required = false, defaultValue = "true") final Boolean connectToExternalERs,
-                                             @ApiParam(value = "The number of events to be displayed.") @RequestParam(value = "limit", required = false, defaultValue = "1") final int limit,
+                                             @ApiParam(value = "Determines if external ER's should be used to compile the results of query.Use false to use External ER's.") @RequestParam(value = "lookupInExternalERs", required = false, defaultValue = "true") final Boolean lookupInExternalERs,
+                                             @ApiParam(value = "The number of events to be displayed.") @RequestParam(value = "lookupLimit", required = false, defaultValue = "1") final int lookupLimit,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
 
         String bodyJsonOut = null;
@@ -176,7 +176,7 @@ public class ProducerController {
         EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
 
         try {
-        	String generateUrl=generateURLTemplate.getUrl()+"&failIfMultipleFound="+failIfMultipleFound+"&failIfNoneFound="+failIfNoneFound+"&connectToExternalERs="+connectToExternalERs+"&limit="+limit;
+        	String generateUrl=generateURLTemplate.getUrl()+"&failIfMultipleFound="+failIfMultipleFound+"&failIfNoneFound="+failIfNoneFound+"&lookupInExternalERs="+lookupInExternalERs+"&lookupLimit="+lookupLimit;
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
