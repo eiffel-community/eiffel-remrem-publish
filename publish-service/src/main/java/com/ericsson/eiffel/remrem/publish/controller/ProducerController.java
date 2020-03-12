@@ -155,7 +155,7 @@ public class ProducerController {
                                              @ApiParam(value = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
                                              @ApiParam(value = "ER lookup result multiple found, Generate will fail") @RequestParam(value = "failIfMultipleFound", required = false, defaultValue = "false") final Boolean failIfMultipleFound,
                                              @ApiParam(value = "ER lookup result none found, Generate will fail") @RequestParam(value = "failIfNoneFound", required = false, defaultValue = "false") final Boolean failIfNoneFound,
-                                             @ApiParam(value = "Determines if external ER's should be used to compile the results of query.Use false to use External ER's.") @RequestParam(value = "lookupInExternalERs", required = false, defaultValue = "true") final Boolean lookupInExternalERs,
+                                             @ApiParam(value = "Determines if external ER's should be used to compile the results of query.Use true to use External ER's.") @RequestParam(value = "lookupInExternalERs", required = false, defaultValue = "false") final Boolean lookupInExternalERs,
                                              @ApiParam(value = "The number of events to be displayed.") @RequestParam(value = "lookupLimit", required = false, defaultValue = "1") final int lookupLimit,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
 
