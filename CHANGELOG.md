@@ -1,3 +1,6 @@
+## 2.0.15
+- Added the lookupInExternalERs and lookupLimit parameters to ER lookup.
+
 ## 2.0.14
 - Uplifted eiffel-remrem-semantics version from 2.0.11 to 2.0.12.
 
