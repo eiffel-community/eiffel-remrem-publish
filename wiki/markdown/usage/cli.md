@@ -42,6 +42,8 @@ usage: java -jar
 
 -port,--port <arg>                Port to connect to message bus, default is 5672.
 
+-vh,--virtual_host <arg>          Virtual host to connect to (optional).
+
 -ud,--user_domain_suffix <arg>    User domain suffix.
 
 -rk,--routing_key <arg>           Routing key of the eiffel message.

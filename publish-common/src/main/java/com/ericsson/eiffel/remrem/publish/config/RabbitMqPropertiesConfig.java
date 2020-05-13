@@ -88,6 +88,7 @@ public class RabbitMqPropertiesConfig {
                 RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
                 rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").asText());
                 rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").asText()));
+                rabbitMqProperties.setVirtualHost(rabbitmqInstanceObject.get("virtualHost").asText());
                 rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").asText());
                 rabbitMqProperties.setPassword(DecryptionUtils.decryptString(rabbitmqInstanceObject.get("password").asText(), jasyptPassword));
                 rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").asText());

@@ -135,6 +135,7 @@ These parameters are related to RabbitMQ Server, which will be used for publishi
 ```
 <protocol>.rabbitmq.host:          <host name, eg: localhost>
 <protocol>.rabbitmq.port:          <port, eg: 5672>
+<protocol>.rabbitmq.virtualHost:   <virtual host, eg: /eiffel/production, is optional>
 <protocol>.rabbitmq.username:      <username, default for RabbitMQ Server: guest>
 <protocol>.rabbitmq.password:      <password, default for RabbitMQ Server: guest>
 <protocol>.rabbitmq.tls:           <tls version, is optional>
@@ -152,8 +153,8 @@ These parameters are related to RabbitMQ Server, which will be used for publishi
 # must exist
 #rabbitmq.exchange.name=eiffel.poc
 
-rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }, \
-{ "mp": "eiffel3", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }]
+rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }, \
+{ "mp": "eiffel3", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }]
 ```
 
 Application launch is terminated if exchange is unavailable and createExchangeIfNotExisting is set to false. Application can create the exchange by adding the below property in config.properties file
