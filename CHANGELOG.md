@@ -1,3 +1,6 @@
+## 2.0.17
+- Removed Ericsson specific configuration from github.
+
 ## 2.0.16
 - Uplifted eiffel-remrem-semantics version from 2.0.12 to 2.0.13.
 

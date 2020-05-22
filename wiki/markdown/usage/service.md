@@ -148,12 +148,12 @@ These parameters are related to RabbitMQ Server, which will be used for publishi
 #RabbitMq configurations
 
 # need to be updated according to the test env.
-#rabbitmq.host=mb101-eiffel010.lmera.ericsson.se
+#rabbitmq.host=http://127.0.0.1
 # must exist
-#rabbitmq.exchange.name=eiffel.poc
+#rabbitmq.exchange.name=eiffel.xxx
 
 rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }, \
-{ "mp": "eiffel3", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }]
+{ "mp": "eiffelprotocol", "host": "127.0.0.1", "port": "5672", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }]
 ```
 
 Application launch is terminated if exchange is unavailable and createExchangeIfNotExisting is set to false. Application can create the exchange by adding the below property in config.properties file
