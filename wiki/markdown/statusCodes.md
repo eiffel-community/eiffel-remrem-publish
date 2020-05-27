@@ -170,6 +170,7 @@ These response can be generated only when `/generateAndPublish` endpoint is used
 | 401         | Unauthorized          | Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled | Is returned if LDAP for REMReM Generate Service is enabled and REMReM Generate Publish have not access to it.          |
 | 406         | Not Acceptable        | No event id found with ERLookup properties                                  | Is returned if no event id fetched from configured event repository in REMReM generate.                                |
 | 417         | Expectation Failed    | Multiple event ids found with ERLookup properties                           | Is returned if multiple event ids fetched from configured event repository in REMReM generate.                         |
+| 422         | Unprocessable Entity  | Link specific options could not fetch information from ER                   | Is returned if could not fetch information from ER with specific options.                                              |
 | 500         | Internal Server Error | Internal server error in Generate Service                                   | Is returned if REMReM Generate Service is not started or in case of others internal errors in REMReM Generate Service. |
 | 503         | Service Unavailable   | Message protocol is invalid                                                 | Is returned if there is no such message protocol loaded.                                                               |
 
@@ -226,6 +227,19 @@ The Lookup properties with multiple event ids fetched from configured event repo
      "status_code": 417,
      "result": "FAIL",
      "message": "Multiple event ids found with ERLookup properties"
+    }
+]
+```
+
+**422 Unprocessable Entity**
+The link specific options could not fetch information from configured event repository in generate , REMReM fails to generate.
+
+```
+[
+    {
+     "status_code": 422,
+     "result": "FAIL",
+     "message": "Link specific options could not fetch information from ER"
     }
 ]
 ```

@@ -3,4 +3,4 @@ To get information about configuration and usage of REMReM Publish CLI see [here
 
 To get information about configuration and usage of REMReM Publish Service see [here](../markdown/usage/service.md).
 
-To get information about internal status codes see [here](statusCodes.md).
+To get information about internal status codes see [here](../markdown/statusCodes.md).
