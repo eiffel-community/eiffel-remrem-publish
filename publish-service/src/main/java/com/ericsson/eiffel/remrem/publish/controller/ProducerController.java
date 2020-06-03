@@ -178,11 +178,13 @@ public class ProducerController {
         EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
 
         try {
-            String generateUrl=generateURLTemplate.getUrl()+"&failIfMultipleFound="+failIfMultipleFound+"&failIfNoneFound="+failIfNoneFound+"&lookupInExternalERs="+lookupInExternalERs+"&lookupLimit="+lookupLimit;
+            String generateUrl = generateURLTemplate.getUrl() + "&failIfMultipleFound=" + failIfMultipleFound
+                    + "&failIfNoneFound=" + failIfNoneFound + "&lookupInExternalERs=" + lookupInExternalERs
+                    + "&lookupLimit=" + lookupLimit;
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
-            if(response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK) {
                 log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
 
                 // publishing requires an array if you want status code

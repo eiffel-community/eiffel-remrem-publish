@@ -173,15 +173,14 @@ public class EiffelRemremCommonControllerUnitTest {
 
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void testErLookupFailedWithOptions() throws Exception {
         String correctURL = "/{mp}?msgType={msgType}";
-        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>>any(),
+        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOptionsFailed);
 
-        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",false,
+        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
                 false, false, true, 1, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.UNPROCESSABLE_ENTITY);
 
@@ -191,10 +190,10 @@ public class EiffelRemremCommonControllerUnitTest {
     @Test
     public void testErLookupFailedWithMultipleFound() throws Exception {
         String correctURL = "/{mp}?msgType={msgType}";
-        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>>any(),
+        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseMultipleFound);
 
-        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",false,
+        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
                 false, false, true, 1, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.EXPECTATION_FAILED);
 
@@ -204,10 +203,10 @@ public class EiffelRemremCommonControllerUnitTest {
     @Test
     public void testErLookupFailedWithNoneFound() throws Exception {
         String correctURL = "/{mp}?msgType={msgType}";
-        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>>any(),
+        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseNoneFound);
 
-        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",false,
+        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
                 false, false, true, 1, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.NOT_ACCEPTABLE);
 
