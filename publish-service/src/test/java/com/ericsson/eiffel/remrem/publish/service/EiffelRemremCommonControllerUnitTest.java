@@ -85,6 +85,15 @@ public class EiffelRemremCommonControllerUnitTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     ResponseEntity responseBad = new ResponseEntity("ok", HttpStatus.BAD_REQUEST);
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    ResponseEntity responseOptionsFailed = new ResponseEntity("Link specific options could not be fulfilled", HttpStatus.UNPROCESSABLE_ENTITY);
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    ResponseEntity responseMultipleFound = new ResponseEntity("Muliple event ids found with ERLookup properties", HttpStatus.EXPECTATION_FAILED);
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    ResponseEntity responseNoneFound = new ResponseEntity("No event id found with ERLookup properties", HttpStatus.NOT_ACCEPTABLE);
+
     @Mock
     JsonElement body;
 
@@ -161,6 +170,45 @@ public class EiffelRemremCommonControllerUnitTest {
         assertEquals(mapTest.get("msgType"), map.get("msgType"));
 
         assertEquals(generateURLTemplate.getUrl(), correctURL);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testErLookupFailedWithOptions() throws Exception {
+        String correctURL = "/{mp}?msgType={msgType}";
+        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
+                Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOptionsFailed);
+
+        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
+                false, false, true, 1, body.getAsJsonObject());
+        assertEquals(elem.getStatusCode(), HttpStatus.UNPROCESSABLE_ENTITY);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testErLookupFailedWithMultipleFound() throws Exception {
+        String correctURL = "/{mp}?msgType={msgType}";
+        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
+                Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseMultipleFound);
+
+        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
+                false, false, true, 1, body.getAsJsonObject());
+        assertEquals(elem.getStatusCode(), HttpStatus.EXPECTATION_FAILED);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testErLookupFailedWithNoneFound() throws Exception {
+        String correctURL = "/{mp}?msgType={msgType}";
+        when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
+                Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseNoneFound);
+
+        ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
+                false, false, true, 1, body.getAsJsonObject());
+        assertEquals(elem.getStatusCode(), HttpStatus.NOT_ACCEPTABLE);
 
     }
 

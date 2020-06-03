@@ -360,4 +360,4 @@ Result:
 ## Status Codes
 For each user request Eiffel REMReM Publish generate response in JSON with internal status code and message.
 
-To get information about internal status codes see [here](statusCodes.md).
+To get information about internal status codes see [here](../statusCodes.md).
