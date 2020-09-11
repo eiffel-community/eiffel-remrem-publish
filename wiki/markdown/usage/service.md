@@ -124,7 +124,7 @@ output:
 
 Use the above encrypted password in your property file like this **{ENC(encrypted password)}**
 
-`Ex:rabbitmq.password: {ENC(euJcvto7NtCDiWT7BKFW0A ==)}`
+`Ex:rabbitmq.password: {ENC(euJcvto7NtCDiWT7BKFW0A==)}`
 
 **Note: REMReM will work without jasypt encryption also but if you have encrypted any text using jasypt library then jasypt.encryptor.password property should be present in property file.**
 
