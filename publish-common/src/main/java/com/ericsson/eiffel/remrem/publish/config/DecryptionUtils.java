@@ -1,6 +1,6 @@
 /***********************************************************************
  *                                                                     *
- * Copyright Ericsson AB 2019                                          *
+ * Copyright Ericsson AB 2020                                          *
  *                                                                     *
  * No part of this software may be reproduced in any form without the  *
  * written permission of the copyright owner.                          *
