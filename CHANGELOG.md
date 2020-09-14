@@ -1,3 +1,6 @@
+## 2.0.18
+- Implemented the functionality to read the Jasypt encryption key from jasypt.key file.
+
 ## 2.0.17
 - REMReM lookups controlled 'failIfNoneFound' and 'failIfMultipleFound' lookups per lookup
   object within an event instead of globally per call.

@@ -14,10 +14,12 @@
 */
 package com.ericsson.eiffel.remrem.publish.helper;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -229,5 +231,26 @@ public class RMQHelperUnitTest {
         assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getPort().equals(portNumber));
         assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getTlsVer().equals(tlsVersion));
         assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getExchangeName().equals(exchangeNameTest));
+    }
+
+    @Test
+    public void testJasyptFileSuccess() throws IOException {
+        String jasyptPath = "src/test/resources/jasypt.key";
+        String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptPath);
+        assertEquals("docker", jasyptKey);
+    }
+
+    @Test
+    public void testJasyptFileWithEmptyKey() {
+        String jasyptPath = "src/test/resources/emptyJasypt.key";
+        String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptPath);
+        assertEquals("", jasyptKey);
+    }
+
+    @Test
+    public void testJasyptFileFailure() throws IOException {
+        String jasyptPath = "src/test/jasypt.key";
+        String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptPath);
+        assertEquals("", jasyptKey);
     }
 }
