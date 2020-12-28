@@ -159,6 +159,9 @@ public class ProducerController {
                                              @ApiParam(value = "The maximum number of events returned from a lookup. If more events are found "
                                                      + "they will be disregarded. The order of the events is undefined, which means that what events are "
                                                      + "disregarded is also undefined.") @RequestParam(value = "lookupLimit", required = false, defaultValue = "1") final int lookupLimit,
+                                             @ApiParam(value = "okToLeaveOutInvalidOptionalFields true will remove the optional "
+                                                     + "event fields from the input event data that does not validate successfully, "
+                                                     + "and add those removed field information into customData/remremGenerateFailures") @RequestParam(value = "okToLeaveOutInvalidOptionalFields", required = false, defaultValue = "false")  final Boolean okToLeaveOutInvalidOptionalFields,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
 
         String bodyJsonOut = null;
@@ -180,7 +183,7 @@ public class ProducerController {
         try {
             String generateUrl = generateURLTemplate.getUrl() + "&failIfMultipleFound=" + failIfMultipleFound
                     + "&failIfNoneFound=" + failIfNoneFound + "&lookupInExternalERs=" + lookupInExternalERs
-                    + "&lookupLimit=" + lookupLimit;
+                    + "&lookupLimit=" + lookupLimit + "&okToLeaveOutInvalidOptionalFields=" + okToLeaveOutInvalidOptionalFields;
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 

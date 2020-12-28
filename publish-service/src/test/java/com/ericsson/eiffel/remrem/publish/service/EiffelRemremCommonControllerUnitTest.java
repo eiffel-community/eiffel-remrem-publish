@@ -131,7 +131,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOK);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",false,
-                null, null, true, 1, body.getAsJsonObject());
+                null, null, true, 1, false, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.OK);
 
     }
@@ -145,7 +145,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseBad);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffel3", "eiffelactivityfinished", "", "", "",false,
-                null, null, true, 1, body.getAsJsonObject());
+                null, null, true, 1, false, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.BAD_REQUEST);
 
     }
@@ -181,7 +181,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOptionsFailed);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
-                false, false, true, 1, body.getAsJsonObject());
+                false, false, true, 1, false, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.UNPROCESSABLE_ENTITY);
 
     }
@@ -194,7 +194,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseMultipleFound);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
-                false, false, true, 1, body.getAsJsonObject());
+                false, false, true, 1, false, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.EXPECTATION_FAILED);
 
     }
@@ -207,7 +207,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseNoneFound);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
-                false, false, true, 1, body.getAsJsonObject());
+                false, false, true, 1, false, body.getAsJsonObject());
         assertEquals(elem.getStatusCode(), HttpStatus.NOT_ACCEPTABLE);
 
     }
