@@ -1,3 +1,7 @@
+## 2.0.19
+- Added the lenientValidation parameter(okToLeaveOutInvalidOptionalFields) for /generateAndPublish 
+  end point.
+
 ## 2.0.18
 - Implemented the functionality to read the Jasypt encryption key from jasypt.key file.
 
