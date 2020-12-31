@@ -17,8 +17,10 @@ package com.ericsson.eiffel.remrem.publish.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+//import java.util.ConcurrentReferenceHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+//import org.springframework.util.ConcurrentReferenceHashMap;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
@@ -58,7 +61,7 @@ import ch.qos.logback.classic.Logger;
      */
     @Override
     public SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs, MsgService msgService) {
-        List<PublishResultItem> results = new ArrayList<>();
+        List<PublishResultItem> results = new CopyOnWriteArrayList<>();
         SendResult sendResult = null;
         PublishResultItem event = null;
         if (!CollectionUtils.isEmpty(msgs)) {
@@ -88,6 +91,7 @@ import ch.qos.logback.classic.Logger;
 
         JsonParser parser = new JsonParser();
         try {
+        	
             JsonElement json = parser.parse(jsonContent);
             if (json.isJsonArray()) {
                 return send(json, msgService, userDomainSuffix, tag, routingKey);
@@ -101,17 +105,17 @@ import ch.qos.logback.classic.Logger;
                         map.put(eventId, json.toString());
                         routingKeyMap.put(eventId, routing_key);
                     } else if (routing_key == null) {
-                        List<PublishResultItem> resultItemList = new ArrayList<>();
+                        List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
                         routingKeyGenerationFailure(resultItemList);
                         return new SendResult(resultItemList);
                     } else {
-                        List<PublishResultItem> resultItemList = new ArrayList<>();
+                        List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
                         PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
                         resultItemList.add(resultItem);
                         return new SendResult(resultItemList);
                     }
                 } else {
-                    List<PublishResultItem> resultItemList = new ArrayList<>();
+                    List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
                     createFailureResult(resultItemList);
                     return new SendResult(resultItemList);
                 }
@@ -123,7 +127,7 @@ import ch.qos.logback.classic.Logger;
                 resultMsg = resultMsg + " Cause: " + e.getCause().getMessage();
             }
             log.error(resultMsg, e.getMessage());
-            List<PublishResultItem> resultItemList = new ArrayList<>();
+            List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
             createFailureResult(resultItemList);
             return new SendResult(resultItemList);
         }
@@ -138,12 +142,12 @@ import ch.qos.logback.classic.Logger;
         Map<String, String> map = new HashMap<>();
         Map<String, String> routingKeyMap = new HashMap<>();
         SendResult result;
-        resultList = new ArrayList<PublishResultItem>();
+        resultList = new CopyOnWriteArrayList<PublishResultItem>();
         if (json == null) {
             createFailureResult(resultList);
         }
         if (json.isJsonArray()) {
-            statusCodes = new ArrayList<Integer>();
+            statusCodes = new CopyOnWriteArrayList<Integer>();
             checkEventStatus = true;
             JsonArray bodyJson = json.getAsJsonArray();
             for (JsonElement obj : bodyJson) {
@@ -159,7 +163,7 @@ import ch.qos.logback.classic.Logger;
                             statusCodes.add(statusCode);
                     } else if (routing_key == null) {
                         routingKeyGenerationFailure(resultList);
-                        errorItems = new ArrayList<JsonElement>();
+                        errorItems = new CopyOnWriteArrayList<JsonElement>();
                         int statusCode = resultList.get(0).getStatusCode();
                         statusCodes.add(statusCode);
                         errorItems.add(obj);
@@ -178,7 +182,7 @@ import ch.qos.logback.classic.Logger;
                         statusCodes.add(statusCode);
                     } else {
                         createFailureResult(resultList);
-                        errorItems = new ArrayList<JsonElement>();
+                        errorItems = new CopyOnWriteArrayList<JsonElement>();
                         int statusCode = resultList.get(0).getStatusCode();
                         statusCodes.add(statusCode);
                         errorItems.add(obj);
@@ -187,7 +191,7 @@ import ch.qos.logback.classic.Logger;
                 }
             }
         } else {
-            statusCodes = new ArrayList<Integer>();
+            statusCodes = new CopyOnWriteArrayList<Integer>();
             result = send(json.toString(), msgService, userDomainSuffix, tag, routingKey);
             resultList.addAll(result.getEvents());
             int statusCode = result.getEvents().get(0).getStatusCode();
