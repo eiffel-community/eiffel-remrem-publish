@@ -166,4 +166,4 @@ If CLI fails internally before trying to publish Eiffel message, user will get e
 ## Status Codes
 For each user request Eiffel REMReM Publish generate response in JSON with internal status code and message, when publishing takes place.
 
-To get information about internal status codes see [here](statusCodes.md).
+To get information about internal status codes see [here](../statusCodes.md).

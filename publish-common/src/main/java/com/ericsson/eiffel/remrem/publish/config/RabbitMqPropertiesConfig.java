@@ -14,6 +14,10 @@
 */
 package com.ericsson.eiffel.remrem.publish.config;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -39,7 +43,7 @@ import ch.qos.logback.classic.Logger;
 @Component
 public class RabbitMqPropertiesConfig {
 
-    Logger log = (Logger) LoggerFactory.getLogger(RabbitMqPropertiesConfig.class);
+    static Logger log = (Logger) LoggerFactory.getLogger(RabbitMqPropertiesConfig.class);
 
     @Autowired
     Environment env;
@@ -47,8 +51,8 @@ public class RabbitMqPropertiesConfig {
     @Value("${rabbitmq.instances.jsonlist:{null}}")
     private String rabbitmqInstancesJsonListContent;
 
-    @Value("${jasypt.encryptor.password:{null}}")
-    private String jasyptPassword;
+    @Value("${jasypt.encryptor.jasyptKeyFilePath:{null}}")
+    private String jasyptKeyFilePath;
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
@@ -77,6 +81,8 @@ public class RabbitMqPropertiesConfig {
     private void readSpringProperties() {
         JsonNode rabbitmqInstancesJsonListJsonArray = null;
         final ObjectMapper objMapper = new ObjectMapper();
+        final String jasyptKey = readJasyptKeyFile(jasyptKeyFilePath);
+
         try {
             rabbitmqInstancesJsonListJsonArray = objMapper.readTree(rabbitmqInstancesJsonListContent);
 
@@ -90,7 +96,11 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").asText()));
                 rabbitMqProperties.setVirtualHost(rabbitmqInstanceObject.get("virtualHost").asText());
                 rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").asText());
-                rabbitMqProperties.setPassword(DecryptionUtils.decryptString(rabbitmqInstanceObject.get("password").asText(), jasyptPassword));
+                String rabbitMqPassword = rabbitmqInstanceObject.get("password").asText();
+                if (rabbitMqPassword.startsWith("{ENC(") && rabbitMqPassword.endsWith("}")) {
+                    rabbitMqPassword = rabbitMqPassword.substring(1, rabbitMqPassword.length() - 1);
+                }
+                rabbitMqProperties.setPassword(DecryptionUtils.decryptString(rabbitMqPassword, jasyptKey));
                 rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").asText());
                 rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
                 rabbitMqProperties.setCreateExchangeIfNotExisting(rabbitmqInstanceObject.get("createExchangeIfNotExisting").asBoolean());
@@ -103,6 +113,31 @@ public class RabbitMqPropertiesConfig {
         } catch (Exception e) {
             log.error("Failure when initiating RabbitMq Java Spring properties: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * To read the jasypt key from jasypt.key file
+     *
+     * @param jasyptKeyFilePath
+     *            file path in which jasypt key is stored
+     * @return jasypt key fetched from the file
+     */
+    public static String readJasyptKeyFile(final String jasyptKeyFilePath) {
+        String jasyptKey = "";
+        final FileInputStream file;
+        try {
+            if (StringUtils.isNotBlank(jasyptKeyFilePath)) {
+                file = new FileInputStream(jasyptKeyFilePath);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+                jasyptKey = reader.readLine();
+                if(jasyptKey == null) {
+                    return "";
+                }
+            }
+        } catch (IOException e) {
+            log.error("Could not read the jasypt key from the jasypt key file path: " + e.getMessage(), e);
+        }
+        return jasyptKey;
     }
 
     /***

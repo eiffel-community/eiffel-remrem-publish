@@ -83,10 +83,10 @@ Start the application from Tomcat.
 Jasypt Spring Boot provides Encryption support for property sources(passwords, secret info ..etc) in Spring Boot Applications. To support this functionality in our application we need to add the following property in property file
 
 ```
-jasypt.encryptor.password: The key value which was used while encrypting the original password
+jasypt.encryptor.jasyptKeyFilePath: The path of jasypt.key file containing the key value which was used while encrypting the original password
 ```
 
-The above encryptor password must be same for both encryption and decryption of the original password(ldap,rabbitmq...etc)
+The key value in jasypt.key file must be same for both encryption and decryption of the original password(ldap,rabbitmq...etc)
 The encryptor password will be used by jasypt-spring-boot library in application to decrypt the encrypted password at runtime.
 
 ### How to encrypt the password:
@@ -122,9 +122,9 @@ output:
     euJcvto7NtCDiWT7BKFW0A==
 ```
 
-Use the above encrypted password in your property file like this **ENC(encrypted password)**
+Use the above encrypted password in your property file like this **{ENC(encrypted password)}**
 
-`Ex:rabbitmq.password: ENC(euJcvto7NtCDiWT7BKFW0A ==)`
+`Ex:rabbitmq.password: {ENC(euJcvto7NtCDiWT7BKFW0A==)}`
 
 **Note: REMReM will work without jasypt encryption also but if you have encrypted any text using jasypt library then jasypt.encryptor.password property should be present in property file.**
 
@@ -361,4 +361,4 @@ Result:
 ## Status Codes
 For each user request Eiffel REMReM Publish generate response in JSON with internal status code and message.
 
-To get information about internal status codes see [here](statusCodes.md).
+To get information about internal status codes see [here](../statusCodes.md).

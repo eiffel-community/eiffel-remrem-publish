@@ -14,6 +14,12 @@
 */
 package com.ericsson.eiffel.remrem.publish.helper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -34,8 +40,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 import com.rabbitmq.client.Connection;
-
-import static org.junit.Assert.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ RabbitMqProperties.class, RMQHelper.class })
@@ -212,5 +216,26 @@ public class RMQHelperUnitTest {
         assertEquals(virtHost, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getVirtualHost());
         assertEquals(tlsVersion, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getTlsVer());
         assertEquals(exchangeNameTest, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getExchangeName());
+    }
+
+    @Test
+    public void testJasyptFileSuccess() throws IOException {
+        String jasyptPath = "src/test/resources/jasypt.key";
+        String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptPath);
+        assertEquals("docker", jasyptKey);
+    }
+
+    @Test
+    public void testJasyptFileWithEmptyKey() {
+        String jasyptPath = "src/test/resources/emptyJasypt.key";
+        String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptPath);
+        assertEquals("", jasyptKey);
+    }
+
+    @Test
+    public void testJasyptFileFailure() throws IOException {
+        String jasyptPath = "src/test/jasypt.key";
+        String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptPath);
+        assertEquals("", jasyptKey);
     }
 }

@@ -1,4 +1,17 @@
+## 2.0.20
+- Implemented code changes to handle the error ConcurrentModificationException which occured when too many
+  requests are sent to /generateAndPublish endpoint.
+
+## 2.0.19
+- Added the lenientValidation parameter(okToLeaveOutInvalidOptionalFields) for /generateAndPublish 
+  end point.
+
+## 2.0.18
+- Implemented the functionality to read the Jasypt encryption key from jasypt.key file.
+
 ## 2.0.17
+- REMReM lookups controlled 'failIfNoneFound' and 'failIfMultipleFound' lookups per lookup
+  object within an event instead of globally per call.
 - Removed Ericsson specific configuration from github.
 
 ## 2.0.16
