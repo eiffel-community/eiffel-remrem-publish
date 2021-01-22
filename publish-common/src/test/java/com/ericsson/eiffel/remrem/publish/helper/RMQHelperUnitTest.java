@@ -47,6 +47,7 @@ public class RMQHelperUnitTest {
 
     private static final String mBusHost= "HostA";
     private static final Integer mBusPort= 1234;
+    private static final String virtualHost = "/eiffel/test";
     private static final String exchangeName= "EN1";
     private static final String cliMode= "True";
     private static final String testMode= "True";
@@ -85,49 +86,31 @@ public class RMQHelperUnitTest {
     }
 
     private void initProperties() {
-        String key = PropertiesConfig.MESSAGE_BUS_HOST;
-        System.setProperty(key, mBusHost);
-        key = PropertiesConfig.MESSAGE_BUS_PORT;
-        System.setProperty(key, Integer.toString(mBusPort));
-        key = PropertiesConfig.EXCHANGE_NAME;
-        System.setProperty(key, exchangeName);
-        key = PropertiesConfig.CLI_MODE;
-        System.setProperty(key, cliMode);
-        key = PropertiesConfig.TEST_MODE;
-        System.setProperty(key, testMode);
-        key = PropertiesConfig.TLS;
-        System.setProperty(key, tlsVer);
-        key = PropertiesConfig.USE_PERSISTENCE;
-        System.setProperty(key, usePersistence);
-        key = PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING;
-        System.setProperty(key, createExchange);
-        key = PropertiesConfig.DOMAIN_ID;
-        System.setProperty(key, domainId);
-        key = PropertiesConfig.CHANNELS_COUNT;
-        System.setProperty(key, Integer.toString(channelsCount));
+        System.setProperty(PropertiesConfig.MESSAGE_BUS_HOST, mBusHost);
+        System.setProperty(PropertiesConfig.MESSAGE_BUS_PORT, Integer.toString(mBusPort));
+        System.setProperty(PropertiesConfig.VIRTUAL_HOST, virtualHost);
+        System.setProperty(PropertiesConfig.EXCHANGE_NAME, exchangeName);
+        System.setProperty(PropertiesConfig.CLI_MODE, cliMode);
+        System.setProperty(PropertiesConfig.TEST_MODE, testMode);
+        System.setProperty(PropertiesConfig.TLS, tlsVer);
+        System.setProperty(PropertiesConfig.USE_PERSISTENCE, usePersistence);
+        System.setProperty(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING, createExchange);
+        System.setProperty(PropertiesConfig.DOMAIN_ID, domainId);
+        System.setProperty(PropertiesConfig.CHANNELS_COUNT, Integer.toString(channelsCount));
     }
 
     private void cleanProperties() {
-        String key = PropertiesConfig.MESSAGE_BUS_HOST;
-        System.clearProperty(key);
-        key = PropertiesConfig.MESSAGE_BUS_PORT;
-        System.clearProperty(key);
-        key = PropertiesConfig.EXCHANGE_NAME;
-        System.clearProperty(key);
-        key = PropertiesConfig.CLI_MODE;
-        System.clearProperty(key);
-        key = PropertiesConfig.TEST_MODE;
-        System.clearProperty(key);
-        key = PropertiesConfig.TLS;
-        System.clearProperty(key);
-        key = PropertiesConfig.USE_PERSISTENCE;
-        System.clearProperty(key);
-        key = PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING;
-        System.setProperty(key, createExchange);
-        key = PropertiesConfig.DOMAIN_ID;
-        System.clearProperty(key);
-        key = PropertiesConfig.CHANNELS_COUNT;
-        System.clearProperty(key);
+        System.clearProperty(PropertiesConfig.MESSAGE_BUS_HOST);
+        System.clearProperty(PropertiesConfig.MESSAGE_BUS_PORT);
+        System.clearProperty(PropertiesConfig.VIRTUAL_HOST);
+        System.clearProperty(PropertiesConfig.EXCHANGE_NAME);
+        System.clearProperty(PropertiesConfig.CLI_MODE);
+        System.clearProperty(PropertiesConfig.TEST_MODE);
+        System.clearProperty(PropertiesConfig.TLS);
+        System.clearProperty(PropertiesConfig.USE_PERSISTENCE);
+        System.clearProperty(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING);
+        System.clearProperty(PropertiesConfig.DOMAIN_ID);
+        System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
     }
 
     @Test public void getHostTest() {
@@ -157,6 +140,10 @@ public class RMQHelperUnitTest {
         assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getPort().equals(portNumber));
     }
 
+    @Test public void getVirtualHostTest() {
+        assertEquals(virtualHost, rmqHelper.rabbitMqPropertiesMap.get(protocol).getVirtualHost());
+    }
+
     @Test public void getTlsVersionTest() {
         assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getTlsVer().equals(tlsVer));
     }
@@ -182,20 +169,17 @@ public class RMQHelperUnitTest {
 
         String host = "HOSTC";
         Integer portNumber = 1928;
+        String virtHost = "/eiffel/test2";
         String tlsVersion = "1.0";
         String exchangeNameTest = "EN2";
         String usePersistenceTest = "false";
 
-        String key = PropertiesConfig.MESSAGE_BUS_HOST;
-        System.setProperty(key, host);
-        key = PropertiesConfig.MESSAGE_BUS_PORT;
-        System.setProperty(key, Integer.toString(portNumber));
-        key = PropertiesConfig.TLS;
-        System.setProperty(key, tlsVersion);
-        key = PropertiesConfig.EXCHANGE_NAME;
-        System.setProperty(key, exchangeNameTest);
-        key = PropertiesConfig.USE_PERSISTENCE;
-        System.setProperty(key, usePersistenceTest);
+        System.setProperty(PropertiesConfig.MESSAGE_BUS_HOST, host);
+        System.setProperty(PropertiesConfig.MESSAGE_BUS_PORT, Integer.toString(portNumber));
+        System.setProperty(PropertiesConfig.VIRTUAL_HOST, virtHost);
+        System.setProperty(PropertiesConfig.TLS, tlsVersion);
+        System.setProperty(PropertiesConfig.EXCHANGE_NAME, exchangeNameTest);
+        System.setProperty(PropertiesConfig.USE_PERSISTENCE, usePersistenceTest);
 
         RMQHelper rmqHelperTest = new RMQHelper();
         RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
@@ -227,10 +211,11 @@ public class RMQHelperUnitTest {
             assertTrue(false);
         }
 
-        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getHost().equals(host));
-        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getPort().equals(portNumber));
-        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getTlsVer().equals(tlsVersion));
-        assertTrue(rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getExchangeName().equals(exchangeNameTest));
+        assertEquals(host, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getHost());
+        assertEquals(portNumber, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getPort());
+        assertEquals(virtHost, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getVirtualHost());
+        assertEquals(tlsVersion, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getTlsVer());
+        assertEquals(exchangeNameTest, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getExchangeName());
     }
 
     @Test

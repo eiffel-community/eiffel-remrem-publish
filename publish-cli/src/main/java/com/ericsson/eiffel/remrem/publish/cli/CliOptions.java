@@ -75,6 +75,7 @@ public class CliOptions {
         options.addOption("ce", "create_exchange", true, "option to denote if we need to create an exchange eg: -ce true or --create_exchange true");
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus, default is 5672");
+        options.addOption("vh", "virtual_host", true, "virtual host to connect to (optional)");
         options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'. It is required for RabbitMq secured port.");
         options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics, default is eiffelsemantics");
         options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
@@ -203,6 +204,11 @@ public class CliOptions {
             System.setProperty(key, port);
         }
 
+        if (commandLine.hasOption("vh")) {
+            String virtualHost = commandLine.getOptionValue("vh");
+            System.setProperty(PropertiesConfig.VIRTUAL_HOST, virtualHost);
+        }
+
         if (commandLine.hasOption("ce")) {
             String createExchange = commandLine.getOptionValue("ce");
             String key = PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING;
@@ -258,22 +264,15 @@ public class CliOptions {
      * Remove the system properties added by this application 
      */
     public static void clearSystemProperties() {
-        String key = PropertiesConfig.MESSAGE_BUS_HOST;
-        System.clearProperty(key);
-        key = PropertiesConfig.EXCHANGE_NAME;
-        System.clearProperty(key);
-        key = PropertiesConfig.USE_PERSISTENCE;
-        System.clearProperty(key);
-        key = PropertiesConfig.CLI_MODE;
-        System.clearProperty(key);
-        key = PropertiesConfig.MESSAGE_BUS_PORT;
-        System.clearProperty(key);
-        key = PropertiesConfig.TLS;
-        System.clearProperty(key);
-        key = PropertiesConfig.DOMAIN_ID;
-        System.clearProperty(key);
-        key = PropertiesConfig.CHANNELS_COUNT;
-        System.clearProperty(key);
+        System.clearProperty(PropertiesConfig.MESSAGE_BUS_HOST);
+        System.clearProperty(PropertiesConfig.EXCHANGE_NAME);
+        System.clearProperty(PropertiesConfig.USE_PERSISTENCE);
+        System.clearProperty(PropertiesConfig.CLI_MODE);
+        System.clearProperty(PropertiesConfig.MESSAGE_BUS_PORT);
+        System.clearProperty(PropertiesConfig.VIRTUAL_HOST);
+        System.clearProperty(PropertiesConfig.TLS);
+        System.clearProperty(PropertiesConfig.DOMAIN_ID);
+        System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
     }
 
     /**

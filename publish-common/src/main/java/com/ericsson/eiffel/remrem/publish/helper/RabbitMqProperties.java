@@ -45,6 +45,7 @@ public class RabbitMqProperties {
     private String exchangeName;
     private Integer port;
     private String tlsVer;
+    private String virtualHost;
     private String username;
     private String password;
     private String domainId;
@@ -81,6 +82,10 @@ public class RabbitMqProperties {
     public void setPort(Integer port) {
         this.port = port;
     }
+
+    public String getVirtualHost() { return virtualHost; }
+
+    public void setVirtualHost(String virtualHost) { this.virtualHost = virtualHost; }
 
     public String getTlsVer() {
         return tlsVer;
@@ -163,7 +168,8 @@ public class RabbitMqProperties {
         }
         madatoryParametersCheck();
         try {
-            factory.setHost(host);  
+            factory.setHost(host);
+            log.info("Host address: " + host);
 
             if (port != null) {
                 factory.setPort(port);
@@ -172,7 +178,13 @@ public class RabbitMqProperties {
                 log.info("Using default rabbit mq port.");
             }
 
-            log.info("Host adress: " + host);
+            if (virtualHost != null && !virtualHost.isEmpty()) {
+                factory.setVirtualHost(virtualHost);
+                log.info("Virtual host is: " + virtualHost);
+            } else {
+                log.info("Using default virtual host");
+            }
+
             log.info("Exchange is: " + exchangeName);
 
             if((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
@@ -237,6 +249,10 @@ public class RabbitMqProperties {
             port = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.port"));
         }
 
+        if (virtualHost == null) {
+            virtualHost = getValuesFromSystemProperties(protocol + ".rabbitmq.virtualHost");
+        }
+
         if (domainId == null) {
             domainId = getValuesFromSystemProperties(protocol + ".rabbitmq.domainId");
         }
@@ -266,6 +282,7 @@ public class RabbitMqProperties {
     private void setValues() {
         host = getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_HOST);
         port = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
+        virtualHost = getValuesFromSystemProperties(PropertiesConfig.VIRTUAL_HOST);
         domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
         channelsCount = Integer.getInteger(PropertiesConfig.CHANNELS_COUNT);
         tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
