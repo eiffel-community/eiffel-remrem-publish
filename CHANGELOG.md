@@ -1,6 +1,8 @@
 ## 2.0.20
 - Implemented code changes to handle the error ConcurrentModificationException which occured when too many
   requests are sent to /generateAndPublish endpoint.
+- Uplifted eiffel-remrem-parent version from 2.0.4 to 2.0.5
+- Uplifted eiffel-remrem-shared version from 2.0.4 to 2.0.5
 
 ## 2.0.19
 - Added the lenientValidation parameter(okToLeaveOutInvalidOptionalFields) for /generateAndPublish 
