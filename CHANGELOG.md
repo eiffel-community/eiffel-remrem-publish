@@ -3,7 +3,6 @@
   requests are sent to /generateAndPublish endpoint.
 - Uplifted eiffel-remrem-parent version from 2.0.4 to 2.0.5
 - Uplifted eiffel-remrem-shared version from 2.0.4 to 2.0.5
-- Implemented changes to handle the returning of duplicate eventId responses in Publish Response body.
 - Implemented changes and made the configurable parameter "virtualHost" as optional field.
 
 ## 2.0.19
