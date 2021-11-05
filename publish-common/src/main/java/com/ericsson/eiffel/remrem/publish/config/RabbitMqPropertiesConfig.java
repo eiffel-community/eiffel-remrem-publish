@@ -94,7 +94,9 @@ public class RabbitMqPropertiesConfig {
                 RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
                 rabbitMqProperties.setHost(rabbitmqInstanceObject.get("host").asText());
                 rabbitMqProperties.setPort(Integer.parseInt(rabbitmqInstanceObject.get("port").asText()));
-                rabbitMqProperties.setVirtualHost(rabbitmqInstanceObject.get("virtualHost").asText());
+                if((rabbitmqInstanceObject.get("virtualHost") != null) ) {
+                    rabbitMqProperties.setVirtualHost(rabbitmqInstanceObject.get("virtualHost").asText());
+                }
                 rabbitMqProperties.setUsername(rabbitmqInstanceObject.get("username").asText());
                 String rabbitMqPassword = rabbitmqInstanceObject.get("password").asText();
                 if (rabbitMqPassword.startsWith("{ENC(") && rabbitMqPassword.endsWith("}")) {
