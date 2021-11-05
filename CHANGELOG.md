@@ -4,6 +4,7 @@
 - Uplifted eiffel-remrem-parent version from 2.0.4 to 2.0.5
 - Uplifted eiffel-remrem-shared version from 2.0.4 to 2.0.5
 - Implemented changes and made the configurable parameter "virtualHost" as optional field.
+- Implemented changes to handle the returning of duplicate eventId responses in Publish Response body.
 
 ## 2.0.19
 - Added the lenientValidation parameter(okToLeaveOutInvalidOptionalFields) for /generateAndPublish 
