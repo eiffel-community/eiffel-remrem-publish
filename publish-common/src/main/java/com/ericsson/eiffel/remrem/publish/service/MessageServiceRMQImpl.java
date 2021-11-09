@@ -58,7 +58,7 @@ import ch.qos.logback.classic.Logger;
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.util.Map, java.util.Map)
      */
     @Override
-    public SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs, MsgService msgService) {
+    public synchronized SendResult send(Map<String, String> routingKeyMap, Map<String, String> msgs, MsgService msgService) {
         List<PublishResultItem> results = new CopyOnWriteArrayList<>();
         SendResult sendResult = null;
         PublishResultItem event = null;
@@ -85,7 +85,7 @@ import ch.qos.logback.classic.Logger;
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.lang.String, com.ericsson.eiffel.remrem.protocol.MsgService, java.lang.String)
      */
     @Override
-    public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix, String tag, String routingKey) {
+    public synchronized SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix, String tag, String routingKey) {
 
         JsonParser parser = new JsonParser();
         try {
@@ -135,7 +135,7 @@ import ch.qos.logback.classic.Logger;
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(com.google.gson.JsonElement, com.ericsson.eiffel.remrem.protocol.MsgService, java.lang.String)
     */
     @Override
-    public SendResult send(JsonElement json, MsgService msgService, String userDomainSuffix, String tag, String routingKey) {
+    public synchronized SendResult send(JsonElement json, MsgService msgService, String userDomainSuffix, String tag, String routingKey) {
         Map<String, String> map = new HashMap<>();
         Map<String, String> routingKeyMap = new HashMap<>();
         SendResult result;
@@ -200,7 +200,7 @@ import ch.qos.logback.classic.Logger;
         return result;
     }
 
-    private String sendMessage(String routingKey, String msg, MsgService msgService) {
+    private synchronized String sendMessage(String routingKey, String msg, MsgService msgService) {
         String resultMsg = PropertiesConfig.SUCCESS;
         try {
             instantiateRmqHelper();
