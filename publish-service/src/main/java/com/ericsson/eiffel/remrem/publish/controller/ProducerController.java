@@ -110,9 +110,10 @@ public class ProducerController {
             } catch (RemRemPublishException e) {
                 return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
             }
+        } synchronized(this) {
+            SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
+            return new ResponseEntity(result, messageService.getHttpStatus());
         }
-        SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
-        return new ResponseEntity(result, messageService.getHttpStatus());
     }
 
     /**
@@ -200,8 +201,10 @@ public class ProducerController {
                 if (msgService != null && msgProtocol != null) {
                     rmqHelper.rabbitMqPropertiesInit(msgProtocol);
                 }
-                SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
-                return new ResponseEntity(result, messageService.getHttpStatus());
+                synchronized(this) {
+                    SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
+                    return new ResponseEntity(result, messageService.getHttpStatus());
+                }
             } else {
                 return response;
             }
