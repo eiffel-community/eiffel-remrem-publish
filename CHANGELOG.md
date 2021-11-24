@@ -4,6 +4,7 @@
 - Uplifted eiffel-remrem-parent version from 2.0.4 to 2.0.5
 - Uplifted eiffel-remrem-shared version from 2.0.4 to 2.0.5
 - Implemented changes and made the configurable parameter "virtualHost" as optional field.
+- Implemented changes for UTF-8 format problem with REMReM GenerateAndPublish API
 
 ## 2.0.19
 - Added the lenientValidation parameter(okToLeaveOutInvalidOptionalFields) for /generateAndPublish 
