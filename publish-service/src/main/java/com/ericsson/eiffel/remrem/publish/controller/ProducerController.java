@@ -110,9 +110,10 @@ public class ProducerController {
             } catch (RemRemPublishException e) {
                 return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
             }
+        } synchronized(this) {
+            SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
+            return new ResponseEntity(result, messageService.getHttpStatus());
         }
-        SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
-        return new ResponseEntity(result, messageService.getHttpStatus());
     }
 
     /**
@@ -176,7 +177,7 @@ public class ProducerController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
         EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
 
@@ -200,8 +201,10 @@ public class ProducerController {
                 if (msgService != null && msgProtocol != null) {
                     rmqHelper.rabbitMqPropertiesInit(msgProtocol);
                 }
-                SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
-                return new ResponseEntity(result, messageService.getHttpStatus());
+                synchronized(this) {
+                    SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
+                    return new ResponseEntity(result, messageService.getHttpStatus());
+                }
             } else {
                 return response;
             }

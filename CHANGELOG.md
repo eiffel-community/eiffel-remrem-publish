@@ -1,8 +1,15 @@
+## 2.0.21
+- Dummy release for eiffel-remrem-publish
+
 ## 2.0.20
 - Implemented code changes to handle the error ConcurrentModificationException which occured when too many
   requests are sent to /generateAndPublish endpoint.
+- Provided an option to configure the virtual host name in property files and via command line
 - Uplifted eiffel-remrem-parent version from 2.0.4 to 2.0.5
 - Uplifted eiffel-remrem-shared version from 2.0.4 to 2.0.5
+- Implemented changes and made the configurable parameter "virtualHost" as optional field.
+- Implemented changes to handle the returning of duplicate eventId responses in Publish Response body.
+- Implemented changes for UTF-8 format problem with REMREM GenerateAndPublish API
 
 ## 2.0.19
 - Added the lenientValidation parameter(okToLeaveOutInvalidOptionalFields) for /generateAndPublish 
