@@ -82,7 +82,7 @@ public class RabbitMqPropertiesConfig {
         JsonNode rabbitmqInstancesJsonListJsonArray = null;
         String jasyptKey = null;
         final ObjectMapper objMapper = new ObjectMapper();
-        if (jasyptKeyFilePath != null && !jasyptKeyFilePath.equals("\"\"")) {
+        if (jasyptKeyFilePath != null && !jasyptKeyFilePath.equals("\"\"") && !jasyptKeyFilePath.equals("''")) {
             log.info("Initiating Jasypt Key File");
             jasyptKey = readJasyptKeyFile(jasyptKeyFilePath);
         }
