@@ -48,10 +48,10 @@ public class RabbitMqPropertiesConfig {
     @Autowired
     Environment env;
 
-    @Value("${rabbitmq.instances.jsonlist:{null}}")
+    @Value("${rabbitmq.instances.jsonlist:#{null}}")
     private String rabbitmqInstancesJsonListContent;
 
-    @Value("${jasypt.encryptor.jasyptKeyFilePath:{null}}")
+    @Value("${jasypt.encryptor.jasyptKeyFilePath:#{null}}")
     private String jasyptKeyFilePath;
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
@@ -80,8 +80,12 @@ public class RabbitMqPropertiesConfig {
      */
     private void readSpringProperties() {
         JsonNode rabbitmqInstancesJsonListJsonArray = null;
+        String jasyptKey = null;
         final ObjectMapper objMapper = new ObjectMapper();
-        final String jasyptKey = readJasyptKeyFile(jasyptKeyFilePath);
+        if (jasyptKeyFilePath != null && !jasyptKeyFilePath.equals("\"\"") && !jasyptKeyFilePath.equals("''")) {
+            log.info("Initiating Jasypt Key File");
+            jasyptKey = readJasyptKeyFile(jasyptKeyFilePath);
+        }
 
         try {
             rabbitmqInstancesJsonListJsonArray = objMapper.readTree(rabbitmqInstancesJsonListContent);
@@ -101,8 +105,11 @@ public class RabbitMqPropertiesConfig {
                 String rabbitMqPassword = rabbitmqInstanceObject.get("password").asText();
                 if (rabbitMqPassword.startsWith("{ENC(") && rabbitMqPassword.endsWith("}")) {
                     rabbitMqPassword = rabbitMqPassword.substring(1, rabbitMqPassword.length() - 1);
+                    rabbitMqProperties.setPassword(DecryptionUtils.decryptString(rabbitMqPassword, jasyptKey));
                 }
-                rabbitMqProperties.setPassword(DecryptionUtils.decryptString(rabbitMqPassword, jasyptKey));
+                else{
+                    rabbitMqProperties.setPassword(rabbitMqPassword);
+                }
                 rabbitMqProperties.setTlsVer(rabbitmqInstanceObject.get("tls").asText());
                 rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
                 rabbitMqProperties.setCreateExchangeIfNotExisting(rabbitmqInstanceObject.get("createExchangeIfNotExisting").asBoolean());
