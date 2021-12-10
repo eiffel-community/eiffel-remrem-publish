@@ -1,5 +1,6 @@
 ## 2.0.21
 - Dummy release for eiffel-remrem-publish
+- Updated all the REMRem Publish curl commands in documentation
 
 ## 2.0.20
 - Implemented code changes to handle the error ConcurrentModificationException which occured when too many
