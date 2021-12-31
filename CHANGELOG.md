@@ -1,3 +1,9 @@
+## 2.0.23
+- Updated the documentation that publish doesn't validate the message.
+
+## 2.0.22
+- Changed Jasypt configuration to be optional
+
 ## 2.0.21
 - Dummy release for eiffel-remrem-publish
 

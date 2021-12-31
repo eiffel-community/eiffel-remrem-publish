@@ -167,3 +167,5 @@ If CLI fails internally before trying to publish Eiffel message, user will get e
 For each user request Eiffel REMReM Publish generate response in JSON with internal status code and message, when publishing takes place.
 
 To get information about internal status codes see [here](../statusCodes.md).
+
+**Note:** publish-cli will not validate the message. It will check only if the message contains eventId and eventType.
