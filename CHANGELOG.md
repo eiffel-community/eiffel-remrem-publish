@@ -2,7 +2,7 @@
 - Uplifted eiffel-remrem-parent version from 2.0.5 to 2.0.6.
 - Uplifted eiffel-remrem-semantic version from 2.0.13 to 2.2.0
 - Uplifted the logback version to 1.2.10 to resolve the vulnerability issue.
-- Excluded the log4j dependency to resolve the vulnerability issue.
+- Excluded the log4j-to-slf4j dependency to resolve the vulnerability issue.
 
 ## 2.0.21
 - Dummy release for eiffel-remrem-publish
