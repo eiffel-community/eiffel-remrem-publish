@@ -1,8 +1,11 @@
 ## 2.0.23
-- Updated the documentation that publish doesn't validate the message.
+- Uplifted eiffel-remrem-parent version from 2.0.5 to 2.0.6
+- Uplifted eiffel-remrem-semantic version from 2.0.13 to 2.2.1
+- Uplifted the logback version to 1.2.10 to resolve the vulnerability issue.
+- Excluded the log4j-to-slf4j dependency to resolve the vulnerability issue.
 
 ## 2.0.22
-- Changed Jasypt configuration to be optional
+- Changed Jasypt configuration to be optional.
 
 ## 2.0.21
 - Dummy release for eiffel-remrem-publish
