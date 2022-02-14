@@ -40,6 +40,7 @@ public class PropertiesConfig {
     public static final String SERVICE_UNAVAILABLE = "Service Unavailable";
 
     public static final String CREATE_EXCHANGE_IF_NOT_EXISTING = "com.ericsson.eiffel.remrem.publish.messagebus.createExchange";
+    public static final String SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH = "com.ericsson.eiffel.remrem.publish.messagebus.semanticsRoutingkeyTypeOverrideFilepath";
     public static final String INVALID_EXCHANGE = "Exchange not found, Please check exchange configuration and try again";
     public static final String INVALID_EXCHANGE_MESSAGE_CLI = " Unavailable. To create the exchange specify -ce or --create_exchange to true )";
     public static final String INVALID_EXCHANGE_MESSAGE_SERVICE = " ExchangeName is not present, To create the exchange specify createExchangeIfNotExisting in application configuration";

@@ -54,6 +54,9 @@ public class RabbitMqPropertiesConfig {
     @Value("${jasypt.encryptor.jasyptKeyFilePath:#{null}}")
     private String jasyptKeyFilePath;
 
+    @Value("${semanticsRoutingkeyTypeOverrideFilepath:#{null}}")
+    private String semanticsRoutingkeyTypeOverrideFilepath;
+
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     @Autowired
@@ -114,9 +117,10 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
                 rabbitMqProperties.setCreateExchangeIfNotExisting(rabbitmqInstanceObject.get("createExchangeIfNotExisting").asBoolean());
                 rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").asText());
-                if((rabbitmqInstanceObject.get("channelsCount") != null) ) {
+                if ((rabbitmqInstanceObject.get("channelsCount") != null) ) {
                     rabbitMqProperties.setChannelsCount(Integer.parseInt(rabbitmqInstanceObject.get("channelsCount").asText()));  
                 }
+                rabbitMqProperties.setRoutingkeyTypeOverrideFilePath(semanticsRoutingkeyTypeOverrideFilepath);
                 rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
             }
         } catch (Exception e) {
