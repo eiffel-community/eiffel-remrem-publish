@@ -84,6 +84,7 @@ public class CliOptions {
         options.addOption("v", "lists the versions of publish and all loaded protocols");
         options.addOption("tag", "tag", true, "tag to be used in routing key");
         options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
+        options.addOption("srkt", "semanticsRoutingkeyTypeOverrideFilepath", false, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
 
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
@@ -239,6 +240,12 @@ public class CliOptions {
             System.setProperty(key, tls_ver);
         }
 
+        if (commandLine.hasOption("semanticsRoutingkeyTypeOverrideFilepath")) {
+            String semanticsRoutingkeyTypeOverrideFilepath =commandLine.getOptionValue("semanticsRoutingkeyTypeOverrideFilepath");
+            String key = PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH;
+            System.setProperty(key, semanticsRoutingkeyTypeOverrideFilepath);
+        }
+
         String usePersistance = "true";
         if (commandLine.hasOption("np")) {
             usePersistance = "false";
@@ -273,6 +280,7 @@ public class CliOptions {
         System.clearProperty(PropertiesConfig.TLS);
         System.clearProperty(PropertiesConfig.DOMAIN_ID);
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
+        System.clearProperty(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
     }
 
     /**
