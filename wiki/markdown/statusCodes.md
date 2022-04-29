@@ -172,7 +172,7 @@ These response can be generated only when `/generateAndPublish` endpoint is used
 | 417         | Expectation Failed    | Multiple event ids found with ERLookup properties                           | Is returned if multiple event ids fetched from configured event repository in REMReM generate.                         |
 | 422         | Unprocessable Entity  | Link specific lookup options could not be fulfilled                         | Is returned if Link specific lookup options could not be matched with failIfMultipleFound and failIfNoneFound.         |
 | 500         | Internal Server Error | Internal server error in Generate Service                                   | Is returned if REMReM Generate Service is not started or in case of others internal errors in REMReM Generate Service. |
-| 503         | Service Unavailable   | Message protocol is invalid                                                 | Is returned if there is no such message protocol loaded.                                                               |
+| 503         | Service Unavailable   | No protocol service has been found registered                               | Is returned if there is no such message protocol loaded.                                                               |
 
 ### Status codes explanation
 
@@ -267,7 +267,7 @@ There is no such message protocol loaded..
      {
       "status_code": 503,
       "result": "FAIL",
-      "message": "Message protocol is invalid"
+      "message": "No protocol service has been found registered"
      }
 ]
 ```
