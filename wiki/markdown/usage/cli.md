@@ -17,6 +17,8 @@ usage: java -jar
  -cc,--channelsCount <arg>        Number of channels connected to message
                                   bus, default is 1
 
+ -wcto,--WaitForConfirmsTimeOut <arg>      Time out for wait for confirms ,default is 5sec
+
 -en,--exchange_name <arg>         Exchange name.
 
 -ce,--create_exchange <arg>       option to denote if we need to create an exchange
@@ -113,6 +115,14 @@ If the number of channels increases then the CPU load and memory usage on the Ra
 
 ```
 java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -cc numberof-channels 
+```
+
+**If you want to change the wait for confirms timeout connected to RabbitMQ to publish messages:**
+waitForConfirmsTimeout default value is 5 sec.
+If the waitForConfirmsTimeout is less than 1 sec then sometimes it may leads to TimeoutException if channel unable to get acknowledgement within timeout.
+
+```
+java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -wcto timeout-in-seconds 
 ```
 
 **If you want to have the message publishing on RabbitMQ with given tag:**

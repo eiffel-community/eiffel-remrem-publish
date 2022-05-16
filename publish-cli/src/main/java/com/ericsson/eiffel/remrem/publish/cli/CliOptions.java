@@ -80,6 +80,7 @@ public class CliOptions {
         options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics, default is eiffelsemantics");
         options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
         options.addOption("cc", "channelsCount", true, "Number of channels connected to message bus, default is 1");
+        options.addOption("wcto", "waitForConfirmsTimeOut", true, "the timeout for waitfor confirms, default is 5 sec");
         options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         options.addOption("v", "lists the versions of publish and all loaded protocols");
         options.addOption("tag", "tag", true, "tag to be used in routing key");
@@ -226,6 +227,12 @@ public class CliOptions {
             System.setProperty(key, channelsCount);
         }
 
+        if (commandLine.hasOption("wcto")) {
+            String timeOut = commandLine.getOptionValue("wcto");
+            String key = PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT;
+            System.setProperty(key,timeOut);
+        }
+
         if (commandLine.hasOption("tls")) {
             String tls_ver = commandLine.getOptionValue("tls");
             if (tls_ver == null) {
@@ -273,6 +280,7 @@ public class CliOptions {
         System.clearProperty(PropertiesConfig.TLS);
         System.clearProperty(PropertiesConfig.DOMAIN_ID);
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
+        System.clearProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
     }
 
     /**

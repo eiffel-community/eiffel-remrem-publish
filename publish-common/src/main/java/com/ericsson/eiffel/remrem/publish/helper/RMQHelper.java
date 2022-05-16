@@ -18,6 +18,7 @@ package com.ericsson.eiffel.remrem.publish.helper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,6 +30,8 @@ import org.springframework.stereotype.Component;
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.exception.ChannelClosureException;
+import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 
 import ch.qos.logback.classic.Level;
@@ -86,7 +89,7 @@ import ch.qos.logback.classic.Logger;
         rabbitMqPropertiesMap.get(protocol).init();
     }
 
-    public void send(String routingKey, String msg, MsgService msgService) throws IOException {
+    public void send(String routingKey, String msg, MsgService msgService) throws IOException, NackException, TimeoutException, ChannelClosureException {
         String protocol = msgService.getServiceName();
         if(rabbitMqPropertiesMap.get(protocol) != null) {
             rabbitMqPropertiesMap.get(protocol).send(routingKey,msg);

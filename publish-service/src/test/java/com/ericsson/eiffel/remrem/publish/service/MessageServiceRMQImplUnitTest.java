@@ -24,6 +24,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 
@@ -38,6 +39,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.exception.ChannelClosureException;
+import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
@@ -171,7 +174,7 @@ public class MessageServiceRMQImplUnitTest {
     }
 
     @Test
-    public void testRabbitMQConnection() {
+    public void testRabbitMQConnection() throws NackException, TimeoutException, ChannelClosureException {
         try {
             if(rmqHelper.getRabbitMqPropertiesMap().get(protocol) != null) {
                 rmqHelper.getRabbitMqPropertiesMap().get(protocol).createRabbitMqConnection();

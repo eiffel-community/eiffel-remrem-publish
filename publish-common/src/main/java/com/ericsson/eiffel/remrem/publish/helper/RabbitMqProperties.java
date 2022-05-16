@@ -22,10 +22,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
+import com.ericsson.eiffel.remrem.publish.exception.ChannelClosureException;
+import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -51,6 +54,7 @@ public class RabbitMqProperties {
     private String domainId;
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
+    private Long WaitForConfirmstimeOut;
 
     private Connection rabbitConnection;
     private String protocol;
@@ -58,6 +62,15 @@ public class RabbitMqProperties {
     private List<Channel> rabbitChannels;
 
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
+
+
+    public Long getWaitForConfirmsTimeOut() {
+        return WaitForConfirmstimeOut;
+    }
+
+    public void setWaitForConfirmsTimeOut(Long WaitForConfirmsTimeOut) {
+        this.WaitForConfirmstimeOut = WaitForConfirmsTimeOut;
+    }
 
     public String getHost() {
         return host;
@@ -231,6 +244,9 @@ public class RabbitMqProperties {
             for (int i = 0; i < channelsCount; i++) {
                 rabbitChannels.add(rabbitConnection.createChannel());
             }
+            for (int i = 0; i < rabbitChannels.size(); i++){
+                rabbitChannels.get(i).confirmSelect();
+            }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
         }
@@ -276,6 +292,9 @@ public class RabbitMqProperties {
         if (channelsCount == null ) {
             channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
         }
+        if (WaitForConfirmstimeOut == null ) {
+            WaitForConfirmstimeOut = Long.getLong(getValuesFromSystemProperties(protocol + ".rabbitmq.WaitForConfirmsTimeOut"));
+        }
     }
     
 
@@ -285,6 +304,7 @@ public class RabbitMqProperties {
         virtualHost = getValuesFromSystemProperties(PropertiesConfig.VIRTUAL_HOST);
         domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
         channelsCount = Integer.getInteger(PropertiesConfig.CHANNELS_COUNT);
+        WaitForConfirmstimeOut = Long.getLong(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
         tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
         exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
@@ -400,33 +420,51 @@ public class RabbitMqProperties {
      * @param routingKey
      * @param msg is Eiffel Event
      * @throws IOException
+     * @throws ChannelClosureException
      */
-    public void send(String routingKey, String msg) throws IOException {
-
-        Channel channel = giveMeRandomChannel();
-        channel.addShutdownListener(new ShutdownListener() {
-            public void shutdownCompleted(ShutdownSignalException cause) {
-                // Beware that proper synchronization is needed here
-                if (cause.isInitiatedByApplication()) {
-                    log.debug("Shutdown is initiated by application. Ignoring it.");
-                } else {
-                    log.error("Shutdown is NOT initiated by application.");
-                    log.error(cause.getMessage());
-                    boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
-                    if (cliMode) {
-                        System.exit(-3);
+    public void send(String routingKey, String msg) throws  IOException ,NackException ,TimeoutException, ChannelClosureException{
+            Channel channel = giveMeRandomChannel();
+            channel.addShutdownListener(new ShutdownListener() {
+                public void shutdownCompleted(ShutdownSignalException cause) {
+                    // Beware that proper synchronization is needed here
+                    if (cause.isInitiatedByApplication()) {
+                        log.debug("Shutdown is initiated by application. Ignoring it.");
+                    } else {
+                        log.error("Shutdown is NOT initiated by application.");
+                        log.error(cause.getMessage());
+                        boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+                        if (cliMode) {
+                            System.exit(-3);
+                        }
                     }
                 }
+            });
+            BasicProperties msgProps = MessageProperties.BASIC;
+            if (usePersitance)
+                msgProps = MessageProperties.PERSISTENT_BASIC;
+        try {
+            channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
+            log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'",
+                    msg.getBytes().length, exchangeName, routingKey);
+            if (WaitForConfirmstimeOut == null || WaitForConfirmstimeOut == 0) {
+                WaitForConfirmstimeOut = 5000L;
             }
-        });
+            channel.waitForConfirmsOrDie(WaitForConfirmstimeOut);
+            log.info("channel seq number is.............."+channel.getNextPublishSeqNo());
 
-        BasicProperties msgProps = MessageProperties.BASIC;
-        if (usePersitance)
-            msgProps = MessageProperties.PERSISTENT_BASIC;
-
-        channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
-        log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length,
-                exchangeName, routingKey);
+        } catch (InterruptedException | IOException e) {
+            log.error("Failed to publish message due to" + e.getMessage());
+            throw new NackException("the message is nacked due to " + e.getMessage());
+        } catch (TimeoutException e) {
+            log.error("Failed to publish message due to" + e.getMessage());
+            throw new TimeoutException("Timeout waiting for ACK  " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Failed to publish message due to " + e.getMessage());
+            if(!channel.isOpen()&& rabbitConnection.isOpen()){
+                throw new ChannelClosureException("Failed to publish message due to " + e.getMessage());
+            }
+            throw new IOException("Failed to publish message due to " + e.getMessage());
+        }
     }
 
     /**

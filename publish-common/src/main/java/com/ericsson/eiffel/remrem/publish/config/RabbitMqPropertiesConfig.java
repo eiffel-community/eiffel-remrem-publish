@@ -117,6 +117,9 @@ public class RabbitMqPropertiesConfig {
                 if((rabbitmqInstanceObject.get("channelsCount") != null) ) {
                     rabbitMqProperties.setChannelsCount(Integer.parseInt(rabbitmqInstanceObject.get("channelsCount").asText()));  
                 }
+                if((rabbitmqInstanceObject.get("WaitForConfirmsTimeOut") != null) ) {
+                    rabbitMqProperties.setWaitForConfirmsTimeOut(Long.parseLong(rabbitmqInstanceObject.get("WaitForConfirmsTimeOut").asText()));
+                }
                 rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
             }
         } catch (Exception e) {
