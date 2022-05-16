@@ -232,7 +232,7 @@ You can use command line tools like [curl](https://curl.haxx.se/) or some plugin
 **One message:**
 
 ```
-curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics"
+curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}]' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics"
 ```
 
 Result:
@@ -244,7 +244,7 @@ Result:
 **Two messages/objects and given user domain suffix:**
 
 ```
-curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}},{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}' "http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics"
+curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}},{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872dek89","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}]' "http://localhost:8080/publish/producer/msg?ud=fem001&mp=eiffelsemantics"
 ```
 
 Result:
@@ -256,7 +256,7 @@ Result:
 **One message and given tag:**
 
 ```
-curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&tag=production"
+curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}]' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&tag=production"
 ```
 
 Result:
@@ -268,7 +268,7 @@ Result:
 **One message and given routing key:**
 
 ```
-curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&rk=myroutingkey"
+curl -H "Content-Type: application/json" -X POST -d '[{"meta":{"id":"963da060-f2cf-4370-a68d-67fd872def36","type":"EiffelActivityFinishedEvent","version":"3.0.0","time":1513758440588,"tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}]' "http://localhost:8080/publish/producer/msg?mp=eiffelsemantics&rk=myroutingkey"
 ```
 
 Result:
@@ -306,7 +306,7 @@ curl -H "Content-Type: application/json" -X POST -d '[{Message}]' "http://localh
 Result:
 
 ```
-{"timestamp":"Dec 27, 2017 3:34:11 PM","status":400,"error":"Bad Request","exception":"org.springframework.http.converter.HttpMessageNotReadableException","message":"Could not read JSON: ..."}
+{"timestamp":"Dec 2, 2021 7:44:31 PM","status":400,"error":"Bad Request","message":"Could not read JSON: ..."}
 ```
 
 ### Examples for /generateAndPublish endpoint
@@ -314,7 +314,7 @@ Result:
 **Correct message:**
 
 ```
-curl -H "Content-Type: application/json" -X POST -d '{"msgParams": {"meta": {"type": "EiffelActivityFinishedEvent", "version": "3.0.0","tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins/","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}' "http://localhost:8080/publish/generateAndPublish?mp=eiffelsemantics&msgType=EiffelActivityFinished"
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"msgParams": {"meta": {"type": "EiffelActivityTriggeredEvent","version": "4.0.0","tags": [""],"source": {"domainId": "","host": "","name": "","uri": ""}}},"eventParams": {"data": {"name": "eiffel-generic-site","categories": [],"triggers": [{"type": "EIFFEL_EVENT","description": "Triggered by Eiffel message"}],"customData": []},"links": []}}' 'http://localhost:8080/publish/generateAndPublish?mp=eiffelsemantics&msgType=EiffelActivityTriggeredEvent&parseData=false&failIfMultipleFound=false&failIfNoneFound=false&lookupInExternalERs=false&lookupLimit=1&okToLeaveOutInvalidOptionalFields=false'
 ```
 
 Result:
@@ -326,25 +326,25 @@ Result:
 **Incorrect message protocol:**
 
 ```
-curl -H "Content-Type: application/json" -X POST -d '{"msgParams":  {"meta": {"type": "EiffelActivityFinishedEvent", "version": "3.0.0","tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins/","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}' "http://localhost:8080/publish/generateAndPublish?mp=incorrecteiffelprotocol&msgType=EiffelActivityFinished"
+curl -H "Content-Type: application/json" -X POST -d '{"msgParams":  {"meta": {"type": "EiffelActivityFinishedEvent", "version": "3.0.0","tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins/","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}}' "http://localhost:8080/publish/generateAndPublish?mp=incorrecteiffelprotocol&msgType=EiffelActivityFinished"
 ```
 
 Result:
 
 ```
-{"status_code":503,"result":"FAIL","message":"Message protocol is invalid"}
+{"status_code":503,"result":"FAIL","message":"No protocol service has been found registered"}
 ```
 
 **Incorrect message type:**
 
 ```
-curl -H "Content-Type: application/json" -X POST -d '{"msgParams":  {"meta": {"type": "EiffelActivityFinishedEvent", "version": "3.0.0","tags": ["product_master","product_feature1"], "source": {"domainId": "eiffeltest", "host": "localhost", "name": "LOCALHOST", "uri": "http://localhost:8080/jenkins/","serializer":"pkg:maven/com.github.eiffel-community/eiffel-remrem-semantics@2.0.2"}}, "eventParams": {"data": {"outcome": {"conclusion": "SUCCESSFUL"}, "persistentLogs": [{"name": "firstLog", "uri": "http://localhost:8080/firstLog"}, {"name": "otherLog", "uri": "http://localhost:8080/otherlogs"}]}, "links": [{"type": "ACTIVITY_EXECUTION", "target": "e269b37d-17a1-4a10-aafb-c108735ee51f"}]}}' "http://localhost:8080/publish/generateAndPublish?mp=eiffelsemantics&msgType=incorrectmessagetype"
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"msgParams": {"meta": {"type": "EiffelActivityTriggeredEvent","version": "4.0.0","tags": [""],"source": {"domainId": "","host": "","name": "","uri": ""}}},"eventParams": {"data": {"name": "eiffel-generic-site","categories": [],"triggers": [{"type": "EIFFEL_EVENT","description": "Triggered by Eiffel message"}],"customData": []},"links": []}}' 'http://localhost:8080/publish/generateAndPublish?mp=eiffelsemantics&msgType=incorrectmessagetype&parseData=false&failIfMultipleFound=false&failIfNoneFound=false&lookupInExternalERs=false&lookupLimit=1&okToLeaveOutInvalidOptionalFields=false'
 ```
 
 Result:
 
 ```
-{"status_code":400,"result":"FAIL","message":"Malformed JSON or incorrect type of event"}
+{"result":"error","message":"Unknown event type requested..."}
 ```
 
 ### Examples for `/versions` endpoint
