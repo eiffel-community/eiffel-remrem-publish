@@ -125,14 +125,14 @@ public class CliOptionsUnitTests {
         assertTrue(CliOptions.getErrorCodes().contains(code));
     }
 
-    public void testToption() throws Exception {
+    public void testWctoOption() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-wcto", "5000"};
         CliOptions.parse(args);
         assertTrue(CliOptions.getErrorCodes().isEmpty());
     }
 
     @Test
-    public void testToOptionFails() throws Exception {
+    public void testWctoOptionFails() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-wctof", "5000"};
         CliOptions.parse(args);
         int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;

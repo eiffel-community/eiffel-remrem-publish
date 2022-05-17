@@ -39,6 +39,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.Connection;
 
 @RunWith(PowerMockRunner.class)
@@ -127,7 +128,7 @@ public class RMQHelperUnitTest {
     }
 
     @Test
-    public void testConnection() {
+    public void testConnection() throws RemRemPublishException {
         assertNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
         rmqHelper.rabbitMqPropertiesMap.get(protocol).createRabbitMqConnection();
         assertNotNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());

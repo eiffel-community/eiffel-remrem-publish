@@ -22,12 +22,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
-import com.ericsson.eiffel.remrem.publish.exception.ChannelClosureException;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
@@ -54,7 +52,8 @@ public class RabbitMqProperties {
     private String domainId;
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
-    private Long WaitForConfirmstimeOut;
+    private Long waitForConfirmsTimeOut;
+    private Long defaultWaitForConfirmsTimeout = 5000L;
 
     private Connection rabbitConnection;
     private String protocol;
@@ -65,11 +64,11 @@ public class RabbitMqProperties {
 
 
     public Long getWaitForConfirmsTimeOut() {
-        return WaitForConfirmstimeOut;
+        return waitForConfirmsTimeOut;
     }
 
-    public void setWaitForConfirmsTimeOut(Long WaitForConfirmsTimeOut) {
-        this.WaitForConfirmstimeOut = WaitForConfirmsTimeOut;
+    public void setWaitForConfirmsTimeOut(Long waitForConfirmsTimeOut) {
+        this.waitForConfirmsTimeOut = waitForConfirmsTimeOut;
     }
 
     public String getHost() {
@@ -232,8 +231,9 @@ public class RabbitMqProperties {
 
     /**
      * This method is used to create Rabbitmq connection and channels
+     * @throws RemRemPublishException
      */
-    public void createRabbitMqConnection() {
+    public void createRabbitMqConnection() throws RemRemPublishException {
         try {
             rabbitConnection = factory.newConnection();
             log.info("Connected to RabbitMQ.");
@@ -249,6 +249,7 @@ public class RabbitMqProperties {
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
+            throw new RemRemPublishException("Failed to create connection for Rabbitmq ::" + factory.getHost() + ":" + factory.getPort());
         }
     }
 
@@ -292,8 +293,8 @@ public class RabbitMqProperties {
         if (channelsCount == null ) {
             channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
         }
-        if (WaitForConfirmstimeOut == null ) {
-            WaitForConfirmstimeOut = Long.getLong(getValuesFromSystemProperties(protocol + ".rabbitmq.WaitForConfirmsTimeOut"));
+        if (waitForConfirmsTimeOut == null ) {
+            waitForConfirmsTimeOut = Long.getLong(getValuesFromSystemProperties(protocol + ".rabbitmq.WaitForConfirmsTimeOut"));
         }
     }
     
@@ -304,7 +305,7 @@ public class RabbitMqProperties {
         virtualHost = getValuesFromSystemProperties(PropertiesConfig.VIRTUAL_HOST);
         domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
         channelsCount = Integer.getInteger(PropertiesConfig.CHANNELS_COUNT);
-        WaitForConfirmstimeOut = Long.getLong(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
+        waitForConfirmsTimeOut = Long.getLong(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
         tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
         exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
@@ -420,9 +421,11 @@ public class RabbitMqProperties {
      * @param routingKey
      * @param msg is Eiffel Event
      * @throws IOException
-     * @throws ChannelClosureException
+     * @throws NackException
+     * @throws TimeoutException
+     * @throws RemRemPublishException
      */
-    public void send(String routingKey, String msg) throws  IOException ,NackException ,TimeoutException, ChannelClosureException{
+    public void send(String routingKey, String msg) throws  IOException ,NackException ,TimeoutException, RemRemPublishException{
             Channel channel = giveMeRandomChannel();
             channel.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
@@ -446,22 +449,20 @@ public class RabbitMqProperties {
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
             log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'",
                     msg.getBytes().length, exchangeName, routingKey);
-            if (WaitForConfirmstimeOut == null || WaitForConfirmstimeOut == 0) {
-                WaitForConfirmstimeOut = 5000L;
+            if (waitForConfirmsTimeOut == null || waitForConfirmsTimeOut == 0) {
+                waitForConfirmsTimeOut = defaultWaitForConfirmsTimeout;
             }
-            channel.waitForConfirmsOrDie(WaitForConfirmstimeOut);
-            log.info("channel seq number is.............."+channel.getNextPublishSeqNo());
-
+            channel.waitForConfirmsOrDie(waitForConfirmsTimeOut);
         } catch (InterruptedException | IOException e) {
             log.error("Failed to publish message due to" + e.getMessage());
-            throw new NackException("the message is nacked due to " + e.getMessage());
+            throw new NackException("the message is nacked due to " + e.getMessage(), e);
         } catch (TimeoutException e) {
             log.error("Failed to publish message due to" + e.getMessage());
             throw new TimeoutException("Timeout waiting for ACK  " + e.getMessage());
         } catch (Exception e) {
-            log.error("Failed to publish message due to " + e.getMessage());
+            log.error(e.getMessage(), e);
             if(!channel.isOpen()&& rabbitConnection.isOpen()){
-                throw new ChannelClosureException("Failed to publish message due to " + e.getMessage());
+                throw new RemRemPublishException("Channel was closed for Rabbitmq connection ::" + factory.getHost() + factory.getPort());
             }
             throw new IOException("Failed to publish message due to " + e.getMessage());
         }
@@ -470,8 +471,9 @@ public class RabbitMqProperties {
     /**
      * This method is used to give random channel
      * @return channel
+     * @throws RemRemPublishException
      */
-    private Channel giveMeRandomChannel() {
+    private Channel giveMeRandomChannel() throws RemRemPublishException {
         if ((rabbitConnection == null || !rabbitConnection.isOpen())) {
             createRabbitMqConnection();
         }

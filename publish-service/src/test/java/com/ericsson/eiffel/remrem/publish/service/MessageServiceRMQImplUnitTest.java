@@ -39,7 +39,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
-import com.ericsson.eiffel.remrem.publish.exception.ChannelClosureException;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
@@ -174,7 +173,7 @@ public class MessageServiceRMQImplUnitTest {
     }
 
     @Test
-    public void testRabbitMQConnection() throws NackException, TimeoutException, ChannelClosureException {
+    public void testRabbitMQConnection() throws NackException, TimeoutException, RemRemPublishException {
         try {
             if(rmqHelper.getRabbitMqPropertiesMap().get(protocol) != null) {
                 rmqHelper.getRabbitMqPropertiesMap().get(protocol).createRabbitMqConnection();

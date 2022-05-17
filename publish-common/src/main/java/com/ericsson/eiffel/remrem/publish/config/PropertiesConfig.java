@@ -50,7 +50,6 @@ public class PropertiesConfig {
     public static final String SERVER_DOWN_MESSAGE = "RabbitMQ is down. Please try later";
     public static final String MESSAGE_NACK = "Message is nacked";
     public static final String TIMEOUT_WAITING_FOR_ACK = "Time out waiting for ACK";
-    public static final String CHANNEL_DOWN = "channel is closed";
     public static final String ROUTING_KEY_GENERATION_FAILED_CONTENT = "Could not prepare Routing key to publish message";
     public static final String UNSUCCESSFUL_EVENT_CONTENT = "Please check previous event and try again later";
     public static final String RABBITMQ_PROPERTIES_NOT_FOUND = "RabbitMQ properties not found";

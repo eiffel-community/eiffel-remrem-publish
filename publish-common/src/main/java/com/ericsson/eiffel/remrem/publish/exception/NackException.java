@@ -14,11 +14,16 @@
 */
 package com.ericsson.eiffel.remrem.publish.exception;
 
-public class NackException extends Exception {
+import java.io.IOException;
+
+public class NackException extends IOException {
 
     private static final long serialVersionUID = 1872149119179038290L;
 
     public NackException(String message) {
         super(message);
+    }
+    public NackException(String message , Throwable cause) {
+        super(message, cause);
     }
 }

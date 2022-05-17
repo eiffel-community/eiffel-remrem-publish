@@ -15,7 +15,6 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.publish.exception.ChannelClosureException;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
@@ -67,29 +65,29 @@ import ch.qos.logback.classic.Logger;
         PublishResultItem event = null;
         if (!CollectionUtils.isEmpty(msgs)) {
             for (Map.Entry<String, String> entry : msgs.entrySet()) {
-                String message;
+                String message, entryKey = entry.getKey();
                 try {
-                    message = sendMessage(routingKeyMap.get(entry.getKey()), entry.getValue(), msgService);
+                    message = sendMessage(routingKeyMap.get(entryKey), entry.getValue(), msgService);
                 if (PropertiesConfig.SUCCESS.equals(message)) {
-                    event = new PublishResultItem(entry.getKey(), 200, PropertiesConfig.SUCCESS,
+                    event = new PublishResultItem(entryKey, HttpStatus.OK.value(), PropertiesConfig.SUCCESS,
                             PropertiesConfig.SUCCESS_MESSAGE);
                 } else {
-                    event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,
+                    event = new PublishResultItem(entryKey,  HttpStatus.INTERNAL_SERVER_ERROR.value(), PropertiesConfig.SERVER_DOWN,
                             PropertiesConfig.SERVER_DOWN_MESSAGE);
                     checkEventStatus = false;
                 }
                 } catch (NackException e) {
-                    event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,
+                    event = new PublishResultItem(entryKey, HttpStatus.INTERNAL_SERVER_ERROR.value(), PropertiesConfig.SERVER_DOWN,
                             PropertiesConfig.MESSAGE_NACK);
                 } catch (TimeoutException e) {
-                    event = new PublishResultItem(entry.getKey(), 504, PropertiesConfig.GATEWAY_TIMEOUT,
+                    event = new PublishResultItem(entryKey, HttpStatus.GATEWAY_TIMEOUT.value(), PropertiesConfig.GATEWAY_TIMEOUT,
                             PropertiesConfig.TIMEOUT_WAITING_FOR_ACK);
+                } catch (RemRemPublishException e) {
+                    event = new PublishResultItem(entryKey, HttpStatus.INTERNAL_SERVER_ERROR.value(), PropertiesConfig.SERVER_DOWN,
+                            e.getMessage());
                 } catch (IOException e) {
-                    event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,
+                    event = new PublishResultItem(entryKey, HttpStatus.INTERNAL_SERVER_ERROR.value(), PropertiesConfig.SERVER_DOWN,
                             PropertiesConfig.SERVER_DOWN_MESSAGE);
-                } catch (ChannelClosureException e) {
-                    event = new PublishResultItem(entry.getKey(), 500, PropertiesConfig.SERVER_DOWN,
-                            PropertiesConfig.CHANNEL_DOWN);
                 }
                 results.add(event);
             }
@@ -218,7 +216,7 @@ import ch.qos.logback.classic.Logger;
         return result;
     }
 
-    private String sendMessage(String routingKey, String msg, MsgService msgService) throws IOException,NackException, TimeoutException, ChannelClosureException {
+    private String sendMessage(String routingKey, String msg, MsgService msgService) throws IOException,NackException, TimeoutException, RemRemPublishException {
         String resultMsg = PropertiesConfig.SUCCESS;
         try {
             instantiateRmqHelper();
