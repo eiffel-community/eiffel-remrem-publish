@@ -65,6 +65,7 @@ public class MessageServiceRMQImplUnitTest {
     private static final String exchangeName= "amq.direct";
     private static final String domainId= "eiffelxxx";
     private boolean createExchangeIfNotExisting = true;
+    private static final Integer tcpTimeOut = 5000;
 
     @PostConstruct public void setUp() throws Exception {
         rmqHelper.getRabbitMqPropertiesMap().put(protocol, new RabbitMqProperties());
@@ -72,6 +73,7 @@ public class MessageServiceRMQImplUnitTest {
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setTcpTimeOut(tcpTimeOut);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
     }
 

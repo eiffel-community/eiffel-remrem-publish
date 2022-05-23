@@ -55,6 +55,7 @@ public class RMQHelperUnitTest {
     private static final String usePersistence= "1.2";
     private static final String domainId= "eiffelxxx";
     private static final Integer channelsCount= 1;
+    private static final Integer tcpTimeOut= 5000;
     private String protocol = "eiffelsemantics";
     private String createExchange = "true";
 
@@ -97,6 +98,7 @@ public class RMQHelperUnitTest {
         System.setProperty(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING, createExchange);
         System.setProperty(PropertiesConfig.DOMAIN_ID, domainId);
         System.setProperty(PropertiesConfig.CHANNELS_COUNT, Integer.toString(channelsCount));
+        System.setProperty(PropertiesConfig.TCP_TIMEOUT, Integer.toString(tcpTimeOut));
     }
 
     private void cleanProperties() {
@@ -111,6 +113,7 @@ public class RMQHelperUnitTest {
         System.clearProperty(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING);
         System.clearProperty(PropertiesConfig.DOMAIN_ID);
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
+        System.clearProperty(PropertiesConfig.TCP_TIMEOUT);
     }
 
     @Test public void getHostTest() {
@@ -173,6 +176,7 @@ public class RMQHelperUnitTest {
         String tlsVersion = "1.0";
         String exchangeNameTest = "EN2";
         String usePersistenceTest = "false";
+        Integer tcpTimeOut = 5000;
 
         System.setProperty(PropertiesConfig.MESSAGE_BUS_HOST, host);
         System.setProperty(PropertiesConfig.MESSAGE_BUS_PORT, Integer.toString(portNumber));
@@ -180,6 +184,7 @@ public class RMQHelperUnitTest {
         System.setProperty(PropertiesConfig.TLS, tlsVersion);
         System.setProperty(PropertiesConfig.EXCHANGE_NAME, exchangeNameTest);
         System.setProperty(PropertiesConfig.USE_PERSISTENCE, usePersistenceTest);
+        System.setProperty(PropertiesConfig.TCP_TIMEOUT, Integer.toString(tcpTimeOut));
 
         RMQHelper rmqHelperTest = new RMQHelper();
         RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
@@ -216,6 +221,7 @@ public class RMQHelperUnitTest {
         assertEquals(virtHost, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getVirtualHost());
         assertEquals(tlsVersion, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getTlsVer());
         assertEquals(exchangeNameTest, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getExchangeName());
+        assertEquals(tcpTimeOut, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getTcpTimeOut());
     }
 
     @Test

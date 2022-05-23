@@ -51,6 +51,9 @@ public class RabbitMqProperties {
     private String domainId;
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
+    private Integer tcpTimeOut;
+//  built in tcp connection timeout value for MB in milliseconds.
+    public static final Integer DEFAULT_TCP_TIMEOUT=60000;
 
     private Connection rabbitConnection;
     private String protocol;
@@ -134,6 +137,14 @@ public class RabbitMqProperties {
     public void setChannelsCount(Integer channelsCount) {
         this.channelsCount = channelsCount;
     }
+
+    public Integer getTcpTimeOut() {
+		return tcpTimeOut;
+	}
+
+	public void setTcpTimeOut(Integer tcpTimeOut) {
+		this.tcpTimeOut = tcpTimeOut;
+	}
 
     public RMQBeanConnectionFactory getFactory() {
         return factory;
@@ -222,6 +233,10 @@ public class RabbitMqProperties {
      */
     public void createRabbitMqConnection() {
         try {
+			if (tcpTimeOut == 0 || tcpTimeOut == null) {
+				tcpTimeOut = DEFAULT_TCP_TIMEOUT;
+			}
+			factory.setConnectionTimeout(tcpTimeOut);
             rabbitConnection = factory.newConnection();
             log.info("Connected to RabbitMQ.");
             rabbitChannels = new ArrayList<>();
@@ -276,6 +291,10 @@ public class RabbitMqProperties {
         if (channelsCount == null ) {
             channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
         }
+
+		if (tcpTimeOut == null) {
+			tcpTimeOut = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.tcpTimeOut"));
+		}
     }
     
 
@@ -289,6 +308,8 @@ public class RabbitMqProperties {
         exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
         createExchangeIfNotExisting = Boolean.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
+        tcpTimeOut = Integer.getInteger(PropertiesConfig.TCP_TIMEOUT);
+
     }
 
     private String getValuesFromSystemProperties(String propertyName) {
