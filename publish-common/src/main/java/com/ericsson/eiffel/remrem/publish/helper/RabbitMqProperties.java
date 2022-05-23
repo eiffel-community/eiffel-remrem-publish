@@ -22,10 +22,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ldap.TimeLimitExceededException;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
@@ -193,7 +190,7 @@ public class RabbitMqProperties {
 				log.info("Port is: " + port);
 			} else {
 				log.info("Using default rabbit mq port.");
-			}           
+			}
 			if (virtualHost != null && !virtualHost.isEmpty()) {
 				factory.setVirtualHost(virtualHost);
 				log.info("Virtual host is: " + virtualHost);
@@ -233,11 +230,9 @@ public class RabbitMqProperties {
 	 */
 	public void createRabbitMqConnection() {
 		try {
-			System.out.println("-------------timeout before" + tcpTimeOut);
 			if (tcpTimeOut == 0 || tcpTimeOut == null) {
 				tcpTimeOut = DEFAULT_TCP_TIMEOUT;
 			}
-			System.out.println("------------------" + tcpTimeOut);
 			factory.setConnectionTimeout(tcpTimeOut);
 			rabbitConnection = factory.newConnection();
 			log.info("Connected to RabbitMQ.");
@@ -333,7 +328,7 @@ public class RabbitMqProperties {
 	 * This method is used to check for checking exchange availability, if exchange
 	 * is not available creates a new exchange based on
 	 * isCreateExchangeIfNotExisting true boolean property .
-	 * 
+	 *
 	 * @throws RemRemPublishException
 	 * @throws TimeoutException
 	 * @throws IOException
@@ -344,7 +339,6 @@ public class RabbitMqProperties {
 			if (isCreateExchangeIfNotExisting()) {
 				Connection connection = null;
 				try {
-					System.out.println("checking echange is there or nott--------------------------------");
 					connection = factory.newConnection();
 				} catch (final IOException | TimeoutException e) {
 					throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::"
@@ -387,7 +381,7 @@ public class RabbitMqProperties {
 
 	/**
 	 * This method is used to check exchange exists or not
-	 * 
+	 *
 	 * @return Boolean
 	 * @throws RemRemPublishException
 	 * @throws TimeoutException
@@ -438,8 +432,6 @@ public class RabbitMqProperties {
 	public void send(String routingKey, String msg) throws IOException {
 
 		Channel channel = giveMeRandomChannel();
-		channel.confirmSelect();
-		System.out.println("checking the channel------------------------");
 		channel.addShutdownListener(new ShutdownListener() {
 			public void shutdownCompleted(ShutdownSignalException cause) {
 				// Beware that proper synchronization is needed here
@@ -468,7 +460,7 @@ public class RabbitMqProperties {
 
 	/**
 	 * This method is used to give random channel
-	 * 
+	 *
 	 * @return channel
 	 */
 	private Channel giveMeRandomChannel() {
