@@ -19,6 +19,7 @@ public class PropertiesConfig {
     public static final String MESSAGE_BUS_PORT = "com.ericsson.eiffel.remrem.publish.messagebus.port";
     public static final String VIRTUAL_HOST = "com.ericsson.eiffel.remrem.publish.messagebus.virtualhost";
     public static final String CHANNELS_COUNT = "com.ericsson.eiffel.remrem.publish.messagebus.channels";
+    public static final String TCP_TIMEOUT = "com.ericsson.eiffel.remrem.publish.messagebus.tcpTimeOut";
     public static final String TLS = "com.ericsson.eiffel.remrem.publish.messagebus.tls";
     public static final String EXCHANGE_NAME = "com.ericsson.eiffel.remrem.publish.exchange.name";
     public static final String USE_PERSISTENCE = "com.ericsson.eiffel.remrem.publish.use.persistence";
@@ -28,6 +29,7 @@ public class PropertiesConfig {
     public static final String DOMAIN_ID = "com.ericsson.eiffel.remrem.publish.domain";
 
     public static final String INVALID_EVENT_CONTENT = "Invalid event content, client need to fix problem in event before submitting again";
+
     public static final String INVALID_MESSAGE = "Bad Request";
     public static final String SUCCESS = "SUCCESS";
 

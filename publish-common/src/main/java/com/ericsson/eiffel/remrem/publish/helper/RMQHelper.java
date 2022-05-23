@@ -71,6 +71,7 @@ import ch.qos.logback.classic.Logger;
      */
     public void rabbitMqPropertiesInit(String protocol) throws RemRemPublishException{
         if(!rabbitMqPropertiesMap.containsKey(protocol)) {
+        	System.out.println("This method is used to set protocol specific RabbitMQ properties----------------------------------");
             rabbitMqPropertiesMap.put(protocol, new RabbitMqProperties());
             protocolInit(protocol);
         }

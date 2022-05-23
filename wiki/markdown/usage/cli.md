@@ -17,6 +17,8 @@ usage: java -jar
  -cc,--channelsCount <arg>        Number of channels connected to message
                                   bus, default is 1
 
+-tto --tcpTimeOut <arg>           Tcp connection timeout value
+
 -en,--exchange_name <arg>         Exchange name.
 
 -ce,--create_exchange <arg>       option to denote if we need to create an exchange
@@ -113,6 +115,12 @@ If the number of channels increases then the CPU load and memory usage on the Ra
 
 ```
 java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -cc numberof-channels 
+```
+
+**If you want to change the tcp connection timeout value for rabbitmq connection**
+
+```
+java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics --tto tcp-timeout-value
 ```
 
 **If you want to have the message publishing on RabbitMQ with given tag:**

@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ldap.TimeLimitExceededException;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
@@ -37,407 +40,442 @@ import ch.qos.logback.classic.Logger;
 
 public class RabbitMqProperties {
 
-    private RMQBeanConnectionFactory factory = new RMQBeanConnectionFactory();
-    private static final Random random = new Random();
-    private boolean usePersitance = true;
+	private RMQBeanConnectionFactory factory = new RMQBeanConnectionFactory();
+	private static final Random random = new Random();
+	private boolean usePersitance = true;
 
-    private String host;
-    private String exchangeName;
-    private Integer port;
-    private String tlsVer;
-    private String virtualHost;
-    private String username;
-    private String password;
-    private String domainId;
-    private Integer channelsCount;
-    private boolean createExchangeIfNotExisting;
+	private String host;
+	private String exchangeName;
+	private Integer port;
+	private String tlsVer;
+	private String virtualHost;
+	private String username;
+	private String password;
+	private String domainId;
+	private Integer channelsCount;
+	private boolean createExchangeIfNotExisting;
+	private Integer tcpTimeOut;
+	public static final Integer DEFAULT_TCP_TIMEOUT = 60000;
 
-    private Connection rabbitConnection;
-    private String protocol;
+	private Connection rabbitConnection;
+	private String protocol;
 
-    private List<Channel> rabbitChannels;
+	private List<Channel> rabbitChannels;
 
-    Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
+	Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
-    public String getHost() {
-        return host;
-    }
+	public String getHost() {
+		return host;
+	}
 
-    public void setHost(String host) {
-        this.host = host;
-    }
+	public void setHost(String host) {
+		this.host = host;
+	}
 
-    public String getExchangeName() {
-        return exchangeName;
-    }
+	public String getExchangeName() {
+		return exchangeName;
+	}
 
-    public void setExchangeName(String exchangeName) {
-        this.exchangeName = exchangeName;
-    }
+	public void setExchangeName(String exchangeName) {
+		this.exchangeName = exchangeName;
+	}
 
-    public Integer getPort() {
-        return port;
-    }
+	public Integer getPort() {
+		return port;
+	}
 
-    public void setPort(Integer port) {
-        this.port = port;
-    }
+	public void setPort(Integer port) {
+		this.port = port;
+	}
 
-    public String getVirtualHost() { return virtualHost; }
+	public String getVirtualHost() {
+		return virtualHost;
+	}
 
-    public void setVirtualHost(String virtualHost) { this.virtualHost = virtualHost; }
+	public void setVirtualHost(String virtualHost) {
+		this.virtualHost = virtualHost;
+	}
 
-    public String getTlsVer() {
-        return tlsVer;
-    }
+	public String getTlsVer() {
+		return tlsVer;
+	}
 
-    public void setTlsVer(String tlsVer) {
-        this.tlsVer = tlsVer;
-    }
+	public void setTlsVer(String tlsVer) {
+		this.tlsVer = tlsVer;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setUsername(String user) {
-        this.username = user;
-    }
+	public void setUsername(String user) {
+		this.username = user;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public String getDomainId() {
-        return domainId;
-    }
+	public String getDomainId() {
+		return domainId;
+	}
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
-    }
+	public void setDomainId(String domainId) {
+		this.domainId = domainId;
+	}
 
-    public boolean isCreateExchangeIfNotExisting() {
-        return createExchangeIfNotExisting;
-    }
+	public boolean isCreateExchangeIfNotExisting() {
+		return createExchangeIfNotExisting;
+	}
 
-    public void setCreateExchangeIfNotExisting(boolean createExchangeIfNotExisting) {
-        this.createExchangeIfNotExisting = createExchangeIfNotExisting;
-    }
+	public void setCreateExchangeIfNotExisting(boolean createExchangeIfNotExisting) {
+		this.createExchangeIfNotExisting = createExchangeIfNotExisting;
+	}
 
-    public Integer getChannelsCount() {
-        return channelsCount;
-    }
+	public Integer getChannelsCount() {
+		return channelsCount;
+	}
 
-    public void setChannelsCount(Integer channelsCount) {
-        this.channelsCount = channelsCount;
-    }
+	public void setChannelsCount(Integer channelsCount) {
+		this.channelsCount = channelsCount;
+	}
 
-    public RMQBeanConnectionFactory getFactory() {
-        return factory;
-    }
+	public RMQBeanConnectionFactory getFactory() {
+		return factory;
+	}
 
-    public void setFactory(RMQBeanConnectionFactory factory) {
-        this.factory = factory;
-    }
+	public void setFactory(RMQBeanConnectionFactory factory) {
+		this.factory = factory;
+	}
 
-    public String getProtocol() {
-        return protocol;
-    }
+	public String getProtocol() {
+		return protocol;
+	}
 
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
 
-    public Connection getRabbitConnection() {
-        return rabbitConnection;
-    }
+	public Connection getRabbitConnection() {
+		return rabbitConnection;
+	}
 
-    public void setRabbitConnection(Connection rabbitConnection) {
-        this.rabbitConnection = rabbitConnection;
-    }
+	public void setRabbitConnection(Connection rabbitConnection) {
+		this.rabbitConnection = rabbitConnection;
+	}
 
-    public void init() throws RemRemPublishException {
-        log.info("RabbitMqProperties init ...");
-        if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
-            initCli();
-        } else {
-            initService();
-        }
-        madatoryParametersCheck();
-        try {
-            factory.setHost(host);
-            log.info("Host address: " + host);
+	public Integer getTcpTimeOut() {
+		return tcpTimeOut;
+	}
 
-            if (port != null) {
-                factory.setPort(port);
-                log.info("Port is: " + port);
-            } else {
-                log.info("Using default rabbit mq port.");
-            }
+	public void setTcpTimeOut(Integer tcpTimeOut) {
+		this.tcpTimeOut = tcpTimeOut;
+	}
 
-            if (virtualHost != null && !virtualHost.isEmpty()) {
-                factory.setVirtualHost(virtualHost);
-                log.info("Virtual host is: " + virtualHost);
-            } else {
-                log.info("Using default virtual host");
-            }
+	public void init() throws RemRemPublishException {
+		log.info("RabbitMqProperties init ...");
+		if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+			initCli();
+		} else {
+			initService();
+		}
+		madatoryParametersCheck();
+		try {
+			factory.setHost(host);
+			log.info("Host address: " + host);
 
-            log.info("Exchange is: " + exchangeName);
+			if (port != null) {
+				factory.setPort(port);
+				log.info("Port is: " + port);
+			} else {
+				log.info("Using default rabbit mq port.");
+			}           
+			if (virtualHost != null && !virtualHost.isEmpty()) {
+				factory.setVirtualHost(virtualHost);
+				log.info("Virtual host is: " + virtualHost);
+			} else {
+				log.info("Using default virtual host");
+			}
 
-            if((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
-                factory.setUsername(username);
-                factory.setPassword(password);
-            }
-            
-            
-           
+			log.info("Exchange is: " + exchangeName);
 
-            if (tlsVer != null && !tlsVer.isEmpty()) {
-                if (tlsVer.contains("default")) {
-                    log.info("Using default TLS version connection to RabbitMQ.");
-                    factory.useSslProtocol();
-                }
-                else {
-                    log.info("Using TLS version " + tlsVer + " connection to RabbitMQ.");
-                    factory.useSslProtocol("TLSv" + tlsVer);
-                }
-            }
-            else{
-                log.info("Using standard connection method to RabbitMQ.");
-            }
+			if ((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
+				factory.setUsername(username);
+				factory.setPassword(password);
+			}
 
-        } catch (KeyManagementException e) {
-            log.error(e.getMessage(), e);
-        } catch (NoSuchAlgorithmException e) {
-            log.error(e.getMessage(), e);            
-        }
-        checkAndCreateExchangeIfNeeded();
-    }
+			if (tlsVer != null && !tlsVer.isEmpty()) {
+				if (tlsVer.contains("default")) {
+					log.info("Using default TLS version connection to RabbitMQ.");
+					factory.useSslProtocol();
+				} else {
+					log.info("Using TLS version " + tlsVer + " connection to RabbitMQ.");
+					factory.useSslProtocol("TLSv" + tlsVer);
+				}
+			} else {
+				log.info("Using standard connection method to RabbitMQ.");
+			}
 
-    /**
-     * This method is used to create Rabbitmq connection and channels
-     */
-    public void createRabbitMqConnection() {
-        try {
-            rabbitConnection = factory.newConnection();
-            log.info("Connected to RabbitMQ.");
-            rabbitChannels = new ArrayList<>();
-            if(channelsCount == null || channelsCount == 0 ) {
-                channelsCount = 1;
-            }
-            for (int i = 0; i < channelsCount; i++) {
-                rabbitChannels.add(rabbitConnection.createChannel());
-            }
-        } catch (IOException | TimeoutException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+		} catch (KeyManagementException e) {
+			log.error(e.getMessage(), e);
+		} catch (NoSuchAlgorithmException e) {
+			log.error(e.getMessage(), e);
+		}
+		checkAndCreateExchangeIfNeeded();
+	}
 
-    private void initCli() {
-        setValues();
-    }
+	/**
+	 * This method is used to create Rabbitmq connection and channels
+	 */
+	public void createRabbitMqConnection() {
+		try {
+			System.out.println("-------------timeout before" + tcpTimeOut);
+			if (tcpTimeOut == 0 || tcpTimeOut == null) {
+				tcpTimeOut = DEFAULT_TCP_TIMEOUT;
+			}
+			System.out.println("------------------" + tcpTimeOut);
+			factory.setConnectionTimeout(tcpTimeOut);
+			rabbitConnection = factory.newConnection();
+			log.info("Connected to RabbitMQ.");
+			rabbitChannels = new ArrayList<>();
+			if (channelsCount == null || channelsCount == 0) {
+				channelsCount = 1;
+			}
+			for (int i = 0; i < channelsCount; i++) {
+				rabbitChannels.add(rabbitConnection.createChannel());
+			}
+		} catch (IOException | TimeoutException e) {
+			log.error(e.getMessage(), e);
+		}
+	}
 
-    private void initService() {
-        if (host == null) {
-            host = getValuesFromSystemProperties(protocol + ".rabbitmq.host");
-        }
+	private void initCli() {
+		setValues();
+	}
 
-        if (port == null) {
-            port = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.port"));
-        }
+	private void initService() {
+		if (host == null) {
+			host = getValuesFromSystemProperties(protocol + ".rabbitmq.host");
+		}
 
-        if (virtualHost == null) {
-            virtualHost = getValuesFromSystemProperties(protocol + ".rabbitmq.virtualHost");
-        }
+		if (port == null) {
+			port = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.port"));
+		}
 
-        if (domainId == null) {
-            domainId = getValuesFromSystemProperties(protocol + ".rabbitmq.domainId");
-        }
+		if (virtualHost == null) {
+			virtualHost = getValuesFromSystemProperties(protocol + ".rabbitmq.virtualHost");
+		}
 
-        if (tlsVer == null) {
-            tlsVer = getValuesFromSystemProperties(protocol + ".rabbitmq.tls");
-        }
+		if (domainId == null) {
+			domainId = getValuesFromSystemProperties(protocol + ".rabbitmq.domainId");
+		}
 
-        if (exchangeName == null) {
-            exchangeName = getValuesFromSystemProperties(protocol + ".rabbitmq.exchangeName");
-        }
+		if (tlsVer == null) {
+			tlsVer = getValuesFromSystemProperties(protocol + ".rabbitmq.tls");
+		}
 
-        if (username == null) {
-            username = getValuesFromSystemProperties(protocol + ".rabbitmq.username");
-        }
+		if (exchangeName == null) {
+			exchangeName = getValuesFromSystemProperties(protocol + ".rabbitmq.exchangeName");
+		}
 
-        if (password == null) {
-            password = getValuesFromSystemProperties(protocol + ".rabbitmq.password");
-        }
+		if (username == null) {
+			username = getValuesFromSystemProperties(protocol + ".rabbitmq.username");
+		}
 
-        if (channelsCount == null ) {
-            channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
-        }
-    }
-    
+		if (password == null) {
+			password = getValuesFromSystemProperties(protocol + ".rabbitmq.password");
+		}
 
-    private void setValues() {
-        host = getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_HOST);
-        port = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
-        virtualHost = getValuesFromSystemProperties(PropertiesConfig.VIRTUAL_HOST);
-        domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
-        channelsCount = Integer.getInteger(PropertiesConfig.CHANNELS_COUNT);
-        tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
-        exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
-        usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
-        createExchangeIfNotExisting = Boolean.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
-    }
+		if (channelsCount == null) {
+			channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
+		}
 
-    private String getValuesFromSystemProperties(String propertyName) {
-        return System.getProperty(propertyName);
-    }
+		if (tcpTimeOut == null) {
+			tcpTimeOut = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.tcpTimeOut"));
+		}
+	}
 
-    /**
-     * This method is used to check mandatory RabbitMQ properties.
-     */
-    private void madatoryParametersCheck() {
-        if(host == null || exchangeName == null) {
-            if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
-                System.err.println("Mandatory RabbitMq properties missing");
-                System.exit(-1);
-            }
-        }
-    }
+	private void setValues() {
+		host = getValuesFromSystemProperties(PropertiesConfig.MESSAGE_BUS_HOST);
+		port = Integer.getInteger(PropertiesConfig.MESSAGE_BUS_PORT);
+		virtualHost = getValuesFromSystemProperties(PropertiesConfig.VIRTUAL_HOST);
+		domainId = getValuesFromSystemProperties(PropertiesConfig.DOMAIN_ID);
+		channelsCount = Integer.getInteger(PropertiesConfig.CHANNELS_COUNT);
+		tlsVer = getValuesFromSystemProperties(PropertiesConfig.TLS);
+		exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
+		usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
+		createExchangeIfNotExisting = Boolean
+				.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
+		tcpTimeOut = Integer.getInteger(PropertiesConfig.TCP_TIMEOUT);
+	}
 
-    /**
-     * This method is used to check for checking exchange availability, if
-     * exchange is not available creates a new exchange based on isCreateExchangeIfNotExisting true boolean property  .
-     * @throws RemRemPublishException
-     * @throws TimeoutException
-     * @throws IOException
-     */
-    public void checkAndCreateExchangeIfNeeded() throws RemRemPublishException {
-        final boolean exchangeAlreadyExist = hasExchange();
-        if (!exchangeAlreadyExist) {
-            if (isCreateExchangeIfNotExisting()) {
-                Connection connection = null;
-                try {
-                    connection = factory.newConnection();
-                } catch (final IOException | TimeoutException e) {
-                    throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::" + factory.getHost() + ":" + factory.getPort() + e.getMessage());
-                }
-                Channel channel = null;
-                try {
-                    channel = connection.createChannel();
-                } catch (final IOException e) {
-                    throw new RemRemPublishException("Exception occurred while creating Channel with Rabbitmq connection ::" + factory.getHost() + ":" + factory.getPort() + e.getMessage());
-                }
-                try {
-                    channel.exchangeDeclare(exchangeName, "topic", true);
-                } catch (final IOException e) {
-                    log.info(exchangeName + "failed to create an exchange");
-                    throw new RemRemPublishException("Unable to create Exchange with Rabbitmq connection " + exchangeName + factory.getHost() + ":" + factory.getPort() + e.getMessage());
-                } finally {
-                    if (channel == null || channel.isOpen()) {
-                        try {
-                            channel.close();
-                            connection.close();
-                        } catch (IOException | TimeoutException e) {
-                            log.warn("Exception occurred while closing the channel" + e.getMessage());
-                        }
-                    }
-                }
-            } else {
-                if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
-                    throw new RemRemPublishException(exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_SERVICE);
-                } else {
-                    throw new RemRemPublishException("Exchange " + exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_CLI);
-                }
-            }
-        }
-    }
+	private String getValuesFromSystemProperties(String propertyName) {
+		return System.getProperty(propertyName);
+	}
 
-    /**
-     * This method is used to check exchange exists or not
-     * @return Boolean
-     * @throws RemRemPublishException
-     * @throws TimeoutException
-     * @throws IOException
-     */
-    private boolean hasExchange() throws RemRemPublishException {
-        log.info("Exchange is: " + exchangeName);
-        Connection connection;
-        try {
-            connection = factory.newConnection();
-        } catch (final IOException | TimeoutException e) {
-            throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::" + factory.getHost() + factory.getPort() + e.getMessage());
-        }
-        Channel channel = null;
-        try {
-            channel = connection.createChannel();
-        } catch (final IOException e) {
-            log.info("Exchange " + exchangeName + " does not Exist");
-            throw new RemRemPublishException("Exception occurred while creating Channel with Rabbitmq connection ::" + factory.getHost() + factory.getPort() + e.getMessage());
-        }
-        try {
-            channel.exchangeDeclarePassive(exchangeName);
-            return true;
-        } catch (final IOException e) {
-            log.info("Exchange " + exchangeName + " does not Exist");
-            return false;
-        } finally {
-            if (channel != null && channel.isOpen()) {
-                try {
-                    channel.close();
-                    connection.close();
-                } catch (IOException | TimeoutException e) {
-                    log.warn("Exception occurred while closing the channel" + e.getMessage());
-                }
-            }
-        }
-    }
+	/**
+	 * This method is used to check mandatory RabbitMQ properties.
+	 */
+	private void madatoryParametersCheck() {
+		if (host == null || exchangeName == null) {
+			if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+				System.err.println("Mandatory RabbitMq properties missing");
+				System.exit(-1);
+			}
+		}
+	}
 
-    /**
-     * This method is used to publish the message to RabbitMQ
-     * @param routingKey
-     * @param msg is Eiffel Event
-     * @throws IOException
-     */
-    public void send(String routingKey, String msg) throws IOException {
+	/**
+	 * This method is used to check for checking exchange availability, if exchange
+	 * is not available creates a new exchange based on
+	 * isCreateExchangeIfNotExisting true boolean property .
+	 * 
+	 * @throws RemRemPublishException
+	 * @throws TimeoutException
+	 * @throws IOException
+	 */
+	public void checkAndCreateExchangeIfNeeded() throws RemRemPublishException {
+		final boolean exchangeAlreadyExist = hasExchange();
+		if (!exchangeAlreadyExist) {
+			if (isCreateExchangeIfNotExisting()) {
+				Connection connection = null;
+				try {
+					System.out.println("checking echange is there or nott--------------------------------");
+					connection = factory.newConnection();
+				} catch (final IOException | TimeoutException e) {
+					throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::"
+							+ factory.getHost() + ":" + factory.getPort() + e.getMessage());
+				}
+				Channel channel = null;
+				try {
+					channel = connection.createChannel();
+				} catch (final IOException e) {
+					throw new RemRemPublishException(
+							"Exception occurred while creating Channel with Rabbitmq connection ::" + factory.getHost()
+									+ ":" + factory.getPort() + e.getMessage());
+				}
+				try {
+					channel.exchangeDeclare(exchangeName, "topic", true);
+				} catch (final IOException e) {
+					log.info(exchangeName + "failed to create an exchange");
+					throw new RemRemPublishException("Unable to create Exchange with Rabbitmq connection "
+							+ exchangeName + factory.getHost() + ":" + factory.getPort() + e.getMessage());
+				} finally {
+					if (channel == null || channel.isOpen()) {
+						try {
+							channel.close();
+							connection.close();
+						} catch (IOException | TimeoutException e) {
+							log.warn("Exception occurred while closing the channel" + e.getMessage());
+						}
+					}
+				}
+			} else {
+				if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+					throw new RemRemPublishException(exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_SERVICE);
+				} else {
+					throw new RemRemPublishException(
+							"Exchange " + exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_CLI);
+				}
+			}
+		}
+	}
 
-        Channel channel = giveMeRandomChannel();
-        channel.addShutdownListener(new ShutdownListener() {
-            public void shutdownCompleted(ShutdownSignalException cause) {
-                // Beware that proper synchronization is needed here
-                if (cause.isInitiatedByApplication()) {
-                    log.debug("Shutdown is initiated by application. Ignoring it.");
-                } else {
-                    log.error("Shutdown is NOT initiated by application.");
-                    log.error(cause.getMessage());
-                    boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
-                    if (cliMode) {
-                        System.exit(-3);
-                    }
-                }
-            }
-        });
+	/**
+	 * This method is used to check exchange exists or not
+	 * 
+	 * @return Boolean
+	 * @throws RemRemPublishException
+	 * @throws TimeoutException
+	 * @throws IOException
+	 */
+	private boolean hasExchange() throws RemRemPublishException {
+		log.info("Exchange is: " + exchangeName);
+		Connection connection;
+		try {
+			connection = factory.newConnection();
+		} catch (final IOException | TimeoutException e) {
+			throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::"
+					+ factory.getHost() + factory.getPort() + e.getMessage());
+		}
+		Channel channel = null;
+		try {
+			channel = connection.createChannel();
+		} catch (final IOException e) {
+			log.info("Exchange " + exchangeName + " does not Exist");
+			throw new RemRemPublishException("Exception occurred while creating Channel with Rabbitmq connection ::"
+					+ factory.getHost() + factory.getPort() + e.getMessage());
+		}
+		try {
+			channel.exchangeDeclarePassive(exchangeName);
+			return true;
+		} catch (final IOException e) {
+			log.info("Exchange " + exchangeName + " does not Exist");
+			return false;
+		} finally {
+			if (channel != null && channel.isOpen()) {
+				try {
+					channel.close();
+					connection.close();
+				} catch (IOException | TimeoutException e) {
+					log.warn("Exception occurred while closing the channel" + e.getMessage());
+				}
+			}
+		}
+	}
 
-        BasicProperties msgProps = MessageProperties.BASIC;
-        if (usePersitance)
-            msgProps = MessageProperties.PERSISTENT_BASIC;
+	/**
+	 * This method is used to publish the message to RabbitMQ
+	 * 
+	 * @param routingKey
+	 * @param msg        is Eiffel Event
+	 * @throws IOException
+	 */
+	public void send(String routingKey, String msg) throws IOException {
 
-        channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
-        log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length,
-                exchangeName, routingKey);
-    }
+		Channel channel = giveMeRandomChannel();
+		channel.confirmSelect();
+		System.out.println("checking the channel------------------------");
+		channel.addShutdownListener(new ShutdownListener() {
+			public void shutdownCompleted(ShutdownSignalException cause) {
+				// Beware that proper synchronization is needed here
+				if (cause.isInitiatedByApplication()) {
+					log.debug("Shutdown is initiated by application. Ignoring it.");
+				} else {
+					log.error("Shutdown is NOT initiated by application.");
+					log.error(cause.getMessage());
+					boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+					if (cliMode) {
+						System.exit(-3);
+					}
+				}
+			}
+		});
 
-    /**
-     * This method is used to give random channel
-     * @return channel
-     */
-    private Channel giveMeRandomChannel() {
-        if ((rabbitConnection == null || !rabbitConnection.isOpen())) {
-            createRabbitMqConnection();
-        }
-        return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
-    }
+		BasicProperties msgProps = MessageProperties.BASIC;
+		if (usePersitance)
+			msgProps = MessageProperties.PERSISTENT_BASIC;
+
+		channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
+
+		log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'", msg.getBytes().length,
+				exchangeName, routingKey);
+	}
+
+	/**
+	 * This method is used to give random channel
+	 * 
+	 * @return channel
+	 */
+	private Channel giveMeRandomChannel() {
+		if ((rabbitConnection == null || !rabbitConnection.isOpen())) {
+			createRabbitMqConnection();
+		}
+		return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
+	}
 
 }

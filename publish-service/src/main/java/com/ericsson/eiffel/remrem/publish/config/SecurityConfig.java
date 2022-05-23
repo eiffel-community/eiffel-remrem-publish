@@ -14,16 +14,42 @@
 */
 package com.ericsson.eiffel.remrem.publish.config;
 
+import java.io.IOException;
+import java.rmi.ConnectException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
+import javax.naming.InitialContext;
+
+import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
+import org.springframework.boot.actuate.beans.BeansEndpoint.ContextBeans;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ldap.TimeLimitExceededException;
+import org.springframework.ldap.core.LdapOperations;
+import org.springframework.ldap.core.support.AbstractContextSource;
+import org.springframework.ldap.core.support.BaseLdapPathContextSource;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer.ContextSourceBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.web.session.SessionManagementFilter;
+
+import com.fasterxml.jackson.core.sym.Name;
+
+import ch.qos.logback.core.Context;
 
 /**
  * This class is used to enable the ldap authentication based on property
@@ -37,7 +63,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
-
+    
     @Value("${activedirectory.ldapUrl}")
     private String ldapUrl;
 
@@ -55,22 +81,57 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Value("${activedirectory.rootDn}")
     private String rootDn;
+    
+    @Value("${activedirectory.connection.timeout}")
+    private String ldapTimeOut;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
-        if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
-            managerPassword = DecryptionUtils.decryptString(managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
-        }
-        LOGGER.debug("LDAP server url: "+ldapUrl);
-        auth.ldapAuthentication().userSearchFilter(userSearchFilter).contextSource().managerDn(managerDn).root(rootDn)
-                .managerPassword(managerPassword).url(ldapUrl);
+    public static final String DEFAULT_LDAP_CONNECTION_TIMEOUT = "12700";
+    
+    public String getTimeOut()
+    {
+		if (ldapTimeOut.isEmpty() || ldapTimeOut == "0")
+			ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
+		return ldapTimeOut;
     }
+    
+	@Autowired
+	protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
+		if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
+			managerPassword = DecryptionUtils.decryptString(managerPassword.substring(1, managerPassword.length() - 1),
+					jasyptKey);
+		}
+		LOGGER.debug("LDAP server url: " + ldapUrl);
+//			auth.ldapAuthentication().userSearchFilter(userSearchFilter).contextSource().managerDn(managerDn).root(rootDn)
+//			        .managerPassword(managerPassword).url(ldapUrl);
 
+		System.out.println("checking the ldap authentication------------------------");
+		auth.ldapAuthentication().userSearchFilter(userSearchFilter).contextSource(ldapContextSource());
+
+	}
+ 
+    @Bean
+	public BaseLdapPathContextSource ldapContextSource() {
+		LdapContextSource ldap = new LdapContextSource();
+		ldap.setUrl(ldapUrl);
+		ldap.setBase(rootDn);
+		ldap.setUserDn(managerDn);
+		ldap.setPassword(managerPassword);
+		Map<String, Object> environment = new HashMap<>();
+		environment.put("com.sun.jndi.ldap.connect.timeout", getTimeOut());
+		ldap.setBaseEnvironmentProperties(environment);
+		return ldap;
+
+	}
+    
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         LOGGER.debug("LDAP authentication enabled");
+        System.out.println("ldap authentication enabled ------------------------------");
         http.authorizeRequests().anyRequest().authenticated().and().httpBasic().and().csrf().disable();
         
     }
+    
+
 }

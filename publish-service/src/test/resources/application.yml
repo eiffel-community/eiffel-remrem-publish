@@ -12,6 +12,7 @@ rabbitmq:
     name: amq.direct
   domainId: eiffelxxx  
   tls:
+  tcpTimeOut: 5000
 spring:
   http.converters:
     preferred-json-mapper: gson

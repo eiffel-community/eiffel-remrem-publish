@@ -143,6 +143,7 @@ These parameters are related to RabbitMQ Server, which will be used for publishi
 <protocol>.rabbitmq.createExchangeIfNotExisting:  <create Exchange if not present on RabbitMQ Server>
 <protocol>.rabbitmq.domainId:      <domain id, any string>
 <protocol>.rabbitmq.channelsCount: <channels count, eg: 1 (default value is 1)>
+<protocol>.rabbitmq.tcpTimeOut:    <tcp connection timeout, eg: 5000>
 ```
 
 ```
@@ -153,8 +154,8 @@ These parameters are related to RabbitMQ Server, which will be used for publishi
 # must exist
 #rabbitmq.exchange.name=eiffel.xxx
 
-rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }, \
-{ "mp": "eiffelprotocol", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true }]
+rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true, "tcpTimeOut": "5000" }, \
+{ "mp": "eiffelprotocol", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1" ,"createExchangeIfNotExisting":true, "tcpTimeOut": "5000" }]
 ```
 
 Application launch is terminated if exchange is unavailable and createExchangeIfNotExisting is set to false. Application can create the exchange by adding the below property in config.properties file
@@ -166,12 +167,13 @@ eg: protocol.rabbitmq.createExchangeIfNotExisting: true.
 **NOTE:** properties above should be configured for each protocol, that users are going to use.
 
 ```
-activedirectory.publish.enabled:  <true|false>
-activedirectory.ldapUrl:          <LDAP server url>
-activedirectory.managerPassword:  <LDAP server manager password >
-activedirectory.managerDn:        <LDAP managerDn pattern>
-activedirectory.rootDn:           <LDAP rootDn pattern>
-activedirectory.userSearchFilter: <LDAP userSearchFilter pattern>
+activedirectory.publish.enabled:    <true|false>
+activedirectory.ldapUrl:            <LDAP server url>
+activedirectory.managerPassword:    <LDAP server manager password >
+activedirectory.managerDn:          <LDAP managerDn pattern>
+activedirectory.rootDn:             <LDAP rootDn pattern>
+activedirectory.userSearchFilter:   <LDAP userSearchFilter pattern>
+activedirectory.connection.timeout: <LDAP connection timeout value>
 ```
 
 **LDAP authentication without Base64 encryption of user details:**
