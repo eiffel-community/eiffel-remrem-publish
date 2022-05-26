@@ -139,12 +139,12 @@ public class RabbitMqProperties {
     }
 
     public Integer getTcpTimeOut() {
-		return tcpTimeOut;
-	}
+        return tcpTimeOut;
+    }
 
-	public void setTcpTimeOut(Integer tcpTimeOut) {
-		this.tcpTimeOut = tcpTimeOut;
-	}
+    public void setTcpTimeOut(Integer tcpTimeOut) {
+        this.tcpTimeOut = tcpTimeOut;
+    }
 
     public RMQBeanConnectionFactory getFactory() {
         return factory;
@@ -233,10 +233,10 @@ public class RabbitMqProperties {
      */
     public void createRabbitMqConnection() {
         try {
-			if (tcpTimeOut == 0 || tcpTimeOut == null) {
-				tcpTimeOut = DEFAULT_TCP_TIMEOUT;
-			}
-			factory.setConnectionTimeout(tcpTimeOut);
+            if (tcpTimeOut == 0 || tcpTimeOut == null) {
+                tcpTimeOut = DEFAULT_TCP_TIMEOUT;
+            }
+            factory.setConnectionTimeout(tcpTimeOut);
             rabbitConnection = factory.newConnection();
             log.info("Connected to RabbitMQ.");
             rabbitChannels = new ArrayList<>();
@@ -292,9 +292,9 @@ public class RabbitMqProperties {
             channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
         }
 
-		if (tcpTimeOut == null) {
-			tcpTimeOut = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.tcpTimeOut"));
-		}
+        if (tcpTimeOut == null) {
+            tcpTimeOut = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.tcpTimeOut"));
+        }
     }
     
 
@@ -309,7 +309,6 @@ public class RabbitMqProperties {
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
         createExchangeIfNotExisting = Boolean.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
         tcpTimeOut = Integer.getInteger(PropertiesConfig.TCP_TIMEOUT);
-
     }
 
     private String getValuesFromSystemProperties(String propertyName) {

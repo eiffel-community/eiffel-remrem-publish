@@ -42,65 +42,64 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
 
-	@Value("${activedirectory.ldapUrl}")
-	private String ldapUrl;
+    @Value("${activedirectory.ldapUrl}")
+    private String ldapUrl;
 
-	@Value("${jasypt.encryptor.jasyptKeyFilePath:{null}}")
-	private String jasyptKeyFilePath;
+    @Value("${jasypt.encryptor.jasyptKeyFilePath:{null}}")
+    private String jasyptKeyFilePath;
 
-	@Value("${activedirectory.managerPassword}")
-	private String managerPassword;
+    @Value("${activedirectory.managerPassword}")
+    private String managerPassword;
 
-	@Value("${activedirectory.managerDn}")
-	private String managerDn;
+    @Value("${activedirectory.managerDn}")
+    private String managerDn;
 
-	@Value("${activedirectory.userSearchFilter}")
-	private String userSearchFilter;
+    @Value("${activedirectory.userSearchFilter}")
+    private String userSearchFilter;
 
-	@Value("${activedirectory.rootDn}")
-	private String rootDn;
-	
-	@Value("${activedirectory.connection.timeout}")
-	private String ldapTimeOut;
+    @Value("${activedirectory.rootDn}")
+    private String rootDn;
+
+    @Value("${activedirectory.connectionTimeOut}")
+    private String ldapTimeOut;
 
 //  built in connection timeout value for ldap if the network issue happens
-	public static final String DEFAULT_LDAP_CONNECTION_TIMEOUT = "12700";
+    public static final String DEFAULT_LDAP_CONNECTION_TIMEOUT = "12700";
 
-	public String getTimeOut() {
-		if (ldapTimeOut.isEmpty() || ldapTimeOut == "0")
-			ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
-		return ldapTimeOut;
-	}
+    public String getTimeOut() {
+        if (ldapTimeOut.isEmpty() || ldapTimeOut == "0")
+            ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
+        return ldapTimeOut;
+    }
 
-	@Autowired
-	protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
-		if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
-			managerPassword = DecryptionUtils.decryptString(managerPassword.substring(1, managerPassword.length() - 1),
-					jasyptKey);
-		}
-		LOGGER.debug("LDAP server url: " + ldapUrl);
-		auth.ldapAuthentication().userSearchFilter(userSearchFilter).contextSource(ldapContextSource());
-	}
+    @Autowired
+    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
+        if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
+            managerPassword = DecryptionUtils.decryptString(managerPassword.substring(1, managerPassword.length() - 1),jasyptKey);
+        }
+        LOGGER.debug("LDAP server url: " + ldapUrl);
+        auth.ldapAuthentication().userSearchFilter(userSearchFilter).contextSource(ldapContextSource());
+    }
 
-	@Bean
-	public BaseLdapPathContextSource ldapContextSource() {
-		LdapContextSource ldap = new LdapContextSource();
-		ldap.setUrl(ldapUrl);
-		ldap.setBase(rootDn);
-		ldap.setUserDn(managerDn);
-		ldap.setPassword(managerPassword);
-		HashMap<String, Object> environment = new HashMap<>();
-		environment.put("com.sun.jndi.ldap.connect.timeout", getTimeOut());
-		ldap.setBaseEnvironmentProperties(environment);
-		return ldap;
-	}
+    @Bean
+    public BaseLdapPathContextSource ldapContextSource() {
+        LdapContextSource ldap = new LdapContextSource();
+        ldap.setUrl(ldapUrl);
+        ldap.setBase(rootDn);
+        ldap.setUserDn(managerDn);
+        ldap.setPassword(managerPassword);
+        HashMap<String, Object> environment = new HashMap<>();
+        environment.put("com.sun.jndi.ldap.connect.timeout", getTimeOut());
+        ldap.setBaseEnvironmentProperties(environment);
+        return ldap;
+    }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		LOGGER.debug("LDAP authentication enabled");
-		http.authorizeRequests().anyRequest().authenticated().and().httpBasic().and().csrf().disable();
-	}
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        LOGGER.debug("LDAP authentication enabled");
+        http.authorizeRequests().anyRequest().authenticated().and().httpBasic().and().csrf().disable();
+    }
 }

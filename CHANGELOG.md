@@ -1,6 +1,6 @@
 ## 2.0.24
 - Updated all the curl commands in documentation
-- Introduced connection time out values for MB and LDAP so the user/customer no need to wait for long time
+- Implemented configurable parameters for TCP connection timeout against LDAP and MB
 
 ## 2.0.23
 - Uplifted eiffel-remrem-parent version from 2.0.5 to 2.0.6

@@ -16,7 +16,7 @@ usage: java -jar
 
  -cc,--channelsCount <arg>        Number of channels connected to message
                                   bus, default is 1
- -tto,--tcpTimeOut <arg>          Tcp Connection TimeOut value
+ -tto,--tcp_time_out <arg>        Tcp Connection TimeOut value
 
 -en,--exchange_name <arg>         Exchange name.
 

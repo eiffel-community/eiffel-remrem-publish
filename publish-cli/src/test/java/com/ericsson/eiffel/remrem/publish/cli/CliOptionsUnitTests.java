@@ -168,14 +168,14 @@ public class CliOptionsUnitTests {
     }
 
     public void testTtoOption() throws Exception {
-        String[] args = {"-f", "/a/b/c/test.file",  "test", "-tto", "5000"};
+        String[] args = { "-f", "/a/b/c/test.file", "test", "-tto", "5000" };
         CliOptions.parse(args);
         assertTrue(CliOptions.getErrorCodes().isEmpty());
     }
 
     @Test
     public void testTtoOptionFails() throws Exception {
-        String[] args = {"-f", "/a/b/c/test.file",  "test", "-ttof", "5000"};
+        String[] args = { "-f", "/a/b/c/test.file", "test", "-ttof", "5000" };
         CliOptions.parse(args);
         int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
         assertTrue(CliOptions.getErrorCodes().contains(code));

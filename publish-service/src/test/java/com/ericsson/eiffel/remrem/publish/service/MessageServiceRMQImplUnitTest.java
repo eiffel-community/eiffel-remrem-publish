@@ -68,13 +68,14 @@ public class MessageServiceRMQImplUnitTest {
     private static final Integer tcpTimeOut = 5000;
 
     @PostConstruct public void setUp() throws Exception {
-        rmqHelper.getRabbitMqPropertiesMap().put(protocol, new RabbitMqProperties());
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setProtocol(protocol);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setTcpTimeOut(tcpTimeOut);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+        RabbitMqProperties properties = new RabbitMqProperties();
+        rmqHelper.getRabbitMqPropertiesMap().put(protocol, properties);
+        properties.setProtocol(protocol);
+        properties.setHost(host);
+        properties.setExchangeName(exchangeName);
+        properties.setDomainId(domainId);
+        properties.setTcpTimeOut(tcpTimeOut);
+        properties.init();
     }
 
     /**
