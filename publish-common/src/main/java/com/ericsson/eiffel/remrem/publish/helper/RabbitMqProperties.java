@@ -294,7 +294,7 @@ public class RabbitMqProperties {
             channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
         }
         if (waitForConfirmsTimeOut == null ) {
-            waitForConfirmsTimeOut = Long.getLong(getValuesFromSystemProperties(protocol + ".rabbitmq.WaitForConfirmsTimeOut"));
+            waitForConfirmsTimeOut = Long.getLong(getValuesFromSystemProperties(protocol + ".rabbitmq.waitForConfirmsTimeOut"));
         }
     }
     
@@ -454,11 +454,11 @@ public class RabbitMqProperties {
             }
             channel.waitForConfirmsOrDie(waitForConfirmsTimeOut);
         } catch (InterruptedException | IOException e) {
-            log.error("Failed to publish message due to" + e.getMessage());
-            throw new NackException("the message is nacked due to " + e.getMessage(), e);
+            log.error("Failed to publish message due to " + e.getMessage());
+            throw new NackException("The message is nacked due to " + e.getMessage(), e);
         } catch (TimeoutException e) {
-            log.error("Failed to publish message due to" + e.getMessage());
-            throw new TimeoutException("Timeout waiting for ACK  " + e.getMessage());
+            log.error("Failed to publish message due to " + e.getMessage());
+            throw new TimeoutException("Timeout waiting for ACK " + e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             if(!channel.isOpen()&& rabbitConnection.isOpen()){

@@ -10,50 +10,50 @@ $ java -jar publish-cli.jar -h
 You passed help flag.
 usage: java -jar
 
--d,--debug                        Enable debug traces.
+-d,--debug                                    Enable debug traces.
 
--domain,--domainId <arg>          Identifies the domain that produces the event.
+-domain,--domainId <arg>                      Identifies the domain that produces the event.
 
- -cc,--channelsCount <arg>        Number of channels connected to message
-                                  bus, default is 1
+ -cc,--channelsCount <arg>                    Number of channels connected to message
+                                              bus, default is 1
 
- -wcto,--waitForConfirmsTimeOut <arg>      Time out for wait for confirms ,default is 5sec
+ -wcto,--wait_for_confirms_timeOut <arg>      Time out for wait for confirms ,default is 5sec
 
--en,--exchange_name <arg>         Exchange name.
+-en,--exchange_name <arg>                     Exchange name.
 
--ce,--create_exchange <arg>       option to denote if we need to create an exchange
-                                  create_exchange or ce to true eg: -ce true or --create_exchange false.
+-ce,--create_exchange <arg>                   option to denote if we need to create an exchange
+                                              create_exchange or ce to true eg: -ce true or --create_exchange false.
 
--f,--content_file <arg>           Event content file.
+-f,--content_file <arg>                       Event content file.
 
--h,--help                         Show help.
+-h,--help                                     Show help.
 
--json,--json_content <arg>        Event content in JSON string. The value can also be a dash (-)
-                                  and the JSON will be read from the output of other programs if piped.
-                                  Multiple JSON events are also supported.
+-json,--json_content <arg>                    Event content in JSON string. The value can also be a dash (-)
+                                              and the JSON will be read from the output of other programs if piped.
+                                              Multiple JSON events are also supported.
 
--mb,--message_bus <arg>           Host of message bus to use.
+-mb,--message_bus <arg>                       Host of message bus to use.
 
--mp,--message_protocol <arg>      Name of messaging protocol to be used, e.g: eiffelsemantics.
-                                  Default is eiffelsemantics.
+-mp,--message_protocol <arg>                  Name of messaging protocol to be used, e.g: eiffelsemantics.
+                                              Default is eiffelsemantics.
 
--np,--non_persistent              Remove persistence from message sending.
+-np,--non_persistent                          Remove persistence from message sending.
 
--tls,--tls <arg>                  tls version, specify a valid tls version: '1', '1.1', '1.2' or default.
-                                  It is required for RabbitMQ secured port (5671).
+-tls,--tls <arg>                              tls version, specify a valid tls version: '1', '1.1', '1.2' or default.
+                                              It is required for RabbitMQ secured port (5671).
 
--port,--port <arg>                Port to connect to message bus, default is 5672.
+-port,--port <arg>                            Port to connect to message bus, default is 5672.
 
--vh,--virtual_host <arg>          Virtual host to connect to (optional).
+-vh,--virtual_host <arg>                      Virtual host to connect to (optional).
 
--ud,--user_domain_suffix <arg>    User domain suffix.
+-ud,--user_domain_suffix <arg>                User domain suffix.
 
--rk,--routing_key <arg>           Routing key of the eiffel message.
-                                  When provided routing key is not generated and the value provided is used.
+-rk,--routing_key <arg>                       Routing key of the eiffel message.
+                                              When provided routing key is not generated and the value provided is used.
 
--tag,--tag <arg>                  Tag to be used in routing key.
+-tag,--tag <arg>                              Tag to be used in routing key.
 
--v,--list_versions                Lists the versions of publish and all loaded protocols.
+-v,--list_versions                            Lists the versions of publish and all loaded protocols.
 ```
 
 For publish we have input only from file that can contain one or more messages in a JSON array (surrounded with square brackets) separated by comma.
