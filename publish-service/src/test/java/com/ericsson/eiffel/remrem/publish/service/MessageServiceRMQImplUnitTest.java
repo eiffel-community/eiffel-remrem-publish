@@ -61,7 +61,7 @@ public class MessageServiceRMQImplUnitTest {
     @Qualifier("rmqHelper") 
     RMQHelper rmqHelper;
     private static final String protocol = "eiffelsemantics";
-    private static final String host= "127.0.0.1";
+    private static final String host= "0.0.0.0";
     private static final String exchangeName= "amq.direct";
     private static final String domainId= "eiffelxxx";
     private boolean createExchangeIfNotExisting = true;
