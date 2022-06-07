@@ -17,7 +17,7 @@ usage: java -jar
  -cc,--channelsCount <arg>                    Number of channels connected to message
                                               bus, default is 1
 
- -wcto,--wait_for_confirms_timeOut <arg>      Time out for wait for confirms ,default is 5sec
+ -wcto,--wait_for_confirms_timeOut <arg>      Time out for wait for confirms ,default is 5000 ms/milliseconds.
 
 -en,--exchange_name <arg>                     Exchange name.
 
@@ -118,7 +118,7 @@ java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -
 ```
 
 **If you want to change the wait for confirms timeout connected to RabbitMQ to publish messages:**
-waitForConfirmsTimeout default value is 5 sec.
+waitForConfirmsTimeout default value is 5000 ms/milliseconds.
 As the waitForConfirmsTimeout value reduces sometimes it may leads to TimeoutException if channel unable to get acknowledgement within timeout.
 
 ```
