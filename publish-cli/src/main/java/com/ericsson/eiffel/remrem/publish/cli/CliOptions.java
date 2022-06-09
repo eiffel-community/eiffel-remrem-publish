@@ -84,7 +84,7 @@ public class CliOptions {
         options.addOption("v", "lists the versions of publish and all loaded protocols");
         options.addOption("tag", "tag", true, "tag to be used in routing key");
         options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
-        options.addOption("tto", "tcp_time_out", true, "specifies tcp connection timeout, default time is 60 seconds");
+        options.addOption("tto", "tcp_time_out", true, "specifies tcp connection timeout, default time is 60000 milliseconds");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }
