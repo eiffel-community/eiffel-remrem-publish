@@ -143,7 +143,7 @@ These parameters are related to RabbitMQ Server, which will be used for publishi
 <protocol>.rabbitmq.createExchangeIfNotExisting:  <create Exchange if not present on RabbitMQ Server>
 <protocol>.rabbitmq.domainId:      <domain id, any string>
 <protocol>.rabbitmq.channelsCount: <channels count, eg: 1 (default value is 1)>
-<protocol>.rabbitmq.tcpTimeOut:    <tcp connection timeout value, eg: 5000 milliseconds (if value is mentioned as 0 than it will consider default value 60 seconds)>
+<protocol>.rabbitmq.tcpTimeOut:    <tcp connection timeout value, eg: 5000 milliseconds (if value is mentioned as 0 than it will consider default value 60000 milliseconds)>
 ```
 
 ```

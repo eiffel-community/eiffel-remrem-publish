@@ -62,15 +62,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${activedirectory.rootDn}")
     private String rootDn;
 
-    @Value("${activedirectory.connectionTimeOut}")
-    private String ldapTimeOut;
+    @Value("${activedirectory.connectionTimeOut:#{0}}")
+    private Integer ldapTimeOut;
 
 //  built in connection timeout value for ldap if the network issue happens
-    public static final String DEFAULT_LDAP_CONNECTION_TIMEOUT = "12700";
+    public static final Integer DEFAULT_LDAP_CONNECTION_TIMEOUT = 127000;
 
-    public String getTimeOut() {
-        if (ldapTimeOut.isEmpty() || ldapTimeOut == "0")
+    public Integer getTimeOut() {
+        if (ldapTimeOut== null || ldapTimeOut == 0) {
             ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
+        }
         return ldapTimeOut;
     }
 
@@ -78,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
         if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
-            managerPassword = DecryptionUtils.decryptString(managerPassword.substring(1, managerPassword.length() - 1),jasyptKey);
+            managerPassword = DecryptionUtils.decryptString(managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
         }
         LOGGER.debug("LDAP server url: " + ldapUrl);
         auth.ldapAuthentication().userSearchFilter(userSearchFilter).contextSource(ldapContextSource());
@@ -92,7 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ldap.setUserDn(managerDn);
         ldap.setPassword(managerPassword);
         HashMap<String, Object> environment = new HashMap<>();
-        environment.put("com.sun.jndi.ldap.connect.timeout", getTimeOut());
+        environment.put("com.sun.jndi.ldap.connect.timeout", Integer.toString(getTimeOut()));
         ldap.setBaseEnvironmentProperties(environment);
         return ldap;
     }

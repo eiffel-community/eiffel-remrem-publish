@@ -233,7 +233,7 @@ public class RabbitMqProperties {
      */
     public void createRabbitMqConnection() {
         try {
-            if (tcpTimeOut == 0 || tcpTimeOut == null) {
+            if (tcpTimeOut == null || tcpTimeOut == 0) {
                 tcpTimeOut = DEFAULT_TCP_TIMEOUT;
             }
             factory.setConnectionTimeout(tcpTimeOut);
