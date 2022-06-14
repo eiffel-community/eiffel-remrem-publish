@@ -172,6 +172,20 @@ public class MessageServiceRMQImplUnitTest {
         assertEquals(Expected, jarray.toString());       
     }
 
+    @Test public void testPublisherConfirmsTimeoutException() throws Exception {
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setWaitForConfirmsTimeOut(1L);;
+        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+        String body = FileUtils.readFileToString(new File("src/test/resources/MultipleValidEvents.json"));
+        JsonArray jarray = new JsonArray();
+        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
+        SendResult result = messageService.send(body, msgService, "test", null, null);
+        Assert.assertNotNull(result);
+        for (PublishResultItem results : result.getEvents()) {
+            jarray.add(results.toJsonObject());
+        }
+        assertTrue(jarray.toString().contains("Time out waiting for ACK"));
+    }
+
     @Test
     public void testRabbitMQConnection() throws NackException, TimeoutException, RemRemPublishException {
         try {
