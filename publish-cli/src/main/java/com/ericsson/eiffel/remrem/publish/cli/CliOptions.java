@@ -28,7 +28,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.shared.VersionService;
 
 public class CliOptions {
 
