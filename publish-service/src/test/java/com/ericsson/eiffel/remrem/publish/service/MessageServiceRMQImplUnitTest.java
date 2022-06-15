@@ -176,7 +176,7 @@ public class MessageServiceRMQImplUnitTest {
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).setWaitForConfirmsTimeOut(1L);
         rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
         JsonArray jarray = new JsonArray();
-        for (int i = 1; i < 50; i++) {
+        for (int i = 1; i < 10; i++) {
             String body = FileUtils.readFileToString(new File("src/test/resources/MultipleValidEvents.json"));
             MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
             SendResult result = messageService.send(body, msgService, "test", null, null);
