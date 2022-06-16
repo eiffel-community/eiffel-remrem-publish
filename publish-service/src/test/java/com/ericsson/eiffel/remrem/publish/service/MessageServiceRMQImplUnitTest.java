@@ -185,7 +185,6 @@ public class MessageServiceRMQImplUnitTest {
                jarray.add(results.toJsonObject());
             }
         }
-        System.out.println("the final out put is.............................***************"+jarray.toString());
         assertTrue(jarray.toString().contains("Time out waiting for ACK"));
     }
 
