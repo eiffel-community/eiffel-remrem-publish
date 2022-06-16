@@ -26,14 +26,12 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import com.google.gson.JsonParser;
+import ch.qos.logback.classic.Logger;
 
 
 /**
  * This class will search in all registered jars and their manifest file for
  * attribute Remrem-Version-Key. It will return a list with all versions found.
- * 
- * @author evasiba
- *
  */
 public class VersionService {
 
@@ -44,6 +42,7 @@ public class VersionService {
     private static final String IS_ENDPOINT_VERSION = "isEndpointVersion";
     private static final String ENDPOINT_VERSION = "endpointVersions";
     private static final String SERVICE_VERSION = "serviceVersion";
+    private Logger log = (Logger) LoggerFactory.getLogger(VersionService.class);
     JsonParser parser = new JsonParser();
     Map<String, Map<String, String>> versions = new HashMap<>();
     Map<String, String> endpointVersions = new HashMap<String, String>();
@@ -59,11 +58,9 @@ public class VersionService {
      * attributes('isEndpointVersion': 'true') }
      * 
      * @return a map containing the protocol and service types with their
-     *         versions {"endpointVersions" : {"semanticsVersion" : "1.1.1"},
-     *         "serviceVersion": {"remremGenerateVersion": "0.1.1"}}
+     * versions {"endpointVersions" : {"semanticsVersion" : "1.1.1"},
+     * "serviceVersion": {"remremGenerateVersion": "0.1.1"}}
      */
-    
-
     public Map<String, Map<String, String>> getMessagingVersions() {
         Enumeration<?> resEnum;
         
@@ -91,6 +88,7 @@ public class VersionService {
                     }
                 } catch (Exception e) {
                     // Silently ignore wrong manifests on classpath?
+                    log.debug("Ignore wrong manifests on classpath ",e.getMessage());
                 }
             }
             if(serviceVersion.isEmpty()){
@@ -100,6 +98,7 @@ public class VersionService {
             versions.put(SERVICE_VERSION, serviceVersion);
         } catch (IOException e1) {
             // Silently ignore wrong manifests on classpath?
+            log.debug("Ignore wrong manifests on classpath ",e1.getMessage());
         }
         return versions;
     }
