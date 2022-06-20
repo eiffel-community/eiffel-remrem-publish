@@ -27,6 +27,7 @@ import java.util.jar.Manifest;
 
 import com.google.gson.JsonParser;
 import ch.qos.logback.classic.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class will search in all registered jars and their manifest file for
