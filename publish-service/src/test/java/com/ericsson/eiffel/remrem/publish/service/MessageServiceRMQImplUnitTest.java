@@ -178,9 +178,9 @@ public class MessageServiceRMQImplUnitTest {
         JsonArray jarray = new JsonArray();
         String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
-        for (int i = 1; i < 50; i++) {
+        for (int i = 1; i < 5; i++) {
             SendResult result = messageService.send(body, msgService, "test", null, null);
-            Thread.sleep(100);
+            Thread.sleep(300);
             Assert.assertNotNull(result);
             for (PublishResultItem results : result.getEvents()) {
                jarray.add(results.toJsonObject());
