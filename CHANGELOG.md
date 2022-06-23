@@ -3,6 +3,7 @@
 - Uplifted eiffel-remrem-parent version from 2.0.6 to 2.0.7.
 - Uplifted eiffel-remrem-semantics version from 2.2.1 to 2.2.2.
 - Uplifted jackson-databind dependency to 2.13.3
+- Updated the documentation that publish doesn't validate the message.
 
 ## 2.0.23
 - Uplifted eiffel-remrem-parent version from 2.0.5 to 2.0.6
