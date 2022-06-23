@@ -180,7 +180,7 @@ public class MessageServiceRMQImplUnitTest {
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         for (int i = 1; i < 5; i++) {
             SendResult result = messageService.send(body, msgService, "test", null, null);
-            Thread.sleep(500);
+            Thread.sleep(1000);
             Assert.assertNotNull(result);
             for (PublishResultItem results : result.getEvents()) {
                jarray.add(results.toJsonObject());
