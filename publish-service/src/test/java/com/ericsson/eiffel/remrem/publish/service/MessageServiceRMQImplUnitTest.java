@@ -180,9 +180,8 @@ public class MessageServiceRMQImplUnitTest {
         JsonArray jarray = new JsonArray();
         String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
-        for (int i = 1; i < 50; i++) {
+        while (!(jarray.toString().contains("Time out waiting for ACK"))) {
             SendResult result = messageService.send(body, msgService, "test", null, null);
-            Thread.sleep(100);
             Assert.assertNotNull(result);
             for (PublishResultItem results : result.getEvents()) {
                jarray.add(results.toJsonObject());
