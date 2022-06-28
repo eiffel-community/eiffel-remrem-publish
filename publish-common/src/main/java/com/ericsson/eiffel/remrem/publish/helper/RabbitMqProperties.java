@@ -53,7 +53,8 @@ public class RabbitMqProperties {
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
     private Long waitForConfirmsTimeOut;
-    private Long defaultWaitForConfirmsTimeout = 5000L;
+    public static final Long DEFAULT_WAIT_FOR_CONFIRMS_TIMEOUT = 5000L;
+    public static final Integer DEFAULT_CHANNEL_COUNT = 1;
 
     private Connection rabbitConnection;
     private String protocol;
@@ -239,13 +240,12 @@ public class RabbitMqProperties {
             log.info("Connected to RabbitMQ.");
             rabbitChannels = new ArrayList<>();
             if(channelsCount == null || channelsCount == 0 ) {
-                channelsCount = 1;
+                channelsCount = DEFAULT_CHANNEL_COUNT;
             }
             for (int i = 0; i < channelsCount; i++) {
-                rabbitChannels.add(rabbitConnection.createChannel());
-            }
-            for (int i = 0; i < rabbitChannels.size(); i++){
-                rabbitChannels.get(i).confirmSelect();
+                Channel channel = rabbitConnection.createChannel();
+                channel.confirmSelect();
+                rabbitChannels.add(channel);
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
@@ -425,7 +425,8 @@ public class RabbitMqProperties {
      * @throws TimeoutException
      * @throws RemRemPublishException
      */
-    public void send(String routingKey, String msg) throws  IOException ,NackException ,TimeoutException, RemRemPublishException{
+    public void send(String routingKey, String msg)
+            throws IOException, NackException, TimeoutException, RemRemPublishException {
             Channel channel = giveMeRandomChannel();
             channel.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
@@ -450,7 +451,7 @@ public class RabbitMqProperties {
             log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'",
                     msg.getBytes().length, exchangeName, routingKey);
             if (waitForConfirmsTimeOut == null || waitForConfirmsTimeOut == 0) {
-                waitForConfirmsTimeOut = defaultWaitForConfirmsTimeout;
+                waitForConfirmsTimeOut = DEFAULT_WAIT_FOR_CONFIRMS_TIMEOUT;
             }
             channel.waitForConfirmsOrDie(waitForConfirmsTimeOut);
         } catch (InterruptedException | IOException e) {
