@@ -1,3 +1,7 @@
+## 2.0.25
+- Uplifted eiffel-remrem-parent version from 2.0.7 to 2.0.8
+- Uplifted eiffel-remrem-semantics version from 2.2.2 to 2.2.3
+
 ## 2.0.24
 - Updated all the curl commands in documentation
 - Uplifted eiffel-remrem-parent version from 2.0.6 to 2.0.7.
