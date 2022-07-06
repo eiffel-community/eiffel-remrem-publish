@@ -82,12 +82,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.Ericsson</groupId>
-            <artifactId>eiffel-remrem-shared</artifactId>
-            <version>${eiffel-remrem-shared.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
             <scope>compile</scope>
