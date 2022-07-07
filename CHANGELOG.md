@@ -1,3 +1,6 @@
+## 2.0.25
+- Implemented "publisher confirms " in REMReM so that this  can be used to get confirmation about the messages sent to MB.
+
 ## 2.0.24
 - Updated all the curl commands in documentation
 - Uplifted eiffel-remrem-parent version from 2.0.6 to 2.0.7.
