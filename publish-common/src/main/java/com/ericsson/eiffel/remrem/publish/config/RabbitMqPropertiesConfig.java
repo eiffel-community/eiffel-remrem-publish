@@ -115,7 +115,14 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setCreateExchangeIfNotExisting(rabbitmqInstanceObject.get("createExchangeIfNotExisting").asBoolean());
                 rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").asText());
                 if((rabbitmqInstanceObject.get("channelsCount") != null) ) {
-                    rabbitMqProperties.setChannelsCount(Integer.parseInt(rabbitmqInstanceObject.get("channelsCount").asText()));  
+                    rabbitMqProperties.setChannelsCount(
+                            Integer.getInteger(rabbitmqInstanceObject.get("channelsCount").asText(),
+                                    RabbitMqProperties.DEFAULT_CHANNEL_COUNT));
+                }
+                if((rabbitmqInstanceObject.get("waitForConfirmsTimeOut") != null) ) {
+                    rabbitMqProperties.setWaitForConfirmsTimeOut(Long.getLong(
+                            rabbitmqInstanceObject.get("waitForConfirmsTimeOut").asText(),
+                            RabbitMqProperties.DEFAULT_WAIT_FOR_CONFIRMS_TIMEOUT));
                 }
                 rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
             }
