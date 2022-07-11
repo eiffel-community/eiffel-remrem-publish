@@ -1,9 +1,16 @@
+## 2.0.25
+- Implemented "publisher confirms " in REMReM so that this  can be used to get confirmation about the messages sent to MB.
+- Implemented configurable parameters for TCP connection timeout against LDAP and MB
+
 ## 2.0.24
 - Updated all the curl commands in documentation
 - Uplifted eiffel-remrem-parent version from 2.0.6 to 2.0.7.
 - Uplifted eiffel-remrem-semantics version from 2.2.1 to 2.2.2.
 - Uplifted jackson-databind dependency to 2.13.3
-- Implemented configurable parameters for TCP connection timeout against LDAP and MB
+- Updated the documentation that publish doesn't validate the message.
+- Removed archived repo remrem-shared dependencies
+- Uplifted eiffel-remrem-parent version from 2.0.7 to 2.0.8
+- Uplifted eiffel-remrem-semantics version from 2.2.2 to 2.2.3
 
 ## 2.0.23
 - Uplifted eiffel-remrem-parent version from 2.0.5 to 2.0.6

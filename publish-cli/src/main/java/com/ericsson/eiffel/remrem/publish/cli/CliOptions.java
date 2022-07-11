@@ -28,7 +28,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.shared.VersionService;
 
 public class CliOptions {
 
@@ -80,6 +79,7 @@ public class CliOptions {
         options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics, default is eiffelsemantics");
         options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
         options.addOption("cc", "channelsCount", true, "Number of channels connected to message bus, default is 1");
+        options.addOption("wcto", "wait_for_confirms_timeOut", true, "the timeout for wait for confirms, default is 5000 ms/milliseconds");
         options.addOption("ud", "user_domain_suffix", true, "user domain suffix");
         options.addOption("v", "lists the versions of publish and all loaded protocols");
         options.addOption("tag", "tag", true, "tag to be used in routing key");
@@ -232,6 +232,12 @@ public class CliOptions {
             String key = PropertiesConfig.TCP_TIMEOUT;
             System.setProperty(key, timeOut);
         }
+        
+        if (commandLine.hasOption("wcto")) {
+            String timeOut = commandLine.getOptionValue("wcto");
+            String key = PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT;
+            System.setProperty(key,timeOut);
+        }
 
         if (commandLine.hasOption("tls")) {
             String tls_ver = commandLine.getOptionValue("tls");
@@ -281,6 +287,7 @@ public class CliOptions {
         System.clearProperty(PropertiesConfig.DOMAIN_ID);
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
         System.clearProperty(PropertiesConfig.TCP_TIMEOUT);
+        System.clearProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
     }
 
     /**
