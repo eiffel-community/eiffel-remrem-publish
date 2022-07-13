@@ -16,7 +16,7 @@ usage: java -jar
 
 -cc,--channelsCount <arg>                     Number of channels connected to messagebus, default is 1
 
--tto,--tcp_time_out <arg>                     Tcp Connection TimeOut value
+-tto,--tcp_time_out <arg>                     Tcp Connection TimeOut value, default value is 60000 milliseconds.
 
 -wcto,--wait_for_confirms_timeOut <arg>       Time out for wait for confirms ,default is 5000 ms/milliseconds.
 

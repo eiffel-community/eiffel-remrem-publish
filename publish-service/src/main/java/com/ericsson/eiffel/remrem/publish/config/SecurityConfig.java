@@ -62,16 +62,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${activedirectory.rootDn}")
     private String rootDn;
 
-    @Value("${activedirectory.connectionTimeOut:#{0}}")
-    private Integer ldapTimeOut;
+    @Value("${activedirectory.connectionTimeOut:#{127000}}")
+    private Integer ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
 
 //  built in connection timeout value for ldap if the network issue happens
     public static final Integer DEFAULT_LDAP_CONNECTION_TIMEOUT = 127000;
 
     public Integer getTimeOut() {
-        if (ldapTimeOut== null || ldapTimeOut == 0) {
-            ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
-        }
         return ldapTimeOut;
     }
 
