@@ -124,6 +124,10 @@ public class RabbitMqPropertiesConfig {
                             rabbitmqInstanceObject.get("waitForConfirmsTimeOut").asText(),
                             RabbitMqProperties.DEFAULT_WAIT_FOR_CONFIRMS_TIMEOUT));
                 }
+                if ((rabbitmqInstanceObject.get("tcpTimeOut") != null)) {
+                    rabbitMqProperties.setTcpTimeOut(Integer.getInteger(rabbitmqInstanceObject.get("tcpTimeOut").asText(),
+                            RabbitMqProperties.DEFAULT_TCP_TIMEOUT));
+                }
                 rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
             }
         } catch (Exception e) {

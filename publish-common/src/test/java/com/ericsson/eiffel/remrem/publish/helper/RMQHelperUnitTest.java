@@ -56,6 +56,7 @@ public class RMQHelperUnitTest {
     private static final String usePersistence= "1.2";
     private static final String domainId= "eiffelxxx";
     private static final Integer channelsCount= 1;
+    private static final Integer tcpTimeOut= 5000;
     private static final Long waitForConfirmTimeOut= 5000L;
     private String protocol = "eiffelsemantics";
     private String createExchange = "true";
@@ -100,6 +101,7 @@ public class RMQHelperUnitTest {
         System.setProperty(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING, createExchange);
         System.setProperty(PropertiesConfig.DOMAIN_ID, domainId);
         System.setProperty(PropertiesConfig.CHANNELS_COUNT, Integer.toString(channelsCount));
+        System.setProperty(PropertiesConfig.TCP_TIMEOUT, Integer.toString(tcpTimeOut));
         System.setProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT, Long.toString(waitForConfirmTimeOut));
     }
 
@@ -115,6 +117,7 @@ public class RMQHelperUnitTest {
         System.clearProperty(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING);
         System.clearProperty(PropertiesConfig.DOMAIN_ID);
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
+        System.clearProperty(PropertiesConfig.TCP_TIMEOUT);
         System.clearProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
     }
 
@@ -178,6 +181,7 @@ public class RMQHelperUnitTest {
         String tlsVersion = "1.0";
         String exchangeNameTest = "EN2";
         String usePersistenceTest = "false";
+        Integer tcpTimeOut = 5000;
         Long waitForConfirmsTimeOut = 5000L;
 
         System.setProperty(PropertiesConfig.MESSAGE_BUS_HOST, host);
@@ -186,6 +190,7 @@ public class RMQHelperUnitTest {
         System.setProperty(PropertiesConfig.TLS, tlsVersion);
         System.setProperty(PropertiesConfig.EXCHANGE_NAME, exchangeNameTest);
         System.setProperty(PropertiesConfig.USE_PERSISTENCE, usePersistenceTest);
+        System.setProperty(PropertiesConfig.TCP_TIMEOUT, Integer.toString(tcpTimeOut));
         System.setProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT, Long.toString(waitForConfirmsTimeOut));
 
         RMQHelper rmqHelperTest = new RMQHelper();
@@ -217,7 +222,7 @@ public class RMQHelperUnitTest {
             e.printStackTrace();
             assertTrue(false);
         }
-
+        
         RabbitMqProperties rabbitmqProtocolPropertiesTest = rmqHelperTest.getRabbitMqPropertiesMap().get(protocol);
         assertEquals(host, rabbitmqProtocolPropertiesTest.getHost());
         assertEquals(portNumber, rabbitmqProtocolPropertiesTest.getPort());
@@ -225,6 +230,7 @@ public class RMQHelperUnitTest {
         assertEquals(tlsVersion, rabbitmqProtocolPropertiesTest.getTlsVer());
         assertEquals(exchangeNameTest, rabbitmqProtocolPropertiesTest.getExchangeName());
         assertEquals(waitForConfirmsTimeOut, rabbitmqProtocolPropertiesTest.getWaitForConfirmsTimeOut());
+        assertEquals(tcpTimeOut, rabbitmqProtocolPropertiesTest.getTcpTimeOut());
     }
 
     @Test
