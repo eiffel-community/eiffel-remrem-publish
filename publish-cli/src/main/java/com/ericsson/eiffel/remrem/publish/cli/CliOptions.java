@@ -84,7 +84,7 @@ public class CliOptions {
         options.addOption("v", "lists the versions of publish and all loaded protocols");
         options.addOption("tag", "tag", true, "tag to be used in routing key");
         options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
-
+        options.addOption("tto", "tcp_time_out", true, "specifies tcp connection timeout, default time is 60000 milliseconds");
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }
@@ -220,12 +220,19 @@ public class CliOptions {
             String key = PropertiesConfig.DOMAIN_ID;
             System.setProperty(key, domain);
         }
+
         if (commandLine.hasOption("channelsCount")) {
             String channelsCount = commandLine.getOptionValue("channelsCount");
             String key = PropertiesConfig.CHANNELS_COUNT;
             System.setProperty(key, channelsCount);
         }
 
+        if (commandLine.hasOption("tto")) {
+            String timeOut = commandLine.getOptionValue("tto");
+            String key = PropertiesConfig.TCP_TIMEOUT;
+            System.setProperty(key, timeOut);
+        }
+        
         if (commandLine.hasOption("wcto")) {
             String timeOut = commandLine.getOptionValue("wcto");
             String key = PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT;
@@ -279,6 +286,7 @@ public class CliOptions {
         System.clearProperty(PropertiesConfig.TLS);
         System.clearProperty(PropertiesConfig.DOMAIN_ID);
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
+        System.clearProperty(PropertiesConfig.TCP_TIMEOUT);
         System.clearProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
     }
 

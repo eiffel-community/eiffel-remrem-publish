@@ -14,10 +14,11 @@ usage: java -jar
 
 -domain,--domainId <arg>                      Identifies the domain that produces the event.
 
- -cc,--channelsCount <arg>                    Number of channels connected to message
-                                              bus, default is 1
+-cc,--channelsCount <arg>                     Number of channels connected to messagebus, default is 1
 
- -wcto,--wait_for_confirms_timeOut <arg>      Time out for wait for confirms ,default is 5000 ms/milliseconds.
+-tto,--tcp_time_out <arg>                     Tcp Connection TimeOut value, default value is 60000 milliseconds.
+
+-wcto,--wait_for_confirms_timeOut <arg>       Time out for wait for confirms ,default is 5000 ms/milliseconds.
 
 -en,--exchange_name <arg>                     Exchange name.
 
@@ -129,6 +130,12 @@ java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -
 
 ```
 java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -tag production
+```
+
+**If you want to change the tcp connection timeout value for rabbitmq connection**
+
+```
+java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics --tto tcp-timeout-value
 ```
 
 **To create an exchange passed while publishing the messages use --create_exchange or -ce property to true. Example:**
