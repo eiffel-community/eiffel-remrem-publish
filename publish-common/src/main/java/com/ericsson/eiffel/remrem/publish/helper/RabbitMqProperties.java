@@ -483,7 +483,7 @@ public class RabbitMqProperties {
             throw new TimeoutException("Timeout waiting for ACK " + e.getMessage());
         } catch (IllegalArgumentException e) {
             log.error("Failed to publish message due to " + e.getMessage());
-            throw new IllegalArgumentException("Length exceeded " + e.getMessage());
+            throw new IllegalArgumentException("Limit Exceeded " + e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             if(!channel.isOpen()&& rabbitConnection.isOpen()){
