@@ -109,7 +109,7 @@ public class EiffelRemRemPublishIT {
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             String routingKey = messageService.generateRoutingKey(json.getAsJsonObject(), null, null, null);
-            assertEquals("eiffel.activity.finished.notag.eiffeltest", routingKey);
+            assertEquals("eiffel.activity.EiffelActivityFinishedEvent.notag.eiffeltest", routingKey);
         }
     }
  }

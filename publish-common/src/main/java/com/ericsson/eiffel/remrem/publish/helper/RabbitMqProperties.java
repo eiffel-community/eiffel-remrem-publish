@@ -14,14 +14,19 @@
 */
 package com.ericsson.eiffel.remrem.publish.helper;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeoutException;
+import java.util.PropertyResourceBundle;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
@@ -51,11 +56,16 @@ public class RabbitMqProperties {
     private String domainId;
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
+    private String routingkeyTypeOverrideFilePath;
 
     private Connection rabbitConnection;
     private String protocol;
 
     private List<Channel> rabbitChannels;
+
+    private ResourceBundle types;
+    private final String TYPE = "type";
+    private final String DOT = ".";
 
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
@@ -127,7 +137,15 @@ public class RabbitMqProperties {
         this.createExchangeIfNotExisting = createExchangeIfNotExisting;
     }
 
-    public Integer getChannelsCount() {
+	public String getRoutingkeyTypeOverrideFilePath() {
+		return routingkeyTypeOverrideFilePath;
+	}
+
+	public void setRoutingkeyTypeOverrideFilePath(String routingkeyTypeOverrideFilePath) {
+		this.routingkeyTypeOverrideFilePath = routingkeyTypeOverrideFilePath;
+	}
+
+	public Integer getChannelsCount() {
         return channelsCount;
     }
 
@@ -191,9 +209,6 @@ public class RabbitMqProperties {
                 factory.setUsername(username);
                 factory.setPassword(password);
             }
-            
-            
-           
 
             if (tlsVer != null && !tlsVer.isEmpty()) {
                 if (tlsVer.contains("default")) {
@@ -215,6 +230,13 @@ public class RabbitMqProperties {
             log.error(e.getMessage(), e);            
         }
         checkAndCreateExchangeIfNeeded();
+        if (StringUtils.isNotBlank(routingkeyTypeOverrideFilePath)) {
+            try {
+                types = new PropertyResourceBundle(new FileInputStream(routingkeyTypeOverrideFilePath));
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
     }
 
     /**
@@ -276,6 +298,10 @@ public class RabbitMqProperties {
         if (channelsCount == null ) {
             channelsCount = Integer.getInteger(getValuesFromSystemProperties(protocol + ".rabbitmq.channelsCount"));
         }
+
+        if (protocol.equalsIgnoreCase("eiffelsemantics") && routingkeyTypeOverrideFilePath == null) {
+            routingkeyTypeOverrideFilePath = getValuesFromSystemProperties("semanticsRoutingkeyTypeOverrideFilepath");
+        }
     }
     
 
@@ -289,6 +315,7 @@ public class RabbitMqProperties {
         exchangeName = getValuesFromSystemProperties(PropertiesConfig.EXCHANGE_NAME);
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
         createExchangeIfNotExisting = Boolean.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
+        routingkeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
     }
 
     private String getValuesFromSystemProperties(String propertyName) {
@@ -440,4 +467,24 @@ public class RabbitMqProperties {
         return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
     }
 
+    /**
+     * This method is used to get routing key type based on the eventType from the configuration file
+     * 
+     * @param eventType
+     *            Eiffel eventType
+     * @return type based on eventType if provided in the configuration file else null
+     */
+    public String getTypeRoutingKeyFromConfiguration(String eventType) {
+        if (types != null) {
+            String key = eventType + DOT + TYPE;
+            try {
+                if (!types.getString(key).isEmpty()) {
+                    return types.getString(key);
+                }
+            } catch (MissingResourceException e) {
+                return null;
+            }
+        }
+		return null;
+    }
 }

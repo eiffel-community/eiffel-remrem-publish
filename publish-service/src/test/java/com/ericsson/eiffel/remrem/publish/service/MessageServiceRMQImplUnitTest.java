@@ -195,7 +195,7 @@ public class MessageServiceRMQImplUnitTest {
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
             routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001", null, null);
             if(routingKey != null) {
-                assertEquals("eiffel.activity.finished.notag.eiffeltest.fem001", routingKey);
+                assertEquals("eiffel.activity.EiffelActivityFinishedEvent.notag.eiffeltest.fem001", routingKey);
             }
         }
     }
