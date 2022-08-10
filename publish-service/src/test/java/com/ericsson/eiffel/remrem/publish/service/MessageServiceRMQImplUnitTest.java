@@ -86,12 +86,12 @@ public class MessageServiceRMQImplUnitTest {
      * exchange it will throw an Exception.
      */
     @Test
-    public void testCreateExchangeIfNotExistingEnable() throws RemRemPublishException {
+    public void testCreateExchangeIfNotExistingEnable() {
         boolean ExceptionOccured = false;
         rabbitmqProtocolProperties.setExchangeName("nonexistexchangename");
         rabbitmqProtocolProperties.setCreateExchangeIfNotExisting(createExchangeIfNotExisting);
         try {
-            rabbitmqProtocolProperties.init();
+            rabbitmqProtocolProperties.checkAndCreateExchangeIfNeeded();
         } catch (RemRemPublishException e) {
             ExceptionOccured = true;
         } finally {
@@ -110,7 +110,7 @@ public class MessageServiceRMQImplUnitTest {
     public void testCreateExchangeIfNotExistingDisable() throws RemRemPublishException  {
         rabbitmqProtocolProperties.setExchangeName("test76888");
         rabbitmqProtocolProperties.setCreateExchangeIfNotExisting(false);
-        rabbitmqProtocolProperties.init();
+        rabbitmqProtocolProperties.checkAndCreateExchangeIfNeeded();
 
         rabbitmqProtocolProperties.setExchangeName(exchangeName);
         rabbitmqProtocolProperties.init();

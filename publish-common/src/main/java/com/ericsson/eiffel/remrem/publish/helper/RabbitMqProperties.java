@@ -183,7 +183,7 @@ public class RabbitMqProperties {
         this.rabbitConnection = rabbitConnection;
     }
 
-    public void init() throws RemRemPublishException {
+    public void init() {
         log.info("RabbitMqProperties init ...");
         if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
             initCli();
@@ -238,7 +238,12 @@ public class RabbitMqProperties {
         } catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage(), e);            
         }
-        checkAndCreateExchangeIfNeeded();
+        try {
+            checkAndCreateExchangeIfNeeded();
+        } catch (RemRemPublishException e) {
+            log.error("Error occured while setting up the RabbitMq Connection. "+e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -484,7 +489,7 @@ public class RabbitMqProperties {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             if(!channel.isOpen()&& rabbitConnection.isOpen()){
-                throw new RemRemPublishException("Channel was closed for Rabbitmq connection ::" + factory.getHost() + factory.getPort());
+                throw new RemRemPublishException("Channel was closed for Rabbitmq connection ::" + factory.getHost() + factory.getPort()+" due to "+e.getMessage());
             }
             throw new IOException("Failed to publish message due to " + e.getMessage());
         }
