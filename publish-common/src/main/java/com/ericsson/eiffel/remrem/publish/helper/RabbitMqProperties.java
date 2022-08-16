@@ -489,7 +489,7 @@ public class RabbitMqProperties {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             if(!channel.isOpen()&& rabbitConnection.isOpen()){
-                throw new RemRemPublishException("Channel was closed for Rabbitmq connection ::" + factory.getHost() + factory.getPort()+" due to "+e.getMessage());
+                throw new RemRemPublishException("Channel was closed for Rabbitmq connection ::" + factory.getHost() + factory.getPort() + e.getMessage());
             }
             throw new IOException("Failed to publish message due to " + e.getMessage());
         }

@@ -87,18 +87,18 @@ public class MessageServiceRMQImplUnitTest {
      */
     @Test
     public void testCreateExchangeIfNotExistingEnable() {
-        boolean ExceptionOccured = false;
+        boolean exceptionOccured = false;
         rabbitmqProtocolProperties.setExchangeName("nonexistexchangename");
         rabbitmqProtocolProperties.setCreateExchangeIfNotExisting(createExchangeIfNotExisting);
         try {
             rabbitmqProtocolProperties.checkAndCreateExchangeIfNeeded();
         } catch (RemRemPublishException e) {
-            ExceptionOccured = true;
+            exceptionOccured = true;
         } finally {
             rabbitmqProtocolProperties.setExchangeName(exchangeName);
             rabbitmqProtocolProperties.init();
         }
-        assertFalse("An exception occured while creating a exchange", ExceptionOccured);
+        assertFalse("An exception occured while creating a exchange", exceptionOccured);
     }
 
     /**
