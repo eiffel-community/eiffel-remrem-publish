@@ -447,7 +447,7 @@ public class RabbitMqProperties {
      * @throws RemRemPublishException
      */
     public void send(String routingKey, String msg)
-            throws IOException, NackException, TimeoutException, RemRemPublishException {
+            throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
             Channel channel = giveMeRandomChannel();
             channel.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
@@ -481,6 +481,9 @@ public class RabbitMqProperties {
         } catch (TimeoutException e) {
             log.error("Failed to publish message due to " + e.getMessage());
             throw new TimeoutException("Timeout waiting for ACK " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("Failed to publish message due to " + e.getMessage());
+            throw new IllegalArgumentException("DomainId limit exceeded " + e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             if(!channel.isOpen()&& rabbitConnection.isOpen()){
