@@ -53,6 +53,7 @@ public class RabbitMqProperties {
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
     private Integer tcpTimeOut;
+    private boolean hasExchange =false;
 //  built in tcp connection timeout value for MB in milliseconds.
     public static final Integer DEFAULT_TCP_TIMEOUT = 60000;
     private Long waitForConfirmsTimeOut;
@@ -379,6 +380,8 @@ public class RabbitMqProperties {
                 }
                 try {
                     channel.exchangeDeclare(exchangeName, "topic", true);
+                    log.info("Exchange "+exchangeName+" has created");
+                    hasExchange =true;
                 } catch (final IOException e) {
                     log.info(exchangeName + "failed to create an exchange");
                     throw new RemRemPublishException("Unable to create Exchange with Rabbitmq connection " + exchangeName + factory.getHost() + ":" + factory.getPort() + e.getMessage());
@@ -411,6 +414,9 @@ public class RabbitMqProperties {
      */
     private boolean hasExchange() throws RemRemPublishException {
         log.info("Exchange is: " + exchangeName);
+        if(hasExchange)
+           return true;
+
         Connection connection;
         try {
             connection = factory.newConnection();
@@ -421,15 +427,17 @@ public class RabbitMqProperties {
         try {
             channel = connection.createChannel();
         } catch (final IOException e) {
-            log.info("Exchange " + exchangeName + " does not Exist");
+            log.info("Exchange " + exchangeName + " does not exist");
             throw new RemRemPublishException("Exception occurred while creating Channel with Rabbitmq connection ::" + factory.getHost() + factory.getPort() + e.getMessage());
         }
         try {
             channel.exchangeDeclarePassive(exchangeName);
-            return true;
+            hasExchange = true;
+            return hasExchange;
         } catch (final IOException e) {
-            log.info("Exchange " + exchangeName + " does not Exist");
-            return false;
+            log.info("Exchange " + exchangeName + " does not exist");
+            hasExchange = false;
+            return hasExchange;
         } finally {
             if (channel != null && channel.isOpen()) {
                 try {
@@ -454,6 +462,7 @@ public class RabbitMqProperties {
     public void send(String routingKey, String msg)
             throws IOException, NackException, TimeoutException, RemRemPublishException {
             Channel channel = giveMeRandomChannel();
+            checkAndCreateExchangeIfNeeded();
             channel.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
                     // Beware that proper synchronization is needed here
