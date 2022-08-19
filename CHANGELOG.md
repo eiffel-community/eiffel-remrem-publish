@@ -1,6 +1,7 @@
 ## 2.0.25
 - Implemented "publisher confirms " in REMReM so that this  can be used to get confirmation about the messages sent to MB.
 - Implemented configurable parameters for TCP connection timeout against LDAP and MB
+- Implemented changes to return proper error messages when DomainId value is greater than 255 chars.
 - Added code changes so that REMReM Publish should not die if RabbitMQ is unavailable when starting up.
 
 ## 2.0.24
