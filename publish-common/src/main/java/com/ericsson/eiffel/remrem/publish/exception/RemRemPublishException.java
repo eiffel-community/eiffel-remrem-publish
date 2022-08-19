@@ -21,4 +21,7 @@ public class RemRemPublishException extends Exception {
     public RemRemPublishException(String message) {
         super(message);
     }
+    public RemRemPublishException(String message , Throwable cause) {
+        super(message, cause);
+    }
 }
