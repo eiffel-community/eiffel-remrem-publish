@@ -108,7 +108,6 @@ public class MessageServiceRMQImplUnitTest {
      */
     @Test(expected = RemRemPublishException.class)
     public void testCreateExchangeIfNotExistingDisable() throws RemRemPublishException  {
-        rabbitmqProtocolProperties.setHasExchange(false);
         rabbitmqProtocolProperties.setExchangeName("test76888");
         rabbitmqProtocolProperties.setCreateExchangeIfNotExisting(false);
         rabbitmqProtocolProperties.checkAndCreateExchangeIfNeeded();
