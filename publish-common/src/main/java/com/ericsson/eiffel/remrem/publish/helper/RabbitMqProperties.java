@@ -274,7 +274,7 @@ public class RabbitMqProperties {
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
-            throw new RemRemPublishException("Failed to create connection for Rabbitmq ::", factory,
+            throw new RemRemPublishException("Failed to create connection for Rabbitmq :: ", factory,
                     e);
         }
     }
@@ -376,7 +376,7 @@ public class RabbitMqProperties {
                     connection = factory.newConnection();
                 } catch (final IOException | TimeoutException e) {
                     throw new RemRemPublishException(
-                            "Exception occurred while creating Rabbitmq connection ::", factory, e);
+                            "Exception occurred while creating Rabbitmq connection :: ", factory, e);
                 }
                 Channel channel = null;
                 try {
@@ -393,7 +393,7 @@ public class RabbitMqProperties {
                 } catch (final IOException e) {
                     log.info(exchangeName + "failed to create an exchange");
                     throw new RemRemPublishException(
-                            "Unable to create exchange with Rabbitmq connection " + exchangeName,
+                            "Unable to create Exchange with Rabbitmq connection " + exchangeName,
                             factory, e);
                 } finally {
                     if (channel == null || channel.isOpen()) {
@@ -424,7 +424,7 @@ public class RabbitMqProperties {
      */
     private boolean hasExchange() throws RemRemPublishException {
         if(hasExchange) {
-           log.info("Exchange is:{} ", exchangeName);
+           log.info("Exchange is: {}", exchangeName);
            return true;
         }
 
@@ -433,14 +433,14 @@ public class RabbitMqProperties {
             connection = factory.newConnection();
         } catch (final IOException | TimeoutException e) {
             throw new RemRemPublishException(
-                    "Exception occurred while creating Rabbitmq connection ::", factory, e);
+                    "Exception occurred while creating Rabbitmq connection :: ", factory, e);
         }
         Channel channel = null;
         try {
             channel = connection.createChannel();
         } catch (final IOException e) {
             throw new RemRemPublishException(
-                    "Exception occurred while creating Channel with Rabbitmq connection ::",
+                    "Exception occurred while creating Channel with Rabbitmq connection :: ",
                     factory, e);
         }
         try {
@@ -514,7 +514,7 @@ public class RabbitMqProperties {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             if(!channel.isOpen()&& rabbitConnection.isOpen()){
-                throw new RemRemPublishException("Channel was closed for Rabbitmq connection ::",
+                throw new RemRemPublishException("Channel was closed for Rabbitmq connection :: ",
                         factory, e);
             }
             throw new IOException("Failed to publish message due to " + e.getMessage(), e);
