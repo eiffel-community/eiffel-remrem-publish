@@ -53,6 +53,7 @@ public class RabbitMqProperties {
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
     private Integer tcpTimeOut;
+    private boolean hasExchange = false;
 //  built in tcp connection timeout value for MB in milliseconds.
     public static final Integer DEFAULT_TCP_TIMEOUT = 60000;
     private Long waitForConfirmsTimeOut;
@@ -88,7 +89,10 @@ public class RabbitMqProperties {
     }
 
     public void setExchangeName(String exchangeName) {
-        this.exchangeName = exchangeName;
+        if (!exchangeName.equals(this.exchangeName)) {
+            this.exchangeName = exchangeName;
+            this.hasExchange = false;
+        }
     }
 
     public Integer getPort() {
@@ -183,7 +187,7 @@ public class RabbitMqProperties {
         this.rabbitConnection = rabbitConnection;
     }
 
-    public void init() throws RemRemPublishException {
+    public void init() {
         log.info("RabbitMqProperties init ...");
         if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
             initCli();
@@ -238,7 +242,13 @@ public class RabbitMqProperties {
         } catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage(), e);            
         }
-        checkAndCreateExchangeIfNeeded();
+        try {
+            //The exception can be safely handled here as there is a check for existence of exchange is done before each publish.
+            checkAndCreateExchangeIfNeeded();
+        } catch (RemRemPublishException e) {
+            log.error("Error occured while setting up the RabbitMq Connection. "+e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -264,7 +274,8 @@ public class RabbitMqProperties {
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
-            throw new RemRemPublishException("Failed to create connection for Rabbitmq ::" + factory.getHost() + ":" + factory.getPort());
+            throw new RemRemPublishException("Failed to create connection for Rabbitmq :: ", factory,
+                    e);
         }
     }
 
@@ -364,19 +375,26 @@ public class RabbitMqProperties {
                 try {
                     connection = factory.newConnection();
                 } catch (final IOException | TimeoutException e) {
-                    throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::" + factory.getHost() + ":" + factory.getPort() + e.getMessage());
+                    throw new RemRemPublishException(
+                            "Exception occurred while creating Rabbitmq connection :: ", factory, e);
                 }
                 Channel channel = null;
                 try {
                     channel = connection.createChannel();
                 } catch (final IOException e) {
-                    throw new RemRemPublishException("Exception occurred while creating Channel with Rabbitmq connection ::" + factory.getHost() + ":" + factory.getPort() + e.getMessage());
+                    throw new RemRemPublishException(
+                            "Exception occurred while creating Channel with Rabbitmq connection ::",
+                            factory, e);
                 }
                 try {
                     channel.exchangeDeclare(exchangeName, "topic", true);
+                    log.info("Exchange {} is created",exchangeName);
+                    hasExchange = true;
                 } catch (final IOException e) {
                     log.info(exchangeName + "failed to create an exchange");
-                    throw new RemRemPublishException("Unable to create Exchange with Rabbitmq connection " + exchangeName + factory.getHost() + ":" + factory.getPort() + e.getMessage());
+                    throw new RemRemPublishException(
+                            "Unable to create Exchange with Rabbitmq connection " + exchangeName,
+                            factory, e);
                 } finally {
                     if (channel == null || channel.isOpen()) {
                         try {
@@ -405,25 +423,32 @@ public class RabbitMqProperties {
      * @throws IOException
      */
     private boolean hasExchange() throws RemRemPublishException {
-        log.info("Exchange is: " + exchangeName);
+        if(hasExchange) {
+           log.info("Exchange is: {}", exchangeName);
+           return true;
+        }
+
         Connection connection;
         try {
             connection = factory.newConnection();
         } catch (final IOException | TimeoutException e) {
-            throw new RemRemPublishException("Exception occurred while creating Rabbitmq connection ::" + factory.getHost() + factory.getPort() + e.getMessage());
+            throw new RemRemPublishException(
+                    "Exception occurred while creating Rabbitmq connection :: ", factory, e);
         }
         Channel channel = null;
         try {
             channel = connection.createChannel();
         } catch (final IOException e) {
-            log.info("Exchange " + exchangeName + " does not Exist");
-            throw new RemRemPublishException("Exception occurred while creating Channel with Rabbitmq connection ::" + factory.getHost() + factory.getPort() + e.getMessage());
+            throw new RemRemPublishException(
+                    "Exception occurred while creating Channel with Rabbitmq connection :: ",
+                    factory, e);
         }
         try {
             channel.exchangeDeclarePassive(exchangeName);
-            return true;
+            hasExchange = true;
+            return hasExchange;
         } catch (final IOException e) {
-            log.info("Exchange " + exchangeName + " does not Exist");
+            log.info("Exchange " + exchangeName + " was not created");
             return false;
         } finally {
             if (channel != null && channel.isOpen()) {
@@ -437,7 +462,8 @@ public class RabbitMqProperties {
         }
     }
 
-    /**
+
+	/**
      * This method is used to publish the message to RabbitMQ
      * @param routingKey
      * @param msg is Eiffel Event
@@ -449,6 +475,7 @@ public class RabbitMqProperties {
     public void send(String routingKey, String msg)
             throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
             Channel channel = giveMeRandomChannel();
+            checkAndCreateExchangeIfNeeded();
             channel.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
                     // Beware that proper synchronization is needed here
@@ -483,13 +510,14 @@ public class RabbitMqProperties {
             throw new TimeoutException("Timeout waiting for ACK " + e.getMessage());
         } catch (IllegalArgumentException e) {
             log.error("Failed to publish message due to " + e.getMessage());
-            throw new IllegalArgumentException("DomainId limit exceeded " + e.getMessage());
+            throw new IllegalArgumentException("DomainId limit exceeded " + e.getMessage(), e);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             if(!channel.isOpen()&& rabbitConnection.isOpen()){
-                throw new RemRemPublishException("Channel was closed for Rabbitmq connection ::" + factory.getHost() + factory.getPort());
+                throw new RemRemPublishException("Channel was closed for Rabbitmq connection :: ",
+                        factory, e);
             }
-            throw new IOException("Failed to publish message due to " + e.getMessage());
+            throw new IOException("Failed to publish message due to " + e.getMessage(), e);
         }
     }
 

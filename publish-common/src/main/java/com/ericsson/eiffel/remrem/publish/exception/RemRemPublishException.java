@@ -14,11 +14,22 @@
 */
 package com.ericsson.eiffel.remrem.publish.exception;
 
+import com.ericsson.eiffel.remrem.publish.helper.RMQBeanConnectionFactory;
+
 public class RemRemPublishException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
     public RemRemPublishException(String message) {
         super(message);
+    }
+
+    public RemRemPublishException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public RemRemPublishException(String message, RMQBeanConnectionFactory factory,
+            Throwable cause) {
+        super(message + factory.getHost() + ":" + factory.getPort(), cause);
     }
 }
