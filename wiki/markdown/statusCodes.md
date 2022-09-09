@@ -90,20 +90,6 @@ RabbitMQ properties not configured in tomcat/conf/config.properties file for the
 ]
 ```
 
-**415 Unsupported Media Type**
-
-Server refuses to accept the request because the payload format is in an unsupported format.
-
-```
-{
-  "timestamp": "Sep 9, 2022 2:56:07 PM",
-  "status": 415,
-  "error": "Unsupported Media Type",
-  "message": "Content type \u0027unsupported;charset\u003dUTF-8\u0027 not supported",
-  "path": "/publish/producer/msg"
-}
-```
-
 **500 Internal Server Error**
 
 Cannot prepare routing key.
@@ -185,7 +171,6 @@ These response can be generated only when `/generateAndPublish` endpoint is used
 | 400         | Bad Request           | Malformed JSON or incorrect type of event                                   | Is returned if the request body JSON is malformed or entered incorrect type of event.                                  |
 | 401         | Unauthorized          | Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled | Is returned if LDAP for REMReM Generate Service is enabled and REMReM Generate Publish have not access to it.          |
 | 406         | Not Acceptable        | No event id found with ERLookup properties                                  | Is returned if no event id fetched from configured event repository in REMReM generate.                                |
-| 415         | Unsupported Media Type| Content type `<content-type>` not supported                                         | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.                                                                                                                                                                                                                                                                                                                                                                             |
 | 417         | Expectation Failed    | Multiple event ids found with ERLookup properties                           | Is returned if multiple event ids fetched from configured event repository in REMReM generate.                         |
 | 422         | Unprocessable Entity  | Link specific lookup options could not be fulfilled                         | Is returned if Link specific lookup options could not be matched with failIfMultipleFound and failIfNoneFound.         |
 | 500         | Internal Server Error | Internal server error in Generate Service                                   | Is returned if REMReM Generate Service is not started or in case of others internal errors in REMReM Generate Service. |
@@ -235,23 +220,7 @@ The Lookup properties with no event id fetched from configured event repository 
 ]
 ```
 
-**415 Unsupported Media Type**
-
-Server refuses to accept the request because the payload format is in an unsupported format.
-
-```
-{
-  "timestamp": "Sep 9, 2022 2:56:07 PM",
-  "status": 415,
-  "error": "Unsupported Media Type",
-  "message": "Content type \u0027unsupported;charset\u003dUTF-8\u0027 not supported",
-  "path": "/publish/producer/msg"
-}
-```
-
-
 **417 Expectation Failed**
-
 The Lookup properties with multiple event ids fetched from configured event repository in generate , REMReM fails to generate.
 
 ```
@@ -265,7 +234,6 @@ The Lookup properties with multiple event ids fetched from configured event repo
 ```
 
 **422 Unprocessable Entity**
-
 The link specific lookup options could not be matched with failIfMultipleFound and failIfNoneFound in generate , REMReM fails to generate.
 
 ```
