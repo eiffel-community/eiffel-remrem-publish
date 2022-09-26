@@ -85,7 +85,10 @@ import ch.qos.logback.classic.Logger;
                 } catch (RemRemPublishException e) {
                     event = new PublishResultItem(entryKey, HttpStatus.INTERNAL_SERVER_ERROR.value(), PropertiesConfig.SERVER_DOWN,
                             e.getMessage());
-                } catch (IOException e) {
+                } catch (IllegalArgumentException e) {
+                    event = new PublishResultItem(entryKey, HttpStatus.BAD_REQUEST.value(), PropertiesConfig.INVALID_MESSAGE,
+                            e.getMessage());
+	        }catch (IOException e) {
                     event = new PublishResultItem(entryKey, HttpStatus.INTERNAL_SERVER_ERROR.value(), PropertiesConfig.SERVER_DOWN,
                             PropertiesConfig.SERVER_DOWN_MESSAGE);
                 }
