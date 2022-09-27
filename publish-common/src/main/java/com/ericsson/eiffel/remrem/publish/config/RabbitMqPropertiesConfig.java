@@ -114,19 +114,17 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setExchangeName(rabbitmqInstanceObject.get("exchangeName").asText());
                 rabbitMqProperties.setCreateExchangeIfNotExisting(rabbitmqInstanceObject.get("createExchangeIfNotExisting").asBoolean());
                 rabbitMqProperties.setDomainId(rabbitmqInstanceObject.get("domainId").asText());
-                if((rabbitmqInstanceObject.get("channelsCount") != null) ) {
+                if ((rabbitmqInstanceObject.get("channelsCount") != null)) {
                     rabbitMqProperties.setChannelsCount(
-                            Integer.getInteger(rabbitmqInstanceObject.get("channelsCount").asText(),
-                                    RabbitMqProperties.DEFAULT_CHANNEL_COUNT));
+                            Integer.parseInt(rabbitmqInstanceObject.get("channelsCount").asText()));
                 }
-                if((rabbitmqInstanceObject.get("waitForConfirmsTimeOut") != null) ) {
-                    rabbitMqProperties.setWaitForConfirmsTimeOut(Long.getLong(
-                            rabbitmqInstanceObject.get("waitForConfirmsTimeOut").asText(),
-                            RabbitMqProperties.DEFAULT_WAIT_FOR_CONFIRMS_TIMEOUT));
+                if ((rabbitmqInstanceObject.get("waitForConfirmsTimeOut") != null)) {
+                    rabbitMqProperties.setWaitForConfirmsTimeOut(Long.parseLong(
+                            rabbitmqInstanceObject.get("waitForConfirmsTimeOut").asText()));
                 }
                 if ((rabbitmqInstanceObject.get("tcpTimeOut") != null)) {
-                    rabbitMqProperties.setTcpTimeOut(Integer.getInteger(rabbitmqInstanceObject.get("tcpTimeOut").asText(),
-                            RabbitMqProperties.DEFAULT_TCP_TIMEOUT));
+                    rabbitMqProperties.setTcpTimeOut(
+                            Integer.parseInt(rabbitmqInstanceObject.get("tcpTimeOut").asText()));
                 }
                 rabbitMqPropertiesMap.put(protocol, rabbitMqProperties);
             }

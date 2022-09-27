@@ -15,7 +15,8 @@ Below is the status codes:
 | 404         | RabbitMQ properties not found | RabbitMQ properties not configured for the protocol <protocol>                      | Is returned if RabbitMQ message broker properties are not found for the protocol used by event.                                                                                                                                                                                                                                                                                |
 | 500         | Internal Server Error         | RabbitMQ is down. Please try later                                                  | Is returned if RabbitMQ is down.                                                                                                                                                                                                                                                                                                                                               |
 |             |                               | Could not prepare Routing key to publish message.                                   | Is returned if could not prepare routing key to publish the eiffel event.                                                                                                                                                                                                                                                                                                      |
-| 503         | Service Unavailable           | Please check previous event and try again later                                     | Is returned if there is a failure in publishing previous event with status code 400, 404 or 500.                                                                                                                                                                                                                                                                               |
+| 503         | Service Unavailable           | Please check previous event and try again later                                     | Is returned if there is a failure in publishing previous event with status code 400, 404 or 500.
+| 504         | Gateway Timeout               | Time out waiting for ACK                                                            | Is returned if event is not confirmed within waitForConfirmsTimeout.                                                                                                                                                                                                                                                               |
 
 ### Status codes explanation
 
@@ -111,6 +112,45 @@ Event is failed to send because of internal server error.
      "status_code": 500,
      "result": "Internal Server Error",
      "message": "RabbitMQ is down. Please try later"
+    }
+]
+```
+When previous Event is failed to send because of Gateway Timeout.
+
+```
+[
+    {
+     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+     "status_code": 500,
+     "result": "Internal Server Error",
+     "message": "Channel was closed for Rabbitmq connection <hostaddress>"
+    }
+]
+```
+
+When message is nack-ed i.e broker could not take care of it for some reason.
+
+```
+[
+    {
+     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+     "status_code": 500,
+     "result": "Internal Server Error",
+     "message": "Message is nacked"
+    }
+]
+```
+
+**504 Gateway Timeout**
+
+Event is not confirmed by RabbitMq within specified waitForConfirmsTimeout.
+
+```
+[
+    {
+     "status_code": 504,
+     "result": "Gateway Timeout",
+     "message": "Time out waiting for ACK"
     }
 ]
 ```
