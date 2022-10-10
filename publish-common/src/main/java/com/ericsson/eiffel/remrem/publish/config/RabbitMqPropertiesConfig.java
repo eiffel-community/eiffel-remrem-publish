@@ -76,15 +76,22 @@ public class RabbitMqPropertiesConfig {
     private static final String PROPERTY_WAIT_FOR_CONFIRMS_TIMEOUT = "waitForConfirmsTimeOut";
 
     /***
-     * This method is used to get the protocol specific RabbitMq properties.
+     * This method is used to get the RabbitMq property value, it will return null if
+     * property was not found.
      *
-     * @return specific RabbitMa property
+     * @return specific RabbitMq property
      */
     String getPropertyAsText(JsonNode node, String property) {
         JsonNode jsonNode = node.get(property);
         return jsonNode != null ? jsonNode.asText() : null;
      }
 
+    /***
+     * This method is used to get the RabbitMq property value, it will return null if
+     * property was not found.
+     *
+     * @return specific RabbitMq property
+     */
     Boolean getPropertyAsBoolean(JsonNode node, String property) {
         JsonNode jsonNode = node.get(property);
         return jsonNode != null ? jsonNode.asBoolean() : null;
@@ -128,7 +135,7 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setHost(getPropertyAsText(rabbitmqInstanceObject, PROPERTY_HOST));
                 rabbitMqProperties.setPort(Integer.parseInt(getPropertyAsText(rabbitmqInstanceObject, PROPERTY_PORT)));
                 String virtualHost = getPropertyAsText(rabbitmqInstanceObject, PROPERTY_VIRTUAL_HOST);
-                if((virtualHost != null) ) {
+                if(virtualHost != null) {
                     rabbitMqProperties.setVirtualHost(virtualHost);
                 }
                 rabbitMqProperties.setUsername(getPropertyAsText(rabbitmqInstanceObject, PROPERTY_USERNAME));
@@ -145,16 +152,16 @@ public class RabbitMqPropertiesConfig {
                 rabbitMqProperties.setCreateExchangeIfNotExisting(getPropertyAsBoolean(rabbitmqInstanceObject, PROPERTY_CREATE_EXCHANGE_IF_NOTEXISTING));
                 rabbitMqProperties.setDomainId(getPropertyAsText(rabbitmqInstanceObject, PROPERTY_DOMAINID));
                 String channelsCount = getPropertyAsText(rabbitmqInstanceObject, PROPERTY_CHANNELS_COUNT);
-                if ((channelsCount != null)) {
+                if (channelsCount != null) {
                     rabbitMqProperties.setChannelsCount(
                             Integer.parseInt(channelsCount));
                 }
                 String waitForConfirmsTimeOut = getPropertyAsText(rabbitmqInstanceObject, PROPERTY_WAIT_FOR_CONFIRMS_TIMEOUT);
-                if ((waitForConfirmsTimeOut != null)) {
+                if (waitForConfirmsTimeOut != null) {
                     rabbitMqProperties.setWaitForConfirmsTimeOut(Long.parseLong(waitForConfirmsTimeOut));
                 }
                 String tcpTimeOut = getPropertyAsText(rabbitmqInstanceObject, PROPERTY_TCP_TIMEOUT);
-                if ((tcpTimeOut != null)) {
+                if (tcpTimeOut != null) {
                     rabbitMqProperties.setTcpTimeOut(
                             Integer.parseInt(tcpTimeOut));
                 }
