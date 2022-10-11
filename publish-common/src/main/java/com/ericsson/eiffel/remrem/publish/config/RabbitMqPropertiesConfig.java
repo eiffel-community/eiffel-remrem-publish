@@ -87,10 +87,9 @@ public class RabbitMqPropertiesConfig {
      }
 
     /***
-     * This method is used to get the RabbitMq property value, it will return null if
-     * property was not found.
+     * This method is used to get the RabbitMq property value.
      *
-     * @return specific RabbitMq property
+     * @return RabbitMq property or null if the property name was not found
      */
     Boolean getPropertyAsBoolean(JsonNode node, String property) {
         JsonNode jsonNode = node.get(property);
@@ -98,9 +97,9 @@ public class RabbitMqPropertiesConfig {
      }
 
     /***
-     * This method is used to give RabbitMq properties based on protocol
-     * 
-     * @return protocol specific RabbitMq properties in map
+     * This method is used to get the RabbitMq property value.
+     *
+     * @return RabbitMq property or null if the property name was not found
      */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
