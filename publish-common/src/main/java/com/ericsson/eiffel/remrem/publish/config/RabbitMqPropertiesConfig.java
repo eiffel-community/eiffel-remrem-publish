@@ -76,10 +76,9 @@ public class RabbitMqPropertiesConfig {
     private static final String PROPERTY_WAIT_FOR_CONFIRMS_TIMEOUT = "waitForConfirmsTimeOut";
 
     /***
-     * This method is used to get the RabbitMq property value, it will return null if
-     * property was not found.
+     * This method is used to get the RabbitMq property value.
      *
-     * @return specific RabbitMq property
+     * @return RabbitMq property or null if the property name was not found
      */
     String getPropertyAsText(JsonNode node, String property) {
         JsonNode jsonNode = node.get(property);
@@ -97,9 +96,9 @@ public class RabbitMqPropertiesConfig {
      }
 
     /***
-     * This method is used to get the RabbitMq property value.
+     * This method is used to give RabbitMq properties based on protocol
      *
-     * @return RabbitMq property or null if the property name was not found
+     * @return protocol specific RabbitMq properties in map
      */
     public Map<String, RabbitMqProperties> getRabbitMqProperties() {
         Map<String, Object> map = new HashMap<String, Object>();
