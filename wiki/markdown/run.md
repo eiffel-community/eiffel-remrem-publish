@@ -12,7 +12,7 @@ RemRem-Publish application can be executed with Maven command or with the maven 
 1. Change to service directory: 
 `cd publish-service`
 
-2. Execute maven command to build and run RemRem-Generate:
+2. Execute maven command to build and run RemRem-Publish:
 `mvn spring-boot:run`
 
 
@@ -37,7 +37,7 @@ Provide customized RemRem-Publish application.properties configuration via the s
 `-Dspring.config.location=/path/to/application.properties`
 
 
-## Override RemRem-Generate Eiffel Protocol Version
+## Override RemRem-Publish Eiffel Protocol Version
 
 Eiffel-RemRem Protocol versions is developed and released by Github project:
 https://github.com/eiffel-community/eiffel-remrem-semantics
