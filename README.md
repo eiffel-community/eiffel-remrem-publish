@@ -46,6 +46,7 @@ Visit [Eiffel Community](https://eiffel-community.github.io) to get started and 
 2. [**Installation**](wiki/markdown/installation.md)
 
 3. [**Running RemRem-Publish service**](wiki/markdown/running-remrem-publish.md)
+    - [**Run Application**](wiki/markdown/run.md)
     - [**Run in Docker**](wiki/markdown/docker.md)
     - [**Configuration**](wiki/markdown/configuration.md)
     
