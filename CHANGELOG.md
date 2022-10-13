@@ -1,5 +1,6 @@
 ## 2.0.26
 - Added code changes so that REMReM Publish should not die if RabbitMQ is unavailable when starting up.
+- Updated documentation and added code changes related to channels count and timeout parameters.
 
 ## 2.0.25
 - Implemented "publisher confirms " in REMReM so that this  can be used to get confirmation about the messages sent to MB.
