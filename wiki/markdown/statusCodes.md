@@ -11,12 +11,12 @@ Below is the status codes:
 |-------------|-------------------------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 200         | SUCCESS                       | Event sent successfully                                                             | Is returned if the request is completed successfully.                                                                                                                                                                                                                                                                                                                         |
 | 207         | Multi-Status                  |                                                                                     | Is returned if we have a mix of internal status codes.  Eg: publish of few events was successful and few events was a failure.  In case of multiple events in the body JSON, if a event is given internal status code of 400 or 500 rest events will not be published and will be given a internal status code of 503, which will result in overall HTTP response code of 207. |
-| 400         | Bad Request                   | Invalid event content, client need to fix problem in event before submitting again. | Is returned if the request body JSON is malformed. Eg: unable to parse the body JSON.                                                                                                                                                                                                                                                                                         |
-| 404         | RabbitMQ properties not found | RabbitMQ properties not configured for the protocol <protocol>                      | Is returned if RabbitMQ message broker properties are not found for the protocol used by event.                                                                                                                                                                                                                                                                               |
-| 415         | Unsupported Media Type        | Content type '<content-type>' not supported                                         | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.                                                                                                                                                                                                                                                                                                                                                                             |
-| 500         | Internal Server Error         | RabbitMQ is down. Please try later                                                  | Is returned if RabbitMQ is down.                                                                                                                                                                                                                                                                                                                                              |
-|             |                               | Could not prepare Routing key to publish message.                                   | Is returned if could not prepare routing key to publish the eiffel event.                                                                                                                                                                                                                                                                                                     |
-| 503         | Service Unavailable           | Please check previous event and try again later                                     | Is returned if there is a failure in publishing previous event with status code 400, 404 or 500.                                                                                                                                                                                                                                                                              |
+| 400         | Bad Request                   | Invalid event content, client need to fix problem in event before submitting again. | Is returned if the request body JSON is malformed. Eg: unable to parse the body JSON.                                                                                                                                                                                                                                                                                          |
+| 404         | RabbitMQ properties not found | RabbitMQ properties not configured for the protocol <protocol>                      | Is returned if RabbitMQ message broker properties are not found for the protocol used by event.                                                                                                                                                                                                                                                                                |
+| 500         | Internal Server Error         | RabbitMQ is down. Please try later                                                  | Is returned if RabbitMQ is down.                                                                                                                                                                                                                                                                                                                                               |
+|             |                               | Could not prepare Routing key to publish message.                                   | Is returned if could not prepare routing key to publish the eiffel event.                                                                                                                                                                                                                                                                                                      |
+| 503         | Service Unavailable           | Please check previous event and try again later                                     | Is returned if there is a failure in publishing previous event with status code 400, 404 or 500.
+| 504         | Gateway Timeout               | Time out waiting for ACK                                                            | Is returned if event is not confirmed within waitForConfirmsTimeout.                                                                                                                                                                                                                                                               |
 
 ### Status codes explanation
 
@@ -126,6 +126,45 @@ Event is failed to send because of internal server error.
      "status_code": 500,
      "result": "Internal Server Error",
      "message": "RabbitMQ is down. Please try later"
+    }
+]
+```
+When previous Event is failed to send because of Gateway Timeout.
+
+```
+[
+    {
+     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+     "status_code": 500,
+     "result": "Internal Server Error",
+     "message": "Channel was closed for Rabbitmq connection <hostaddress>"
+    }
+]
+```
+
+When message is nack-ed i.e broker could not take care of it for some reason.
+
+```
+[
+    {
+     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
+     "status_code": 500,
+     "result": "Internal Server Error",
+     "message": "Message is nacked"
+    }
+]
+```
+
+**504 Gateway Timeout**
+
+Event is not confirmed by RabbitMq within specified waitForConfirmsTimeout.
+
+```
+[
+    {
+     "status_code": 504,
+     "result": "Gateway Timeout",
+     "message": "Time out waiting for ACK"
     }
 ]
 ```
