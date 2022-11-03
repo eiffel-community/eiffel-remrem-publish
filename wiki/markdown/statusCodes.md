@@ -3,20 +3,21 @@ The response generated will have internal status codes for each and every event 
 
 Status codes are generated according to the below tables.
 
-## Internal status codes
+## Status codes
 
-Below is the status codes:
+Status codes returned by `/versions` and `/producer/msg` operations. 
+Note, that status codes of operation `/generateAndPublish` are listed [below](#status-codes-related-to-failures-in-eiffel-remrem-generate-service).
 
 | Status code | Result                        | Message                                                                             | Comment                                                                                                                                                                                                                                                                                                                                                                       |
 |-------------|-------------------------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 200         | SUCCESS                       | Event sent successfully                                                             | Is returned if the request is completed successfully.                                                                                                                                                                                                                                                                                                                         |
 | 207         | Multi-Status                  |                                                                                     | Is returned if we have a mix of internal status codes.  Eg: publish of few events was successful and few events was a failure.  In case of multiple events in the body JSON, if a event is given internal status code of 400 or 500 rest events will not be published and will be given a internal status code of 503, which will result in overall HTTP response code of 207. |
-| 400         | Bad Request                   | Invalid event content, client need to fix problem in event before submitting again. | Is returned if the request body JSON is malformed. Eg: unable to parse the body JSON.                                                                                                                                                                                                                                                                                          |
-| 404         | RabbitMQ properties not found | RabbitMQ properties not configured for the protocol <protocol>                      | Is returned if RabbitMQ message broker properties are not found for the protocol used by event.                                                                                                                                                                                                                                                                                |
-| 500         | Internal Server Error         | RabbitMQ is down. Please try later                                                  | Is returned if RabbitMQ is down.                                                                                                                                                                                                                                                                                                                                               |
-|             |                               | Could not prepare Routing key to publish message.                                   | Is returned if could not prepare routing key to publish the eiffel event.                                                                                                                                                                                                                                                                                                      |
-| 503         | Service Unavailable           | Please check previous event and try again later                                     | Is returned if there is a failure in publishing previous event with status code 400, 404 or 500.
-| 504         | Gateway Timeout               | Time out waiting for ACK                                                            | Is returned if event is not confirmed within waitForConfirmsTimeout.                                                                                                                                                                                                                                                               |
+| 400         | Bad Request                   | Invalid event content, client need to fix problem in event before submitting again. | Is returned if the request body JSON is malformed. Eg: unable to parse the body JSON.                                                                                                                                                                                                                                                                                         |
+| 404         | RabbitMQ properties not found | RabbitMQ properties not configured for the protocol <protocol>                      | Is returned if RabbitMQ message broker properties are not found for the protocol used by event.                                                                                                                                                                                                                                                                               |
+| 415         | Unsupported Media Type        | Content type `<content-type>` not supported                                         | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.                                                                                                                                                                                                                                                                                                                                                                             |
+| 500         | Internal Server Error         | RabbitMQ is down. Please try later                                                  | Is returned if RabbitMQ is down.                                                                                                                                                                                                                                                                                                                                              |
+|             |                               | Could not prepare Routing key to publish message.                                   | Is returned if could not prepare routing key to publish the eiffel event.                                                                                                                                                                                                                                                                                                     |
+| 503         | Service Unavailable           | Please check previous event and try again later                                     | Is returned if there is a failure in publishing previous event with status code 400, 404 or 500.                                                                                                                                                                                                                                                                              |
 
 ### Status codes explanation
 
@@ -129,45 +130,6 @@ Event is failed to send because of internal server error.
     }
 ]
 ```
-When previous Event is failed to send because of Gateway Timeout.
-
-```
-[
-    {
-     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-     "status_code": 500,
-     "result": "Internal Server Error",
-     "message": "Channel was closed for Rabbitmq connection <hostaddress>"
-    }
-]
-```
-
-When message is nack-ed i.e broker could not take care of it for some reason.
-
-```
-[
-    {
-     "id": "9cdd0f68-df85-44b0-88bd-fc4163ac90a0",
-     "status_code": 500,
-     "result": "Internal Server Error",
-     "message": "Message is nacked"
-    }
-]
-```
-
-**504 Gateway Timeout**
-
-Event is not confirmed by RabbitMq within specified waitForConfirmsTimeout.
-
-```
-[
-    {
-     "status_code": 504,
-     "result": "Gateway Timeout",
-     "message": "Time out waiting for ACK"
-    }
-]
-```
 
 **503 Service Unavailable**
 
@@ -223,6 +185,7 @@ These response can be generated only when `/generateAndPublish` endpoint is used
 | 400         | Bad Request           | Malformed JSON or incorrect type of event                                   | Is returned if the request body JSON is malformed or entered incorrect type of event.                                  |
 | 401         | Unauthorized          | Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled | Is returned if LDAP for REMReM Generate Service is enabled and REMReM Generate Publish have not access to it.          |
 | 406         | Not Acceptable        | No event id found with ERLookup properties                                  | Is returned if no event id fetched from configured event repository in REMReM generate.                                |
+| 415         | Unsupported Media Type| Content type `<content-type>` not supported                                         | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.                                                                                                                                                                                                                                                                                                                                                                             |
 | 417         | Expectation Failed    | Multiple event ids found with ERLookup properties                           | Is returned if multiple event ids fetched from configured event repository in REMReM generate.                         |
 | 422         | Unprocessable Entity  | Link specific lookup options could not be fulfilled                         | Is returned if Link specific lookup options could not be matched with failIfMultipleFound and failIfNoneFound.         |
 | 500         | Internal Server Error | Internal server error in Generate Service                                   | Is returned if REMReM Generate Service is not started or in case of others internal errors in REMReM Generate Service. |
@@ -272,7 +235,23 @@ The Lookup properties with no event id fetched from configured event repository 
 ]
 ```
 
+**415 Unsupported Media Type**
+
+Server refuses to accept the request because the payload format is in an unsupported format.
+
+```
+{
+  "timestamp": "Sep 9, 2022 2:56:07 PM",
+  "status": 415,
+  "error": "Unsupported Media Type",
+  "message": "Content type \u0027unsupported;charset\u003dUTF-8\u0027 not supported",
+  "path": "/publish/producer/msg"
+}
+```
+
+
 **417 Expectation Failed**
+
 The Lookup properties with multiple event ids fetched from configured event repository in generate , REMReM fails to generate.
 
 ```
@@ -286,6 +265,7 @@ The Lookup properties with multiple event ids fetched from configured event repo
 ```
 
 **422 Unprocessable Entity**
+
 The link specific lookup options could not be matched with failIfMultipleFound and failIfNoneFound in generate , REMReM fails to generate.
 
 ```
