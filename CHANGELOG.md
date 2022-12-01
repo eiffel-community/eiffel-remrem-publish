@@ -1,3 +1,6 @@
+##2.0.27
+- Added the code changes to override the AMQP.BasicProprties.
+
 ## 2.0.26
 - Added code changes so that REMReM Publish should not die if RabbitMQ is unavailable when starting up.
 - Updated documentation and added code changes related to channels count and timeout parameters.
