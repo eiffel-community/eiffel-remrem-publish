@@ -61,11 +61,19 @@ public class RabbitMqProperties {
     public static final Integer DEFAULT_CHANNEL_COUNT = 1;
     public static final String CONTENT_TYPE = "application/json";
     public static final String ENCODING_TYPE = "UTF-8";
-
+    public static final BasicProperties PERSISTENT_BASIC_APPLICAION_JSON;
     private Connection rabbitConnection;
     private String protocol;
 
     private List<Channel> rabbitChannels;
+
+    static {
+        PERSISTENT_BASIC_APPLICAION_JSON =
+                MessageProperties.PERSISTENT_BASIC.builder()
+                        .contentType(CONTENT_TYPE)
+                        .contentEncoding(ENCODING_TYPE)
+                        .build();
+    }
 
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
@@ -494,13 +502,8 @@ public class RabbitMqProperties {
                 }
             });
             BasicProperties msgProps = MessageProperties.BASIC;
-            final BasicProperties PERSISTENT_BASIC_APPLICAION =
-                    MessageProperties.PERSISTENT_BASIC.builder()
-                            .contentType(CONTENT_TYPE)
-                            .contentEncoding(ENCODING_TYPE)
-                            .build();
             if (usePersitance)
-                msgProps = PERSISTENT_BASIC_APPLICAION;
+                msgProps = PERSISTENT_BASIC_APPLICAION_JSON;
         try {
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
             log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'",
