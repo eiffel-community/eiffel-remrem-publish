@@ -33,7 +33,7 @@ public class CliOptions {
 
     static private Options options=null;
     static private CommandLine commandLine;
-
+    private static final String SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH = "semanticsRoutingkeyTypeOverrideFilepath";
     //Used for testing purposes
     private static ArrayList<Integer> testErrorCodes = new ArrayList<>();
 
@@ -83,7 +83,7 @@ public class CliOptions {
         options.addOption("v", "lists the versions of publish and all loaded protocols");
         options.addOption("tag", "tag", true, "tag to be used in routing key");
         options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
-        options.addOption("srkt", "semanticsRoutingkeyTypeOverrideFilepath", false, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
+        options.addOption("srkt", SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH, false, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
 
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
@@ -239,8 +239,8 @@ public class CliOptions {
             System.setProperty(key, tls_ver);
         }
 
-        if (commandLine.hasOption("semanticsRoutingkeyTypeOverrideFilepath")) {
-            String semanticsRoutingkeyTypeOverrideFilepath =commandLine.getOptionValue("semanticsRoutingkeyTypeOverrideFilepath");
+        if (commandLine.hasOption(SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH)) {
+            String semanticsRoutingkeyTypeOverrideFilepath =commandLine.getOptionValue(SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
             String key = PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH;
             System.setProperty(key, semanticsRoutingkeyTypeOverrideFilepath);
         }

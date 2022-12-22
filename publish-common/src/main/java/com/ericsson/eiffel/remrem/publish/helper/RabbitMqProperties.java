@@ -300,7 +300,7 @@ public class RabbitMqProperties {
         }
 
         if (protocol.equalsIgnoreCase("eiffelsemantics") && routingkeyTypeOverrideFilePath == null) {
-            routingkeyTypeOverrideFilePath = getValuesFromSystemProperties("semanticsRoutingkeyTypeOverrideFilepath");
+            routingkeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
         }
     }
     
