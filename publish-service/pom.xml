@@ -162,6 +162,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.5</version>
                 <configuration>
                     <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
                     <skip>false</skip>
