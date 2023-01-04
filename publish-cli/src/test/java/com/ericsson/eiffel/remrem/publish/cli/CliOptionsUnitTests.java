@@ -19,9 +19,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.cli.CliOptions;;
@@ -30,7 +30,7 @@ public class CliOptionsUnitTests {
     private PrintStream console;
     private ByteArrayOutputStream bytes;
 
-    @Before public void setUp() throws Exception {
+    @BeforeEach public void setUp() throws Exception {
         String key = PropertiesConfig.TEST_MODE;
         System.setProperty(key, "true");
         //Switch std out to another stream
@@ -39,7 +39,7 @@ public class CliOptionsUnitTests {
         System.setOut(new PrintStream(bytes));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         System.clearProperty(PropertiesConfig.TEST_MODE);
         System.setOut(console);

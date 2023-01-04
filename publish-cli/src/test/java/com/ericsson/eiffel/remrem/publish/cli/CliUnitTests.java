@@ -14,28 +14,27 @@
 */
 package com.ericsson.eiffel.remrem.publish.cli;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.io.File;
 import java.util.List;
 
 import org.mockito.MockitoAnnotations;
 
-import com.ericsson.eiffel.remrem.publish.cli.CLIExitCodes;
-import com.ericsson.eiffel.remrem.publish.cli.CLI;
-import com.ericsson.eiffel.remrem.publish.cli.CliOptions;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+//import static org.powermock.api.mockito.PowerMockito;
+
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -73,7 +72,7 @@ public class CliUnitTests {
     @InjectMocks
     private CLI cli;
 
-    @Before public void setUp() throws Exception {
+    @BeforeEach public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         String key = PropertiesConfig.TEST_MODE;
         System.setProperty(key, "true");
@@ -84,7 +83,7 @@ public class CliUnitTests {
 
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         System.clearProperty(PropertiesConfig.TEST_MODE);
         System.setOut(console);
