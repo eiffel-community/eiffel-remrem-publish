@@ -23,6 +23,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.7.5</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -38,6 +39,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>2.7.5</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -49,6 +51,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
+            <version>2.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -64,6 +67,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+            <version>2.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -95,6 +99,7 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
@@ -134,7 +139,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>${springboot.version}</version>
+            <version>2.7.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -145,7 +150,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <version>${springboot.version}</version>
+            <version>2.7.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -153,14 +158,15 @@
         <artifactId>spring-beans</artifactId>
         <version>5.3.23</version>
         </dependency>
-        <!-- <dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency> -->
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>2.7.5</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
