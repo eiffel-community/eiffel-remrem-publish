@@ -17,16 +17,17 @@ package com.ericsson.eiffel.remrem.publish.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
 public class EventTemplateHandlerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventTemplateHandlerTest.class);

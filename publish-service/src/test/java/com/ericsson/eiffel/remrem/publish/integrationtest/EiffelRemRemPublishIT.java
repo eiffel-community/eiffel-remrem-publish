@@ -15,7 +15,7 @@
 package com.ericsson.eiffel.remrem.publish.integrationtest;
 
 import static com.jayway.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileReader;
@@ -24,16 +24,16 @@ import java.util.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
@@ -50,7 +50,7 @@ import com.google.gson.JsonParser;
 import com.jayway.restassured.RestAssured;
 
 @ActiveProfiles("integration-test")
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 public class EiffelRemRemPublishIT {
     @Value("${local.server.port}")
@@ -66,7 +66,7 @@ public class EiffelRemRemPublishIT {
     @Autowired
     RMQHelper rmqHelper;
 
-    @BeforeEach
+    @Before
     public void setUp() throws RemRemPublishException {
         RestAssured.port = port;
         rmqHelper.rabbitMqPropertiesInit(protocol);

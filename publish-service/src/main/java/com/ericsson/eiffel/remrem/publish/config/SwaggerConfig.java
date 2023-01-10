@@ -65,12 +65,6 @@ public class SwaggerConfig {
                 return new UiConfiguration(null, "list", "alpha", "schema", Constants.DEFAULT_SUBMIT_METHODS, false, true,
                                 null);
         }
-//        public UiConfiguration uiConfig() {
-//            return new UiConfiguration(false, false, null,
-//                    null, ModelRendering.of("schema"), false, DocExpansion.LIST, null, null,
-//                    OperationsSorter.ALPHA, false, false, null,
-//                    Constants.DEFAULT_SUBMIT_METHODS, null, null);
-//        }
 
         @Bean
         public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,

@@ -14,14 +14,15 @@
 */
 package com.ericsson.eiffel.remrem.publish.cli;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import java.util.ArrayList;
 import java.io.File;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-//import static org.powermock.api.mockito.PowerMockito;
 
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -72,7 +72,7 @@ public class CliUnitTests {
     @InjectMocks
     private CLI cli;
 
-    @BeforeEach public void setUp() throws Exception {
+    @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         String key = PropertiesConfig.TEST_MODE;
         System.setProperty(key, "true");
@@ -83,7 +83,7 @@ public class CliUnitTests {
 
     }
 
-    @AfterEach
+    @After
     public void tearDown() {
         System.clearProperty(PropertiesConfig.TEST_MODE);
         System.setOut(console);

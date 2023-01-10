@@ -1,25 +1,21 @@
-/*
-    Copyright 2018 Ericsson AB.
-    For a full list of individual contributors, please see the commit history.
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+/*  Copyright 2018 Ericsson AB. For a full list of individual contributors, please see the commit
+  history. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+  file except in compliance with the License. You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in
+  writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific
+  language governing permissions and limitations under the License.*/
+
 package com.ericsson.eiffel.remrem.publish.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import static org.junit.jupiter.api.Assertions.fail;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,13 +27,14 @@ import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
@@ -49,28 +46,32 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+@RunWith(SpringRunner.class)
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MessageServiceRMQImplUnitTest {
-    
+
     @Autowired
     private MsgService msgServices[];
 
-    @Autowired 
+    @Autowired
+
     @Qualifier("messageServiceRMQImpl")
     MessageService messageService;
 
     @Autowired
-    @Qualifier("rmqHelper") 
+
+    @Qualifier("rmqHelper")
     RMQHelper rmqHelper;
     RabbitMqProperties rabbitmqProtocolProperties;
     private static final String protocol = "eiffelsemantics";
-    private static final String host= "127.0.0.1";
-    private static final String exchangeName= "amq.direct";
-    private static final String domainId= "eiffelxxx";
+    private static final String host = "127.0.0.1";
+    private static final String exchangeName = "amq.direct";
+    private static final String domainId = "eiffelxxx";
     private boolean createExchangeIfNotExisting = true;
 
-    @PostConstruct public void setUp() throws Exception {
+    @PostConstruct
+    public void setUp() throws Exception {
         rmqHelper.getRabbitMqPropertiesMap().put(protocol, new RabbitMqProperties());
         rabbitmqProtocolProperties = rmqHelper.getRabbitMqPropertiesMap().get(protocol);
         rabbitmqProtocolProperties.setProtocol(protocol);
@@ -81,11 +82,11 @@ public class MessageServiceRMQImplUnitTest {
     }
 
     /**
-     * This test case is used to check and create an exchange based on
-     * createExchangeIfNotExisting value If createExchangeIfNotExisting is true and
-     * exchange is not available then exchange is created. If it fails to create an
-     * exchange it will throw an Exception.
+     * This test case is used to check and create an exchange based on createExchangeIfNotExisting
+     * value If createExchangeIfNotExisting is true and exchange is not available then exchange is
+     * created. If it fails to create an exchange it will throw an Exception.
      */
+
     @Test
     public void testCreateExchangeIfNotExistingEnable() {
         boolean exceptionOccured = false;
@@ -99,72 +100,83 @@ public class MessageServiceRMQImplUnitTest {
             rabbitmqProtocolProperties.setExchangeName(exchangeName);
             rabbitmqProtocolProperties.init();
         }
-        assertFalse(exceptionOccured, "An exception occured while creating a exchange");
+        assertFalse("An exception occured while creating a exchange", exceptionOccured);
     }
 
     /**
-     * This test case is used to check whether it will throw
-     * RemRemPublishException when CreateExchangeIfNotExisting is false and
-     * exchange is not available.
-     */
-    /*
-     * @Test(RemRemPublishException.class) public void testCreateExchangeIfNotExistingDisable()
-     * throws RemRemPublishException { rabbitmqProtocolProperties.setExchangeName("test76888");
-     * rabbitmqProtocolProperties.setCreateExchangeIfNotExisting(false);
-     * rabbitmqProtocolProperties.checkAndCreateExchangeIfNeeded();
-     * 
-     * rabbitmqProtocolProperties.setExchangeName(exchangeName); rabbitmqProtocolProperties.init();
-     * 
-     * }
+     * This test case is used to check whether it will throw RemRemPublishException when
+     * CreateExchangeIfNotExisting is false and exchange is not available.
      */
 
-    @Test public void sendNormal() throws Exception {
+    
+      @Test(expected  = RemRemPublishException.class) 
+      public void testCreateExchangeIfNotExistingDisable()
+      throws RemRemPublishException { rabbitmqProtocolProperties.setExchangeName("test76888");
+      rabbitmqProtocolProperties.setCreateExchangeIfNotExisting(false);
+      rabbitmqProtocolProperties.checkAndCreateExchangeIfNeeded();
+      
+      rabbitmqProtocolProperties.setExchangeName(exchangeName); rabbitmqProtocolProperties.init();
+      
+      }
+     
+
+    @Test
+    public void sendNormal() throws Exception {
         Map<String, String> map = new HashMap<String, String>();
-        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
+        MsgService msgService = PublishUtils.getMessageService(protocol,
+                msgServices);
         map.put("test", "test");
         messageService.send(map, map, msgService);
     }
 
-    @Test public void testSingleSuccessfulEvent() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
+    @Test
+    public void testSingleSuccessfulEvent() throws Exception {
+        String body = FileUtils.readFileToString(
+                new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test", null, null);
-        String Expected="[{\"id\":\"0238a8bd-9bdf-4161-aeff-b00eccf92983\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
+        String Expected = "[{\"id\":\"0238a8bd-9bdf-4161-aeff-b00eccf92983\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         for (PublishResultItem results : result.getEvents()) {
             jarray.add(results.toJsonObject());
         }
         assertEquals(Expected, jarray.toString());
     }
 
-    @Test public void testSingleFailedEvent() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/test/resources/Invalid_EiffelActivityFinishedEvent.json"));
+    @Test
+    public void testSingleFailedEvent() throws Exception {
+        String body = FileUtils.readFileToString(
+                new File("src/test/resources/Invalid_EiffelActivityFinishedEvent.json"));
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         JsonArray jarray = new JsonArray();
         SendResult result = messageService.send(body, msgService, "test", null, null);
-        String Expected="[{\"id\":null,\"status_code\":400,\"result\":\"Bad Request\",\"message\":\"Invalid event content, client need to fix problem in event before submitting again\"}]";
+        String Expected = "[{\"id\":null,\"status_code\":400,\"result\":\"Bad Request\",\"message\":\"Invalid event content, client need to fix problem in event before submitting again\"}]";
         for (PublishResultItem results : result.getEvents()) {
             jarray.add(results.toJsonObject());
         }
         assertEquals(Expected, jarray.toString());
     }
 
-    @Test public void testMultipleFailedEvents() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/test/resources/MultipleInvalidEvents.json"));
+    @Test
+    public void testMultipleFailedEvents() throws Exception {
+        String body = FileUtils.readFileToString(
+                new File("src/test/resources/MultipleInvalidEvents.json"));
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test", null, null);
         assertNotNull(result);
-        String Expected="[{\"id\":null,\"status_code\":400,\"result\":\"Bad Request\",\"message\":\"Invalid event content, client need to fix problem in event before submitting again\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"}]";
+        String Expected = "[{\"id\":null,\"status_code\":400,\"result\":\"Bad Request\",\"message\":\"Invalid event content, client need to fix problem in event before submitting again\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"},{\"id\":null,\"status_code\":503,\"result\":\"Service Unavailable\",\"message\":\"Please check previous event and try again later\"}]";
         for (PublishResultItem results : result.getEvents()) {
             jarray.add(results.toJsonObject());
         }
         assertEquals(Expected, jarray.toString());
     }
 
-    @Test public void testMultipleSuccessfulEvents() throws Exception {
-        String body = FileUtils.readFileToString(new File("src/test/resources/MultipleValidEvents.json"));
-        String Expected="[{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a1\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a2\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a3\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
+    @Test
+    public void testMultipleSuccessfulEvents() throws Exception {
+        String body = FileUtils.readFileToString(
+                new File("src/test/resources/MultipleValidEvents.json"));
+        String Expected = "[{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a1\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a2\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"},{\"id\":\"9cdd0f68-df85-44b0-88bd-fc4163ac90a3\",\"status_code\":200,\"result\":\"SUCCESS\",\"message\":\"Event sent successfully\"}]";
         JsonArray jarray = new JsonArray();
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         SendResult result = messageService.send(body, msgService, "test", null, null);
@@ -172,39 +184,38 @@ public class MessageServiceRMQImplUnitTest {
         for (PublishResultItem results : result.getEvents()) {
             jarray.add(results.toJsonObject());
         }
-        assertEquals(Expected, jarray.toString());       
+        assertEquals(Expected, jarray.toString());
     }
 
-    @Test public void testPublisherConfirmsTimeoutException() throws Exception {
+    @Test
+    public void testPublisherConfirmsTimeoutException() throws Exception {
         rabbitmqProtocolProperties.setWaitForConfirmsTimeOut(1L);
         rabbitmqProtocolProperties.init();
         JsonArray jarray = new JsonArray();
-        String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
+        String body = FileUtils.readFileToString(
+                new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
         while (!(jarray.toString().contains("Time out waiting for ACK"))) {
             SendResult result = messageService.send(body, msgService, "test", null, null);
             assertNotNull(result);
             for (PublishResultItem results : result.getEvents()) {
-               jarray.add(results.toJsonObject());
+                jarray.add(results.toJsonObject());
             }
         }
         assertTrue(jarray.toString().contains("Time out waiting for ACK"));
     }
 
-    @Test
-    public void testRabbitMQConnection() throws NackException, TimeoutException, RemRemPublishException {
-        try {
-            if(rabbitmqProtocolProperties != null) {
-                rabbitmqProtocolProperties.createRabbitMqConnection();
-                MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
-                rmqHelper.send("eiffelxxx", "Test message", msgService);
-                assertTrue(rabbitmqProtocolProperties.getRabbitConnection().isOpen());
+    @Test public void testRabbitMQConnection() throws NackException, TimeoutException,
+        RemRemPublishException { try { if(rabbitmqProtocolProperties != null) {
+        rabbitmqProtocolProperties.createRabbitMqConnection(); MsgService msgService =
+        PublishUtils.getMessageService(protocol, msgServices); rmqHelper.send("eiffelxxx",
+        "Test message", msgService);
+        assertTrue(rabbitmqProtocolProperties.getRabbitConnection().isOpen()); } } 
+        catch
+        (IOException e) { // TODO Auto-generated catch block fail(e.getMessage().toString());
             }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            fail(e.getMessage().toString());
         }
-    }
+        
 
     @Test
     public void testRoutingKey() throws Exception {
@@ -214,8 +225,9 @@ public class MessageServiceRMQImplUnitTest {
             File file = new File("src/test/resources/EiffelActivityFinishedEvent.json");
             JsonParser parser = new JsonParser();
             JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
-            routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001", null, null);
-            if(routingKey != null) {
+            routingKey = PublishUtils.getRoutingKey(msgService,
+                    json.getAsJsonObject(), rmqHelper, "fem001", null, null);
+            if (routingKey != null) {
                 assertEquals("eiffel.activity.finished.notag.eiffeltest.fem001", routingKey);
             }
         }
