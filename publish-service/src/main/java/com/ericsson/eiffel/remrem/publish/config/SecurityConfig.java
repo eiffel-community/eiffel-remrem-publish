@@ -82,7 +82,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.ldapAuthentication().userSearchFilter(userSearchFilter).contextSource(ldapContextSource());
     }
 
-    @Bean
     public BaseLdapPathContextSource ldapContextSource() {
         LdapContextSource ldap = new LdapContextSource();
         ldap.setUrl(ldapUrl);
@@ -92,6 +91,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         HashMap<String, Object> environment = new HashMap<>();
         environment.put("com.sun.jndi.ldap.connect.timeout", Integer.toString(getTimeOut()));
         ldap.setBaseEnvironmentProperties(environment);
+        ldap.afterPropertiesSet();
         return ldap;
     }
 
