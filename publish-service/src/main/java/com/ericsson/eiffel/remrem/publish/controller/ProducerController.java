@@ -139,13 +139,10 @@ public class ProducerController {
      */
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    @RequestMapping(value = "/generateAndPublish", method = RequestMethod.POST)
     @ApiOperation(value = "To generate and publish eiffel event to message bus", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Event sent successfully"),
-            @ApiResponse(code = 400, message = "Invalid event content"),
-            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
-            @ApiResponse(code = 500, message = "Internal server error"),
             @ApiResponse(code = 503, message = "Message protocol is invalid") })
-    @RequestMapping(value = "/generateAndPublish", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity generateAndPublish(@ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
                                              @ApiParam(value = "message type", required = true) @RequestParam("msgType") final String msgType,

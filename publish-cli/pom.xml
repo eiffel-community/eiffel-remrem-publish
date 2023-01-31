@@ -19,6 +19,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.7.5</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -38,11 +39,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>2.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
+            <version>2.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -58,11 +61,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+            <version>2.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
+            <version>5.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -112,18 +117,22 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>2.7.5</version>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.junit.jupiter</groupId>
+            		<artifactId>junit-jupiter</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		<groupId>org.mockito</groupId>
+            		<artifactId>mockito-junit-jupiter</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>${powermock.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -132,6 +141,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.5</version>
                 <configuration>
                     <mainClass>com.ericsson.eiffel.remrem.publish.cli.CLI</mainClass>
                     <skip>false</skip>
@@ -152,6 +162,8 @@
                     <includes>
                         <include>**/*.class</include>
                     </includes>
+                    <!-- Allow JUnit to access the test classes -->
+                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>

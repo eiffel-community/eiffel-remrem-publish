@@ -16,6 +16,7 @@ package com.ericsson.eiffel.remrem.publish;
 
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -35,7 +36,7 @@ public class App extends SpringBootServletInitializer {
         application.addInitializers(new SpringLoggingInitializer());
         application.setBannerMode(Banner.Mode.OFF);
         application.setLogStartupInfo(false);
-        application.setWebEnvironment(true);    
+        application.setWebApplicationType(WebApplicationType.SERVLET); 
         ApplicationContext ctx = application.run(args); 
     }
 }
