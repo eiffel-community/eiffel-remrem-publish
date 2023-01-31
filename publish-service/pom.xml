@@ -23,7 +23,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.7.5</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -39,7 +38,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>2.7.5</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -51,7 +49,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>2.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -67,13 +64,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>2.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
-            <version>5.7.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -131,7 +126,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>2.7.5</version>
+            <version>${springboot.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -142,7 +137,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <version>2.7.5</version>
+            <version>${springboot.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -159,7 +154,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>2.7.5</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -178,7 +172,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.7.5</version>
+                <version>${springboot.version}</version>
                 <configuration>
                     <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
                     <skip>false</skip>
