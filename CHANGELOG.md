@@ -1,5 +1,11 @@
-##2.0.27
+##2.0.28
 - Added the code changes to override the AMQP.BasicProprties.
+
+## 2.0.27
+- Degraded the spring-boot-maven-plugin version to 2.7.5
+- Updated the eiffel-remrem-parent version to 2.0.9
+- Updated the eiffel-remem-semantics version to 2.2.4
+- Uplift FasterXML Jackson databind to 2.14.1
 
 ## 2.0.26
 - Added code changes so that REMReM Publish should not die if RabbitMQ is unavailable when starting up.
