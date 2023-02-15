@@ -61,7 +61,7 @@ public class RabbitMqProperties {
     public static final Integer DEFAULT_CHANNEL_COUNT = 1;
     public static final String CONTENT_TYPE = "application/json";
     public static final String ENCODING_TYPE = "UTF-8";
-    public static final BasicProperties PERSISTENT_BASIC_APPLICAION_JSON;
+    public static final BasicProperties PERSISTENT_BASIC_APPLICATION_JSON;
 
     private Connection rabbitConnection;
     private String protocol;
