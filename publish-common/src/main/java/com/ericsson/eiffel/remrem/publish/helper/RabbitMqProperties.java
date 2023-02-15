@@ -501,7 +501,7 @@ public class RabbitMqProperties {
                     }
                 }
             });
-            BasicProperties msgProps = usePersitance ? PERSISTENT_BASIC_APPLICAION_JSON
+            BasicProperties msgProps = usePersitance ? PERSISTENT_BASIC_APPLICATION_JSON
                     : MessageProperties.BASIC;
 
         try {
