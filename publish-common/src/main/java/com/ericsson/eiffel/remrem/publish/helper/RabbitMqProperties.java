@@ -71,7 +71,7 @@ public class RabbitMqProperties {
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
     static {
-        PERSISTENT_BASIC_APPLICAION_JSON =
+        PERSISTENT_BASIC_APPLICATION_JSON =
                 MessageProperties.PERSISTENT_BASIC.builder()
                         .contentType(CONTENT_TYPE)
                         .contentEncoding(ENCODING_TYPE)
