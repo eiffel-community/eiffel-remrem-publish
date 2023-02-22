@@ -59,6 +59,9 @@ public class RabbitMqProperties {
     private Long waitForConfirmsTimeOut;
     public static final Long DEFAULT_WAIT_FOR_CONFIRMS_TIMEOUT = 5000L;
     public static final Integer DEFAULT_CHANNEL_COUNT = 1;
+    public static final String CONTENT_TYPE = "application/json";
+    public static final String ENCODING_TYPE = "UTF-8";
+    public static final BasicProperties PERSISTENT_BASIC_APPLICATION_JSON;
 
     private Connection rabbitConnection;
     private String protocol;
@@ -67,6 +70,13 @@ public class RabbitMqProperties {
 
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
+    static {
+        PERSISTENT_BASIC_APPLICATION_JSON =
+                MessageProperties.PERSISTENT_BASIC.builder()
+                        .contentType(CONTENT_TYPE)
+                        .contentEncoding(ENCODING_TYPE)
+                        .build();
+    }
 
     public Long getWaitForConfirmsTimeOut() {
         return waitForConfirmsTimeOut;
@@ -491,9 +501,9 @@ public class RabbitMqProperties {
                     }
                 }
             });
-            BasicProperties msgProps = MessageProperties.BASIC;
-            if (usePersitance)
-                msgProps = MessageProperties.PERSISTENT_BASIC;
+            BasicProperties msgProps = usePersitance ? PERSISTENT_BASIC_APPLICATION_JSON
+                    : MessageProperties.BASIC;
+
         try {
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
             log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'",
