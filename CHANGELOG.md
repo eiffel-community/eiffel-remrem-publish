@@ -1,5 +1,6 @@
 ## 2.0.28
 - Made changes to override AMQP Basic properties.
+- Uplifted eiffel-remrem-parent version to 2.0.10 to inherit the latest spring-boot version.
 
 ## 2.0.27
 - Degraded the spring-boot-maven-plugin version to 2.7.5
