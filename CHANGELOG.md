@@ -1,3 +1,6 @@
+## 2.0.29
+- Swagger don't display default status codes
+
 ## 2.0.28
 - Made changes to override AMQP Basic properties.
 
