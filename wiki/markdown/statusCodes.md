@@ -92,17 +92,17 @@ RabbitMQ properties not configured in tomcat/conf/config.properties file for the
 
 **415 Unsupported Media Type**
 
- Server refuses to accept the request because the payload format is in an unsupported format.
+Server refuses to accept the request because the payload format is in an unsupported format.
 
- ```
- {
-   "timestamp": "Sep 9, 2022 2:56:07 PM",
-   "status": 415,
-   "error": "Unsupported Media Type",
-   "message": "Content type \u0027unsupported;charset\u003dUTF-8\u0027 not supported",
-   "path": "/publish/producer/msg"
- }
- ```
+```
+{
+  "timestamp": "Sep 9, 2022 2:56:07 PM",
+  "status": 415,
+  "error": "Unsupported Media Type",
+  "message": "Content type \u0027unsupported;charset\u003dUTF-8\u0027 not supported",
+  "path": "/publish/producer/msg"
+}
+```
 
 **500 Internal Server Error**
 
