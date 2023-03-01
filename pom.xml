@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.github.eiffel-community</groupId>
         <artifactId>eiffel-remrem-parent</artifactId>
-        <version>2.0.8</version>
+        <version>2.0.9</version>
     </parent>
     <properties>
-        <eiffel-remrem-publish.version>2.0.25</eiffel-remrem-publish.version>
-        <eiffel-remrem-semantics.version>2.2.3</eiffel-remrem-semantics.version>
+        <eiffel-remrem-publish.version>2.1.0</eiffel-remrem-publish.version>
+        <eiffel-remrem-semantics.version>2.3.0</eiffel-remrem-semantics.version>
     </properties>
     <artifactId>eiffel-remrem-publish</artifactId>
     <version>${eiffel-remrem-publish.version}</version>
@@ -38,6 +38,7 @@
                 
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>2.7.5</version>
         <configuration>
           <skip>true</skip>
         </configuration>

@@ -39,6 +39,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.Connection;
 
 @RunWith(PowerMockRunner.class)
@@ -55,12 +56,14 @@ public class RMQHelperUnitTest {
     private static final String usePersistence= "1.2";
     private static final String domainId= "eiffelxxx";
     private static final Integer channelsCount= 1;
+    private static final Integer tcpTimeOut= 5000;
+    private static final Long waitForConfirmTimeOut= 5000L;
     private String protocol = "eiffelsemantics";
     private String createExchange = "true";
 
     @InjectMocks
     RMQHelper rmqHelper;
-
+    RabbitMqProperties rabbitmqProtocolProperties;
     @Mock RMQBeanConnectionFactory factory;
     @Mock Connection mockConnection;
     @Mock com.rabbitmq.client.Channel mockChannel;
@@ -78,6 +81,7 @@ public class RMQHelperUnitTest {
         initProperties();
         rabbitMqProperties.setFactory(factory);
         rmqHelper.rabbitMqPropertiesInit(protocol);
+        rabbitmqProtocolProperties = rmqHelper.getRabbitMqPropertiesMap().get(protocol);
     }
 
     @After public void tearDown() throws Exception {
@@ -97,6 +101,8 @@ public class RMQHelperUnitTest {
         System.setProperty(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING, createExchange);
         System.setProperty(PropertiesConfig.DOMAIN_ID, domainId);
         System.setProperty(PropertiesConfig.CHANNELS_COUNT, Integer.toString(channelsCount));
+        System.setProperty(PropertiesConfig.TCP_TIMEOUT, Integer.toString(tcpTimeOut));
+        System.setProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT, Long.toString(waitForConfirmTimeOut));
     }
 
     private void cleanProperties() {
@@ -111,57 +117,59 @@ public class RMQHelperUnitTest {
         System.clearProperty(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING);
         System.clearProperty(PropertiesConfig.DOMAIN_ID);
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
+        System.clearProperty(PropertiesConfig.TCP_TIMEOUT);
+        System.clearProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
     }
 
     @Test public void getHostTest() {
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getHost().equals(mBusHost));
+        assertTrue(rabbitmqProtocolProperties.getHost().equals(mBusHost));
     }
 
     @Test public void setHostTest() {
         String host = "HostA";
-        rmqHelper.rabbitMqPropertiesMap.get(protocol).setHost(host);
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getHost().equals(host));
+        rabbitmqProtocolProperties.setHost(host);
+        assertTrue(rabbitmqProtocolProperties.getHost().equals(host));
     }
 
     @Test
-    public void testConnection() {
-        assertNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
-        rmqHelper.rabbitMqPropertiesMap.get(protocol).createRabbitMqConnection();
-        assertNotNull(rmqHelper.rabbitMqPropertiesMap.get(protocol).getRabbitConnection());
+    public void testConnection() throws RemRemPublishException {
+        assertNull(rabbitmqProtocolProperties.getRabbitConnection());
+        rabbitmqProtocolProperties.createRabbitMqConnection();
+        assertNotNull(rabbitmqProtocolProperties.getRabbitConnection());
     }
 
     @Test public void getPortTest() {
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getPort().equals(mBusPort));
+        assertTrue(rabbitmqProtocolProperties.getPort().equals(mBusPort));
     }
 
     @Test public void setPortTest() {
         Integer portNumber = 5678;
-        rmqHelper.rabbitMqPropertiesMap.get(protocol).setPort(portNumber);
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getPort().equals(portNumber));
+        rabbitmqProtocolProperties.setPort(portNumber);
+        assertTrue(rabbitmqProtocolProperties.getPort().equals(portNumber));
     }
 
     @Test public void getVirtualHostTest() {
-        assertEquals(virtualHost, rmqHelper.rabbitMqPropertiesMap.get(protocol).getVirtualHost());
+        assertEquals(virtualHost, rabbitmqProtocolProperties.getVirtualHost());
     }
 
     @Test public void getTlsVersionTest() {
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getTlsVer().equals(tlsVer));
+        assertTrue(rabbitmqProtocolProperties.getTlsVer().equals(tlsVer));
     }
 
     @Test public void setTlsVersionTest() {
         String tlsVersion = "1.1";
-        rmqHelper.rabbitMqPropertiesMap.get(protocol).setTlsVer(tlsVersion);
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getTlsVer().equals(tlsVersion));
+        rabbitmqProtocolProperties.setTlsVer(tlsVersion);
+        assertTrue(rabbitmqProtocolProperties.getTlsVer().equals(tlsVersion));
     }
 
     @Test public void getExchangeNameTest() {
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getExchangeName().equals(exchangeName));
+        assertTrue(rabbitmqProtocolProperties.getExchangeName().equals(exchangeName));
     }
 
     @Test public void setExchangeNameTest() {
         String exchangeNameTest = "exchangeNameA";
-        rmqHelper.rabbitMqPropertiesMap.get(protocol).setExchangeName(exchangeNameTest);
-        assertTrue(rmqHelper.rabbitMqPropertiesMap.get(protocol).getExchangeName().equals(exchangeNameTest));
+        rabbitmqProtocolProperties.setExchangeName(exchangeNameTest);
+        assertTrue(rabbitmqProtocolProperties.getExchangeName().equals(exchangeNameTest));
     }
 
     @Test public void setValuesTest() {
@@ -173,6 +181,8 @@ public class RMQHelperUnitTest {
         String tlsVersion = "1.0";
         String exchangeNameTest = "EN2";
         String usePersistenceTest = "false";
+        Integer tcpTimeOut = 5000;
+        Long waitForConfirmsTimeOut = 5000L;
 
         System.setProperty(PropertiesConfig.MESSAGE_BUS_HOST, host);
         System.setProperty(PropertiesConfig.MESSAGE_BUS_PORT, Integer.toString(portNumber));
@@ -180,6 +190,8 @@ public class RMQHelperUnitTest {
         System.setProperty(PropertiesConfig.TLS, tlsVersion);
         System.setProperty(PropertiesConfig.EXCHANGE_NAME, exchangeNameTest);
         System.setProperty(PropertiesConfig.USE_PERSISTENCE, usePersistenceTest);
+        System.setProperty(PropertiesConfig.TCP_TIMEOUT, Integer.toString(tcpTimeOut));
+        System.setProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT, Long.toString(waitForConfirmsTimeOut));
 
         RMQHelper rmqHelperTest = new RMQHelper();
         RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
@@ -210,12 +222,15 @@ public class RMQHelperUnitTest {
             e.printStackTrace();
             assertTrue(false);
         }
-
-        assertEquals(host, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getHost());
-        assertEquals(portNumber, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getPort());
-        assertEquals(virtHost, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getVirtualHost());
-        assertEquals(tlsVersion, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getTlsVer());
-        assertEquals(exchangeNameTest, rmqHelperTest.rabbitMqPropertiesMap.get(protocol).getExchangeName());
+        
+        RabbitMqProperties rabbitmqProtocolPropertiesTest = rmqHelperTest.getRabbitMqPropertiesMap().get(protocol);
+        assertEquals(host, rabbitmqProtocolPropertiesTest.getHost());
+        assertEquals(portNumber, rabbitmqProtocolPropertiesTest.getPort());
+        assertEquals(virtHost, rabbitmqProtocolPropertiesTest.getVirtualHost());
+        assertEquals(tlsVersion, rabbitmqProtocolPropertiesTest.getTlsVer());
+        assertEquals(exchangeNameTest, rabbitmqProtocolPropertiesTest.getExchangeName());
+        assertEquals(waitForConfirmsTimeOut, rabbitmqProtocolPropertiesTest.getWaitForConfirmsTimeOut());
+        assertEquals(tcpTimeOut, rabbitmqProtocolPropertiesTest.getTcpTimeOut());
     }
 
     @Test

@@ -24,6 +24,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 
@@ -38,6 +39,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
@@ -60,19 +62,21 @@ public class MessageServiceRMQImplUnitTest {
     @Autowired
     @Qualifier("rmqHelper") 
     RMQHelper rmqHelper;
+    RabbitMqProperties rabbitmqProtocolProperties;
     private static final String protocol = "eiffelsemantics";
-    private static final String host= "0.0.0.0";
+    private static final String host= "127.0.0.1";
     private static final String exchangeName= "amq.direct";
     private static final String domainId= "eiffelxxx";
     private boolean createExchangeIfNotExisting = true;
 
     @PostConstruct public void setUp() throws Exception {
         rmqHelper.getRabbitMqPropertiesMap().put(protocol, new RabbitMqProperties());
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setProtocol(protocol);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+        rabbitmqProtocolProperties = rmqHelper.getRabbitMqPropertiesMap().get(protocol);
+        rabbitmqProtocolProperties.setProtocol(protocol);
+        rabbitmqProtocolProperties.setHost(host);
+        rabbitmqProtocolProperties.setExchangeName(exchangeName);
+        rabbitmqProtocolProperties.setDomainId(domainId);
+        rabbitmqProtocolProperties.init();
     }
 
     /**
@@ -82,19 +86,19 @@ public class MessageServiceRMQImplUnitTest {
      * exchange it will throw an Exception.
      */
     @Test
-    public void testCreateExchangeIfNotExistingEnable() throws RemRemPublishException {
-        boolean ExceptionOccured = false;
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName("nonexistexchangename");
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setCreateExchangeIfNotExisting(createExchangeIfNotExisting);
+    public void testCreateExchangeIfNotExistingEnable() {
+        boolean exceptionOccured = false;
+        rabbitmqProtocolProperties.setExchangeName("nonexistexchangename");
+        rabbitmqProtocolProperties.setCreateExchangeIfNotExisting(createExchangeIfNotExisting);
         try {
-            rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+            rabbitmqProtocolProperties.checkAndCreateExchangeIfNeeded();
         } catch (RemRemPublishException e) {
-            ExceptionOccured = true;
+            exceptionOccured = true;
         } finally {
-            rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
-            rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+            rabbitmqProtocolProperties.setExchangeName(exchangeName);
+            rabbitmqProtocolProperties.init();
         }
-        assertFalse("An exception occured while creating a exchange", ExceptionOccured);
+        assertFalse("An exception occured while creating a exchange", exceptionOccured);
     }
 
     /**
@@ -104,12 +108,12 @@ public class MessageServiceRMQImplUnitTest {
      */
     @Test(expected = RemRemPublishException.class)
     public void testCreateExchangeIfNotExistingDisable() throws RemRemPublishException  {
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName("test76888");
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setCreateExchangeIfNotExisting(false);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+        rabbitmqProtocolProperties.setExchangeName("test76888");
+        rabbitmqProtocolProperties.setCreateExchangeIfNotExisting(false);
+        rabbitmqProtocolProperties.checkAndCreateExchangeIfNeeded();
 
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).init();
+        rabbitmqProtocolProperties.setExchangeName(exchangeName);
+        rabbitmqProtocolProperties.init();
 
     }
 
@@ -170,14 +174,30 @@ public class MessageServiceRMQImplUnitTest {
         assertEquals(Expected, jarray.toString());       
     }
 
+    @Test public void testPublisherConfirmsTimeoutException() throws Exception {
+        rabbitmqProtocolProperties.setWaitForConfirmsTimeOut(1L);
+        rabbitmqProtocolProperties.init();
+        JsonArray jarray = new JsonArray();
+        String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
+        MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
+        while (!(jarray.toString().contains("Time out waiting for ACK"))) {
+            SendResult result = messageService.send(body, msgService, "test", null, null);
+            Assert.assertNotNull(result);
+            for (PublishResultItem results : result.getEvents()) {
+               jarray.add(results.toJsonObject());
+            }
+        }
+        assertTrue(jarray.toString().contains("Time out waiting for ACK"));
+    }
+
     @Test
-    public void testRabbitMQConnection() {
+    public void testRabbitMQConnection() throws NackException, TimeoutException, RemRemPublishException {
         try {
-            if(rmqHelper.getRabbitMqPropertiesMap().get(protocol) != null) {
-                rmqHelper.getRabbitMqPropertiesMap().get(protocol).createRabbitMqConnection();
+            if(rabbitmqProtocolProperties != null) {
+                rabbitmqProtocolProperties.createRabbitMqConnection();
                 MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
                 rmqHelper.send("eiffelxxx", "Test message", msgService);
-                assertTrue(rmqHelper.getRabbitMqPropertiesMap().get(protocol).getRabbitConnection().isOpen());
+                assertTrue(rabbitmqProtocolProperties.getRabbitConnection().isOpen());
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block

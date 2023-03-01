@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Ericsson AB.
+    Copyright 2022 Ericsson AB.
     For a full list of individual contributors, please see the commit history.
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -14,22 +14,16 @@
 */
 package com.ericsson.eiffel.remrem.publish.exception;
 
-import com.ericsson.eiffel.remrem.publish.helper.RMQBeanConnectionFactory;
+import java.io.IOException;
 
-public class RemRemPublishException extends Exception {
+public class NackException extends IOException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1872149119179038290L;
 
-    public RemRemPublishException(String message) {
+    public NackException(String message) {
         super(message);
     }
-
-    public RemRemPublishException(String message, Throwable cause) {
+    public NackException(String message , Throwable cause) {
         super(message, cause);
-    }
-
-    public RemRemPublishException(String message, RMQBeanConnectionFactory factory,
-            Throwable cause) {
-        super(message + factory.getHost() + ":" + factory.getPort(), cause);
     }
 }

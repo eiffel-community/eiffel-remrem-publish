@@ -40,6 +40,7 @@ import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
+import com.ericsson.eiffel.remrem.publish.helper.RabbitMqProperties;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
@@ -69,9 +70,10 @@ public class EiffelRemRemPublishIT {
     public void setUp() throws RemRemPublishException {
         RestAssured.port = port;
         rmqHelper.rabbitMqPropertiesInit(protocol);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setHost(host);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setExchangeName(exchangeName);
-        rmqHelper.getRabbitMqPropertiesMap().get(protocol).setDomainId(domainId);
+        RabbitMqProperties rabbitmqProtocolProperties = rmqHelper.getRabbitMqPropertiesMap().get(protocol);
+        rabbitmqProtocolProperties.setHost(host);
+        rabbitmqProtocolProperties.setExchangeName(exchangeName);
+        rabbitmqProtocolProperties.setDomainId(domainId);
     }
 
     @Test

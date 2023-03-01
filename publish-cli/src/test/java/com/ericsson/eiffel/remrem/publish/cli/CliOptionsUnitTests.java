@@ -125,6 +125,20 @@ public class CliOptionsUnitTests {
         assertTrue(CliOptions.getErrorCodes().contains(code));
     }
 
+    public void testWctoOption() throws Exception {
+        String[] args = {"-f", "/a/b/c/test.file",  "test", "-wcto", "5000"};
+        CliOptions.parse(args);
+        assertTrue(CliOptions.getErrorCodes().isEmpty());
+    }
+
+    @Test
+    public void testWctoOptionFails() throws Exception {
+        String[] args = {"-f", "/a/b/c/test.file",  "test", "-wctof", "5000"};
+        CliOptions.parse(args);
+        int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
+        assertTrue(CliOptions.getErrorCodes().contains(code));
+    }
+
     public void testNpOption() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-np", "non_persistent"};
         CliOptions.parse(args);
@@ -162,6 +176,20 @@ public class CliOptionsUnitTests {
     @Test
     public void testFOptionFails() throws Exception {
         String[] args = {"-fab", "/a/b/c/test.file",  "test", "-portf", "portB"};
+        CliOptions.parse(args);
+        int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
+        assertTrue(CliOptions.getErrorCodes().contains(code));
+    }
+
+    public void testTtoOption() throws Exception {
+        String[] args = { "-f", "/a/b/c/test.file", "test", "-tto", "5000" };
+        CliOptions.parse(args);
+        assertTrue(CliOptions.getErrorCodes().isEmpty());
+    }
+
+    @Test
+    public void testTtoOptionFails() throws Exception {
+        String[] args = { "-f", "/a/b/c/test.file", "test", "-ttof", "5000" };
         CliOptions.parse(args);
         int code = CLIExitCodes.CLI_MISSING_OPTION_EXCEPTION;
         assertTrue(CliOptions.getErrorCodes().contains(code));

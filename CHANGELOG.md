@@ -1,3 +1,26 @@
+## 2.1.0
+- Implemented new routing key template for Sepia.
+
+## 2.0.28
+- Made changes to override AMQP Basic properties.
+
+## 2.0.27
+- Degraded the spring-boot-maven-plugin version to 2.7.5
+- Updated the eiffel-remrem-parent version to 2.0.9
+- Updated the eiffel-remem-semantics version to 2.2.4
+- Uplift FasterXML Jackson databind to 2.14.1
+
+## 2.0.26
+- Added code changes so that REMReM Publish should not die if RabbitMQ is unavailable when starting up.
+- Updated documentation and added code changes related to channels count and timeout parameters.
+- Fixed a override Eiffel-Semantic protocol version issue
+- Added documentation for overriding Eiffel-Semantic protocol version
+
+## 2.0.25
+- Implemented "publisher confirms " in REMReM so that this  can be used to get confirmation about the messages sent to MB.
+- Implemented configurable parameters for TCP connection timeout against LDAP and MB
+- Implemented changes to return proper error messages when DomainId value is greater than 255 chars.
+
 ## 2.0.24
 - Updated all the curl commands in documentation
 - Uplifted eiffel-remrem-parent version from 2.0.6 to 2.0.7.

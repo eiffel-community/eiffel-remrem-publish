@@ -79,7 +79,9 @@ public class VersionService {
                             if (version != null) {
                                 
                                 if (mainAttribs.getValue(IS_ENDPOINT_VERSION) != null) {
-                                    endpointVersions.put(versionKey, version);
+                                    if(endpointVersions.get(versionKey) == null) {
+                                        endpointVersions.put(versionKey, version);
+                                    }
                                 } else {
                                     serviceVersion.put(versionKey, version);
                                 }

@@ -10,48 +10,51 @@ $ java -jar publish-cli.jar -h
 You passed help flag.
 usage: java -jar
 
--d,--debug                        Enable debug traces.
+-d,--debug                                    Enable debug traces.
 
--domain,--domainId <arg>          Identifies the domain that produces the event.
+-domain,--domainId <arg>                      Identifies the domain that produces the event.
 
- -cc,--channelsCount <arg>        Number of channels connected to message
-                                  bus, default is 1
+-cc,--channelsCount <arg>                     Number of channels connected to messagebus, default is 1
 
--en,--exchange_name <arg>         Exchange name.
+-tto,--tcp_time_out <arg>                     Tcp Connection TimeOut value, default value is 60000 milliseconds.
 
--ce,--create_exchange <arg>       option to denote if we need to create an exchange
-                                  create_exchange or ce to true eg: -ce true or --create_exchange false.
+-wcto,--wait_for_confirms_timeOut <arg>       Time out for wait for confirms ,default is 5000 ms/milliseconds.
 
--f,--content_file <arg>           Event content file.
+-en,--exchange_name <arg>                     Exchange name.
 
--h,--help                         Show help.
+-ce,--create_exchange <arg>                   option to denote if we need to create an exchange
+                                              create_exchange or ce to true eg: -ce true or --create_exchange false.
 
--json,--json_content <arg>        Event content in JSON string. The value can also be a dash (-)
-                                  and the JSON will be read from the output of other programs if piped.
-                                  Multiple JSON events are also supported.
+-f,--content_file <arg>                       Event content file.
 
--mb,--message_bus <arg>           Host of message bus to use.
+-h,--help                                     Show help.
 
--mp,--message_protocol <arg>      Name of messaging protocol to be used, e.g: eiffelsemantics.
-                                  Default is eiffelsemantics.
+-json,--json_content <arg>                    Event content in JSON string. The value can also be a dash (-)
+                                              and the JSON will be read from the output of other programs if piped.
+                                              Multiple JSON events are also supported.
 
--np,--non_persistent              Remove persistence from message sending.
+-mb,--message_bus <arg>                       Host of message bus to use.
 
--tls,--tls <arg>                  tls version, specify a valid tls version: '1', '1.1', '1.2' or default.
-                                  It is required for RabbitMQ secured port (5671).
+-mp,--message_protocol <arg>                  Name of messaging protocol to be used, e.g: eiffelsemantics.
+                                              Default is eiffelsemantics.
 
--port,--port <arg>                Port to connect to message bus, default is 5672.
+-np,--non_persistent                          Remove persistence from message sending.
 
--vh,--virtual_host <arg>          Virtual host to connect to (optional).
+-tls,--tls <arg>                              tls version, specify a valid tls version: '1', '1.1', '1.2' or default.
+                                              It is required for RabbitMQ secured port (5671).
 
--ud,--user_domain_suffix <arg>    User domain suffix.
+-port,--port <arg>                            Port to connect to message bus, default is 5672.
 
--rk,--routing_key <arg>           Routing key of the eiffel message.
-                                  When provided routing key is not generated and the value provided is used.
+-vh,--virtual_host <arg>                      Virtual host to connect to (optional).
 
--tag,--tag <arg>                  Tag to be used in routing key.
+-ud,--user_domain_suffix <arg>                User domain suffix.
 
--v,--list_versions                Lists the versions of publish and all loaded protocols.
+-rk,--routing_key <arg>                       Routing key of the eiffel message.
+                                              When provided routing key is not generated and the value provided is used.
+
+-tag,--tag <arg>                              Tag to be used in routing key.
+
+-v,--list_versions                            Lists the versions of publish and all loaded protocols.
 ```
 
 For publish we have input only from file that can contain one or more messages in a JSON array (surrounded with square brackets) separated by comma.
@@ -115,10 +118,24 @@ If the number of channels increases then the CPU load and memory usage on the Ra
 java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -cc numberof-channels 
 ```
 
+**If you want to change the wait for confirms timeout connected to RabbitMQ to publish messages:**
+waitForConfirmsTimeout default value is 5000 ms/milliseconds.
+As the waitForConfirmsTimeout value reduces sometimes it may leads to TimeoutException if channel unable to get acknowledgement within timeout.
+
+```
+java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -wcto timeout-in-seconds 
+```
+
 **If you want to have the message publishing on RabbitMQ with given tag:**
 
 ```
 java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics -tag production
+```
+
+**If you want to change the tcp connection timeout value for rabbitmq connection**
+
+```
+java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -mp eiffelsemantics --tto tcp-timeout-value
 ```
 
 **To create an exchange passed while publishing the messages use --create_exchange or -ce property to true. Example:**

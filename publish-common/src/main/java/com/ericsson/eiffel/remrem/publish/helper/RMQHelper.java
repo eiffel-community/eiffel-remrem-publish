@@ -18,6 +18,7 @@ package com.ericsson.eiffel.remrem.publish.helper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
+import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 
 import ch.qos.logback.classic.Level;
@@ -81,17 +83,19 @@ import ch.qos.logback.classic.Logger;
      * @param protocol name
      * @throws RemRemPublishException
      */
-    private void protocolInit(String protocol) throws RemRemPublishException{
-        rabbitMqPropertiesMap.get(protocol).setProtocol(protocol);
-        rabbitMqPropertiesMap.get(protocol).init();
+    private void protocolInit(String protocol) throws RemRemPublishException {
+        RabbitMqProperties rabbitmqProtocolProperties = rabbitMqPropertiesMap.get(protocol);
+        rabbitmqProtocolProperties.setProtocol(protocol);
+        rabbitmqProtocolProperties.init();
     }
 
-    public void send(String routingKey, String msg, MsgService msgService) throws IOException {
+    public void send(String routingKey, String msg, MsgService msgService) throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
         String protocol = msgService.getServiceName();
-        if(rabbitMqPropertiesMap.get(protocol) != null) {
-            rabbitMqPropertiesMap.get(protocol).send(routingKey,msg);
+        RabbitMqProperties rabbitmqProtocolProperties = rabbitMqPropertiesMap.get(protocol);
+        if (rabbitmqProtocolProperties != null) {
+            rabbitmqProtocolProperties.send(routingKey, msg);
         } else {
-            log.error("RabbitMq properties not configured for the protocol "+protocol);
+            log.error("RabbitMq properties not configured for the protocol " + protocol);
         }
     }
 
@@ -99,10 +103,10 @@ import ch.qos.logback.classic.Logger;
     public void cleanUp() throws IOException {
         log.info("RMQHelper cleanUp ...");
         for(String protocol : rabbitMqPropertiesMap.keySet()) {
-            rabbitMqPropertiesMap.get(protocol).getRabbitConnection();
-            if (rabbitMqPropertiesMap.get(protocol).getRabbitConnection() != null){
-                rabbitMqPropertiesMap.get(protocol).getRabbitConnection().close();
-                rabbitMqPropertiesMap.get(protocol).setRabbitConnection(null);
+            RabbitMqProperties rabbitmqProtocolProperties = rabbitMqPropertiesMap.get(protocol);
+            if (rabbitmqProtocolProperties.getRabbitConnection() != null) {
+                rabbitmqProtocolProperties.getRabbitConnection().close();
+                rabbitmqProtocolProperties.setRabbitConnection(null);
             } else {
                 log.warn("rabbitConnection is null when cleanUp");
             }
@@ -118,4 +122,5 @@ import ch.qos.logback.classic.Logger;
             log.setLevel(Level.OFF);
         }
     }
+
 }

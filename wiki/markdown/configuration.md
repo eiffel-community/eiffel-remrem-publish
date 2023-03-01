@@ -17,13 +17,13 @@ If RemRem-Publish is executed on same host as user accesses the RemRem-Publish s
 
 MessageBus(RabbitMq) connections is configured via property "rabbitmq.instances.jsonlist":
 
-    rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1", "createExchangeIfNotExisting":true }, \
-    { "mp": "eiffel3", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1", "createExchangeIfNotExisting":true }]
+    rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1", "createExchangeIfNotExisting":true,"waitForConfirmsTimeOut":"5000", "tcpTimeOut": "5000" }, \
+    { "mp": "eiffel3", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1", "createExchangeIfNotExisting":true,"waitForConfirmsTimeOut":"5000", "tcpTimeOut": "5000" }]
 
 "rabbitmq.instances.jsonlist" property can be configured with one or several Messagebus per Eiffel protocol/version, "mp" key in json list.
 Most common is that user have only one MessageBus which uses one specific Eiffel protocol version and the property should be configured with only one RabbitMq connection:
 
-    rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1","createExchangeIfNotExisting":true }]
+    rabbitmq.instances.jsonlist=[{ "mp": "eiffelsemantics", "host": "127.0.0.1", "port": "5672", "virtualHost": "", "username": "guest", "password": "guest", "tls": "", "exchangeName": "amq.direct", "domainId": "eiffelxxx", "channelsCount": "1","createExchangeIfNotExisting":true,"waitForConfirmsTimeOut":"5000", "tcpTimeOut": "5000" }]
 
 ## RemRem-Generate configuration
 
