@@ -1,8 +1,6 @@
-## 2.0.29
-- Swagger don't display default status codes
-
 ## 2.0.28
 - Made changes to override AMQP Basic properties.
+- Swagger don't display default status codes
 
 ## 2.0.27
 - Degraded the spring-boot-maven-plugin version to 2.7.5
