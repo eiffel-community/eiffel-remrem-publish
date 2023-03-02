@@ -157,7 +157,9 @@ public class RabbitMqPropertiesConfig {
                     rabbitMqProperties.setChannelsCount(
                             Integer.parseInt(channelsCount));
                 }
+
                 rabbitMqProperties.setRoutingkeyTypeOverrideFilePath(semanticsRoutingkeyTypeOverrideFilepath);
+
                 String waitForConfirmsTimeOut = getPropertyAsText(rabbitmqInstanceObject, PROPERTY_WAIT_FOR_CONFIRMS_TIMEOUT);
                 if (waitForConfirmsTimeOut != null) {
                     rabbitMqProperties.setWaitForConfirmsTimeOut(Long.parseLong(waitForConfirmsTimeOut));
