@@ -96,6 +96,12 @@ public class EiffelRemRemPublishIT {
     public void testFailSingleEvent() throws Exception {
         String body = FileUtils.readFileToString(new File("src/test/resources/Invalid_EiffelActivityFinishedEvent.json"));
 
+        try {
+            Thread.sleep(1000000);
+        }
+        catch (Throwable t) {
+            t.printStackTrace();
+        }
         given().header("Authorization", credentials)
                .contentType("application/json").body(body).when().post("/producer/msg?mp=eiffelsemantics").then()
                .statusCode(HttpStatus.SC_BAD_REQUEST)
