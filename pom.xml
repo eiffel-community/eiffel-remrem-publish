@@ -9,7 +9,7 @@
         <version>2.1.8-openjdk17</version>
     </parent>
     <properties>
-        <eiffel-remrem-publish.version>2.1.27-openjdk17</eiffel-remrem-publish.version>
+        <eiffel-remrem-publish.version>2.0.28-openjdk17</eiffel-remrem-publish.version>
         <eiffel-remrem-semantics.version>2.2.3-openjdk17</eiffel-remrem-semantics.version>
     </properties>
     <artifactId>eiffel-remrem-publish</artifactId>
