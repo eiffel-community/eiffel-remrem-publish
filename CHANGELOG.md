@@ -1,8 +1,10 @@
+## 2.0.29
+- Uplifted eiffel-remrem-parent version to 2.0.10 to inherit the latest spring-boot version.
+
 ## 2.0.28
 - Made changes to override AMQP Basic properties.
 - Swagger don't display default status codes
 - Made changes to create a new RabbitMQ Channel when it is closed in the middle of publishing.
-- Uplifted eiffel-remrem-parent version to 2.0.10 to inherit the latest spring-boot version.
 
 ## 2.0.27
 - Degraded the spring-boot-maven-plugin version to 2.7.5
