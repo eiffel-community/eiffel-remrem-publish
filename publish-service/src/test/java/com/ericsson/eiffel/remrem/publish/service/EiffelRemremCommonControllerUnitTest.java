@@ -26,8 +26,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -101,7 +101,7 @@ public class EiffelRemremCommonControllerUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         unit.setRestTemplate(restTemplate);
 
         File file = new File("src/test/resources/EiffelActivityFinishedEvent.json");
@@ -116,8 +116,8 @@ public class EiffelRemremCommonControllerUnitTest {
         when(service2.getServiceName()).thenReturn("eiffelsemantics");
         when(messageService.getHttpStatus()).thenReturn(HttpStatus.OK);
 
-        when(messageService.send(Matchers.anyString(), Matchers.any(MsgService.class), Matchers.anyString(),
-                Matchers.anyString(), Matchers.anyString())).thenReturn(res);
+        when(messageService.send(ArgumentMatchers.anyString(), ArgumentMatchers.any(MsgService.class), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(res);
 
         when(body.getAsJsonObject()).thenReturn(json);
 

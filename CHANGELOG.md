@@ -1,3 +1,6 @@
+## 2.0.29
+- Uplifted eiffel-remrem-parent version to 2.0.10 to inherit the latest spring-boot version.
+
 ## 2.0.28
 - Made changes to override AMQP Basic properties.
 - Swagger don't display default status codes
