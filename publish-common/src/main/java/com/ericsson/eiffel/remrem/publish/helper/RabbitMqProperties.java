@@ -25,8 +25,8 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -65,6 +65,7 @@ public class RabbitMqProperties {
 
     private Connection rabbitConnection;
     private String protocol;
+    static boolean shutdown = false;
 
     private List<Channel> rabbitChannels;
 
@@ -494,6 +495,7 @@ public class RabbitMqProperties {
                     } else {
                         log.error("Shutdown is NOT initiated by application.");
                         log.error(cause.getMessage());
+                        shutdown = true;
                         boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
                         if (cliMode) {
                             System.exit(-3);
@@ -533,13 +535,27 @@ public class RabbitMqProperties {
 
     /**
      * This method is used to give random channel
+     * 
      * @return channel
      * @throws RemRemPublishException
      */
     private Channel giveMeRandomChannel() throws RemRemPublishException {
-        if ((rabbitConnection == null || !rabbitConnection.isOpen())) {
-            createRabbitMqConnection();
+        if (rabbitConnection == null || !rabbitConnection.isOpen()) {
+            // If the rabbitConnection became null and if shutdown is not initiated by application
+            // the call will go to if block.
+            if (shutdown) {
+                try {
+                    Thread.sleep(5000);
+                    shutdown = false;
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            } else {
+                createRabbitMqConnection();
+            }
         }
+
         for (Channel channel : rabbitChannels) {
             if (channel.isOpen()) {
                 return channel;

@@ -1,3 +1,6 @@
+## 2.0.30
+- Fixed the AMQP connection recovery creates extra connection/channel issue.
+
 ## 2.0.29
 - Uplifted eiffel-remrem-parent version to 2.0.10 to inherit the latest spring-boot version.
 
