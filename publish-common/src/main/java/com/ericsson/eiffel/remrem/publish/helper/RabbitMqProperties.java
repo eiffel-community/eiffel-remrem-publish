@@ -495,7 +495,13 @@ public class RabbitMqProperties {
                     } else {
                         log.error("Shutdown is NOT initiated by application.");
                         log.error(cause.getMessage());
-                        shutdown = true;
+                        if(rabbitConnection != null || !rabbitConnection.isOpen()) {
+                            try {
+                                rabbitConnection.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
                         if (cliMode) {
                             System.exit(-3);
@@ -541,19 +547,7 @@ public class RabbitMqProperties {
      */
     private Channel giveMeRandomChannel() throws RemRemPublishException {
         if (rabbitConnection == null || !rabbitConnection.isOpen()) {
-            // If the rabbitConnection became null and if shutdown is not initiated by application
-            // the call will go to if block.
-            if (shutdown) {
-                try {
-                    Thread.sleep(5000);
-                    shutdown = false;
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            } else {
-                createRabbitMqConnection();
-            }
+            createRabbitMqConnection();
         }
 
         for (Channel channel : rabbitChannels) {
