@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.github.eiffel-community</groupId>
         <artifactId>eiffel-remrem-parent</artifactId>
-        <version>2.0.10-openjdk17</version>
+        <version>2.0.11</version>
     </parent>
     <properties>
-        <eiffel-remrem-publish.version>2.0.28-openjdk17</eiffel-remrem-publish.version>
-        <eiffel-remrem-semantics.version>2.2.3-openjdk17</eiffel-remrem-semantics.version>
+        <eiffel-remrem-publish.version>2.0.30</eiffel-remrem-publish.version>
+        <eiffel-remrem-semantics.version>2.2.5</eiffel-remrem-semantics.version>
     </properties>
     <artifactId>eiffel-remrem-publish</artifactId>
     <version>${eiffel-remrem-publish.version}</version>
@@ -35,16 +35,15 @@
     <build>
         <plugins>
             <plugin>
-                
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>2.7.5</version>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-        <dependencies>
-        </dependencies>
-    </plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.5</version>
+                <configuration>
+                <skip>true</skip>
+                </configuration>
+                <dependencies>
+                </dependencies>
+        </plugin>
     <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
