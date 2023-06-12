@@ -53,6 +53,7 @@ public class SwaggerConfig {
         @Bean
         public Docket api() {
                 return new Docket(DocumentationType.SWAGGER_2)
+                        .useDefaultResponseMessages(false)
                         .select()
                         .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
                         .paths(PathSelectors.any())
