@@ -26,8 +26,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
-@SpringBootApplication
-@ComponentScan("com.ericsson.eiffel.remrem")
+@SpringBootApplication(scanBasePackages = {"com.ericsson.eiffel.remrem"})
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 public class App extends SpringBootServletInitializer {
  
