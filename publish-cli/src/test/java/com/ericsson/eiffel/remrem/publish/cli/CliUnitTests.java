@@ -62,6 +62,8 @@ public class CliUnitTests {
     @InjectMocks
     private CLI cli;
 
+    private MockedStatic<PublishUtils> publishUtils;
+
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         String key = PropertiesConfig.TEST_MODE;
@@ -71,6 +73,9 @@ public class CliUnitTests {
         console = System.out;
         System.setOut(new PrintStream(bytes));
 
+        publishUtils = Mockito.mockStatic(PublishUtils.class);
+        publishUtils.when(() -> PublishUtils.getMessageService(Mockito.eq("eiffelsemantics"), Mockito.any()))
+                .thenReturn(eiffelsemanticsMsgService);
     }
 
     @After
@@ -79,6 +84,8 @@ public class CliUnitTests {
         System.setOut(console);
         // reset error code since it is static
         CliOptions.cleanErrorCodes();
+
+        publishUtils.close();
     }
 
     @Test
@@ -101,45 +108,35 @@ public class CliUnitTests {
 
     @Test
     public void testCreateExchangeDisable() throws Exception {
-        try (MockedStatic<PublishUtils> utils = Mockito.mockStatic(PublishUtils.class)) {
-            utils.when(() -> PublishUtils.getMessageService(Mockito.eq("eiffelsemantics"), Mockito.any()))
-                    .thenReturn(eiffelsemanticsMsgService);
-
-            File file = new File("src/test/resources/publishMessages.json");
-            if (file.exists()) {
-                System.out.println("fileExist");
-            }
-            String[] args = { "-f", "src/test/resources/publishMessages.json", "-mb", "127.0.0.1", "-exchange_name",
-                    "1test", "-ce", "false", "-mp", "eiffelsemantics" };
-            CliOptions.parse(args);
-            cli.run(args);
-            int code = CLIExitCodes.HANDLE_CONTENT_FAILED;
-            assertTrue(CliOptions.getErrorCodes().contains(code));
+        File file = new File("src/test/resources/publishMessages.json");
+        if (file.exists()) {
+            System.out.println("fileExist");
         }
+        String[] args = { "-f", "src/test/resources/publishMessages.json", "-mb", "127.0.0.1", "-exchange_name",
+                "1test", "-ce", "false", "-mp", "eiffelsemantics" };
+        CliOptions.parse(args);
+        cli.run(args);
+        int code = CLIExitCodes.HANDLE_CONTENT_FAILED;
+        assertTrue(CliOptions.getErrorCodes().contains(code));
     }
 
     @Test
     public void testCreateExchangeEnable() throws Exception {
-        try (MockedStatic<PublishUtils> utils = Mockito.mockStatic(PublishUtils.class)) {
-            utils.when(() -> PublishUtils.getMessageService(Mockito.eq("eiffelsemantics"), Mockito.any()))
-                    .thenReturn(eiffelsemanticsMsgService);
-
-            Mockito.when(eiffelsemanticsMsgService.getServiceName()).thenReturn("eiffelsemantics");
-            Mockito.when(messageService.send(Mockito.anyString(), Mockito.any(), Mockito.isNull(), Mockito.isNull(),
-                    Mockito.isNull())).thenReturn(res);
-            JsonArray jarray = new JsonArray();
-            List<PublishResultItem> results = new ArrayList<>();
-            jarray.add(results.add(resultItem));
-            Mockito.when(res.getEvents()).thenReturn(results);
-            File file = new File("src/test/resources/publishMessages.json");
-            if (file.exists()) {
-                System.out.println("fileExist");
-            }
-            String[] args = { "-f", "src/test/resources/publishMessages.json", "-mb", "127.0.0.1", "-exchange_name",
-                    "1test", "-ce", "true", "-mp", "eiffelsemantics" };
-            CliOptions.parse(args);
-            cli.run(args);
-            assertTrue(CliOptions.getErrorCodes().isEmpty());
+        Mockito.when(eiffelsemanticsMsgService.getServiceName()).thenReturn("eiffelsemantics");
+        Mockito.when(messageService.send(Mockito.anyString(), Mockito.any(), Mockito.isNull(), Mockito.isNull(),
+                Mockito.isNull())).thenReturn(res);
+        JsonArray jarray = new JsonArray();
+        List<PublishResultItem> results = new ArrayList<>();
+        jarray.add(results.add(resultItem));
+        Mockito.when(res.getEvents()).thenReturn(results);
+        File file = new File("src/test/resources/publishMessages.json");
+        if (file.exists()) {
+            System.out.println("fileExist");
         }
+        String[] args = { "-f", "src/test/resources/publishMessages.json", "-mb", "127.0.0.1", "-exchange_name",
+                "1test", "-ce", "true", "-mp", "eiffelsemantics" };
+        CliOptions.parse(args);
+        cli.run(args);
+        assertTrue(CliOptions.getErrorCodes().isEmpty());
     }
 }
