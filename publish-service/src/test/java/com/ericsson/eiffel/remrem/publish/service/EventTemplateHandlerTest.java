@@ -365,7 +365,7 @@ public class EventTemplateHandlerTest {
             LOG.info("expectedJsonString: " + expectedJson.toString());
             LOG.info("actualParsedEventJson: " + actualParsedEventJson.toString());
 
-            JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), false);
+            JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), true);
 
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
