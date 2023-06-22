@@ -14,7 +14,7 @@
 */
 package com.ericsson.eiffel.remrem.publish.integrationtest;
 
-import static com.jayway.restassured.RestAssured.given;
+import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -47,7 +47,8 @@ import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.jayway.restassured.RestAssured;
+
+import io.restassured.RestAssured;
 
 @ActiveProfiles("integration-test")
 @RunWith(SpringJUnit4ClassRunner.class)

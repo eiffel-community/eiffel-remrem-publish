@@ -26,31 +26,20 @@ import java.util.ArrayList;
 import java.io.File;
 import java.util.List;
 
-import org.mockito.MockitoAnnotations;
-
-import com.ericsson.eiffel.remrem.publish.cli.CLIExitCodes;
-import com.ericsson.eiffel.remrem.publish.cli.CLI;
-import com.ericsson.eiffel.remrem.publish.cli.CliOptions;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
-import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonArray;
+import org.mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(PublishUtils.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CliUnitTests {
     private PrintStream console;
     private ByteArrayOutputStream bytes;
@@ -73,6 +62,8 @@ public class CliUnitTests {
     @InjectMocks
     private CLI cli;
 
+    private MockedStatic<PublishUtils> publishUtils;
+
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         String key = PropertiesConfig.TEST_MODE;
@@ -82,6 +73,9 @@ public class CliUnitTests {
         console = System.out;
         System.setOut(new PrintStream(bytes));
 
+        publishUtils = Mockito.mockStatic(PublishUtils.class);
+        publishUtils.when(() -> PublishUtils.getMessageService(Mockito.eq("eiffelsemantics"), Mockito.any()))
+                .thenReturn(eiffelsemanticsMsgService);
     }
 
     @After
@@ -90,6 +84,8 @@ public class CliUnitTests {
         System.setOut(console);
         // reset error code since it is static
         CliOptions.cleanErrorCodes();
+
+        publishUtils.close();
     }
 
     @Test
@@ -112,12 +108,6 @@ public class CliUnitTests {
 
     @Test
     public void testCreateExchangeDisable() throws Exception {
-        PowerMockito.mockStatic(PublishUtils.class);
-        Mockito.when(PublishUtils.getMessageService(Mockito.eq("eiffelsemantics"), Mockito.any()))
-                .thenReturn(eiffelsemanticsMsgService);
-        Mockito.when(eiffelsemanticsMsgService.getServiceName()).thenReturn("eiffelsemantics");
-        Mockito.doThrow(new RemRemPublishException("message")).when(rmqHelper)
-                .rabbitMqPropertiesInit(Mockito.anyString());
         File file = new File("src/test/resources/publishMessages.json");
         if (file.exists()) {
             System.out.println("fileExist");
@@ -132,9 +122,6 @@ public class CliUnitTests {
 
     @Test
     public void testCreateExchangeEnable() throws Exception {
-        PowerMockito.mockStatic(PublishUtils.class);
-        Mockito.when(PublishUtils.getMessageService(Mockito.eq("eiffelsemantics"), Mockito.any()))
-                .thenReturn(eiffelsemanticsMsgService);
         Mockito.when(eiffelsemanticsMsgService.getServiceName()).thenReturn("eiffelsemantics");
         Mockito.when(messageService.send(Mockito.anyString(), Mockito.any(), Mockito.isNull(), Mockito.isNull(),
                 Mockito.isNull())).thenReturn(res);
