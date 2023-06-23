@@ -4,7 +4,7 @@ When used without logback.xml log messages will look as below:
 
 ```
 %PARSER_ERROR[wEx]%PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr]
-            
+
 %PARSER_ERROR[clr] %PARSER_ERROR[clr] %PARSER_ERROR[clr]
 ```
 
