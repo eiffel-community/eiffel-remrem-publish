@@ -1,3 +1,6 @@
+## 2.0.31
+- Made changes to resolve extra RabbitMQ connection issue.
+
 ## 2.0.30
 - Upgrading to OpenJDK 17
 
