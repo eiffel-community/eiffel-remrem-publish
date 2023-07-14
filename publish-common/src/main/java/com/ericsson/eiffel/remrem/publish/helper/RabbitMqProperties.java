@@ -276,7 +276,7 @@ public class RabbitMqProperties {
             rabbitConnection.addShutdownListener(new ShutdownListener() {
                 @Override
                 public void shutdownCompleted(ShutdownSignalException cause) {
-                    log.debug("Connection Shutdown completed " + cause);
+                    log.debug("Connection Shutdown completed " + cause.getMessage());
                     try {
                         rabbitConnection.close();
                     } catch (Throwable e) {
@@ -323,7 +323,7 @@ public class RabbitMqProperties {
                 if (cause.isInitiatedByApplication()) {
                     log.debug("Shutdown is initiated by application. Ignoring it.");
                 } else {
-                    log.error("Shutdown is NOT initiated by application." + rabbitConnection);
+                    log.error("Shutdown is NOT initiated by application.");
                     log.error(cause.getMessage());
                     boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
                     if (cliMode) {
