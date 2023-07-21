@@ -25,9 +25,10 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.AlreadyClosedException;
 import com.rabbitmq.client.BlockedListener;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -279,9 +280,9 @@ public class RabbitMqProperties {
                     log.debug("Connection Shutdown completed " + cause.getMessage());
                     try {
                         rabbitConnection.close();
-                    } catch (Throwable e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    } catch (AlreadyClosedException | IOException e) {
+                        // This is intentionally added, if we do not call the close function, connection is not closed properly
+                        // and the connections count is getting increased..
                     }
                 }
             });
