@@ -32,6 +32,8 @@ import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -91,9 +93,11 @@ import ch.qos.logback.classic.Logger;
 
     public void send(String routingKey, String msg, MsgService msgService) throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
         String protocol = msgService.getServiceName();
+        JsonParser parser = new JsonParser();
+        String evnetId = msgService.getEventId(parser.parse(msg).getAsJsonObject());
         RabbitMqProperties rabbitmqProtocolProperties = rabbitMqPropertiesMap.get(protocol);
         if (rabbitmqProtocolProperties != null) {
-            rabbitmqProtocolProperties.send(routingKey, msg);
+            rabbitmqProtocolProperties.send(routingKey, msg, evnetId);
         } else {
             log.error("RabbitMq properties not configured for the protocol " + protocol);
         }

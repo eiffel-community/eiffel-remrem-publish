@@ -482,7 +482,7 @@ public class RabbitMqProperties {
      * @throws TimeoutException
      * @throws RemRemPublishException
      */
-    public void send(String routingKey, String msg)
+    public void send(String routingKey, String msg, String EventId)
             throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
             Channel channel = giveMeRandomChannel();
             checkAndCreateExchangeIfNeeded();
@@ -506,7 +506,7 @@ public class RabbitMqProperties {
 
         try {
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
-            log.info("Published message with size {} bytes on exchange '{}' with routing key '{}'",
+            log.info("Published message {} with size {} bytes on exchange '{}' with routing key '{}'", EventId,
                     msg.getBytes().length, exchangeName, routingKey);
             if (waitForConfirmsTimeOut == null || waitForConfirmsTimeOut == 0) {
                 waitForConfirmsTimeOut = DEFAULT_WAIT_FOR_CONFIRMS_TIMEOUT;
