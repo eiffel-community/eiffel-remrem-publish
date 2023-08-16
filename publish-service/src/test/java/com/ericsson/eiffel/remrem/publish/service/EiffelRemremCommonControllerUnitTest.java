@@ -26,8 +26,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -35,16 +35,12 @@ import org.mockito.Spy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
-import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.ericsson.eiffel.remrem.publish.controller.ProducerController;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
-import com.ericsson.eiffel.remrem.publish.service.MessageService;
-import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -101,7 +97,7 @@ public class EiffelRemremCommonControllerUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         unit.setRestTemplate(restTemplate);
 
         File file = new File("src/test/resources/EiffelActivityFinishedEvent.json");
@@ -116,8 +112,8 @@ public class EiffelRemremCommonControllerUnitTest {
         when(service2.getServiceName()).thenReturn("eiffelsemantics");
         when(messageService.getHttpStatus()).thenReturn(HttpStatus.OK);
 
-        when(messageService.send(Matchers.anyString(), Matchers.any(MsgService.class), Matchers.anyString(),
-                Matchers.anyString(), Matchers.anyString())).thenReturn(res);
+        when(messageService.send(ArgumentMatchers.anyString(), ArgumentMatchers.any(MsgService.class), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(res);
 
         when(body.getAsJsonObject()).thenReturn(json);
 

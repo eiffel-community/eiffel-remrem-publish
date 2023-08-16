@@ -15,6 +15,7 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 import ch.qos.logback.classic.Logger;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -53,6 +54,9 @@ public class EventTemplateHandler {
         JsonNode updatedJson = null;
         JsonFactory factory = new JsonFactory();
         ObjectMapper mapper = new ObjectMapper(factory);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         JsonNode rootNode = null;
         try {
             String eventTemplate = accessFileInSemanticJar(EVENT_TEMPLATE_PATH + eventName.toLowerCase() + ".json");

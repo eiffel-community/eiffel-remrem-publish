@@ -16,6 +16,7 @@ package com.ericsson.eiffel.remrem.publish;
 
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -25,8 +26,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
-@SpringBootApplication
-@ComponentScan("com.ericsson.eiffel.remrem")
+@SpringBootApplication(scanBasePackages = {"com.ericsson.eiffel.remrem"})
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 public class App extends SpringBootServletInitializer {
  
@@ -35,7 +35,7 @@ public class App extends SpringBootServletInitializer {
         application.addInitializers(new SpringLoggingInitializer());
         application.setBannerMode(Banner.Mode.OFF);
         application.setLogStartupInfo(false);
-        application.setWebEnvironment(true);    
+        application.setWebApplicationType(WebApplicationType.SERVLET); 
         ApplicationContext ctx = application.run(args); 
     }
 }

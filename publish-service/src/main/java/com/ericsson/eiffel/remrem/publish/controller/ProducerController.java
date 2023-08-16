@@ -19,6 +19,7 @@ import java.util.Map;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+@ComponentScan("com.ericsson.eiffel.remrem")
 @RestController
 @RequestMapping("/*")
 @Api(value = "REMReM Publish Service", description = "REST API for publishing Eiffel messages to message bus")
