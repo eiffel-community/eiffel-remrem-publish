@@ -569,7 +569,21 @@ public class RabbitMqProperties {
         if ((rabbitConnection == null || !rabbitConnection.isOpen())) {
             createRabbitMqConnection();
         }
-        return rabbitChannels.get(random.nextInt(rabbitChannels.size()));
+        for (Channel channel : rabbitChannels) {
+            if (channel.isOpen()) {
+                return channel;
+            }
+        }
+        try {
+            Channel channel = rabbitConnection.createChannel();
+            channel.confirmSelect();
+            rabbitChannels.add(channel);
+            return channel;
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new RemRemPublishException("Failed to create new channel for Rabbitmq :: ",
+                    factory, e);
+        }
     }
 
     /**
@@ -582,7 +596,7 @@ public class RabbitMqProperties {
     public String getTypeRoutingKeyFromConfiguration(String eventType) {
         if (types != null) {
             String key = eventType + DOT + TYPE;
-			String routingKey = types.getString(key);
+			      String routingKey = types.getString(key);
             try {
                 if (!routingKey.isEmpty()) {
                     return routingKey;
@@ -595,4 +609,6 @@ public class RabbitMqProperties {
 		log.info("Event type is null ");
 		return null;
     }
+
+
 }
