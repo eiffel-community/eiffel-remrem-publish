@@ -70,7 +70,7 @@ public class PublishUtils {
 
             if (StringUtils.isNotBlank(routingKey)) {
                 return routingKey;
-            } else if (StringUtils.isNotBlank(rabbitMqProperties.getRoutingkeyTypeOverrideFilePath())) {
+            } else if (StringUtils.isNotBlank(rabbitMqProperties.getRoutingKeyTypeOverrideFilePath())) {
                 String type = rabbitMqProperties.getTypeRoutingKeyFromConfiguration(msgService.getEventType(json));
                 if (StringUtils.isNotBlank(type)) {
                     return msgService.generateRoutingKey(json, tag, domainId, userDomainSuffix, type);

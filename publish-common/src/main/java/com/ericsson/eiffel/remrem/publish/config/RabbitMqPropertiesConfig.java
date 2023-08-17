@@ -54,8 +54,8 @@ public class RabbitMqPropertiesConfig {
     @Value("${jasypt.encryptor.jasyptKeyFilePath:#{null}}")
     private String jasyptKeyFilePath;
 
-    @Value("${semanticsRoutingkeyTypeOverrideFilepath:#{null}}")
-    private String semanticsRoutingkeyTypeOverrideFilepath;
+    @Value("${semanticsRoutingKeyTypeOverrideFilepath:#{null}}")
+    private String semanticsRoutingKeyTypeOverrideFilepath;
 
     private Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
@@ -158,7 +158,7 @@ public class RabbitMqPropertiesConfig {
                             Integer.parseInt(channelsCount));
                 }
 
-                rabbitMqProperties.setRoutingkeyTypeOverrideFilePath(semanticsRoutingkeyTypeOverrideFilepath);
+                rabbitMqProperties.setRoutingKeyTypeOverrideFilePath(semanticsRoutingKeyTypeOverrideFilepath);
 
                 String waitForConfirmsTimeOut = getPropertyAsText(rabbitmqInstanceObject, PROPERTY_WAIT_FOR_CONFIRMS_TIMEOUT);
                 if (waitForConfirmsTimeOut != null) {

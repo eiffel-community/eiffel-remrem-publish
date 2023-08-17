@@ -33,7 +33,7 @@ public class CliOptions {
 
     static private Options options=null;
     static private CommandLine commandLine;
-    private static final String SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH = "semanticsRoutingkeyTypeOverrideFilepath";
+    private static final String SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH = "semanticsRoutingKeyTypeOverrideFilepath";
     //Used for testing purposes
     private static ArrayList<Integer> testErrorCodes = new ArrayList<>();
 
@@ -255,9 +255,9 @@ public class CliOptions {
         }
 
         if (commandLine.hasOption(SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH)) {
-            String semanticsRoutingkeyTypeOverrideFilepath =commandLine.getOptionValue(SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
+            String semanticsRoutingKeyTypeOverrideFilepath =commandLine.getOptionValue(SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
             String key = PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH;
-            System.setProperty(key, semanticsRoutingkeyTypeOverrideFilepath);
+            System.setProperty(key, semanticsRoutingKeyTypeOverrideFilepath);
         }
 
         String usePersistance = "true";

@@ -57,7 +57,7 @@ public class RabbitMqProperties {
     private String domainId;
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
-    private String routingkeyTypeOverrideFilePath;
+    private String routingKeyTypeOverrideFilePath;
     private Integer tcpTimeOut;
     private boolean hasExchange = false;
 //  built in tcp connection timeout value for MB in milliseconds.
@@ -68,6 +68,7 @@ public class RabbitMqProperties {
     public static final String CONTENT_TYPE = "application/json";
     public static final String ENCODING_TYPE = "UTF-8";
     public static final BasicProperties PERSISTENT_BASIC_APPLICATION_JSON;
+    public static final String SEMANTICS_MESSAGE_PROTOCOL = "eiffelsemantics";
 
     private Connection rabbitConnection;
     private String protocol;
@@ -167,15 +168,15 @@ public class RabbitMqProperties {
         this.createExchangeIfNotExisting = createExchangeIfNotExisting;
     }
 
-	public String getRoutingkeyTypeOverrideFilePath() {
-		return routingkeyTypeOverrideFilePath;
-	}
+    public String getRoutingKeyTypeOverrideFilePath() {
+	return routingKeyTypeOverrideFilePath;
+    }
 
-	public void setRoutingkeyTypeOverrideFilePath(String routingkeyTypeOverrideFilePath) {
-		this.routingkeyTypeOverrideFilePath = routingkeyTypeOverrideFilePath;
-	}
+    public void setRoutingKeyTypeOverrideFilePath(String routingKeyTypeOverrideFilePath) {
+	this.routingKeyTypeOverrideFilePath = routingKeyTypeOverrideFilePath;
+    }
 
-	public Integer getChannelsCount() {
+    public Integer getChannelsCount() {
         return channelsCount;
     }
 
@@ -275,11 +276,11 @@ public class RabbitMqProperties {
             e.printStackTrace();
         }
 
-        if (StringUtils.isNotBlank(routingkeyTypeOverrideFilePath)) {
+        if (StringUtils.isNotBlank(routingKeyTypeOverrideFilePath)) {
             try {
-                types = new PropertyResourceBundle(new FileInputStream(routingkeyTypeOverrideFilePath));
+                types = new PropertyResourceBundle(new FileInputStream(routingKeyTypeOverrideFilePath));
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                log.error("Cannot fing routing key file. "+e.getMessage());
             }
         }
     }
@@ -361,8 +362,9 @@ public class RabbitMqProperties {
             waitForConfirmsTimeOut = Long.getLong(getValuesFromSystemProperties(protocol + ".rabbitmq.waitForConfirmsTimeOut"));
         }
 
-        if (protocol.equalsIgnoreCase("eiffelsemantics") && routingkeyTypeOverrideFilePath == null) {
-            routingkeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
+        if (protocol.equalsIgnoreCase(SEMANTICS_MESSAGE_PROTOCOL) 
+                && (routingKeyTypeOverrideFilePath == null || routingKeyTypeOverrideFilePath.isBlank())) {
+            routingKeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
         }
         
     }
@@ -380,7 +382,7 @@ public class RabbitMqProperties {
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
         createExchangeIfNotExisting = Boolean.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
         tcpTimeOut = Integer.getInteger(PropertiesConfig.TCP_TIMEOUT);
-        routingkeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
+        routingKeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
     }
 
     private String getValuesFromSystemProperties(String propertyName) {
@@ -596,13 +598,13 @@ public class RabbitMqProperties {
     public String getTypeRoutingKeyFromConfiguration(String eventType) {
         if (types != null) {
             String key = eventType + DOT + TYPE;
-			      String routingKey = types.getString(key);
             try {
+                String routingKey = types.getString(key);
                 if (!routingKey.isEmpty()) {
                     return routingKey;
                 }
             } catch (MissingResourceException e) {
-				log.info("Routing key from configuration is null ");
+		        log.info("Routing key from configuration is null ");
                 return null;
             }
         }
