@@ -596,19 +596,24 @@ public class RabbitMqProperties {
      * @return type based on eventType if provided in the configuration file else null
      */
     public String getTypeRoutingKeyFromConfiguration(String eventType) {
+        
         if (types != null) {
             String key = eventType + DOT + TYPE;
             try {
                 String routingKey = types.getString(key);
-                if (!routingKey.isEmpty()) {
+                if (!routingKey.isBlank()) {
                     return routingKey;
+                }else {
+                    log.warn("Routing key from configuration is empty for :"+ key);
                 }
             } catch (MissingResourceException e) {
-		        log.info("Routing key from configuration is null ");
+		        log.warn("Routing key from configuration is null for :"+ key);
                 return null;
             }
+        }else {
+            log.error("Uninitialized routing key configuration file ");
         }
-		log.info("Event type is null ");
+        
 		return null;
     }
 
