@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
@@ -217,6 +219,35 @@ public class MessageServiceRMQImplUnitTest {
             if(routingKey != null) {
                 assertEquals("eiffel.activity.EiffelActivityFinishedEvent.notag.eiffeltest.fem001", routingKey);
             }
+        }
+    }
+    
+    @Test
+    public void testRoutingKeyPriorSepia() throws FileNotFoundException {
+        RabbitMqProperties semanticsProperties = rmqHelper.getRabbitMqPropertiesMap().get("eiffelsemantics");
+
+        try {
+            // Simulate existence of routing key property file
+            System.setProperty(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH,
+                    "src/test/resources/routing-key-overrides.properties");
+            semanticsProperties.init();
+
+            MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
+            String routingKey;
+            if (msgService != null) {
+                File file = new File("src/test/resources/EiffelActivityFinishedEvent.json");
+                JsonParser parser = new JsonParser();
+                JsonElement json = parser.parse(new FileReader(file)).getAsJsonObject();
+                routingKey = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, "fem001", null, null);
+                if (routingKey != null) {
+                    assertEquals("eiffel.activity.finished.notag.eiffeltest.fem001", routingKey);
+                }
+            }
+        }
+        finally {
+            // Restore non-existence of routing key property file
+            System.clearProperty(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
+            semanticsProperties.init();
         }
     }
 }
