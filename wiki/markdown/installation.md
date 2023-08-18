@@ -13,8 +13,12 @@ The latest REMReM Publish CLI binary can be downloaded via [publish-cli.jar](htt
 The latest REMReM Publish Service binary can be downloaded via [publish-service.war](https://jitpack.io/#eiffel-community/eiffel-remrem-publish).
 
 The latest REMReM Publish uses sepia protocol. To make it compatible prior to sepia protocol versions
-create a file at following location publish-service/src/main/resources/routing-key-overrides.properties
-with following content
+create a file at desired location : path/to/routing-key-overrides.properties
+with the below mapping and pass the file location to the jar as follows
+
+Ex: java -DsemanticsRoutingkeyTypeOverrideFilepath=path/to/routing-key-overrides.properties -jar publish-service.war
+
+#########Mappings in routing-key-overrides.properties#############
 
 EiffelActivityCanceledEvent.family=activity
 EiffelActivityCanceledEvent.type=canceled
