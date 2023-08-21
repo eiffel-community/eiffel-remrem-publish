@@ -280,7 +280,7 @@ public class RabbitMqProperties {
             try {
                 types = new PropertyResourceBundle(new FileInputStream(routingKeyTypeOverrideFilePath));
             } catch (IOException e) {
-                log.error("Cannot fing routing key file. "+e.getMessage());
+                log.error("Cannot find routing key file. "+e.getMessage());
             }
         }
     }
