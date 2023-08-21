@@ -16,7 +16,7 @@ The latest REMReM Publish uses sepia protocol. To make it compatible prior to se
 create a file at desired location : path/to/routing-key-overrides.properties
 with the below mapping and pass the file location to the jar as follows
 
-Ex: java -DsemanticsRoutingkeyTypeOverrideFilepath=path/to/routing-key-overrides.properties -jar publish-service.war
+Ex: java -DsemanticsRoutingKeyTypeOverrideFilepath=path/to/routing-key-overrides.properties -jar publish-service.war
 
 #########Mappings in routing-key-overrides.properties#############
 
