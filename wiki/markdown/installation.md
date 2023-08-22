@@ -12,9 +12,10 @@ The latest REMReM Publish CLI binary can be downloaded via [publish-cli.jar](htt
 
 The latest REMReM Publish Service binary can be downloaded via [publish-service.war](https://jitpack.io/#eiffel-community/eiffel-remrem-publish).
 
-The latest REMReM Publish uses sepia protocol. To make it compatible prior to sepia protocol versions
+The latest REMReM Publish uses the routing key structure defined in [Eiffel Sepia](https://eiffel-community.github.io/eiffel-sepia/rabbitmq-message-broker.html).
+To make it compatible to prior routing key structure
 create a file at desired location : path/to/routing-key-overrides.properties
-with the below mapping and pass the file location to the jar as follows
+with the below mappings and pass the file location to the jar as follows
 
 Ex: java -DsemanticsRoutingKeyTypeOverrideFilepath=path/to/routing-key-overrides.properties -jar publish-service.war
 
