@@ -32,6 +32,8 @@ import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -42,6 +44,7 @@ import ch.qos.logback.classic.Logger;
 
     private static final String FALSE = "false";
 
+    private static Gson gson;
     @Autowired
     RabbitMqPropertiesConfig rabbitMqPropertiesConfig;
 
@@ -66,6 +69,13 @@ import ch.qos.logback.classic.Logger;
                 protocolInit(protocol);
             }
         }
+    }
+
+    public static Gson getGson() {
+    	if(gson == null) {
+    		gson = new GsonBuilder().create();
+    	}
+    	return gson;
     }
 
     /**
@@ -93,8 +103,7 @@ import ch.qos.logback.classic.Logger;
 
     public void send(String routingKey, String msg, MsgService msgService) throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
         String protocol = msgService.getServiceName();
-        JsonParser parser = new JsonParser();
-        String evnetId = msgService.getEventId(parser.parse(msg).getAsJsonObject());
+        String evnetId = msgService.getEventId(getGson().fromJson(msg, JsonObject.class));
         RabbitMqProperties rabbitmqProtocolProperties = rabbitMqPropertiesMap.get(protocol);
         if (rabbitmqProtocolProperties != null) {
             rabbitmqProtocolProperties.send(routingKey, msg, evnetId);
