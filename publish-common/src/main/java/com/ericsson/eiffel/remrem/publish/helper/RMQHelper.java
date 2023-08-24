@@ -71,11 +71,15 @@ import ch.qos.logback.classic.Logger;
         }
     }
 
+    /**
+     * This method is used to give the Gson object
+     * @return Gson
+     */
     public static Gson getGson() {
-    	if(gson == null) {
-    		gson = new GsonBuilder().create();
-    	}
-    	return gson;
+        if (gson == null) {
+            gson = new GsonBuilder().create();
+        }
+        return gson;
     }
 
     /**
