@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -29,21 +30,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.*;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.Connection;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ RabbitMqProperties.class, RMQHelper.class })
+@RunWith(MockitoJUnitRunner.class)
 public class RMQHelperUnitTest {
 
     private static final String mBusHost= "HostA";
@@ -73,15 +68,23 @@ public class RMQHelperUnitTest {
     Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     @Before public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        Mockito.doNothing().when(factory).useSslProtocol();
         Mockito.when(factory.newConnection()).thenReturn(mockConnection);
         Mockito.when(mockConnection.createChannel()).thenReturn(mockChannel);
-        PowerMockito.whenNew(RabbitMqProperties.class).withNoArguments().thenReturn(rabbitMqProperties);
-        initProperties();
-        rabbitMqProperties.setFactory(factory);
-        rmqHelper.rabbitMqPropertiesInit(protocol);
-        rabbitmqProtocolProperties = rmqHelper.getRabbitMqPropertiesMap().get(protocol);
+
+        try (MockedConstruction<RabbitMqProperties> construction = mockConstruction(RabbitMqProperties.class,
+                // Redirect all requests coming to any mock instance of RabbitMqProperties to
+                // pre-initialized rabbitMqProperties instance.
+                withSettings().defaultAnswer(invocation -> {
+                    Method method = invocation.getMethod();
+                    return method.invoke(rabbitMqProperties, invocation.getRawArguments());
+                }),
+                // Ensure mock factory is set properly.
+                (mock, context) -> mock.setFactory(factory))) {
+
+            initProperties();
+            rmqHelper.rabbitMqPropertiesInit(protocol);
+            rabbitmqProtocolProperties = rmqHelper.getRabbitMqPropertiesMap().get(protocol);
+        }
     }
 
     @After public void tearDown() throws Exception {

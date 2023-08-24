@@ -14,14 +14,19 @@
 */
 package com.ericsson.eiffel.remrem.publish.helper;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeoutException;
+import java.util.PropertyResourceBundle;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
@@ -52,6 +57,7 @@ public class RabbitMqProperties {
     private String domainId;
     private Integer channelsCount;
     private boolean createExchangeIfNotExisting;
+    private String routingKeyTypeOverrideFilePath;
     private Integer tcpTimeOut;
     private boolean hasExchange = false;
 //  built in tcp connection timeout value for MB in milliseconds.
@@ -62,11 +68,16 @@ public class RabbitMqProperties {
     public static final String CONTENT_TYPE = "application/json";
     public static final String ENCODING_TYPE = "UTF-8";
     public static final BasicProperties PERSISTENT_BASIC_APPLICATION_JSON;
+    public static final String SEMANTICS_MESSAGE_PROTOCOL = "eiffelsemantics";
 
     private Connection rabbitConnection;
     private String protocol;
 
     private List<Channel> rabbitChannels;
+
+    private ResourceBundle types;
+    private final String TYPE = "type";
+    private final String DOT = ".";
 
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
@@ -157,6 +168,14 @@ public class RabbitMqProperties {
         this.createExchangeIfNotExisting = createExchangeIfNotExisting;
     }
 
+    public String getRoutingKeyTypeOverrideFilePath() {
+	return routingKeyTypeOverrideFilePath;
+    }
+
+    public void setRoutingKeyTypeOverrideFilePath(String routingKeyTypeOverrideFilePath) {
+	this.routingKeyTypeOverrideFilePath = routingKeyTypeOverrideFilePath;
+    }
+
     public Integer getChannelsCount() {
         return channelsCount;
     }
@@ -229,9 +248,6 @@ public class RabbitMqProperties {
                 factory.setUsername(username);
                 factory.setPassword(password);
             }
-            
-            
-           
 
             if (tlsVer != null && !tlsVer.isEmpty()) {
                 if (tlsVer.contains("default")) {
@@ -258,6 +274,14 @@ public class RabbitMqProperties {
         } catch (RemRemPublishException e) {
             log.error("Error occured while setting up the RabbitMq Connection. "+e.getMessage());
             e.printStackTrace();
+        }
+
+        if (StringUtils.isNotBlank(routingKeyTypeOverrideFilePath)) {
+            try {
+                types = new PropertyResourceBundle(new FileInputStream(routingKeyTypeOverrideFilePath));
+            } catch (IOException e) {
+                log.error("Cannot find routing key file. "+e.getMessage());
+            }
         }
     }
 
@@ -337,6 +361,12 @@ public class RabbitMqProperties {
         if (waitForConfirmsTimeOut == null ) {
             waitForConfirmsTimeOut = Long.getLong(getValuesFromSystemProperties(protocol + ".rabbitmq.waitForConfirmsTimeOut"));
         }
+
+        if (protocol.equalsIgnoreCase(SEMANTICS_MESSAGE_PROTOCOL) 
+                && (routingKeyTypeOverrideFilePath == null || routingKeyTypeOverrideFilePath.isBlank())) {
+            routingKeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
+        }
+        
     }
     
 
@@ -352,6 +382,7 @@ public class RabbitMqProperties {
         usePersitance = Boolean.getBoolean(PropertiesConfig.USE_PERSISTENCE);
         createExchangeIfNotExisting = Boolean.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
         tcpTimeOut = Integer.getInteger(PropertiesConfig.TCP_TIMEOUT);
+        routingKeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
     }
 
     private String getValuesFromSystemProperties(String propertyName) {
@@ -556,4 +587,35 @@ public class RabbitMqProperties {
                     factory, e);
         }
     }
+
+    /**
+     * This method is used to get routing key type based on the eventType from the configuration file
+     * 
+     * @param eventType
+     *            Eiffel eventType
+     * @return type based on eventType if provided in the configuration file else null
+     */
+    public String getTypeRoutingKeyFromConfiguration(String eventType) {
+        
+        if (types != null) {
+            String key = eventType + DOT + TYPE;
+            try {
+                String routingKey = types.getString(key);
+                if (!routingKey.isBlank()) {
+                    return routingKey;
+                }else {
+                    log.warn("Routing key from configuration is empty for :"+ key);
+                }
+            } catch (MissingResourceException e) {
+		        log.warn("Routing key from configuration is null for :"+ key);
+                return null;
+            }
+        }else {
+            log.error("Uninitialized routing key configuration file ");
+        }
+        
+		return null;
+    }
+
+
 }

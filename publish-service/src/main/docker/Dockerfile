@@ -1,4 +1,4 @@
-FROM tomcat:8.0-jre8
+FROM tomcat:9.0.58-jdk17-openjdk-slim
 MAINTAINER Eiffel-Community
 ARG URL
 RUN echo Building RemRem-Publish image based on artifact url: ${URL}
