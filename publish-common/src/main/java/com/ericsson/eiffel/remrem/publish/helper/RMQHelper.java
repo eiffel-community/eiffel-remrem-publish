@@ -107,7 +107,7 @@ import ch.qos.logback.classic.Logger;
 
     public void send(String routingKey, String msg, MsgService msgService) throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
         String protocol = msgService.getServiceName();
-        String evnetId = msgService.getEventId(getGson().fromJson(msg, JsonObject.class));
+        String eventId = msgService.getEventId(getGson().fromJson(msg, JsonObject.class));
         RabbitMqProperties rabbitmqProtocolProperties = rabbitMqPropertiesMap.get(protocol);
         if (rabbitmqProtocolProperties != null) {
             rabbitmqProtocolProperties.send(routingKey, msg, evnetId);
