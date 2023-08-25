@@ -110,7 +110,7 @@ import ch.qos.logback.classic.Logger;
         String eventId = msgService.getEventId(getGson().fromJson(msg, JsonObject.class));
         RabbitMqProperties rabbitmqProtocolProperties = rabbitMqPropertiesMap.get(protocol);
         if (rabbitmqProtocolProperties != null) {
-            rabbitmqProtocolProperties.send(routingKey, msg, evnetId);
+            rabbitmqProtocolProperties.send(routingKey, msg, eventId);
         } else {
             log.error("RabbitMq properties not configured for the protocol " + protocol);
         }
