@@ -113,6 +113,7 @@ public class ProducerController {
             }
         } synchronized(this) {
             SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
+            log.info("HTTP Status: {}",  messageService.getHttpStatus().value());
             return new ResponseEntity(result, messageService.getHttpStatus());
         }
     }

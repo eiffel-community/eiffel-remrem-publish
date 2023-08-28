@@ -120,10 +120,9 @@ public class MessageServiceRMQImplUnitTest {
     }
 
     @Test public void sendNormal() throws Exception {
-        Map<String, String> map = new HashMap<String, String>();
+        String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
-        map.put("test", "test");
-        messageService.send(map, map, msgService);
+        rmqHelper.send("eiffelxxx", body, msgService);
     }
 
     @Test public void testSingleSuccessfulEvent() throws Exception {
@@ -193,12 +192,13 @@ public class MessageServiceRMQImplUnitTest {
     }
 
     @Test
-    public void testRabbitMQConnection() throws NackException, TimeoutException, RemRemPublishException {
+    public void testRabbitMQConnection() throws TimeoutException, RemRemPublishException, IOException {
+        String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         try {
             if(rabbitmqProtocolProperties != null) {
                 rabbitmqProtocolProperties.createRabbitMqConnection();
                 MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
-                rmqHelper.send("eiffelxxx", "Test message", msgService);
+                rmqHelper.send("eiffelxxx", body, msgService);
                 assertTrue(rabbitmqProtocolProperties.getRabbitConnection().isOpen());
             }
         } catch (IOException e) {
