@@ -24,6 +24,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -94,22 +98,34 @@ public class ProducerController {
             @ApiResponse(code = 503, message = "Service Unavailable") })
     @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity send(@ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
-                               @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
-                               @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
-                               @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
-                               @ApiParam(value = "eiffel event", required = true) @RequestBody final JsonElement body) {
+    public ResponseEntity send(
+            @ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
+            @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
+            @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
+            @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
+            @ApiParam(value = "eiffel event", required = true) @RequestBody final JsonElement body) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
-        log.debug("user domain suffix: " + userDomain + " tag: " + tag + " Routing Key: " + routingKey);
+        log.debug("user domain suffix: " + userDomain + " tag: " + tag + " Routing Key: "
+                + routingKey);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Check if the user is authenticated
+        if (authentication != null && authentication.isAuthenticated()) {
+            // Get the UserDetails object, which contains user information
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // Get the username of the authenticated user
+            String username = userDetails.getUsername();
+            log.info("Authentication Successful for user {} ", username);
+        }
         if (msgService != null && msgProtocol != null) {
             try {
                 rmqHelper.rabbitMqPropertiesInit(msgProtocol);
             } catch (RemRemPublishException e) {
                 return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
             }
-        } synchronized(this) {
+        }
+        synchronized (this) {
             SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
             return new ResponseEntity(result, messageService.getHttpStatus());
         }
