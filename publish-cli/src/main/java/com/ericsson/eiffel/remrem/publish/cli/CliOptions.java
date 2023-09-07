@@ -33,7 +33,7 @@ public class CliOptions {
 
     static private Options options=null;
     static private CommandLine commandLine;
-
+    private static final String SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH = "semanticsRoutingKeyTypeOverrideFilepath";
     //Used for testing purposes
     private static ArrayList<Integer> testErrorCodes = new ArrayList<>();
 
@@ -85,6 +85,8 @@ public class CliOptions {
         options.addOption("tag", "tag", true, "tag to be used in routing key");
         options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
         options.addOption("tto", "tcp_time_out", true, "specifies tcp connection timeout, default time is 60000 milliseconds");
+        options.addOption("srkt", SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH, true, "Default uses the routing key defined in Eiffel Sepia.To make it compatible to prior routing key structure provide the path to routing-key-overrides.properties.");
+
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
     }
@@ -252,6 +254,12 @@ public class CliOptions {
             System.setProperty(key, tls_ver);
         }
 
+        if (commandLine.hasOption(SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH)) {
+            String semanticsRoutingKeyTypeOverrideFilepath =commandLine.getOptionValue(SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
+            String key = PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH;
+            System.setProperty(key, semanticsRoutingKeyTypeOverrideFilepath);
+        }
+
         String usePersistance = "true";
         if (commandLine.hasOption("np")) {
             usePersistance = "false";
@@ -288,6 +296,7 @@ public class CliOptions {
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
         System.clearProperty(PropertiesConfig.TCP_TIMEOUT);
         System.clearProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
+        System.clearProperty(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
     }
 
     /**

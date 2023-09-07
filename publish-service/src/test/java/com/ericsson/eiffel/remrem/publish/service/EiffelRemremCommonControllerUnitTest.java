@@ -35,16 +35,12 @@ import org.mockito.Spy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
-import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.ericsson.eiffel.remrem.publish.controller.ProducerController;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
-import com.ericsson.eiffel.remrem.publish.service.MessageService;
-import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

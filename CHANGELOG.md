@@ -1,3 +1,12 @@
+## 2.1.1
+- Implemented the changes to log the eventId and HTTPStatus while the level is INFO.
+
+## 2.1.0
+- Implemented new routing key template for Sepia.
+
+## 2.0.30
+- Upgrading to OpenJDK 17
+
 ## 2.0.29
 - Uplifted eiffel-remrem-parent version to 2.0.10 to inherit the latest spring-boot version.
 

@@ -205,20 +205,84 @@ generate.server.appName: <application name of generate service, eg: generate>
 
 Available REST resources for REMReM Publish Service are described below.
 
-| Resource            | Method | Parameters                                                                                                                                                                             | Request body                                                                                                                                                                                                    | Description                                                                                                                                                                                                                                                                                           |
-|---------------------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| /producer/msg       | POST   | mp - message protocol, required msgType - message type, required ud - user domain, not required tag - not required rk - routing key, not required                                      | {   "meta": {     # Matches the meta object   },   "data": {     # Matches the data object   },   "links": {     # Matches the links object   } }                                                               | This endpoint is used to publish already generated Eiffel event to message bus. **Note:** This endpoint will not validate the message. It will check only if the message contains eventId and eventType.                                                                                                                                                                                                                      |
-| /generateAndPublish | POST   | mp - message protocol, required ud - user domain, not required tag - not required rk - routing key, not required failIfMultipleFound - default: false, failIfNoneFound - default: false,  lookupInExternalERs - default: false, lookupLimit - default: 1| {   "msgParams": {     "meta": {       # Matches the meta object     }   },   "eventParams": {     "data": {       # Matches the data object     },     "links": {       # Matches the links object     }   } } | This endpoint is used to generate and publish Eiffel events to message bus. It provides single endpoint for both REMReM Generate and REMReM Publish. The service works on the relative link /generateAndPublish if run as standalone application or /publish/generateAndPublish if run as tomcat app. |
-| /versions           | GET    |                                                                                                                                                                                        |                                                                                                                                                                                                                 | This endpoint is used to get versions of publish service and all loaded protocols.                                                                                                                                                                                                                    |
+### `/versions`
+This endpoint is used to get versions of publish service and all loaded protocols.
 
-**generateAndPublish endpoint is provided with four options for Lookups:**
+##### HTTP Method
+GET
 
-| Options              | Default Value | Description                                                                                                                                                                                                                                                                                                                                                                                                                                |
-|----------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| failIfMultipleFound: | False         | If value is set to True and multiple event ids are found through any of the provided lookup definitions, then no event will be generated. |
-| failIfNoneFound:     | False         | If value is set to True and no event id is found through (at least one of) the provided lookup definitions, then no event will be generated. |
-| lookupInExternalERs:             | False          | If value is set to True then REMReM will query external ERs and not just the locally used ER. The reason for the default value to be False is to decrease the load on external ERs. Here local ER means Single ER which is using REMReM generate.  External ER means multiple ER's which are configured in Local ER.|
-| lookupLimit:            | 1             | The number of events returned, through any lookup definition given, is limited to this number. |
+### `/producer/msg`
+This endpoint is used to publish already generated Eiffel event to message bus.
+
+Note: This endpoint will not validate the message. It will check only if the message contains eventId and eventType.
+
+##### HTTP Method
+POST
+
+##### Parameters
+
+| Name | Description | Required |
+|------|-------------|----------|
+| `mp` | message protocol | yes |
+| `msgType` | message type | yes |
+| `ud` | user domain | no |
+| `tag` | | no |
+| `rk` | routing key | no|
+
+##### Request
+```
+{
+  "meta": {
+    # Matches the meta object
+  },
+  "data": {
+    # Matches the data object
+  },
+  "links": {
+    # Matches the links object
+  }
+}
+```
+
+### `/generateAndPublish`
+This endpoint is used to generate and publish Eiffel events to message bus.
+It provides single endpoint for both REMReM Generate and REMReM Publish.
+The service works on the relative link `/generateAndPublish` if run as standalone
+application or `/publish/generateAndPublish` if run as Tomcat app.
+
+##### HTTP Method
+POST
+
+##### Parameters
+| Name | Description                             | Required | Default value |
+|------|------------------------------------------|----------|---------------|
+| `mp` | Message protocol. | yes |
+| `ud` | User domain .| no |
+| `tag` | | no |
+| `rk` | Routing key .| no |
+| `failIfMultipleFound` | If value is set to `truea and multiple event ids are found through any of the provided lookup definitions, then no event will be generated .| no | `false` |
+| `failIfNoneFound` | If value is set to `true` and no event id is found through (at least one of) the provided lookup definitions, then no event will be generated .| no | `false` |
+| `lookupInExternalERs` | If value is set to True then REMReM will query external ERs and not just the locally used ER. The reason for the default value to be `false` is to decrease the load on external ERs. Here local ER means single ER which is using REMReM generate. External ER means multiple ER's which are configured in local ER. | no | `false` |
+| `lookupLimit` | The number of events returned, through any lookup definition given, is limited to this number. | no |`1` |
+
+##### Request
+```
+{
+  "msgParams": {
+    "meta": {
+      # Matches the meta object
+    }
+  },
+  "eventParams": {
+    "data": {
+      # Matches the data object
+    },
+    "links": {
+      # Matches the links object
+    }
+  }
+}
+```
 
 ## Examples
 
@@ -311,7 +375,7 @@ Result:
 {"timestamp":"Dec 2, 2021 7:44:31 PM","status":400,"error":"Bad Request","message":"Could not read JSON: ..."}
 ```
 
-### Examples for /generateAndPublish endpoint
+### Examples for ``/generateAndPublish`` endpoint
 
 **Correct message:**
 
@@ -349,7 +413,7 @@ Result:
 {"result":"error","message":"Unknown event type requested..."}
 ```
 
-### Examples for `/versions` endpoint
+### Examples for ``/versions`` endpoint
 
 ```
 curl -H "Content-Type: application/json" -X GET http://localhost:8080/generate/versions

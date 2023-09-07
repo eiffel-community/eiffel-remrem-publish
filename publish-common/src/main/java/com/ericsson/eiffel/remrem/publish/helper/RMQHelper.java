@@ -32,6 +32,10 @@ import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -40,6 +44,7 @@ import ch.qos.logback.classic.Logger;
 
     private static final String FALSE = "false";
 
+    private static Gson gson;
     @Autowired
     RabbitMqPropertiesConfig rabbitMqPropertiesConfig;
 
@@ -67,6 +72,17 @@ import ch.qos.logback.classic.Logger;
     }
 
     /**
+     * This method is used to give the Gson object
+     * @return Gson
+     */
+    public static Gson getGson() {
+        if (gson == null) {
+            gson = new GsonBuilder().create();
+        }
+        return gson;
+    }
+
+    /**
      * This method is used to set protocol specific RabbitMQ properties
      * @param protocol name
      * @throws RemRemPublishException
@@ -91,9 +107,10 @@ import ch.qos.logback.classic.Logger;
 
     public void send(String routingKey, String msg, MsgService msgService) throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
         String protocol = msgService.getServiceName();
+        String eventId = msgService.getEventId(getGson().fromJson(msg, JsonObject.class));
         RabbitMqProperties rabbitmqProtocolProperties = rabbitMqPropertiesMap.get(protocol);
         if (rabbitmqProtocolProperties != null) {
-            rabbitmqProtocolProperties.send(routingKey, msg);
+            rabbitmqProtocolProperties.send(routingKey, msg, eventId);
         } else {
             log.error("RabbitMq properties not configured for the protocol " + protocol);
         }
