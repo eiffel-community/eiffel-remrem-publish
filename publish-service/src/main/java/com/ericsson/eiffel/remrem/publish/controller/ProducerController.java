@@ -16,16 +16,17 @@ package com.ericsson.eiffel.remrem.publish.controller;
 
 import java.util.EnumSet;
 import java.util.Map;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,13 +40,13 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
+import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.ericsson.eiffel.remrem.publish.service.MessageService;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
-import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
-import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -77,6 +78,9 @@ public class ProducerController {
     @Autowired
     private GenerateURLTemplate generateURLTemplate;
 
+    @Value("${activedirectory.publish.enabled}")
+    private boolean isAuthenticationEnabled;
+
     private RestTemplate restTemplate = new RestTemplate();
 
     private JsonParser parser = new JsonParser();
@@ -89,6 +93,18 @@ public class ProducerController {
 
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    public void getUserName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Check if the user is authenticated
+        if (authentication != null && authentication.isAuthenticated()) {
+            // Get the UserDetails object, which contains user information
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // Get the username of the authenticated user
+            String username = userDetails.getUsername();
+            log.info("User name {} ", username);
+        }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -106,20 +122,16 @@ public class ProducerController {
             @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
             @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
             @ApiParam(value = "eiffel event", required = true) @RequestBody final JsonElement body) {
+        if(isAuthenticationEnabled) {
+            getUserName();
+        }
+
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
         log.debug("mp: " + msgProtocol);
         log.debug("body: " + body);
         log.debug("user domain suffix: " + userDomain + " tag: " + tag + " Routing Key: "
                 + routingKey);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // Check if the user is authenticated
-        if (authentication != null && authentication.isAuthenticated()) {
-            // Get the UserDetails object, which contains user information
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // Get the username of the authenticated user
-            String username = userDetails.getUsername();
-            log.info("Authentication Successful for user {} ", username);
-        }
+
         if (msgService != null && msgProtocol != null) {
             try {
                 rmqHelper.rabbitMqPropertiesInit(msgProtocol);
@@ -182,6 +194,9 @@ public class ProducerController {
                                                      + "event fields from the input event data that does not validate successfully, "
                                                      + "and add those removed field information into customData/remremGenerateFailures") @RequestParam(value = "okToLeaveOutInvalidOptionalFields", required = false, defaultValue = "false")  final Boolean okToLeaveOutInvalidOptionalFields,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
+        if (isAuthenticationEnabled) {
+            getUserName();
+        }
 
         String bodyJsonOut = null;
         if(parseData) {

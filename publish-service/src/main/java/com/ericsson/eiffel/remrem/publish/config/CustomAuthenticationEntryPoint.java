@@ -24,7 +24,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
         if (authException instanceof BadCredentialsException) {
-            LOGGER.info("Bad Credentials {}", HttpStatus.UNAUTHORIZED);
+            LOGGER.warn("Bad Credentials {}", HttpStatus.UNAUTHORIZED);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid credentials");
         }
     }
