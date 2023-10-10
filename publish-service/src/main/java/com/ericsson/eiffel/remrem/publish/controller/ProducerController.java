@@ -95,7 +95,7 @@ public class ProducerController {
         this.restTemplate = restTemplate;
     }
 
-    public void getUserName() {
+    public void logUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Check if the user is authenticated
         if (authentication != null && authentication.isAuthenticated()) {
@@ -103,7 +103,7 @@ public class ProducerController {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             // Get the username of the authenticated user
             String username = userDetails.getUsername();
-            log.info("User name {} ", username);
+            log.info("User name: {} ", username);
         }
     }
 
@@ -123,7 +123,7 @@ public class ProducerController {
             @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
             @ApiParam(value = "eiffel event", required = true) @RequestBody final JsonElement body) {
         if(isAuthenticationEnabled) {
-            getUserName();
+            logUserName();
         }
 
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
@@ -195,7 +195,7 @@ public class ProducerController {
                                                      + "and add those removed field information into customData/remremGenerateFailures") @RequestParam(value = "okToLeaveOutInvalidOptionalFields", required = false, defaultValue = "false")  final Boolean okToLeaveOutInvalidOptionalFields,
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
         if (isAuthenticationEnabled) {
-            getUserName();
+            logUserName();
         }
 
         String bodyJsonOut = null;
