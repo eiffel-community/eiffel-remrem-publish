@@ -30,9 +30,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
+import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.AlreadyClosedException;
+import com.rabbitmq.client.BlockedListener;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.MessageProperties;
@@ -296,15 +298,36 @@ public class RabbitMqProperties {
             }
             factory.setConnectionTimeout(tcpTimeOut);
             rabbitConnection = factory.newConnection();
+            rabbitConnection.addShutdownListener(new ShutdownListener() {
+                @Override
+                public void shutdownCompleted(ShutdownSignalException cause) {
+                    log.debug("Connection Shutdown completed " + cause.getMessage());
+                    try {
+                        rabbitConnection.close();
+                    } catch (AlreadyClosedException | IOException e) {
+                        // This is intentionally added, if we do not call the close function, connection is not closed properly
+                        // and the connections count is getting increased..
+                    }
+                }
+            });
+
+            rabbitConnection.addBlockedListener(new BlockedListener() {
+                public void handleBlocked(String reason) throws IOException {
+                    // Connection is now blocked
+                    log.debug("Connection is blocked " + reason);
+                }
+
+                public void handleUnblocked() throws IOException {
+                    // Connection is now unblocked
+                }
+            });
             log.info("Connected to RabbitMQ.");
             rabbitChannels = new ArrayList<>();
             if(channelsCount == null || channelsCount == 0 ) {
                 channelsCount = DEFAULT_CHANNEL_COUNT;
             }
             for (int i = 0; i < channelsCount; i++) {
-                Channel channel = rabbitConnection.createChannel();
-                channel.confirmSelect();
-                rabbitChannels.add(channel);
+                createNewChannel();
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
@@ -313,6 +336,32 @@ public class RabbitMqProperties {
         }
     }
 
+    /**
+     * This method is used to create Rabbitmq channels
+     * @throws IOException
+     */
+    private Channel createNewChannel() throws IOException {
+        Channel channel = rabbitConnection.createChannel();
+        channel.addShutdownListener(new ShutdownListener() {
+            public void shutdownCompleted(ShutdownSignalException cause) {
+                // Beware that proper synchronization is needed here
+                if (cause.isInitiatedByApplication()) {
+                    log.debug("Shutdown is initiated by application. Ignoring it.");
+                } else {
+                    log.error("Shutdown is NOT initiated by application.");
+                    log.error(cause.getMessage());
+                    boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+                    if (cliMode) {
+                        System.exit(-3);
+                    }
+                }
+            }
+        });
+        channel.confirmSelect();
+        rabbitChannels.add(channel);
+        return channel;
+    }
+    
     private void initCli() {
         setValues();
     }
@@ -517,21 +566,7 @@ public class RabbitMqProperties {
             throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
             Channel channel = giveMeRandomChannel();
             checkAndCreateExchangeIfNeeded();
-            channel.addShutdownListener(new ShutdownListener() {
-                public void shutdownCompleted(ShutdownSignalException cause) {
-                    // Beware that proper synchronization is needed here
-                    if (cause.isInitiatedByApplication()) {
-                        log.debug("Shutdown is initiated by application. Ignoring it.");
-                    } else {
-                        log.error("Shutdown is NOT initiated by application.");
-                        log.error(cause.getMessage());
-                        boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
-                        if (cliMode) {
-                            System.exit(-3);
-                        }
-                    }
-                }
-            });
+
             BasicProperties msgProps = usePersitance ? PERSISTENT_BASIC_APPLICATION_JSON
                     : MessageProperties.BASIC;
 
@@ -577,9 +612,7 @@ public class RabbitMqProperties {
             }
         }
         try {
-            Channel channel = rabbitConnection.createChannel();
-            channel.confirmSelect();
-            rabbitChannels.add(channel);
+            Channel channel = createNewChannel();
             return channel;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
