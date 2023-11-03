@@ -52,6 +52,12 @@ usage: java -jar
 -rk,--routing_key <arg>                       Routing key of the eiffel message.
                                               When provided routing key is not generated and the value provided is used.
 
+-srkt,--semanticsRoutingKeyTypeOverrideFilepath <arg>
+
+                                              Default implementation uses the routing key defined in Eiffel Sepia.
+                                              To make it compatible to prior routing key structure provide the
+                                              path to routing-key-overrides.properties
+
 -tag,--tag <arg>                              Tag to be used in routing key.
 
 -v,--list_versions                            Lists the versions of publish and all loaded protocols.
@@ -71,6 +77,13 @@ Typical examples of usage Eiffel REMReM Publish CLI are described below.
 ```
 java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -ud messageQueue -mp eiffelsemantics
 ```
+
+**To support default routing key prior to routing key structure defined in Eiffel Sepia:**
+
+```
+java -jar publish-cli.jar -f publishMessages.json -en mb-exchange -mb hostname -domain publish-domain -ud messageQueue -mp eiffelsemantics -srkt /path/to/routing-key-overrides.properties
+```
+**Note:To get more information on mapping routing-key-overrides.properties see [here](https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/wiki/markdown/installation.md).
 
 **If you want to have the message non persistent add np flag:**
 

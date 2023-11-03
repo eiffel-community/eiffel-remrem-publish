@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
@@ -73,13 +72,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
         if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
-            managerPassword = DecryptionUtils.decryptString(managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
+            managerPassword = DecryptionUtils.decryptString(
+                    managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
         }
         LOGGER.debug("LDAP server url: " + ldapUrl);
-        auth.ldapAuthentication().userSearchFilter(userSearchFilter).contextSource(ldapContextSource());
+        auth.ldapAuthentication()
+            .userSearchFilter(userSearchFilter)
+            .contextSource(ldapContextSource());
     }
 
     public BaseLdapPathContextSource ldapContextSource() {
@@ -98,6 +103,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         LOGGER.debug("LDAP authentication enabled");
-        http.authorizeRequests().anyRequest().authenticated().and().httpBasic().and().csrf().disable();
+        http.authorizeRequests()
+            .anyRequest()
+            .authenticated()
+            .and()
+            .httpBasic()
+            .authenticationEntryPoint(customAuthenticationEntryPoint)
+            .and()
+            .csrf()
+            .disable();
     }
 }
