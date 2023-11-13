@@ -346,10 +346,11 @@ public class RabbitMqProperties {
             public void shutdownCompleted(ShutdownSignalException cause) {
                 // Beware that proper synchronization is needed here
                 if (cause.isInitiatedByApplication()) {
-                    log.debug("Shutdown is initiated by application. Ignoring it.");
+                    log.info("Shutdown of MB channel is initiated by application; ignoring it: "
+                            + cause.getMessage());
                 } else {
-                    log.error("Shutdown is NOT initiated by application.");
-                    log.error(cause.getMessage());
+                    log.error("Shutdown of MB channel is NOT initiated by application: "
+                            + cause.getMessage());
                     boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
                     if (cliMode) {
                         System.exit(-3);
