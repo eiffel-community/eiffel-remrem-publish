@@ -61,12 +61,22 @@ usage: java -jar
 -tag,--tag <arg>                              Tag to be used in routing key.
 
 -v,--list_versions                            Lists the versions of publish and all loaded protocols.
+
+-un,--username <arg>                          Username to connect to Messagebus
+
+-pwd,--password <arg>                         Encrypted Password to connect to MessageBus. Plaintext password
+                                              should be encrypted using Base64 Encryption Mechanism.
+-uri,--uri <uri>                              URI to message but, see https://www.rabbitmq.com/uri-spec.html.
 ```
 
 For publish we have input only from file that can contain one or more messages in a JSON array (surrounded with square brackets) separated by comma.
 
 The routing key is generated in the protocol library based on the event type.
 To get more information on routing key see [here](https://github.com/eiffel-community/eiffel-remrem-semantics).
+
+URI may contain username, password, etc, see https://www.rabbitmq.com/uri-spec.html for
+more details. If other options with the same meaning are provided their values overwrite
+values given by option `--uri`, regardless of their order on command line.
 
 ## Examples
 

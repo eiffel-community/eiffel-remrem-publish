@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -362,9 +363,10 @@ public class EventTemplateHandlerTest {
             JsonNode expectedJson = mapper.readTree(expectedDocument);
             JsonNode actualParsedEventJson = eventTemplateHandler.eventTemplateParser(dataToBeParsed, EventName);
 
-            LOG.info("expectedJsonString: " + expectedJson.toString());
+            LOG.info("expectedJsonString:    " + expectedJson.toString());
             LOG.info("actualParsedEventJson: " + actualParsedEventJson.toString());
 
+            JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), JSONCompareMode.NON_EXTENSIBLE);
             JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), true);
 
         } catch (Exception e) {

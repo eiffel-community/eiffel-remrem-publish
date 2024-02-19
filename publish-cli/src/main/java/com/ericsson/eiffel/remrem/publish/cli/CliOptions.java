@@ -34,6 +34,8 @@ public class CliOptions {
     static private Options options=null;
     static private CommandLine commandLine;
     private static final String SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH = "semanticsRoutingKeyTypeOverrideFilepath";
+    public static final String[] VALID_TLS_VERSIONS = new String[]{"1", "1.1", "1.2", "1.3", "default"};
+
     //Used for testing purposes
     private static ArrayList<Integer> testErrorCodes = new ArrayList<>();
 
@@ -75,7 +77,7 @@ public class CliOptions {
         options.addOption("np", "non_persistent", false, "remove persistence from message sending");
         options.addOption("port", "port", true, "port to connect to message bus, default is 5672");
         options.addOption("vh", "virtual_host", true, "virtual host to connect to (optional)");
-        options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1', '1.1, '1.2' or 'default'. It is required for RabbitMq secured port.");
+        options.addOption("tls", "tls", true, "tls version, specify a valid tls version: '1'..'1.3' or 'default'. It is required for RabbitMq secured port.");
         options.addOption("mp", "messaging_protocol", true, "name of messaging protocol to be used, e.g. eiffel3, eiffelsemantics, default is eiffelsemantics");
         options.addOption("domain", "domainId", true, "identifies the domain that produces the event");
         options.addOption("cc", "channelsCount", true, "Number of channels connected to message bus, default is 1");
@@ -86,6 +88,9 @@ public class CliOptions {
         options.addOption("rk", "routing_key", true, "routing key of the eiffel message. When provided routing key is not generated and the value provided is used.");
         options.addOption("tto", "tcp_time_out", true, "specifies tcp connection timeout, default time is 60000 milliseconds");
         options.addOption("srkt", SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH, true, "Default uses the routing key defined in Eiffel Sepia.To make it compatible to prior routing key structure provide the path to routing-key-overrides.properties.");
+        options.addOption("un", "username", true, "username to connect to message bus");
+        options.addOption("pwd", "password", true, "password to connect to message bus");
+        options.addOption("ur", "uri", true, "URI to connect to message bus");
 
         contentGroup = createContentGroup();
         options.addOptionGroup(contentGroup);
@@ -246,8 +251,7 @@ public class CliOptions {
             if (tls_ver == null) {
                 tls_ver = "NULL";
             }
-            String[] validTlsVersions = new String[]{"1", "1.1", "1.2", "default"};
-            if (!ArrayUtils.contains(validTlsVersions, tls_ver)) {
+            if (!ArrayUtils.contains(VALID_TLS_VERSIONS, tls_ver)) {
                 throw new HandleMessageBusException("Specified TLS version is not valid! Specify a valid TLS version!");
             }
             String key = PropertiesConfig.TLS;
@@ -258,6 +262,24 @@ public class CliOptions {
             String semanticsRoutingKeyTypeOverrideFilepath =commandLine.getOptionValue(SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
             String key = PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH;
             System.setProperty(key, semanticsRoutingKeyTypeOverrideFilepath);
+        }
+
+        if (commandLine.hasOption("username")) {
+            String usernm = commandLine.getOptionValue("username");
+            String key = PropertiesConfig.USERNAME;
+            System.setProperty(key, usernm);
+        }
+
+        if (commandLine.hasOption("password")) {
+            String passwd = commandLine.getOptionValue("password");
+            String key = PropertiesConfig.PASSWORD;
+            System.setProperty(key, passwd);
+        }
+
+        if (commandLine.hasOption("uri")) {
+            String passwd = commandLine.getOptionValue("uri");
+            String key = PropertiesConfig.URI;
+            System.setProperty(key, passwd);
         }
 
         String usePersistance = "true";
@@ -297,6 +319,9 @@ public class CliOptions {
         System.clearProperty(PropertiesConfig.TCP_TIMEOUT);
         System.clearProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
         System.clearProperty(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
+        System.clearProperty(PropertiesConfig.USERNAME);
+        System.clearProperty(PropertiesConfig.PASSWORD);
+        System.clearProperty(PropertiesConfig.URI);
     }
 
     /**
