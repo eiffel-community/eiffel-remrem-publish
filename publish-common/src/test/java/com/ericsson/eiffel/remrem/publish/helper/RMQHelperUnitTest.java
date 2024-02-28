@@ -55,6 +55,8 @@ public class RMQHelperUnitTest {
     private static final Long waitForConfirmTimeOut= 5000L;
     private String protocol = "eiffelsemantics";
     private String createExchange = "true";
+    private static final String username= "guest";
+    private static final String password= "Z3Vlc3Q=";
 
     @InjectMocks
     RMQHelper rmqHelper;
@@ -106,6 +108,8 @@ public class RMQHelperUnitTest {
         System.setProperty(PropertiesConfig.CHANNELS_COUNT, Integer.toString(channelsCount));
         System.setProperty(PropertiesConfig.TCP_TIMEOUT, Integer.toString(tcpTimeOut));
         System.setProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT, Long.toString(waitForConfirmTimeOut));
+        System.setProperty(PropertiesConfig.USERNAME, username);
+        System.setProperty(PropertiesConfig.PASSWORD, password);
     }
 
     private void cleanProperties() {
@@ -122,6 +126,8 @@ public class RMQHelperUnitTest {
         System.clearProperty(PropertiesConfig.CHANNELS_COUNT);
         System.clearProperty(PropertiesConfig.TCP_TIMEOUT);
         System.clearProperty(PropertiesConfig.WAIT_FOR_CONFIRMS_TIME_OUT);
+        System.clearProperty(PropertiesConfig.USERNAME);
+        System.clearProperty(PropertiesConfig.PASSWORD);
     }
 
     @Test public void getHostTest() {
@@ -160,7 +166,7 @@ public class RMQHelperUnitTest {
     }
 
     @Test public void setTlsVersionTest() {
-        String tlsVersion = "1.1";
+        String tlsVersion = "1.3";
         rabbitmqProtocolProperties.setTlsVer(tlsVersion);
         assertTrue(rabbitmqProtocolProperties.getTlsVer().equals(tlsVersion));
     }
@@ -181,7 +187,7 @@ public class RMQHelperUnitTest {
         String host = "HOSTC";
         Integer portNumber = 1928;
         String virtHost = "/eiffel/test2";
-        String tlsVersion = "1.0";
+        String tlsVersion = "1.3";
         String exchangeNameTest = "EN2";
         String usePersistenceTest = "false";
         Integer tcpTimeOut = 5000;

@@ -16,15 +16,12 @@ package com.ericsson.eiffel.remrem.publish.helper;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
-import java.util.PropertyResourceBundle;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -61,6 +58,8 @@ public class RabbitMqProperties {
     private boolean createExchangeIfNotExisting;
     private String routingKeyTypeOverrideFilePath;
     private Integer tcpTimeOut;
+    private String uri;
+    private URI parsedUri;
     private boolean hasExchange = false;
 //  built in tcp connection timeout value for MB in milliseconds.
     public static final Integer DEFAULT_TCP_TIMEOUT = 60000;
@@ -100,7 +99,13 @@ public class RabbitMqProperties {
     }
 
     public String getHost() {
-        return host;
+        if (host != null)
+            return host;
+
+        if (parsedUri != null)
+            return parsedUri.getHost();
+
+        return null;
     }
 
     public void setHost(String host) {
@@ -119,7 +124,13 @@ public class RabbitMqProperties {
     }
 
     public Integer getPort() {
-        return port;
+        if (port != null)
+            return port;
+
+        if (parsedUri != null)
+            return parsedUri.getPort();
+
+        return null;
     }
 
     public void setPort(Integer port) {
@@ -139,15 +150,35 @@ public class RabbitMqProperties {
     }
 
     public String getUsername() {
-        return username;
+        if (username != null)
+            return username;
+
+        return parseUserInfoFromUri(0 /* password is at index 1 */);
     }
 
     public void setUsername(String user) {
         this.username = user;
     }
 
+    private String parseUserInfoFromUri(int index) {
+        if (parsedUri == null)
+            parsedUri = URI.create(uri);
+
+        String userInfo = parsedUri.getUserInfo();
+        if (userInfo != null) {
+            String[] usernameAndPassword = userInfo.split(":");
+            if (usernameAndPassword.length > index)
+                return usernameAndPassword[index];
+        }
+
+        return null;
+    }
+
     public String getPassword() {
-        return password;
+        if (password != null)
+            return password;
+
+        return parseUserInfoFromUri(1 /* password is at index 1 */);
     }
 
     public void setPassword(String password) {
@@ -225,10 +256,16 @@ public class RabbitMqProperties {
         } else {
             initService();
         }
-        madatoryParametersCheck();
+
         try {
-            factory.setHost(host);
-            log.info("Host address: " + host);
+            if (uri != null) {
+                factory.setUri(uri);
+            }
+
+            if (host != null) {
+                factory.setHost(host);
+                log.info("Host address: " + host);
+            }
 
             if (port != null) {
                 factory.setPort(port);
@@ -265,10 +302,16 @@ public class RabbitMqProperties {
                 log.info("Using standard connection method to RabbitMQ.");
             }
 
+            madatoryParametersCheck();
         } catch (KeyManagementException e) {
             log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         } catch (NoSuchAlgorithmException e) {
-            log.error(e.getMessage(), e);            
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
         try {
             //The exception can be safely handled here as there is a check for existence of exchange is done before each publish.
@@ -433,6 +476,18 @@ public class RabbitMqProperties {
         createExchangeIfNotExisting = Boolean.parseBoolean(getValuesFromSystemProperties(PropertiesConfig.CREATE_EXCHANGE_IF_NOT_EXISTING));
         tcpTimeOut = Integer.getInteger(PropertiesConfig.TCP_TIMEOUT);
         routingKeyTypeOverrideFilePath = getValuesFromSystemProperties(PropertiesConfig.SEMANTICS_ROUTINGKEY_TYPE_OVERRIDE_FILEPATH);
+        username = getValuesFromSystemProperties(PropertiesConfig.USERNAME);
+        password = decryptString(getValuesFromSystemProperties(PropertiesConfig.PASSWORD));
+        uri = getValuesFromSystemProperties(PropertiesConfig.URI);
+        if (!StringUtils.isBlank(uri))
+            parsedUri = URI.create(uri);
+    }
+
+    private String decryptString(String password) {
+        if (password == null)
+            return null;
+
+        return new String(Base64.getDecoder().decode(password));
     }
 
     private String getValuesFromSystemProperties(String propertyName) {
@@ -443,11 +498,16 @@ public class RabbitMqProperties {
      * This method is used to check mandatory RabbitMQ properties.
      */
     private void madatoryParametersCheck() {
-        if(host == null || exchangeName == null) {
-            if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
-                System.err.println("Mandatory RabbitMq properties missing");
-                System.exit(-1);
-            }
+        if (factory == null) {
+            throw new RuntimeException("Missing RabbitMQ factory intialization");
+        }
+
+        if (StringUtils.isBlank(host) && StringUtils.isBlank(factory.getHost())) {
+            throw new RuntimeException("Missing host name");
+        }
+
+        if (StringUtils.isBlank(exchangeName)) {
+            throw new RuntimeException("Missing exchange name");
         }
     }
 
