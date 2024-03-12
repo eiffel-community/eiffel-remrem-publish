@@ -29,6 +29,33 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.ldap.core.support.BaseLdapPathContextSource;
+import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserCache;
+import org.springframework.security.core.userdetails.cache.SpringCacheBasedUserCache;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.ldap.authentication.LdapAuthenticator;
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
 /**
  * This class is used to enable the ldap authentication based on property
@@ -74,20 +101,44 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    @Autowired
-    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    @Bean
+    public UserCache userCache() {
+        // Adjust cache settings as necessary
+        return new SpringCacheBasedUserCache(new ConcurrentMapCache("authenticationCache"));
+    }
+
+    @Bean
+    public LdapAuthoritiesPopulator ldapAuthoritiesPopulator() {
+        return new DefaultLdapAuthoritiesPopulator(ldapContextSource(), null); // Adjust the second parameter based on your group search base
+        // Additional configuration can be set here if necessary
+    }
+
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
         final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
         if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
             managerPassword = DecryptionUtils.decryptString(
                     managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
         }
         LOGGER.debug("LDAP server url: " + ldapUrl);
-        auth.ldapAuthentication()
-            .userSearchFilter(userSearchFilter)
-            .contextSource(ldapContextSource());
+
+        BindAuthenticator bindAuthenticator = new BindAuthenticator(ldapContextSource());
+        bindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch("", userSearchFilter, ldapContextSource()));
+
+
+        LdapAuthoritiesPopulator ldapAuthoritiesPopulator = ldapAuthoritiesPopulator();
+
+        // Create and use the caching LDAP authentication provider
+        CachingLdapAuthenticationProvider cachingProvider =
+                new CachingLdapAuthenticationProvider(bindAuthenticator, ldapAuthoritiesPopulator);
+
+        cachingProvider.setUserCache(userCache());
+        auth.authenticationProvider(cachingProvider);
+
     }
 
-    public BaseLdapPathContextSource ldapContextSource() {
+    public LdapContextSource ldapContextSource() {
         LdapContextSource ldap = new LdapContextSource();
         ldap.setUrl(ldapUrl);
         ldap.setBase(rootDn);
