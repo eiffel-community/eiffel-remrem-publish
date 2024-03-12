@@ -29,6 +29,37 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.ldap.core.support.BaseLdapPathContextSource;
+import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserCache;
+import org.springframework.security.core.userdetails.cache.SpringCacheBasedUserCache;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.ldap.authentication.LdapAuthenticator;
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to enable the ldap authentication based on property
@@ -64,6 +95,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${activedirectory.connectionTimeOut:#{127000}}")
     private Integer ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
 
+    @Value("${LdapCacheTTL}")
+    private Integer LdapCacheTTL;
+
 //  built in connection timeout value for ldap if the network issue happens
     public static final Integer DEFAULT_LDAP_CONNECTION_TIMEOUT = 127000;
 
@@ -74,20 +108,54 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    @Autowired
-    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    @Bean
+    public UserCache userCache() {
+        if (cacheManager().getCache("authenticationCache") == null) {
+            throw new IllegalStateException ("Cache 'authenticationCache' is required but not available");
+        }
+        return new SpringCacheBasedUserCache(cacheManager().getCache("authenticationCache"));
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(Caffeine.newBuilder()
+                .expireAfterWrite(LdapCacheTTL, TimeUnit.MINUTES));
+        return cacheManager;
+    }
+
+    @Bean
+    public LdapAuthoritiesPopulator ldapAuthoritiesPopulator() {
+        LdapContextSource contextSource = ldapContextSource();
+        return new DefaultLdapAuthoritiesPopulator(contextSource, null);
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
         final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
         if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
             managerPassword = DecryptionUtils.decryptString(
                     managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
         }
         LOGGER.debug("LDAP server url: " + ldapUrl);
-        auth.ldapAuthentication()
-            .userSearchFilter(userSearchFilter)
-            .contextSource(ldapContextSource());
+        LdapContextSource contextSource = ldapContextSource();
+        BindAuthenticator bindAuthenticator = new BindAuthenticator(contextSource);
+        bindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch("", userSearchFilter, contextSource));
+
+
+        LdapAuthoritiesPopulator ldapAuthoritiesPopulator = ldapAuthoritiesPopulator();
+
+        // Create and use the caching LDAP authentication provider
+        CachingLdapAuthenticationProvider cachingProvider =
+                new CachingLdapAuthenticationProvider(bindAuthenticator, ldapAuthoritiesPopulator);
+
+        cachingProvider.setUserCache(userCache());
+        auth.authenticationProvider(cachingProvider);
+
     }
 
-    public BaseLdapPathContextSource ldapContextSource() {
+    @Bean
+    public LdapContextSource ldapContextSource() {
         LdapContextSource ldap = new LdapContextSource();
         ldap.setUrl(ldapUrl);
         ldap.setBase(rootDn);
