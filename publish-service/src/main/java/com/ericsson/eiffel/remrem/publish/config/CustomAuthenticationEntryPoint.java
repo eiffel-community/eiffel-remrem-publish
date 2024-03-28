@@ -34,8 +34,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             if (cause instanceof org.springframework.ldap.CommunicationException communicationException) {
                 cause = communicationException.getCause();
                 if (cause instanceof javax.naming.CommunicationException namingCommunicationException) {
-                    LOGGER.warn("Communication problem: {}: {}", HttpStatus.GATEWAY_TIMEOUT, namingCommunicationException.toString());
-                    response.sendError(HttpServletResponse.SC_GATEWAY_TIMEOUT, namingCommunicationException.toString());
+                    String message = namingCommunicationException.toString();
+                    LOGGER.warn("Communication problem: {}; {}", HttpStatus.GATEWAY_TIMEOUT, message);
+                    response.sendError(HttpServletResponse.SC_GATEWAY_TIMEOUT, message);
                     response.flushBuffer();
                 }
             }
