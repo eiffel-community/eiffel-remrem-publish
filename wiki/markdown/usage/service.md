@@ -254,16 +254,17 @@ application or `/publish/generateAndPublish` if run as Tomcat app.
 POST
 
 ##### Parameters
-| Name | Description                             | Required | Default value |
-|------|------------------------------------------|----------|---------------|
-| `mp` | Message protocol. | yes |
-| `ud` | User domain .| no |
-| `tag` | | no |
-| `rk` | Routing key .| no |
-| `failIfMultipleFound` | If value is set to `truea and multiple event ids are found through any of the provided lookup definitions, then no event will be generated .| no | `false` |
-| `failIfNoneFound` | If value is set to `true` and no event id is found through (at least one of) the provided lookup definitions, then no event will be generated .| no | `false` |
-| `lookupInExternalERs` | If value is set to True then REMReM will query external ERs and not just the locally used ER. The reason for the default value to be `false` is to decrease the load on external ERs. Here local ER means single ER which is using REMReM generate. External ER means multiple ER's which are configured in local ER. | no | `false` |
-| `lookupLimit` | The number of events returned, through any lookup definition given, is limited to this number. | no |`1` |
+| Name | Description                                                                                                                                                                                                                                                                                                             | Required | Default value |
+|------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| `mp` | Message protocol.                                                                                                                                                                                                                                                                                                       | yes |
+| `domainId`                          | Eiffel domain identifier is passed to underlying `generate` service, see [Configuration of Default Domain Identifier](https://github.com/eiffel-community/eiffel-remrem-generate/blob/master/wiki/markdown/usage/configuration.md#configuration-of-default-domain-identifier) of `generate` service.                    | no                     |              |
+| `ud` | User domain.                                                                                                                                                                                                                                                                                                            | no |
+| `tag` |                                                                                                                                                                                                                                                                                                                         | no |
+| `rk` | Routing key.                                                                                                                                                                                                                                                                                                            | no |
+| `failIfMultipleFound` | If value is set to `true` and multiple event ids are found through any of the provided lookup definitions, then no event will be generated.                                                                                                                                                                             | no | `false` |
+| `failIfNoneFound` | If value is set to `true` and no event id is found through (at least one of) the provided lookup definitions, then no event will be generated.                                                                                                                                                                          | no | `false` |
+| `lookupInExternalERs` | If value is set to `true` then REMReM will query external ERs and not just the locally used ER. The reason for the default value to be `false` is to decrease the load on external ERs. Here local ER means single ER which is using REMReM generate. External ER means multiple ER's which are configured in local ER. | no | `false` |
+| `lookupLimit` | The number of events returned, through any lookup definition given, is limited to this number.                                                                                                                                                                                                                          | no |`1` |
 
 ##### Request
 ```
