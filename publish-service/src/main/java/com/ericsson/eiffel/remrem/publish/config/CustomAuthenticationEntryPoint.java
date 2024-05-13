@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -24,8 +25,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        if (authException instanceof BadCredentialsException) {
+        if (authException instanceof BadCredentialsException ||
+            authException instanceof InsufficientAuthenticationException) {
             LOGGER.warn("Bad Credentials {}", HttpStatus.UNAUTHORIZED);
+            // Ensure pop-up window is opened when request comes from a web browser.
+            response.setHeader("WWW-Authenticate", "Basic");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid credentials");
         }
         else if (authException instanceof InternalAuthenticationServiceException) {
