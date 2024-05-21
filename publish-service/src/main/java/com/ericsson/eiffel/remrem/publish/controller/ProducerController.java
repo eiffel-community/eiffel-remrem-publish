@@ -14,10 +14,12 @@
 */
 package com.ericsson.eiffel.remrem.publish.controller;
 
+import java.net.URISyntaxException;
 import java.util.EnumSet;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -217,14 +219,22 @@ public class ProducerController {
         EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
 
         try {
-            // Append domainId param if provided.
-            final String domainParam = StringUtils.isNotBlank(domainId) ? "&domainId=" + domainId : "";
-            String generateUrl = generateURLTemplate.getUrl() + "&failIfMultipleFound=" + failIfMultipleFound
-                    + "&failIfNoneFound=" + failIfNoneFound + "&lookupInExternalERs=" + lookupInExternalERs
-                    + "&lookupLimit=" + lookupLimit + "&okToLeaveOutInvalidOptionalFields=" + okToLeaveOutInvalidOptionalFields
-                    + domainParam;
+            URIBuilder builder = null;
+            try {
+                builder = new URIBuilder(generateURLTemplate.getUrl());
+                builder.addParameter("failIfMultipleFound", failIfMultipleFound.toString());
+                builder.addParameter("failIfNoneFound", failIfNoneFound.toString());
+                builder.addParameter("lookupInExternalERs", lookupInExternalERs.toString());
+                builder.addParameter("lookupLimit", String.valueOf(lookupLimit));
+                builder.addParameter("okToLeaveOutInvalidOptionalFields", okToLeaveOutInvalidOptionalFields.toString());
+                if (StringUtils.isNotBlank(domainId))
+                    builder.addParameter("domainId", domainId);
+            } catch (URISyntaxException e) {
+                return new ResponseEntity("Cannot build URL of generate service: " + e.getMessage(),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 
-            ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
+            ResponseEntity<String> response = restTemplate.postForEntity(builder.toString(),
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
             if (response.getStatusCode() == HttpStatus.OK) {
