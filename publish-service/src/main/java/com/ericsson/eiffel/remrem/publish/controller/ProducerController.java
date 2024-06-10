@@ -14,8 +14,7 @@
 */
 package com.ericsson.eiffel.remrem.publish.controller;
 
-import java.util.EnumSet;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,65 +192,98 @@ public class ProducerController {
                                              @ApiParam(value = "okToLeaveOutInvalidOptionalFields true will remove the optional "
                                                      + "event fields from the input event data that does not validate successfully, "
                                                      + "and add those removed field information into customData/remremGenerateFailures") @RequestParam(value = "okToLeaveOutInvalidOptionalFields", required = false, defaultValue = "false")  final Boolean okToLeaveOutInvalidOptionalFields,
-                                             @ApiParam(value = "JSON message", required = true) @RequestBody final JsonObject bodyJson) {
+                                             @ApiParam(value = "JSON message", required = true) @RequestBody final JsonElement bodyJson) {
         if (isAuthenticationEnabled) {
             logUserName();
         }
 
-        String bodyJsonOut = null;
-        if(parseData) {
-            // -- parse params in incoming request -> body -------------
-            EventTemplateHandler eventTemplateHandler = new EventTemplateHandler();
-            JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(bodyJson.toString(), msgType);
-            bodyJsonOut = parsedTemplate.toString();
-            log.info("Parsed template: " + bodyJsonOut);
-        }else{
-            bodyJsonOut = bodyJson.toString();
+        List<JsonObject> events = new ArrayList<>();
+        if (bodyJson.isJsonObject()) {
+            events.add(bodyJson.getAsJsonObject());
+        } else if (bodyJson.isJsonArray()) {
+            for (JsonElement element : bodyJson.getAsJsonArray()) {
+                if (element.isJsonObject()) {
+                    events.add(element.getAsJsonObject());
+                } else {
+                    return new ResponseEntity<>("Invalid event content", HttpStatus.BAD_REQUEST);
+                }
+            }
+        } else {
+            return new ResponseEntity<>("Invalid event content", HttpStatus.BAD_REQUEST);
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
-        EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
-
-        try {
-            String generateUrl = generateURLTemplate.getUrl() + "&failIfMultipleFound=" + failIfMultipleFound
-                    + "&failIfNoneFound=" + failIfNoneFound + "&lookupInExternalERs=" + lookupInExternalERs
-                    + "&lookupLimit=" + lookupLimit + "&okToLeaveOutInvalidOptionalFields=" + okToLeaveOutInvalidOptionalFields;
-            ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
-                    entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
-
-                // publishing requires an array if you want status code
-                String responseBody = "[" + response.getBody() + "]";
-                MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
-
-                log.debug("mp: " + msgProtocol);
-                log.debug("body: " + responseBody);
-                log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
-                if (msgService != null && msgProtocol != null) {
-                    rmqHelper.rabbitMqPropertiesInit(msgProtocol);
-                }
-                synchronized(this) {
-                    SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
-                    return new ResponseEntity(result, messageService.getHttpStatus());
-                }
+        List<Map<String, Object>> responseEvents = new ArrayList<>();
+        for (JsonObject eventJson : events) {
+            Map<String, Object> eventResponse = new HashMap<>();
+            String bodyJsonOut = null;
+            if (parseData) {
+                // -- parse params in incoming request -> body -------------
+                EventTemplateHandler eventTemplateHandler = new EventTemplateHandler();
+                JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
+                bodyJsonOut = parsedTemplate.toString();
+                log.info("Parsed template: " + bodyJsonOut);
             } else {
-                return response;
+                bodyJsonOut = eventJson.toString();
             }
-        }
-        catch (RemRemPublishException e) {
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+            HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
+            EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
+
+            try {
+                String generateUrl = generateURLTemplate.getUrl() + "&failIfMultipleFound=" + failIfMultipleFound
+                        + "&failIfNoneFound=" + failIfNoneFound + "&lookupInExternalERs=" + lookupInExternalERs
+                        + "&lookupLimit=" + lookupLimit + "&okToLeaveOutInvalidOptionalFields=" + okToLeaveOutInvalidOptionalFields;
+                ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
+                        entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
+
+
+                //eventResponse.put("ID", UUID.randomUUID().toString());
+                //eventResponse.put("Status Code", response.getStatusCodeValue());
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
+
+                    // publishing requires an array if you want status code
+                    String responseBody = "[" + response.getBody() + "]";
+                    MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
+
+                    log.debug("mp: " + msgProtocol);
+                    log.debug("body: " + responseBody);
+                    log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
+                    if (msgService != null && msgProtocol != null) {
+                        rmqHelper.rabbitMqPropertiesInit(msgProtocol);
+                    }
+
+                    synchronized (this) {
+                        SendResult result = messageService.send(responseBody, msgService, userDomain, tag, routingKey);
+                        //return new ResponseEntity(result, messageService.getHttpStatus());
+                        eventResponse.put("Result", result);
+                        eventResponse.put("message", messageService.getHttpStatus());
+                    }
+
+
+                } else {
+                    return response;
+                }
+                responseEvents.add(eventResponse);
+            } catch (RemRemPublishException e) {
+                responseEvents.add(eventResponse);
                 return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-        catch (HttpStatusCodeException e) {
-            HttpStatus result = HttpStatus.BAD_REQUEST;
-            if (getStatus.contains(e.getStatusCode())) {
-                result = e.getStatusCode();
+                //eventResponse.put("Message", responseEvents)
+            } catch (HttpStatusCodeException e) {
+                HttpStatus result = HttpStatus.BAD_REQUEST;
+                if (getStatus.contains(e.getStatusCode())) {
+                    result = e.getStatusCode();
+                    responseEvents.add(eventResponse);
+                }
+                return new ResponseEntity(parser.parse(e.getResponseBodyAsString()), result);
             }
-            return new ResponseEntity(parser.parse(e.getResponseBodyAsString()), result);
         }
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("events", responseEvents);
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
     /**
