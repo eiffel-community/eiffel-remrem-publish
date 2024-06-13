@@ -1,3 +1,6 @@
+## 2.1.3
+- REST API parameter `domainId` added.
+ 
 ## 2.1.2
 - Added external parameters to send username, password and/or uri to connect to Messagebus.
  
