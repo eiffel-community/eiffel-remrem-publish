@@ -88,7 +88,9 @@ public class ProducerController {
 
     public final String JSON_EVENT_MESSAGE_FIELD = "status message";
 
-    public final String JSON_EVENT_STATUS_VALUE = "status";
+    public final String STATUS_CODE = "Status code";
+
+    public static final String META = "meta";
 
     public void setMsgServices(MsgService[] msgServices) {
         this.msgServices = msgServices;
@@ -206,7 +208,7 @@ public class ProducerController {
             JsonObject errorResponse = new JsonObject();
             log.error("Unexpected exception caught due to parse json data", e.getMessage());
             String exceptionMessage = e.getMessage();
-            errorResponse.addProperty("status code", HttpStatus.BAD_REQUEST.value());
+            errorResponse.addProperty(STATUS_CODE, HttpStatus.BAD_REQUEST.value());
             errorResponse.addProperty(JSON_STATUS_RESULT, "fatal");
             errorResponse.addProperty(JSON_EVENT_MESSAGE_FIELD, "Invalid JSON parse data format due to: " + exceptionMessage);
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -223,11 +225,11 @@ public class ProducerController {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
         List<JsonObject> events = new ArrayList<>();
         if (bodyJson.isJsonObject()) {
-            events.add(bodyJson.getAsJsonObject());
+            events.add(getAsJsonObject(bodyJson));
         } else if (bodyJson.isJsonArray()) {
             for (JsonElement element : bodyJson.getAsJsonArray()) {
                 if (element.isJsonObject()) {
-                    events.add(element.getAsJsonObject());
+                    events.add(getAsJsonObject(element));
                 } else {
                     return new ResponseEntity<>("Invalid, array events must be a JSON object", HttpStatus.BAD_REQUEST);
                 }
@@ -284,25 +286,8 @@ public class ProducerController {
                 if (msgService != null && msgProtocol != null) {
                     rmqHelper.rabbitMqPropertiesInit(msgProtocol);
                 }
-                JsonElement element = JsonParser.parseString(responseBody);
-
-                for (int i = 0; i < element.getAsJsonArray().size(); i++) {
-                    eventResponse = new HashMap<>();
-                    JsonElement jsonResponseEvent = element.getAsJsonArray().get(i);
-                    if (isValid(jsonResponseEvent)) {
-                        synchronized (this) {
-                            JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
-                            String validResponseBody = validResponse.toString();
-                            SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
-                            eventResponse.put(JSON_STATUS_RESULT, result);
-                        }
-                    } else {
-                        eventResponse.put(JSON_EVENT_STATUS_VALUE, HttpStatus.BAD_REQUEST);
-                        eventResponse.put("like", HttpStatus.ACCEPTED);
-                        eventResponse.put(JSON_EVENT_MESSAGE_FIELD, jsonResponseEvent);
-                    }
-                    responseEvents.add(eventResponse);
-                }
+                responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain,
+                        tag, routingKey);
             } else {
                 return response;
             }
@@ -311,37 +296,51 @@ public class ProducerController {
             eventResponse.put(JSON_EVENT_MESSAGE_FIELD, e.getMessage());
             return new ResponseEntity(eventResponse, HttpStatus.NOT_FOUND);
         } catch (HttpStatusCodeException e) {
-            JsonElement element = JsonParser.parseString(e.getResponseBodyAsString());
-
-            for (int i = 0; i < element.getAsJsonArray().size(); i++) {
-                eventResponse = new HashMap<>();
-                JsonElement JsonResponseEvent = element.getAsJsonArray().get(i);
-                if (isValid(JsonResponseEvent)) {
-                    synchronized (this) {
-                        JsonObject validResponse = JsonResponseEvent.getAsJsonObject();
-                        String validResponseBody = validResponse.toString();
-                        SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
-                        eventResponse.put(JSON_STATUS_RESULT, result);
-                    }
-                } else {
-                    eventResponse.put(JSON_EVENT_MESSAGE_FIELD, JsonResponseEvent);
-                }
-                responseEvents.add(eventResponse);
-            }
+            responseEvents = processingValidEvent(e.getResponseBodyAsString(), msgProtocol, userDomain,
+                    tag, routingKey);
             return new ResponseEntity<>(responseEvents, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(responseEvents, HttpStatus.OK);
+    }
+
+    public List<Map<String, Object>> processingValidEvent(String eventMsg, final String msgProtocol, final String userDomain,
+                                                          final String tag, final String routingKey) {
+        MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
+        List<Map<String, Object>> responseEvent = new ArrayList<>();
+        Map<String, Object> eventResponse;
+        JsonElement element = JsonParser.parseString(eventMsg);
+        for (int i = 0; i < element.getAsJsonArray().size(); i++) {
+            eventResponse = new HashMap<>();
+            JsonElement jsonResponseEvent = element.getAsJsonArray().get(i);
+            if (isValid(jsonResponseEvent)) {
+                synchronized (this) {
+                    JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
+                    String validResponseBody = validResponse.toString();
+                    SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
+                    eventResponse.put(JSON_STATUS_RESULT, result);
+                }
+            } else {
+                eventResponse.put(JSON_EVENT_MESSAGE_FIELD, jsonResponseEvent);
+            }
+            responseEvent.add(eventResponse);
+        }
+        return responseEvent;
+    }
+
+    public JsonObject getAsJsonObject(JsonElement jsonElement) {
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        return jsonObject;
     }
 
     /**
      * This helper method check the json event is valid or not
      */
 
-    private  Boolean isValid(JsonElement jsonObject) {
+    private  Boolean isValid(JsonElement jsonElement) {
         try {
-            return jsonObject.getAsJsonObject().has("meta") && jsonObject.getAsJsonObject().has("data") &&
-                    jsonObject.getAsJsonObject().has("links") && !jsonObject.getAsJsonObject().has("Status code");
-        } catch (Exception e) {
+            return getAsJsonObject(jsonElement).has(META) && getAsJsonObject(jsonElement).has("data") &&
+                    getAsJsonObject(jsonElement).has("links") && !getAsJsonObject(jsonElement).has(STATUS_CODE);
+        } catch (IllegalStateException e) {
             log.error("Error while validating event: ", e.getMessage());
             return false;
         }
