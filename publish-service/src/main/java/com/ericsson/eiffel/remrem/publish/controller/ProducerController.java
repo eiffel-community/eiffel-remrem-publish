@@ -92,6 +92,12 @@ public class ProducerController {
 
     public static final String META = "meta";
 
+    public static final String DATA = "data";
+
+    public static final String LINKS = "links";
+
+    public static final String JSON_FATAL_STATUS = "fatal";
+
     public void setMsgServices(MsgService[] msgServices) {
         this.msgServices = msgServices;
     }
@@ -154,7 +160,6 @@ public class ProducerController {
     /**
      * This controller provides single RemRem REST API End Point for both RemRem
      * Generate and Publish.
-     *
      * @param msgProtocol
      *            message protocol (required)
      * @param msgType
@@ -167,6 +172,9 @@ public class ProducerController {
      *            (not required)
      * @param parseData
      *            (not required, default=false)
+     * @param body
+     *            (Here json body of string type as input because just to parse
+     *            the string in to JsonElement not using JsonElement directly here.)
      * @return A response entity which contains http status and result
      *
      * @use A typical CURL command: curl -H "Content-Type: application/json" -X POST
@@ -205,15 +213,38 @@ public class ProducerController {
             return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
                     failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
         } catch (JsonSyntaxException e) {
-            JsonObject errorResponse = new JsonObject();
-            log.error("Unexpected exception caught due to parse json data", e.getMessage());
             String exceptionMessage = e.getMessage();
+            JsonObject errorResponse = new JsonObject();
+            log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
             errorResponse.addProperty(STATUS_CODE, HttpStatus.BAD_REQUEST.value());
-            errorResponse.addProperty(JSON_STATUS_RESULT, "fatal");
+            errorResponse.addProperty(JSON_STATUS_RESULT, JSON_FATAL_STATUS);
             errorResponse.addProperty(JSON_EVENT_MESSAGE_FIELD, "Invalid JSON parse data format due to: " + exceptionMessage);
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * This controller provides single RemRem REST API End Point for both RemRem
+     * Generate and Publish.
+     *
+     * @param msgProtocol
+     *            message protocol (required)
+     * @param msgType
+     *            message type (required)
+     * @param userDomain
+     *            user domain (not required)
+     * @param tag
+     *            (not required)
+     * @param routingKey
+     *            (not required)
+     * @param parseData
+     *            (not required, default=false)
+     * @return A response entity which contains http status and result
+     *
+     * @use A typical CURL command: curl -H "Content-Type: application/json" -X POST
+     *      --data "@inputGenerate_activity_finished.txt"
+     *      "http://localhost:8986/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"
+     */
 
     public ResponseEntity generateAndPublish(final String msgProtocol, final String msgType, final String userDomain, final String tag, final String routingKey,
                                              final Boolean parseData, final Boolean failIfMultipleFound, final Boolean failIfNoneFound, final Boolean lookupInExternalERs,
@@ -237,26 +268,26 @@ public class ProducerController {
         } else {
             return new ResponseEntity<>("Invalid, event is neither in the form of JSON object nor in the JSON array", HttpStatus.BAD_REQUEST);
         }
-        List<Map<String, Object>> responseEvents = new ArrayList<>();
+        List<Map<String, Object>> responseEvents;
         EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED,
                 HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
         Map<String, Object> eventResponse;
         try {
-            String bodyJsonOut = null;
+            String bodyJsonOut;
             if (parseData) {
                 EventTemplateHandler eventTemplateHandler = new EventTemplateHandler();
-                StringBuffer parsedTempaltes = new StringBuffer();
-                parsedTempaltes.append("[");
+                StringBuffer parsedTemplates = new StringBuffer();
+                parsedTemplates.append("[");
                 for (JsonElement eventJson : events) {
                     // -- parse params in incoming request -> body -------------
                     JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
-                    if (parsedTempaltes.length() > 1) {
-                        parsedTempaltes.append(",");
+                    if (parsedTemplates.length() > 1) {
+                        parsedTemplates.append(",");
                     }
-                    parsedTempaltes.append(parsedTemplate.toString());
+                    parsedTemplates.append(parsedTemplate.toString());
                 }
-                parsedTempaltes.append("]");
-                bodyJsonOut = parsedTempaltes.toString();
+                parsedTemplates.append("]");
+                bodyJsonOut = parsedTemplates.toString();
                 log.info("Parsed template: " + bodyJsonOut);
             } else {
                 bodyJsonOut = bodyJson.toString();
@@ -294,7 +325,7 @@ public class ProducerController {
         } catch (RemRemPublishException e) {
             eventResponse = new HashMap<>();
             eventResponse.put(JSON_EVENT_MESSAGE_FIELD, e.getMessage());
-            return new ResponseEntity(eventResponse, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(eventResponse, HttpStatus.NOT_FOUND);
         } catch (HttpStatusCodeException e) {
             responseEvents = processingValidEvent(e.getResponseBodyAsString(), msgProtocol, userDomain,
                     tag, routingKey);
@@ -303,15 +334,24 @@ public class ProducerController {
         return new ResponseEntity<>(responseEvents, HttpStatus.OK);
     }
 
+    /**
+     * This one is helper method publish messages on mb
+     * @param eventMsg
+     * @param msgProtocol
+     * @param userDomain
+     * @param tag
+     * @param routingKey
+     * @return list of responses
+     */
     public List<Map<String, Object>> processingValidEvent(String eventMsg, final String msgProtocol, final String userDomain,
                                                           final String tag, final String routingKey) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
         List<Map<String, Object>> responseEvent = new ArrayList<>();
         Map<String, Object> eventResponse;
-        JsonElement element = JsonParser.parseString(eventMsg);
-        for (int i = 0; i < element.getAsJsonArray().size(); i++) {
+        JsonElement eventElement = JsonParser.parseString(eventMsg);
+        for (int i = 0; i < eventElement.getAsJsonArray().size(); i++) {
             eventResponse = new HashMap<>();
-            JsonElement jsonResponseEvent = element.getAsJsonArray().get(i);
+            JsonElement jsonResponseEvent = eventElement.getAsJsonArray().get(i);
             if (isValid(jsonResponseEvent)) {
                 synchronized (this) {
                     JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
@@ -334,12 +374,13 @@ public class ProducerController {
 
     /**
      * This helper method check the json event is valid or not
+     * @param jsonElement AN event which need to check
+     * @return boolean type value like it is valid or not
      */
-
     private  Boolean isValid(JsonElement jsonElement) {
         try {
-            return getAsJsonObject(jsonElement).has(META) && getAsJsonObject(jsonElement).has("data") &&
-                    getAsJsonObject(jsonElement).has("links") && !getAsJsonObject(jsonElement).has(STATUS_CODE);
+            return getAsJsonObject(jsonElement).has(META) && getAsJsonObject(jsonElement).has(DATA) &&
+                    getAsJsonObject(jsonElement).has(LINKS) && !getAsJsonObject(jsonElement).has(STATUS_CODE);
         } catch (IllegalStateException e) {
             log.error("Error while validating event: ", e.getMessage());
             return false;
