@@ -88,7 +88,7 @@ public class ProducerController {
 
     public final String JSON_EVENT_MESSAGE_FIELD = "status message";
 
-    public final String STATUS_CODE = "Status code";
+    public final String JSON_STATUS_CODE = "status code";
 
     public static final String META = "meta";
 
@@ -97,6 +97,8 @@ public class ProducerController {
     public static final String LINKS = "links";
 
     public static final String JSON_FATAL_STATUS = "fatal";
+
+    public static final String JSON_ERROR_STATUS = "fail";
 
     public void setMsgServices(MsgService[] msgServices) {
         this.msgServices = msgServices;
@@ -214,12 +216,9 @@ public class ProducerController {
                     failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
-            JsonObject errorResponse = new JsonObject();
             log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
-            errorResponse.addProperty(STATUS_CODE, HttpStatus.BAD_REQUEST.value());
-            errorResponse.addProperty(JSON_STATUS_RESULT, JSON_FATAL_STATUS);
-            errorResponse.addProperty(JSON_EVENT_MESSAGE_FIELD, "Invalid JSON parse data format due to: " + exceptionMessage);
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS,
+                    "Invalid JSON parse data format due to: " + exceptionMessage);
         }
     }
 
@@ -254,6 +253,10 @@ public class ProducerController {
         }
 
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
+        if (msgService == null) {
+            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+                    "No protocol service has been found registered");
+        }
         List<JsonObject> events = new ArrayList<>();
         if (bodyJson.isJsonObject()) {
             events.add(getAsJsonObject(bodyJson));
@@ -262,16 +265,17 @@ public class ProducerController {
                 if (element.isJsonObject()) {
                     events.add(getAsJsonObject(element));
                 } else {
-                    return new ResponseEntity<>("Invalid, array events must be a JSON object", HttpStatus.BAD_REQUEST);
+                    return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+                            "Invalid, array events must be a JSON object");
                 }
             }
         } else {
-            return new ResponseEntity<>("Invalid, event is neither in the form of JSON object nor in the JSON array", HttpStatus.BAD_REQUEST);
+            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+                    "Invalid, event is neither in the form of JSON object nor in the JSON array");
         }
         List<Map<String, Object>> responseEvents;
         EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED,
                 HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
-        Map<String, Object> eventResponse;
         try {
             String bodyJsonOut;
             if (parseData) {
@@ -323,35 +327,84 @@ public class ProducerController {
                 return response;
             }
         } catch (RemRemPublishException e) {
-            eventResponse = new HashMap<>();
-            eventResponse.put(JSON_EVENT_MESSAGE_FIELD, e.getMessage());
-            return new ResponseEntity<>(eventResponse, HttpStatus.NOT_FOUND);
+            String exceptionMessage = e.getMessage();
+            return createResponseEntity(HttpStatus.NOT_FOUND, JSON_ERROR_STATUS, exceptionMessage);
         } catch (HttpStatusCodeException e) {
-            responseEvents = processingValidEvent(e.getResponseBodyAsString(), msgProtocol, userDomain,
-                    tag, routingKey);
+            String responseBody = null;
+            String responseMessage = e.getResponseBodyAsString();
+            if (bodyJson.isJsonObject()) {
+                responseBody = "[" + responseMessage + "]";
+            } else if (bodyJson.isJsonArray()) {
+                responseBody = responseMessage;
+            }
+            responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain, tag, routingKey);
             return new ResponseEntity<>(responseEvents, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(responseEvents, HttpStatus.OK);
     }
 
     /**
-     * This one is helper method publish messages on mb
-     * @param eventMsg
+     * To display response in browser or application
+     * @param status response code for the HTTP request
+     * @param responseMessage the message according to response
+     * @param resultMessage whatever the result this message gives you idea about that
+     * @param errorResponse is to collect all the responses here.
+     * @return ResponseEntity
+     */
+    public ResponseEntity<JsonObject> createResponseEntity(HttpStatus status, String responseMessage, String resultMessage,
+                                                           JsonObject errorResponse) {
+        initializeResponse(status, responseMessage, resultMessage, errorResponse);
+        return new ResponseEntity<>(errorResponse, status);
+    }
+
+    /**
+     * To display response in browser or application
+     * @param status response code for the HTTP request
+     * @param responseMessage the message according to response
+     * @param resultMessage whatever the result this message gives you idea about that
+     * @return ResponseEntity
+     */
+    public ResponseEntity<JsonObject> createResponseEntity(HttpStatus status, String responseMessage, String resultMessage) {
+        return createResponseEntity(status, responseMessage, resultMessage, new JsonObject());
+    }
+
+    /**
+     * To initialize in the @{createResponseEntity} method
+     * @param status response code for the HTTP request
+     * @param resultMessage whatever the result this message gives you idea about that
+     * @param errorResponse is to collect all the responses here.
+     */
+    public void initializeResponse(HttpStatus status, String errorMessage, String resultMessage, JsonObject errorResponse) {
+        errorResponse.addProperty(JSON_STATUS_CODE, status.value());
+        errorResponse.addProperty(JSON_STATUS_RESULT, resultMessage);
+        errorResponse.addProperty(JSON_EVENT_MESSAGE_FIELD, errorMessage);
+    }
+
+    /**
+     * This one is helper method to process or publish messages or event
+     * @param eventResponseMessage
      * @param msgProtocol
      * @param userDomain
      * @param tag
      * @param routingKey
      * @return list of responses
      */
-    public List<Map<String, Object>> processingValidEvent(String eventMsg, final String msgProtocol, final String userDomain,
+    public List<Map<String, Object>> processingValidEvent(String eventResponseMessage, final String msgProtocol, final String userDomain,
                                                           final String tag, final String routingKey) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
         List<Map<String, Object>> responseEvent = new ArrayList<>();
-        Map<String, Object> eventResponse;
-        JsonElement eventElement = JsonParser.parseString(eventMsg);
-        for (int i = 0; i < eventElement.getAsJsonArray().size(); i++) {
+        Map<String, Object> eventResponse = null;
+
+        if (eventResponseMessage == null) {
+            eventResponse.put("Parameter 'eventResponseMessage' must not be null", HttpStatus.BAD_REQUEST);
+            responseEvent.add(eventResponse);
+            return responseEvent;
+        }
+        JsonElement eventElement = JsonParser.parseString(eventResponseMessage);
+        JsonArray eventArray = eventElement.getAsJsonArray();
+        for (int i = 0; i < eventArray.size(); i++) {
             eventResponse = new HashMap<>();
-            JsonElement jsonResponseEvent = eventElement.getAsJsonArray().get(i);
+            JsonElement jsonResponseEvent = eventArray.get(i);
             if (isValid(jsonResponseEvent)) {
                 synchronized (this) {
                     JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
@@ -367,6 +420,11 @@ public class ProducerController {
         return responseEvent;
     }
 
+    /**
+     * This helper method to get JsonObject type from JsonElement
+     * @param jsonElement AN event which need to convert
+     * @return JsonObject converted Json of JsonObject type
+     */
     public JsonObject getAsJsonObject(JsonElement jsonElement) {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         return jsonObject;
@@ -377,10 +435,10 @@ public class ProducerController {
      * @param jsonElement AN event which need to check
      * @return boolean type value like it is valid or not
      */
-    private  Boolean isValid(JsonElement jsonElement) {
+    private Boolean isValid(JsonElement jsonElement) {
         try {
             return getAsJsonObject(jsonElement).has(META) && getAsJsonObject(jsonElement).has(DATA) &&
-                    getAsJsonObject(jsonElement).has(LINKS) && !getAsJsonObject(jsonElement).has(STATUS_CODE);
+                    getAsJsonObject(jsonElement).has(LINKS) && !getAsJsonObject(jsonElement).has(JSON_STATUS_CODE);
         } catch (IllegalStateException e) {
             log.error("Error while validating event: ", e.getMessage());
             return false;
