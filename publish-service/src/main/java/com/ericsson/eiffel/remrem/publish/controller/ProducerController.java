@@ -96,9 +96,9 @@ public class ProducerController {
 
     public static final String LINKS = "links";
 
-    public static final String JSON_FATAL_STATUS = "fatal";
+    public static final String JSON_FATAL_STATUS = "FATAL";
 
-    public static final String JSON_ERROR_STATUS = "fail";
+    public static final String JSON_ERROR_STATUS = "FAIL";
 
     public void setMsgServices(MsgService[] msgServices) {
         this.msgServices = msgServices;
@@ -396,18 +396,28 @@ public class ProducerController {
         Map<String, Object> eventResponse = null;
 
         if (eventResponseMessage == null) {
-            eventResponse.put("Parameter 'eventResponseMessage' must not be null", HttpStatus.BAD_REQUEST);
+            eventResponse.put("Missing response from 'generate' service", HttpStatus.BAD_REQUEST);
             responseEvent.add(eventResponse);
             return responseEvent;
         }
         JsonElement eventElement = JsonParser.parseString(eventResponseMessage);
         JsonArray eventArray = eventElement.getAsJsonArray();
+        if (eventArray == null) {
+            String errorMessage = "Invalid, response json event is not in the form of JSON array";
+            log.error(errorMessage);
+            eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
+        }
         for (int i = 0; i < eventArray.size(); i++) {
             eventResponse = new HashMap<>();
             JsonElement jsonResponseEvent = eventArray.get(i);
             if (isValid(jsonResponseEvent)) {
                 synchronized (this) {
                     JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
+                    if (validResponse == null) {
+                        String errorMessage = "Invalid, response json event is not in the form of JSON object";
+                        log.error(errorMessage);
+                        eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
+                    }
                     String validResponseBody = validResponse.toString();
                     SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
                     eventResponse.put(JSON_STATUS_RESULT, result);
@@ -435,12 +445,13 @@ public class ProducerController {
      * @param jsonElement AN event which need to check
      * @return boolean type value like it is valid or not
      */
-    private Boolean isValid(JsonElement jsonElement) {
+    private boolean isValid(JsonElement jsonElement) {
         try {
-            return getAsJsonObject(jsonElement).has(META) && getAsJsonObject(jsonElement).has(DATA) &&
-                    getAsJsonObject(jsonElement).has(LINKS) && !getAsJsonObject(jsonElement).has(JSON_STATUS_CODE);
+            JsonObject jsonObject = getAsJsonObject(jsonElement);
+            return jsonObject.has(META) && jsonObject.has(DATA) &&
+                    jsonObject.has(LINKS) && !jsonObject.has(JSON_STATUS_CODE);
         } catch (IllegalStateException e) {
-            log.error("Error while validating event: ", e.getMessage());
+            log.error("Error while validating json event: ", e.getMessage());
             return false;
         }
     }
