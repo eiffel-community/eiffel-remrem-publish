@@ -403,7 +403,7 @@ public class ProducerController {
         JsonElement eventElement = JsonParser.parseString(eventResponseMessage);
         JsonArray eventArray = eventElement.getAsJsonArray();
         if (eventArray == null) {
-            String errorMessage = "Invalid, response json event is not in the form of JSON array";
+            String errorMessage = "Invalid, array item expected to be in the form of JSON array";
             log.error(errorMessage);
             eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
         }
@@ -414,7 +414,7 @@ public class ProducerController {
                 synchronized (this) {
                     JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
                     if (validResponse == null) {
-                        String errorMessage = "Invalid, response json event is not in the form of JSON object";
+                        String errorMessage = "Invalid, array item expected to be in the form of JSON object";
                         log.error(errorMessage);
                         eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
                     }
@@ -451,7 +451,7 @@ public class ProducerController {
             return jsonObject.has(META) && jsonObject.has(DATA) &&
                     jsonObject.has(LINKS) && !jsonObject.has(JSON_STATUS_CODE);
         } catch (IllegalStateException e) {
-            log.error("Error while validating json event: ", e.getMessage());
+            log.error("Error while validating JSON event: ", e.getMessage());
             return false;
         }
     }
