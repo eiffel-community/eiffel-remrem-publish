@@ -274,6 +274,7 @@ public class ProducerController {
                     "Invalid, event is neither in the form of JSON object nor in the JSON array");
         }
         List<Map<String, Object>> responseEvents;
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
         EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED,
                 HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
         try {
@@ -306,13 +307,15 @@ public class ProducerController {
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
+            responseStatus = response.getStatusCode();
             String responseBody = null;
             if (bodyJson.isJsonObject()) {
                 responseBody = "[" + response.getBody() + "]";
             } else if (bodyJson.isJsonArray()) {
                 responseBody = response.getBody();
             }
-            if (response.getStatusCode() == HttpStatus.OK) {
+
+            if (responseStatus == HttpStatus.OK || responseStatus == HttpStatus.MULTI_STATUS) {
                 log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
                 log.debug("mp: " + msgProtocol);
                 log.debug("body: " + responseBody);
@@ -340,7 +343,8 @@ public class ProducerController {
             responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain, tag, routingKey);
             return new ResponseEntity<>(responseEvents, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(responseEvents, HttpStatus.OK);
+        //Status here is the status returned from generate service, except BAD_REQUEST which already handled above
+        return new ResponseEntity<>(responseEvents, responseStatus);
     }
 
     /**
