@@ -20,6 +20,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
@@ -632,9 +634,17 @@ public class RabbitMqProperties {
                     : MessageProperties.BASIC;
 
         try {
+            LocalDateTime publishStartTime = LocalDateTime.now();
             channel.basicPublish(exchangeName, routingKey, msgProps, msg.getBytes());
-            log.info("Published message {} with size {} bytes on exchange '{}' with routing key '{}'", eventId,
-                    msg.getBytes().length, exchangeName, routingKey);
+            LocalDateTime publishEndTime = LocalDateTime.now();
+            Duration diff = Duration.between(publishStartTime, publishEndTime);
+            String duration = String.format("%d:%02d:%02d.%03d",
+                    diff.toHours(),
+                    diff.toMinutesPart(),
+                    diff.toSecondsPart(),
+                    diff.toMillisPart());
+            log.info("Published message {} with size {} bytes on exchange '{}' with routing key '{}' with the duration of {}", eventId,
+                    msg.getBytes().length, exchangeName, routingKey, duration);
             if (waitForConfirmsTimeOut == null || waitForConfirmsTimeOut == 0) {
                 waitForConfirmsTimeOut = DEFAULT_WAIT_FOR_CONFIRMS_TIMEOUT;
             }
