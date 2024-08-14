@@ -120,22 +120,23 @@ public class ProducerController {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @ApiOperation(value = "To publish eiffel event to message bus", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Event sent successfully"),
-            @ApiResponse(code = 400, message = "Invalid event content"),
-            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
-            @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 503, message = "Service Unavailable") })
-    @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity send(
-            @ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
-            @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
-            @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
-            @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
-            @ApiParam(value = "eiffel event", required = true) @RequestBody final JsonElement body) {
-        if(isAuthenticationEnabled) {
+    /**
+     * This controller used as producer to send messages or event
+     * @param msgProtocol
+     *            message protocol (required)
+     * @param userDomain
+     *            user domain (required)
+     * @param tag
+     *            (not required)
+     * @param routingKey
+     *            (not required)
+     * @param body
+     *            (required)
+     * @return A response entity which contains http status and result
+     */
+    public ResponseEntity send(final String msgProtocol, final String userDomain, final String tag,
+                               final String routingKey, final JsonElement body) {
+        if (isAuthenticationEnabled) {
             logUserName();
         }
 
@@ -154,8 +155,49 @@ public class ProducerController {
         }
         synchronized (this) {
             SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
-            log.info("HTTP Status: {}",  messageService.getHttpStatus().value());
+            log.info("HTTP Status: {}", messageService.getHttpStatus().value());
             return new ResponseEntity(result, messageService.getHttpStatus());
+        }
+    }
+
+    /**
+     * This controller used as producer to send messages or event
+     * @param msgProtocol
+     *            message protocol (required)
+     * @param userDomain
+     *            user domain (required)
+     * @param tag
+     *            (not required)
+     * @param routingKey
+     *            (not required)
+     * @param body
+     *            (Here json body of string type as input because just to parse
+     *            the string in to JsonElement not using JsonElement directly here.)
+     * @return A response entity which contains http status and result
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @ApiOperation(value = "To publish eiffel event to message bus", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Event sent successfully"),
+            @ApiResponse(code = 400, message = "Invalid event content"),
+            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
+            @ApiResponse(code = 500, message = "Internal server error"),
+            @ApiResponse(code = 503, message = "Service Unavailable")})
+    @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity send(
+            @ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
+            @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
+            @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
+            @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
+            @ApiParam(value = "eiffel event", required = true) @RequestBody final String body) {
+        try {
+            JsonElement inputBody = JsonParser.parseString(body);
+            return send(msgProtocol, userDomain, tag, routingKey, inputBody);
+        } catch (JsonSyntaxException e) {
+            String exceptionMessage = e.getMessage();
+            log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
+            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS,
+                    "Invalid JSON parse data format due to: " + exceptionMessage);
         }
     }
 
