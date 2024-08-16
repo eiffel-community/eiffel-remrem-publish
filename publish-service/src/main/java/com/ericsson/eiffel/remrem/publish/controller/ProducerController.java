@@ -195,7 +195,7 @@ public class ProducerController {
             return send(msgProtocol, userDomain, tag, routingKey, inputBody);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
-            log.error("Cannot parse the following JSON data:\n" + body + '\n', exceptionMessage);
+            log.error("Cannot parse the following JSON data:\n" + body + "\n\n" + exceptionMessage);
             return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS,
                     "Invalid JSON data: " + exceptionMessage);
         }
