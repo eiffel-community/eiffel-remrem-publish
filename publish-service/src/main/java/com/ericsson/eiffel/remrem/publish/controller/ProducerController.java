@@ -81,10 +81,6 @@ public class ProducerController {
     @Value("${maxSizeOfInputArray:250}")
     private int maxSizeOfInputArray;
 
-    public void setMaxSizeOfInputArray(int maxSizeOfInputArray) {
-        this.maxSizeOfInputArray = maxSizeOfInputArray;
-    }
-
     private RestTemplate restTemplate = new RestTemplate();
 
     private JsonParser parser = new JsonParser();
@@ -310,15 +306,14 @@ public class ProducerController {
         if (bodyJson.isJsonObject()) {
             events.add(getAsJsonObject(bodyJson));
         } else if (bodyJson.isJsonArray()) {
+            JsonArray bodyJsonArray = bodyJson.getAsJsonArray();
             //here add check for limitation for events in array is fetched from REMReM property and checked during publishing.
-            if (bodyJson.getAsJsonArray().size() > maxSizeOfInputArray) {
+            if (bodyJsonArray.size() > maxSizeOfInputArray) {
                 return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                        "The number of events in the input array is exceeded the allowed limit of 250 events. " +
-                                "This issue occurred because the input array contains more than 250 events, which is not supported by the system. "
-                                + "To resolve this, please divide the events in to smaller arrays, ensuring each array contains no more than 250 events,"
-                                + "and try to publish them again. This limitation helps to maintain system performance and stability.");
+                        "The number of events in the input array is too high: " + bodyJsonArray.size() + " > " + maxSizeOfInputArray + ", " +
+                                "You can modify the property 'maxSizeOfInputArray' to increase it");
             }
-            for (JsonElement element : bodyJson.getAsJsonArray()) {
+            for (JsonElement element : bodyJsonArray) {
                 if (element.isJsonObject()) {
                     events.add(getAsJsonObject(element));
                 } else {
