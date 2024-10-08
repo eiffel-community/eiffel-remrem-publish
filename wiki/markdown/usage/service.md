@@ -214,7 +214,10 @@ GET
 ### `/producer/msg`
 This endpoint is used to publish already generated Eiffel event to message bus.
 
-Note: This endpoint will not validate the message. It will check only if the message contains eventId and eventType.
+Note: 
+1. This endpoint will not validate the message. It will check only if the message contains eventId and eventType.
+2. Here, introduction of new REMReM property for the size of number of events in the array passed to /producer/msg endpoint.
+   Here, Maximum size of events in array is fetched from REMReM property and checked during publishing.
 
 ##### HTTP Method
 POST
@@ -249,6 +252,9 @@ This endpoint is used to generate and publish Eiffel events to message bus.
 It provides single endpoint for both REMReM Generate and REMReM Publish.
 The service works on the relative link `/generateAndPublish` if run as standalone
 application or `/publish/generateAndPublish` if run as Tomcat app.
+
+NOTE: Here, introduction of new REMReM property for the size of number of events in the array passed to /generateAndPublish endpoint.
+Here, Maximum size of events in array is fetched from REMReM property and checked during publishing.
 
 ##### HTTP Method
 POST
