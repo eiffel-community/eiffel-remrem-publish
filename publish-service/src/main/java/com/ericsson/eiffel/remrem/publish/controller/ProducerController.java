@@ -78,6 +78,9 @@ public class ProducerController {
     @Value("${activedirectory.publish.enabled}")
     private boolean isAuthenticationEnabled;
 
+    @Value("${maxSizeOfInputArray:250}")
+    private int maxSizeOfInputArray;
+
     private RestTemplate restTemplate = new RestTemplate();
 
     private JsonParser parser = new JsonParser();
@@ -152,6 +155,14 @@ public class ProducerController {
             } catch (RemRemPublishException e) {
                 return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
             }
+        }
+
+        //here add check for limitation for events in array is fetched from REMReM property and checked during publishing.
+        if (body.isJsonArray() && (body.getAsJsonArray().size() > maxSizeOfInputArray)) {
+            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+                    "The number of events in the input array is too high: " + body.getAsJsonArray().size() + " > "
+                            + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
+
         }
         synchronized (this) {
             SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
@@ -303,7 +314,14 @@ public class ProducerController {
         if (bodyJson.isJsonObject()) {
             events.add(getAsJsonObject(bodyJson));
         } else if (bodyJson.isJsonArray()) {
-            for (JsonElement element : bodyJson.getAsJsonArray()) {
+            JsonArray bodyJsonArray = bodyJson.getAsJsonArray();
+            //here add check for limitation for events in array is fetched from REMReM property and checked during publishing.
+            if (bodyJsonArray.size() > maxSizeOfInputArray) {
+                return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+                        "The number of events in the input array is too high: " + bodyJsonArray.size() + " > "
+                                + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
+            }
+            for (JsonElement element : bodyJsonArray) {
                 if (element.isJsonObject()) {
                     events.add(getAsJsonObject(element));
                 } else {
