@@ -18,9 +18,13 @@ import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
@@ -44,19 +48,20 @@ public class EventTemplateHandler {
 
     private static final String REGEXP_END_DIGITS = "\\[\\d+\\]$";
 
-    private final Configuration configuration = Configuration.builder()
-            .jsonProvider(new JacksonJsonNodeJsonProvider())
-            .mappingProvider(new JacksonMappingProvider())
-            .build();
+    private ObjectMapper mapper = JsonMapper.builder()
+        .disable(JsonNodeFeature.READ_NULL_PROPERTIES)
+        .build()
+            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    private Configuration configuration = Configuration.builder()
+        .jsonProvider(new JacksonJsonNodeJsonProvider(mapper))
+        .mappingProvider(new JacksonMappingProvider(mapper))
+        .build();
 
     // eventTemplateParser
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public JsonNode eventTemplateParser(String jsonData , String eventName){
         JsonNode updatedJson = null;
-        JsonFactory factory = new JsonFactory();
-        ObjectMapper mapper = new ObjectMapper(factory);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
         JsonNode rootNode = null;
         try {
             String eventTemplate = accessFileInSemanticJar(EVENT_TEMPLATE_PATH + eventName.toLowerCase() + ".json");
