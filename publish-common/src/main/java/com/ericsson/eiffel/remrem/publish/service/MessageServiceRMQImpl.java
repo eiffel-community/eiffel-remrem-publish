@@ -15,6 +15,7 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +50,6 @@ import ch.qos.logback.classic.Logger;
     
     Logger log = (Logger) LoggerFactory.getLogger(MessageServiceRMQImpl.class);
     
-    /*Variables handles status codes*/
-    List<Integer> statusCodes;
-    List<JsonElement> errorItems;
-    List<PublishResultItem> resultList;
-    boolean checkEventStatus;
     /*
      * (non-Javadoc)
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(java.util.Map, java.util.Map)
@@ -74,7 +70,6 @@ import ch.qos.logback.classic.Logger;
                 } else {
                     event = new PublishResultItem(entryKey,  HttpStatus.INTERNAL_SERVER_ERROR.value(), PropertiesConfig.SERVER_DOWN,
                             PropertiesConfig.SERVER_DOWN_MESSAGE);
-                    checkEventStatus = false;
                 }
                 } catch (NackException e) {
                     event = new PublishResultItem(entryKey, HttpStatus.INTERNAL_SERVER_ERROR.value(), PropertiesConfig.SERVER_DOWN,
@@ -105,45 +100,43 @@ import ch.qos.logback.classic.Logger;
      */
     @Override
     public SendResult send(String jsonContent, MsgService msgService, String userDomainSuffix, String tag, String routingKey) {
-
-        JsonParser parser = new JsonParser();
         try {
-            JsonElement json = parser.parse(jsonContent);
+            JsonElement json = JsonParser.parseString(jsonContent);
             if (json.isJsonArray()) {
                 return send(json, msgService, userDomainSuffix, tag, routingKey);
-            } else {
-                Map<String, String> map = new HashMap<>();
-                Map<String, String> routingKeyMap = new HashMap<>();
-                String eventId = msgService.getEventId(json.getAsJsonObject());
-                if (StringUtils.isNotBlank(eventId)) {
-                    String routing_key = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomainSuffix, tag, routingKey);
-                    if (StringUtils.isNotBlank(routing_key)) {
-                        map.put(eventId, json.toString());
-                        routingKeyMap.put(eventId, routing_key);
-                    } else if (routing_key == null) {
-                        List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
-                        routingKeyGenerationFailure(resultItemList);
-                        return new SendResult(resultItemList);
-                    } else {
-                        List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
-                        PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
-                        resultItemList.add(resultItem);
-                        return new SendResult(resultItemList);
-                    }
+            }
+
+            Map<String, String> map = new HashMap<>();
+            Map<String, String> routingKeyMap = new HashMap<>();
+            String eventId = msgService.getEventId(json.getAsJsonObject());
+            if (StringUtils.isNotBlank(eventId)) {
+                String routing_key = PublishUtils.getRoutingKey(msgService, json.getAsJsonObject(), rmqHelper, userDomainSuffix, tag, routingKey);
+                if (StringUtils.isNotBlank(routing_key)) {
+                    map.put(eventId, json.toString());
+                    routingKeyMap.put(eventId, routing_key);
+                } else if (routing_key == null) {
+                    List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
+                    routingKeyGenerationFailure(resultItemList);
+                    return new SendResult(resultItemList);
                 } else {
                     List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
-                    createFailureResult(resultItemList);
+                    PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
+                    resultItemList.add(resultItem);
                     return new SendResult(resultItemList);
                 }
-                return send(routingKeyMap, map, msgService);
+            } else {
+                List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
+                createFailureResult(resultItemList);
+                return new SendResult(resultItemList);
             }
+            return send(routingKeyMap, map, msgService);
         } catch (final JsonSyntaxException e) {
             String resultMsg = "Could not parse JSON.";
             if (e.getCause() != null) {
                 resultMsg = resultMsg + " Cause: " + e.getCause().getMessage();
             }
             log.error(resultMsg, e.getMessage());
-            List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
+            List<PublishResultItem> resultItemList = new ArrayList<>();
             createFailureResult(resultItemList);
             return new SendResult(resultItemList);
         }
@@ -155,76 +148,64 @@ import ch.qos.logback.classic.Logger;
     */
     @Override
     public SendResult send(JsonElement json, MsgService msgService, String userDomainSuffix, String tag, String routingKey) {
+
+        List<PublishResultItem> resultList;
+        boolean checkEventStatus;
+
         Map<String, String> map = new HashMap<>();
         Map<String, String> routingKeyMap = new HashMap<>();
+
         SendResult result;
-        resultList = new CopyOnWriteArrayList<PublishResultItem>();
+        resultList = new ArrayList<>();
         if (json == null) {
             createFailureResult(resultList);
         }
-        if (json.isJsonArray()) {
-            statusCodes = new CopyOnWriteArrayList<Integer>();
-            checkEventStatus = true;
-            JsonArray bodyJson = json.getAsJsonArray();
-            for (JsonElement obj : bodyJson) {
-                String eventId = msgService.getEventId(obj.getAsJsonObject());
-                if (StringUtils.isNotEmpty(eventId) && checkEventStatus) {
-                    String routing_key = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap,
-                            userDomainSuffix, tag, routingKey);
-                    if (StringUtils.isNotBlank(routing_key)) {
-                        result = send(obj.toString(), msgService, userDomainSuffix, tag, routing_key);
-                        resultList.addAll(result.getEvents());
-                        int statusCode = result.getEvents().get(0).getStatusCode();
-                        if (!statusCodes.contains(statusCode))
-                            statusCodes.add(statusCode);
-                    } else if (routing_key == null) {
-                        routingKeyGenerationFailure(resultList);
-                        errorItems = new CopyOnWriteArrayList<JsonElement>();
-                        int statusCode = resultList.get(0).getStatusCode();
-                        statusCodes.add(statusCode);
-                        errorItems.add(obj);
-                        checkEventStatus = false;
+        else {
+            if (json.isJsonArray()) {
+                checkEventStatus = true;
+                JsonArray bodyJson = json.getAsJsonArray();
+                for (JsonElement obj : bodyJson) {
+                    String eventId = msgService.getEventId(obj.getAsJsonObject());
+                    if (StringUtils.isNotEmpty(eventId) && checkEventStatus) {
+                        String routing_key = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap,
+                                userDomainSuffix, tag, routingKey);
+                        if (StringUtils.isNotBlank(routing_key)) {
+                            result = send(obj.toString(), msgService, userDomainSuffix, tag, routing_key);
+                            resultList.addAll(result.getEvents());
+                        } else if (routing_key == null) {
+                            routingKeyGenerationFailure(resultList);
+                            checkEventStatus = false;
+                        } else {
+                            PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
+                            resultList.add(resultItem);
+                            break;
+                        }
                     } else {
-                        PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
-                        resultList.add(resultItem);
-                        int statusCode = resultItem.getStatusCode();
-                        statusCodes.add(statusCode);
-                        break;
-                    }
-                } else {
-                    if (!checkEventStatus) {
-                        addUnsuccessfulResultItem(obj);
-                        int statusCode = resultList.get(0).getStatusCode();
-                        statusCodes.add(statusCode);
-                    } else {
-                        createFailureResult(resultList);
-                        errorItems = new CopyOnWriteArrayList<JsonElement>();
-                        int statusCode = resultList.get(0).getStatusCode();
-                        statusCodes.add(statusCode);
-                        errorItems.add(obj);
-                        checkEventStatus = false;
+                        if (!checkEventStatus) {
+                            addUnsuccessfulResultItem(resultList, obj);
+                        } else {
+                            createFailureResult(resultList);
+                            checkEventStatus = false;
+                        }
                     }
                 }
+            } else {
+                result = send(json.toString(), msgService, userDomainSuffix, tag, routingKey);
+                resultList.addAll(result.getEvents());
             }
-        } else {
-            statusCodes = new CopyOnWriteArrayList<Integer>();
-            result = send(json.toString(), msgService, userDomainSuffix, tag, routingKey);
-            resultList.addAll(result.getEvents());
-            int statusCode = result.getEvents().get(0).getStatusCode();
-            if (!statusCodes.contains(statusCode))
-                statusCodes.add(statusCode);
         }
+
         result = new SendResult();
         result.setEvents(resultList);
         return result;
     }
 
-    private String sendMessage(String routingKey, String msg, MsgService msgService) throws IOException,NackException, TimeoutException, RemRemPublishException {
+    private String sendMessage(String routingKey, String msg, MsgService msgService) throws IOException,TimeoutException, RemRemPublishException {
         String resultMsg = PropertiesConfig.SUCCESS;
         try {
             instantiateRmqHelper();
         } catch (RemRemPublishException e) {
-            log.error("RemRemPublishException occurred::" + e.getMessage());
+            log.error("RemRemPublishException occurred::{}", e.getMessage());
         }
         rmqHelper.send(routingKey, msg, msgService);
         return resultMsg;
@@ -268,7 +249,7 @@ import ch.qos.logback.classic.Logger;
 
     /**
      * Method returns result for the failure event.
-     * @param events for list the eiffel events results
+     * @param resultItemList for list the eiffel events results
      */
     private void createFailureResult(List<PublishResultItem> resultItemList) {
         PublishResultItem resultItem = new PublishResultItem(null, 400, PropertiesConfig.INVALID_MESSAGE,
@@ -293,21 +274,9 @@ import ch.qos.logback.classic.Logger;
         resultItemList.add(resultItem);
     }
 
-    private void addUnsuccessfulResultItem(JsonElement obj) {
+    private void addUnsuccessfulResultItem(List<PublishResultItem> resultList, JsonElement obj) {
         PublishResultItem event = new PublishResultItem(null, 503, PropertiesConfig.SERVICE_UNAVAILABLE,
                 PropertiesConfig.UNSUCCESSFUL_EVENT_CONTENT);
         resultList.add(event);
-    }
-    
-    /**
-     * Method returns the Http response code for the events.
-     */
-    public HttpStatus getHttpStatus() {
-        if (statusCodes.size() > 1) {
-            return HttpStatus.MULTI_STATUS;
-        } else {
-            return HttpStatus.valueOf(statusCodes.get(0));
-            
-        }
     }
 }

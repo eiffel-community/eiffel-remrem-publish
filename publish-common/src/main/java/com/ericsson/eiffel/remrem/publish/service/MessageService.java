@@ -60,10 +60,4 @@ public interface MessageService {
      * Does the cleanup like closing open connections
      */
     public void cleanUp(); 
-    
-    /**
-     * Implemented Status code for the response
-     */
-    public HttpStatus getHttpStatus();
-
 }

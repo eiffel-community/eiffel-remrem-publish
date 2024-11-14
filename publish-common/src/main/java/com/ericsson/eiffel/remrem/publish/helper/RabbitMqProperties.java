@@ -318,7 +318,7 @@ public class RabbitMqProperties {
             //The exception can be safely handled here as there is a check for existence of exchange is done before each publish.
             checkAndCreateExchangeIfNeeded();
         } catch (RemRemPublishException e) {
-            log.error("Error occured while setting up the RabbitMq Connection. "+e.getMessage());
+            log.error("Error occurred while setting up the RabbitMq Connection. "+e.getMessage());
             e.printStackTrace();
         }
 

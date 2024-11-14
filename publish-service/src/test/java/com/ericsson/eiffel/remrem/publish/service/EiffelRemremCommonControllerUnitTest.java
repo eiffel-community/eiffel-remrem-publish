@@ -110,7 +110,7 @@ public class EiffelRemremCommonControllerUnitTest {
 
         when(service.getServiceName()).thenReturn("eiffelsemantics");
         when(service2.getServiceName()).thenReturn("eiffelsemantics");
-        when(messageService.getHttpStatus()).thenReturn(HttpStatus.OK);
+//        when(messageService.getHttpStatus()).thenReturn(HttpStatus.OK);
 
         when(messageService.send(ArgumentMatchers.anyString(), ArgumentMatchers.any(MsgService.class), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(res);

@@ -1,6 +1,9 @@
+## 2.1.5
+- Events can be published in parallel.
+
 ## 2.1.2
 - Added external parameters to send username, password and/or uri to connect to Messagebus.
- 
+
 ## 2.1.1
 - Implemented the changes to log the eventId and HTTPStatus while the level is INFO.
 - Implemented the changes to print the user information while the log level is INFO.
