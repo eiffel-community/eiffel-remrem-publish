@@ -16,6 +16,7 @@ package com.ericsson.eiffel.remrem.publish.controller;
 
 import java.util.*;
 
+import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,10 +45,6 @@ import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
-import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
-import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
-import com.ericsson.eiffel.remrem.publish.service.MessageService;
-import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import ch.qos.logback.classic.Logger;
@@ -111,6 +109,7 @@ public class ProducerController {
         this.restTemplate = restTemplate;
     }
 
+    private int callsInSend = 0;
     public void logUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Check if the user is authenticated
@@ -165,12 +164,31 @@ public class ProducerController {
 
         }
         synchronized (this) {
+            callsInSend++;
+            log.info("callsInSend (before): " + callsInSend);
             SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
-            log.info("HTTP Status: {}", messageService.getHttpStatus().value());
-            return new ResponseEntity(result, messageService.getHttpStatus());
+            callsInSend--;
+            HttpStatus status = getHttpStatus(result);
+            log.info("callsInSend (after): " + callsInSend);
+            log.info("HTTP Status: {}", status.value());
+            return new ResponseEntity(result, status);
         }
     }
 
+    private HttpStatus getHttpStatus(SendResult result) {
+        List<PublishResultItem> events = result.getEvents();
+        HttpStatus status;
+        int nevents = events.size();
+        if (nevents == 0) {
+            return HttpStatus.BAD_REQUEST;
+        }
+        else if (events.size() == 1) {
+            return HttpStatus.valueOf(events.get(0).getStatusCode());
+        }
+        else {
+            return HttpStatus.MULTI_STATUS;
+        }
+    }
     /**
      * This controller used as producer to send messages or event
      * @param msgProtocol
@@ -275,6 +293,11 @@ public class ProducerController {
         }
     }
 
+    private boolean eventTypeExists(@NonNull MsgService msgService, String eventType) {
+        Collection<String> supportedEventTypes = msgService.getSupportedEventTypes();
+        return supportedEventTypes != null && supportedEventTypes.contains(eventType);
+    }
+
     /**
      * This controller provides single RemRem REST API End Point for both RemRem
      * Generate and Publish.
@@ -345,6 +368,11 @@ public class ProducerController {
                 parsedTemplates.append("[");
                 for (JsonElement eventJson : events) {
                     // -- parse params in incoming request -> body -------------
+                    if (!eventTypeExists(msgService, msgType)) {
+                        return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+                                "Unknown event type '" + msgType + "'");
+                    }
+
                     JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
                     if (parsedTemplates.length() > 1) {
                         parsedTemplates.append(",");
