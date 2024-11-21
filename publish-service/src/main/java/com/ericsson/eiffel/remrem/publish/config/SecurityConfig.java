@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
@@ -29,6 +30,10 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.cache.SpringCacheBasedUserCache;
+import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.security.ldap.search.LdapUserSearch;
 
 /**
  * This class is used to enable the ldap authentication based on property
@@ -82,9 +87,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
         }
         LOGGER.debug("LDAP server url: " + ldapUrl);
-        auth.ldapAuthentication()
-            .userSearchFilter(userSearchFilter)
-            .contextSource(ldapContextSource());
+        BindAuthenticator bindAuthenticator = new BindAuthenticator(
+                ldapContextSource());
+        LdapUserSearch ldapUserSearch = new FilterBasedLdapUserSearch("", userSearchFilter, ldapContextSource());
+        bindAuthenticator.setUserSearch(ldapUserSearch);
+        CachingLdapAuthenticationProvider ldapAuthenticationProvider = 
+        		new CachingLdapAuthenticationProvider(bindAuthenticator);
+        ldapAuthenticationProvider.setUserCache(new SpringCacheBasedUserCache(new ConcurrentMapCache("authenticationCache")));
+        auth.authenticationProvider(ldapAuthenticationProvider);
     }
 
     public BaseLdapPathContextSource ldapContextSource() {
