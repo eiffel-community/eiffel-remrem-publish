@@ -109,7 +109,6 @@ public class ProducerController {
         this.restTemplate = restTemplate;
     }
 
-    private int callsInSend = 0;
     public void logUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Check if the user is authenticated
@@ -159,20 +158,15 @@ public class ProducerController {
         //here add check for limitation for events in array is fetched from REMReM property and checked during publishing.
         if (body.isJsonArray() && (body.getAsJsonArray().size() > maxSizeOfInputArray)) {
             return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                    "The number of events in the input array is too high: " + body.getAsJsonArray().size() + " > "
-                            + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
+    "The number of events in the input array is too high: " + body.getAsJsonArray().size() + " > "
+            + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
 
         }
-        synchronized (this) {
-            callsInSend++;
-            log.info("callsInSend (before): " + callsInSend);
-            SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
-            callsInSend--;
-            HttpStatus status = getHttpStatus(result);
-            log.info("callsInSend (after): " + callsInSend);
-            log.info("HTTP Status: {}", status.value());
-            return new ResponseEntity(result, status);
-        }
+
+        SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
+        HttpStatus status = getHttpStatus(result);
+        log.info("HTTP Status: {}", status.value());
+        return new ResponseEntity(result, status);
     }
 
     private HttpStatus getHttpStatus(SendResult result) {
@@ -481,6 +475,7 @@ public class ProducerController {
      * @param routingKey
      * @return list of responses
      */
+    // TODO Why public?
     public List<Map<String, Object>> processingValidEvent(String eventResponseMessage, final String msgProtocol, final String userDomain,
                                                           final String tag, final String routingKey) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
@@ -492,28 +487,40 @@ public class ProducerController {
             responseEvent.add(eventResponse);
             return responseEvent;
         }
-        JsonElement eventElement = JsonParser.parseString(eventResponseMessage);
-        JsonArray eventArray = eventElement.getAsJsonArray();
-        if (eventArray == null) {
-            String errorMessage = "Invalid, array item expected to be in the form of JSON array";
+
+        JsonArray eventArray = null;
+        try {
+            JsonElement eventElement = JsonParser.parseString(eventResponseMessage);
+            eventArray = eventElement.getAsJsonArray();
+        }
+        catch (JsonSyntaxException e) {
+            String errorMessage = "Cannot parse '" + eventResponseMessage + "': " + e.getMessage();
             log.error(errorMessage);
             eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
+            responseEvent.add(eventResponse);
+            return responseEvent;
         }
+
+        if (eventArray == null) {
+            String errorMessage = "Processed event '" +eventResponseMessage + "' is expected in form of JSON array";
+            log.error(errorMessage);
+            eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
+            return responseEvent;
+        }
+
         for (int i = 0; i < eventArray.size(); i++) {
             eventResponse = new HashMap<>();
             JsonElement jsonResponseEvent = eventArray.get(i);
             if (isValid(jsonResponseEvent)) {
-                synchronized (this) {
-                    JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
-                    if (validResponse == null) {
-                        String errorMessage = "Invalid, array item expected to be in the form of JSON object";
-                        log.error(errorMessage);
-                        eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
-                    }
-                    String validResponseBody = validResponse.toString();
-                    SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
-                    eventResponse.put(JSON_STATUS_RESULT, result);
+                JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
+                if (validResponse == null) {
+                    String errorMessage = "Invalid, array item expected to be in the form of JSON object";
+                    log.error(errorMessage);
+                    eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
                 }
+                String validResponseBody = validResponse.toString();
+                SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
+                eventResponse.put(JSON_STATUS_RESULT, result);
             } else {
                 eventResponse.put(JSON_EVENT_MESSAGE_FIELD, jsonResponseEvent);
             }
@@ -524,7 +531,7 @@ public class ProducerController {
 
     /**
      * This helper method to get JsonObject type from JsonElement
-     * @param jsonElement AN event which need to convert
+     * @param jsonElement An event which need to convert
      * @return JsonObject converted Json of JsonObject type
      */
     public JsonObject getAsJsonObject(JsonElement jsonElement) {
@@ -534,18 +541,14 @@ public class ProducerController {
 
     /**
      * This helper method check the json event is valid or not
-     * @param jsonElement AN event which need to check
+     * @param jsonElement An event which need to check
      * @return boolean type value like it is valid or not
      */
     private boolean isValid(JsonElement jsonElement) {
-        try {
-            JsonObject jsonObject = getAsJsonObject(jsonElement);
-            return jsonObject.has(META) && jsonObject.has(DATA) &&
-                    jsonObject.has(LINKS) && !jsonObject.has(JSON_STATUS_CODE);
-        } catch (IllegalStateException e) {
-            log.error("Error while validating JSON event: ", e.getMessage());
-            return false;
-        }
+        JsonObject jsonObject = getAsJsonObject(jsonElement);
+        return jsonObject != null &&
+            jsonObject.has(META) && jsonObject.has(DATA) && jsonObject.has(LINKS) &&
+            !jsonObject.has(JSON_STATUS_CODE);
     }
 
     /**

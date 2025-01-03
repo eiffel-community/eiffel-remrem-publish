@@ -70,6 +70,7 @@ public class EventTemplateHandler {
             updatedJson = mapper.readValue(eventTemplate, JsonNode.class);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
+            // TODO Should a return be here? If rootNode stays null, next statement will fail...
         }
 
         // For each key/value pair for parsing to template

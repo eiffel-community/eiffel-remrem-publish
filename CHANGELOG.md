@@ -1,4 +1,4 @@
-## 2.1.5
+## 2.1.6
 - Events can be published in parallel.
 
 ## 2.1.2

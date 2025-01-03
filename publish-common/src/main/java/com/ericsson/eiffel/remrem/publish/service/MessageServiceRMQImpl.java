@@ -115,17 +115,17 @@ import ch.qos.logback.classic.Logger;
                     map.put(eventId, json.toString());
                     routingKeyMap.put(eventId, routing_key);
                 } else if (routing_key == null) {
-                    List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
+                    List<PublishResultItem> resultItemList = new ArrayList<>();
                     routingKeyGenerationFailure(resultItemList);
                     return new SendResult(resultItemList);
                 } else {
-                    List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
+                    List<PublishResultItem> resultItemList = new ArrayList<>();
                     PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
                     resultItemList.add(resultItem);
                     return new SendResult(resultItemList);
                 }
             } else {
-                List<PublishResultItem> resultItemList = new CopyOnWriteArrayList<>();
+                List<PublishResultItem> resultItemList = new ArrayList<>();
                 createFailureResult(resultItemList);
                 return new SendResult(resultItemList);
             }
@@ -205,7 +205,7 @@ import ch.qos.logback.classic.Logger;
         try {
             instantiateRmqHelper();
         } catch (RemRemPublishException e) {
-            log.error("RemRemPublishException occurred::{}", e.getMessage());
+            log.error("RemRemPublishException occurred: {}", e.getMessage());
         }
         rmqHelper.send(routingKey, msg, msgService);
         return resultMsg;
