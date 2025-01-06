@@ -142,6 +142,12 @@ import ch.qos.logback.classic.Logger;
         }
     }
 
+    protected SendResult createSendResult(List<PublishResultItem> resultList) {
+        SendResult result = new SendResult();
+        result.setEvents(resultList);
+        return result;
+    }
+
     /*
      * (non-Javadoc)
      * @see com.ericsson.eiffel.remrem.publish.service.MessageService#send(com.google.gson.JsonElement, com.ericsson.eiffel.remrem.protocol.MsgService, java.lang.String)
@@ -159,45 +165,43 @@ import ch.qos.logback.classic.Logger;
         resultList = new ArrayList<>();
         if (json == null) {
             createFailureResult(resultList);
-        }
-        else {
-            if (json.isJsonArray()) {
-                checkEventStatus = true;
-                JsonArray bodyJson = json.getAsJsonArray();
-                for (JsonElement obj : bodyJson) {
-                    String eventId = msgService.getEventId(obj.getAsJsonObject());
-                    if (StringUtils.isNotEmpty(eventId) && checkEventStatus) {
-                        String routing_key = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap,
-                                userDomainSuffix, tag, routingKey);
-                        if (StringUtils.isNotBlank(routing_key)) {
-                            result = send(obj.toString(), msgService, userDomainSuffix, tag, routing_key);
-                            resultList.addAll(result.getEvents());
-                        } else if (routing_key == null) {
-                            routingKeyGenerationFailure(resultList);
-                            checkEventStatus = false;
-                        } else {
-                            PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
-                            resultList.add(resultItem);
-                            break;
-                        }
-                    } else {
-                        if (!checkEventStatus) {
-                            addUnsuccessfulResultItem(resultList, obj);
-                        } else {
-                            createFailureResult(resultList);
-                            checkEventStatus = false;
-                        }
-                    }
-                }
-            } else {
-                result = send(json.toString(), msgService, userDomainSuffix, tag, routingKey);
-                resultList.addAll(result.getEvents());
-            }
+            return createSendResult(resultList);
         }
 
-        result = new SendResult();
-        result.setEvents(resultList);
-        return result;
+        if (json.isJsonArray()) {
+            checkEventStatus = true;
+            JsonArray bodyJson = json.getAsJsonArray();
+            for (JsonElement obj : bodyJson) {
+                String eventId = msgService.getEventId(obj.getAsJsonObject());
+                if (StringUtils.isNotEmpty(eventId) && checkEventStatus) {
+                    String routing_key = getAndCheckEvent(msgService, map, resultList, obj, routingKeyMap,
+                            userDomainSuffix, tag, routingKey);
+                    if (StringUtils.isNotBlank(routing_key)) {
+                        result = send(obj.toString(), msgService, userDomainSuffix, tag, routing_key);
+                        resultList.addAll(result.getEvents());
+                    } else if (routing_key == null) {
+                        routingKeyGenerationFailure(resultList);
+                        checkEventStatus = false;
+                    } else {
+                        PublishResultItem resultItem = rabbitmqConfigurationNotFound(msgService);
+                        resultList.add(resultItem);
+                        break;
+                    }
+                } else {
+                    if (!checkEventStatus) {
+                        addUnsuccessfulResultItem(resultList, obj);
+                    } else {
+                        createFailureResult(resultList);
+                        checkEventStatus = false;
+                    }
+                }
+            }
+        } else {
+            result = send(json.toString(), msgService, userDomainSuffix, tag, routingKey);
+            resultList.addAll(result.getEvents());
+        }
+
+        return createSendResult(resultList);
     }
 
     private String sendMessage(String routingKey, String msg, MsgService msgService) throws IOException,TimeoutException, RemRemPublishException {

@@ -57,7 +57,6 @@ public class EventTemplateHandler {
         .mappingProvider(new JacksonMappingProvider(mapper))
         .build();
 
-    // eventTemplateParser
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public JsonNode eventTemplateParser(String jsonData , String eventName){
         JsonNode updatedJson = null;
@@ -70,7 +69,7 @@ public class EventTemplateHandler {
             updatedJson = mapper.readValue(eventTemplate, JsonNode.class);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            // TODO Should a return be here? If rootNode stays null, next statement will fail...
+            return null;
         }
 
         // For each key/value pair for parsing to template

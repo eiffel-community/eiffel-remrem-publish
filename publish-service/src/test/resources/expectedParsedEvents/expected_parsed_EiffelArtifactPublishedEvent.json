@@ -17,6 +17,20 @@
   },
   "eventParams": {
     "data": {
+      "locations" : [ {
+          "type": "ARTIFACTORY",
+          "uri": "https://artifactory:8443/artifact"
+        }, {
+          "type": "NEXUS",
+          "uri": "https://nexus:8443/artifact"
+        }, {
+          "type": "PLAIN",
+          "uri": "https://plain.service:8443/get/request"
+        }, {
+          "type": "OTHER",
+          "uri":"https://other.service:8443/artifact"
+        }
+      ],
       "customData": [
         {
           "key": "EIFFELVERSION",

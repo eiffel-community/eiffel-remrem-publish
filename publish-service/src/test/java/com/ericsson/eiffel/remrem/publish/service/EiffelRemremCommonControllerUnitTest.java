@@ -75,8 +75,9 @@ public class EiffelRemremCommonControllerUnitTest {
 
     SendResult res = mock(SendResult.class);
 
+    // Response of 'generate' service is JSON object.
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    ResponseEntity responseOK = new ResponseEntity("ok", HttpStatus.OK);
+    ResponseEntity responseOK = new ResponseEntity("{\"status\": \"ok\"}", HttpStatus.OK);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     ResponseEntity responseBad = new ResponseEntity("ok", HttpStatus.BAD_REQUEST);
@@ -110,7 +111,10 @@ public class EiffelRemremCommonControllerUnitTest {
 
         when(service.getServiceName()).thenReturn("eiffelsemantics");
         when(service2.getServiceName()).thenReturn("eiffelsemantics");
-//        when(messageService.getHttpStatus()).thenReturn(HttpStatus.OK);
+        // TODO remove in a future
+        // 'getHttpStatus' is no more available in MessageService as it required a status value
+        // preventing parallel correct publishing of events.
+        // when(messageService.getHttpStatus()).thenReturn(HttpStatus.OK);
 
         when(messageService.send(ArgumentMatchers.anyString(), ArgumentMatchers.any(MsgService.class), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(res);

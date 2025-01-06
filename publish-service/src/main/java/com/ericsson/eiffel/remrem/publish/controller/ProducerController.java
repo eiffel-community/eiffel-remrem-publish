@@ -158,9 +158,8 @@ public class ProducerController {
         //here add check for limitation for events in array is fetched from REMReM property and checked during publishing.
         if (body.isJsonArray() && (body.getAsJsonArray().size() > maxSizeOfInputArray)) {
             return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-    "The number of events in the input array is too high: " + body.getAsJsonArray().size() + " > "
-            + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
-
+                "The number of events in the input array is too high: " + body.getAsJsonArray().size() + " > "
+                        + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
         }
 
         SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
@@ -176,13 +175,15 @@ public class ProducerController {
         if (nevents == 0) {
             return HttpStatus.BAD_REQUEST;
         }
-        else if (events.size() == 1) {
+
+        if (events.size() == 1) {
             return HttpStatus.valueOf(events.get(0).getStatusCode());
         }
         else {
             return HttpStatus.MULTI_STATUS;
         }
     }
+
     /**
      * This controller used as producer to send messages or event
      * @param msgProtocol
@@ -364,7 +365,7 @@ public class ProducerController {
                     // -- parse params in incoming request -> body -------------
                     if (!eventTypeExists(msgService, msgType)) {
                         return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                                "Unknown event type '" + msgType + "'");
+                            "Unknown event type '" + msgType + "'");
                     }
 
                     JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
