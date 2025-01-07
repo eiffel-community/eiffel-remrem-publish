@@ -75,12 +75,12 @@ public class EiffelRemremCommonControllerUnitTest {
 
     SendResult res = mock(SendResult.class);
 
-    // Response of 'generate' service is JSON object.
+    // Response of 'generate' service is always a JSON object.
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    ResponseEntity responseOK = new ResponseEntity("{\"status\": \"ok\"}", HttpStatus.OK);
+    ResponseEntity responseOK = new ResponseEntity("{\"meta\": {\"id\": \"545a709b-9c46-44dc-9f74-9593ac8fb745\"}}", HttpStatus.OK);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    ResponseEntity responseBad = new ResponseEntity("ok", HttpStatus.BAD_REQUEST);
+    ResponseEntity responseBad = new ResponseEntity("{\"status code\": \"400\", \"message\": \"FAIL\"}", HttpStatus.BAD_REQUEST);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     ResponseEntity responseOptionsFailed = new ResponseEntity("Link specific options could not be fulfilled", HttpStatus.UNPROCESSABLE_ENTITY);
