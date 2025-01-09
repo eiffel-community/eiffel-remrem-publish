@@ -51,12 +51,14 @@ public class EventTemplateHandler {
     private ObjectMapper mapper = JsonMapper.builder()
         .disable(JsonNodeFeature.READ_NULL_PROPERTIES)
         .build()
+            .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     private Configuration configuration = Configuration.builder()
         .jsonProvider(new JacksonJsonNodeJsonProvider(mapper))
         .mappingProvider(new JacksonMappingProvider(mapper))
         .build();
 
+    // eventTemplateParser
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public JsonNode eventTemplateParser(String jsonData , String eventName){
         JsonNode updatedJson = null;
