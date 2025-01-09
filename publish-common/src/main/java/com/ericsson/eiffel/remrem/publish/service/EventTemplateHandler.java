@@ -71,6 +71,7 @@ public class EventTemplateHandler {
             updatedJson = mapper.readValue(eventTemplate, JsonNode.class);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
+            return null;
         }
 
         // For each key/value pair for parsing to template

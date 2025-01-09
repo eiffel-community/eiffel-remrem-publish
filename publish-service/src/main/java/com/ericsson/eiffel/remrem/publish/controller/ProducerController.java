@@ -16,6 +16,7 @@ package com.ericsson.eiffel.remrem.publish.controller;
 
 import java.util.*;
 
+import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,10 +45,6 @@ import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
-import com.ericsson.eiffel.remrem.publish.service.EventTemplateHandler;
-import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
-import com.ericsson.eiffel.remrem.publish.service.MessageService;
-import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import ch.qos.logback.classic.Logger;
@@ -160,14 +158,29 @@ public class ProducerController {
         //here add check for limitation for events in array is fetched from REMReM property and checked during publishing.
         if (body.isJsonArray() && (body.getAsJsonArray().size() > maxSizeOfInputArray)) {
             return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                    "The number of events in the input array is too high: " + body.getAsJsonArray().size() + " > "
-                            + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
-
+                "The number of events in the input array is too high: " + body.getAsJsonArray().size() + " > "
+                        + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
         }
-        synchronized (this) {
-            SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
-            log.info("HTTP Status: {}", messageService.getHttpStatus().value());
-            return new ResponseEntity(result, messageService.getHttpStatus());
+
+        SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
+        HttpStatus status = getHttpStatus(result);
+        log.info("HTTP Status: {}", status.value());
+        return new ResponseEntity(result, status);
+    }
+
+    private HttpStatus getHttpStatus(SendResult result) {
+        List<PublishResultItem> events = result.getEvents();
+        HttpStatus status;
+        int nevents = events.size();
+        if (nevents == 0) {
+            return HttpStatus.BAD_REQUEST;
+        }
+
+        if (events.size() == 1) {
+            return HttpStatus.valueOf(events.get(0).getStatusCode());
+        }
+        else {
+            return HttpStatus.MULTI_STATUS;
         }
     }
 
@@ -275,6 +288,11 @@ public class ProducerController {
         }
     }
 
+    private boolean eventTypeExists(@NonNull MsgService msgService, String eventType) {
+        Collection<String> supportedEventTypes = msgService.getSupportedEventTypes();
+        return supportedEventTypes != null && supportedEventTypes.contains(eventType);
+    }
+
     /**
      * This controller provides single RemRem REST API End Point for both RemRem
      * Generate and Publish.
@@ -345,6 +363,11 @@ public class ProducerController {
                 parsedTemplates.append("[");
                 for (JsonElement eventJson : events) {
                     // -- parse params in incoming request -> body -------------
+                    if (!eventTypeExists(msgService, msgType)) {
+                        return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+                            "Unknown event type '" + msgType + "'");
+                    }
+
                     JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
                     if (parsedTemplates.length() > 1) {
                         parsedTemplates.append(",");
@@ -453,6 +476,7 @@ public class ProducerController {
      * @param routingKey
      * @return list of responses
      */
+    // TODO Why public?
     public List<Map<String, Object>> processingValidEvent(String eventResponseMessage, final String msgProtocol, final String userDomain,
                                                           final String tag, final String routingKey) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
@@ -464,28 +488,40 @@ public class ProducerController {
             responseEvent.add(eventResponse);
             return responseEvent;
         }
-        JsonElement eventElement = JsonParser.parseString(eventResponseMessage);
-        JsonArray eventArray = eventElement.getAsJsonArray();
-        if (eventArray == null) {
-            String errorMessage = "Invalid, array item expected to be in the form of JSON array";
+
+        JsonArray eventArray = null;
+        try {
+            JsonElement eventElement = JsonParser.parseString(eventResponseMessage);
+            eventArray = eventElement.getAsJsonArray();
+        }
+        catch (JsonSyntaxException e) {
+            String errorMessage = "Cannot parse '" + eventResponseMessage + "': " + e.getMessage();
             log.error(errorMessage);
             eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
+            responseEvent.add(eventResponse);
+            return responseEvent;
         }
+
+        if (eventArray == null) {
+            String errorMessage = "Processed event '" +eventResponseMessage + "' is expected in form of JSON array";
+            log.error(errorMessage);
+            eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
+            return responseEvent;
+        }
+
         for (int i = 0; i < eventArray.size(); i++) {
             eventResponse = new HashMap<>();
             JsonElement jsonResponseEvent = eventArray.get(i);
             if (isValid(jsonResponseEvent)) {
-                synchronized (this) {
-                    JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
-                    if (validResponse == null) {
-                        String errorMessage = "Invalid, array item expected to be in the form of JSON object";
-                        log.error(errorMessage);
-                        eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
-                    }
-                    String validResponseBody = validResponse.toString();
-                    SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
-                    eventResponse.put(JSON_STATUS_RESULT, result);
+                JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
+                if (validResponse == null) {
+                    String errorMessage = "Invalid, array item expected to be in the form of JSON object";
+                    log.error(errorMessage);
+                    eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
                 }
+                String validResponseBody = validResponse.toString();
+                SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
+                eventResponse.put(JSON_STATUS_RESULT, result);
             } else {
                 eventResponse.put(JSON_EVENT_MESSAGE_FIELD, jsonResponseEvent);
             }
@@ -496,7 +532,7 @@ public class ProducerController {
 
     /**
      * This helper method to get JsonObject type from JsonElement
-     * @param jsonElement AN event which need to convert
+     * @param jsonElement An event which need to convert
      * @return JsonObject converted Json of JsonObject type
      */
     public JsonObject getAsJsonObject(JsonElement jsonElement) {
@@ -506,18 +542,14 @@ public class ProducerController {
 
     /**
      * This helper method check the json event is valid or not
-     * @param jsonElement AN event which need to check
+     * @param jsonElement An event which need to check
      * @return boolean type value like it is valid or not
      */
     private boolean isValid(JsonElement jsonElement) {
-        try {
-            JsonObject jsonObject = getAsJsonObject(jsonElement);
-            return jsonObject.has(META) && jsonObject.has(DATA) &&
-                    jsonObject.has(LINKS) && !jsonObject.has(JSON_STATUS_CODE);
-        } catch (IllegalStateException e) {
-            log.error("Error while validating JSON event: ", e.getMessage());
-            return false;
-        }
+        JsonObject jsonObject = getAsJsonObject(jsonElement);
+        return jsonObject != null &&
+            jsonObject.has(META) && jsonObject.has(DATA) && jsonObject.has(LINKS) &&
+            !jsonObject.has(JSON_STATUS_CODE);
     }
 
     /**

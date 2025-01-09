@@ -32,4 +32,15 @@ public class RemRemPublishException extends Exception {
             Throwable cause) {
         super(message + factory.getHost() + ":" + factory.getPort(), cause);
     }
+
+    @Override
+    public String getMessage() {
+        String message = super.getMessage();
+        Throwable cause = getCause();
+        if (cause != null) {
+            message += "; root cause: '" + cause.getMessage() + "'";
+        }
+
+        return message;
+    }
 }
