@@ -313,6 +313,16 @@ public class ProducerController {
     }
 
     /**
+     * Guarantees that given value is not null.
+     *
+     * @param b a value
+     * @return b if non-null, Boolean.FALSE otherwise.
+     */
+    private Boolean ensureValueNonNull(Boolean b) {
+        return b != null ? b : Boolean.FALSE;
+    }
+
+    /**
      * This controller provides single RemRem REST API End Point for both RemRem
      * Generate and Publish.
      *
@@ -401,12 +411,13 @@ public class ProducerController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
             HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
+
             String generateUrl = generateURLTemplate.getUrl()
-                    + appendAttributeAndValue("failIfMultipleFound", failIfMultipleFound)
-                    + appendAttributeAndValue("failIfNoneFound", failIfNoneFound)
-                    + appendAttributeAndValue("lookupInExternalERs", lookupInExternalERs)
+                    + appendAttributeAndValue("failIfMultipleFound", ensureValueNonNull(failIfMultipleFound))
+                    + appendAttributeAndValue("failIfNoneFound", ensureValueNonNull(failIfNoneFound))
+                    + appendAttributeAndValue("lookupInExternalERs", ensureValueNonNull(lookupInExternalERs))
                     + appendAttributeAndValue("lookupLimit", lookupLimit)
-                    + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", okToLeaveOutInvalidOptionalFields);
+                    + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
