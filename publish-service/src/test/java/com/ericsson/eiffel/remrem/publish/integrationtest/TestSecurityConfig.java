@@ -43,6 +43,7 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .httpBasic()
                 .and()
-            .csrf();
+            .csrf()
+                .disable();
     }
 }

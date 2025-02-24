@@ -1,3 +1,6 @@
+## 2.1.7
+- Security fixes applied.
+
 ## 2.1.6
 - Events can be published in parallel.
 

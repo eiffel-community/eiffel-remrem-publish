@@ -110,6 +110,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .httpBasic()
             .authenticationEntryPoint(customAuthenticationEntryPoint)
             .and()
-            .csrf();
+            .csrf()
+                .disable();
     }
 }
