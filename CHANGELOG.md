@@ -1,3 +1,6 @@
+## 2.1.7
+- Ensure Eclipse Temurin is used to build the service
+
 ## 2.1.6
 - Events can be published in parallel.
 
