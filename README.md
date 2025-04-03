@@ -20,8 +20,8 @@
 # Eiffel REMReM Publish
 
 [![Sandbox badge](https://img.shields.io/badge/Stage-Sandbox-yellow)](https://github.com/eiffel-community/community/blob/master/PROJECT_LIFECYCLE.md#stage-sandbox)
-[![Build Status](https://travis-ci.org/eiffel-community/eiffel-remrem-publish.svg?branch=master)](https://travis-ci.org/eiffel-community/eiffel-remrem-publish)
-[![Coverage Status](https://coveralls.io/repos/github/eiffel-community/eiffel-remrem-publish/badge.svg?branch=master)](https://coveralls.io/github/eiffel-community/eiffel-remrem-publish?branch=master)
+[![CI](https://github.com/jainadc9/eiffel-remrem-publish/actions/workflows/main.yml/badge.svg)](https://github.com/jainadc9/eiffel-remrem-publish/actions/workflows/main.yml)
+[![Coverage Status](https://coveralls.io/repos/github/jainadc9/eiffel-remrem-publish/badge.svg?branch=master)](https://coveralls.io/github/jainadc9/eiffel-remrem-publish?branch=master)
 [![](https://jitpack.io/v/eiffel-community/eiffel-remrem-publish.svg)](https://jitpack.io/#eiffel-community/eiffel-remrem-publish)
 
 REMReM Publish is a microservice allowing sending of messages to a topic based exchange on a RabbitMQ Server. It has endpoints that must be called as a relative links.

@@ -65,7 +65,8 @@ jobs:
           RABBITMQ_HOST: 0.0.0.0
           RABBITMQ_PORT: ${{ job.services.rabbitmq.ports[5672] }}
           RABBITMQ_MNG_PORT: ${{ job.services.rabbitmq.ports[15672] }}
-        
+      
+      if: github.event_name == 'push'
       - name: Coveralls
         uses: coverallsapp/github-action@v2
         with:
