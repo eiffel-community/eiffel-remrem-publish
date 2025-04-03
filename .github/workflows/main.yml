@@ -66,8 +66,8 @@ jobs:
           RABBITMQ_PORT: ${{ job.services.rabbitmq.ports[5672] }}
           RABBITMQ_MNG_PORT: ${{ job.services.rabbitmq.ports[15672] }}
       
-      if: github.event_name == 'push'
       - name: Coveralls
+        if: github.event_name == 'push'
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ github.token }}
