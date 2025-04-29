@@ -7,4 +7,5 @@ query-filters:
   #  you likely want to disable CSRF protection."
   - exclude: 
       id: java/spring-disabled-csrf-protection
+      id: java/error-message-exposure
 
