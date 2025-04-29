@@ -449,9 +449,9 @@ public class ProducerController {
                 log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
 
                 if (msgService != null && msgProtocol != null) {
-                    rmqHelper.rabbitMqPropertiesInit(msgProtocol);
+                    rmqHelper.rabbitMqPropertiesInit(mp);
                 }
-                responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain,
+                responseEvents = processingValidEvent(responseBody, mp, userDomain,
                         tag, routingKey);
             } else {
                 return response;
@@ -471,7 +471,7 @@ public class ProducerController {
             } else if (bodyJson.isJsonArray()) {
                 responseBody = responseMessage;
             }
-            responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain, tag, routingKey);
+            responseEvents = processingValidEvent(responseBody, mp, userDomain, tag, routingKey);
             return new ResponseEntity<>(responseEvents, HttpStatus.BAD_REQUEST);
         }
 
