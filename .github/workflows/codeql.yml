@@ -20,15 +20,6 @@ on:
   schedule:
     - cron: '28 3 * * 1'
 
-query-filters:
-  # The application uses non-browser clients. Yes, there is swagger interface,
-  # but is's used only for testing/tuning.
-  #
-  # From https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
-  # "If you are creating a service that is used only by non-browser clients,
-  #  you likely want to disable CSRF protection."
-  - exclude: java/spring-disabled-csrf-protection
-
 jobs:
   analyze:
     name: Analyze
@@ -77,6 +68,7 @@ jobs:
 
         # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
+        config-file: .github/workflows/codeql-filters.yml
 
 
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
