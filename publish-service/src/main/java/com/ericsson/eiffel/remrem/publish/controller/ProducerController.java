@@ -427,7 +427,7 @@ public class ProducerController {
                     + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
-                    entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
+                    entity, String.class, generateURLTemplate.getMap(mp, msgType));
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
