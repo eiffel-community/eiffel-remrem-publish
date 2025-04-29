@@ -352,6 +352,11 @@ public class ProducerController {
             logUserName();
         }
 
+        String mp = null;
+        if (!StringUtils.isEmpty(msgProtocol)) {
+            mp = msgProtocol;
+        }
+
         MsgService msgService = null;
         if (StringUtils.isEmpty(msgProtocol) ||
                 ((msgService = PublishUtils.getMessageService(msgProtocol, msgServices)) == null)) {
@@ -422,7 +427,7 @@ public class ProducerController {
                     + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
-                    entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
+                    entity, String.class, generateURLTemplate.getMap(mp, msgType));
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
