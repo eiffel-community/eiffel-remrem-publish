@@ -21,6 +21,7 @@ import java.util.*;
 
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -351,8 +352,9 @@ public class ProducerController {
             logUserName();
         }
 
-        MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
-        if (msgService == null) {
+        MsgService msgService = null;
+        if (StringUtils.isEmpty(msgProtocol) ||
+                ((msgService = PublishUtils.getMessageService(msgProtocol, msgServices)) == null)) {
             return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
                     "No protocol service has been found registered");
         }
