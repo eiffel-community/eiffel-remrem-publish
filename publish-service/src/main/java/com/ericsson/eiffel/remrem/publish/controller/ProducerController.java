@@ -352,15 +352,15 @@ public class ProducerController {
             logUserName();
         }
 
-        String mp = null;
-        if (!StringUtils.isEmpty(msgProtocol)) {
-            mp = msgProtocol;
-        }
+        String mp = "aaa";
+//        if (!StringUtils.isEmpty(msgProtocol)) {
+//            mp = msgProtocol;
+//        }
 
-        String mt= null;
-        if (!StringUtils.isEmpty(msgType)) {
-            mt = msgType;
-        }
+        String mt= "bbb";
+//        if (!StringUtils.isEmpty(msgType)) {
+//            mt = msgType;
+//        }
 
         MsgService msgService = null;
         if (StringUtils.isEmpty(msgProtocol) ||
