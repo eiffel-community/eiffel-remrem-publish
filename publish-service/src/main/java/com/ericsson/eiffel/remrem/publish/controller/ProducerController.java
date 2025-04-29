@@ -357,6 +357,11 @@ public class ProducerController {
             mp = msgProtocol;
         }
 
+        String mt= null;
+        if (!StringUtils.isEmpty(msgType)) {
+            mt = msgType;
+        }
+
         MsgService msgService = null;
         if (StringUtils.isEmpty(msgProtocol) ||
                 ((msgService = PublishUtils.getMessageService(msgProtocol, msgServices)) == null)) {
@@ -398,9 +403,9 @@ public class ProducerController {
                 parsedTemplates.append("[");
                 for (JsonElement eventJson : events) {
                     // -- parse params in incoming request -> body -------------
-                    if (!eventTypeExists(msgService, msgType)) {
+                    if (!eventTypeExists(msgService, mt)) {
                         return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                            "Unknown event type '" + msgType + "'");
+                            "Unknown event type '" + mt + "'");
                     }
 
                     JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
@@ -427,7 +432,7 @@ public class ProducerController {
                     + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
-                    entity, String.class, generateURLTemplate.getMap(mp, msgType));
+                    entity, String.class, generateURLTemplate.getMap(mp, mt));
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
