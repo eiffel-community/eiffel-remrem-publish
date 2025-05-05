@@ -302,7 +302,7 @@ public class ProducerController {
             boolean iof = true;
             String jb = "json";
             return generateAndPublish(mp, mt, ud, t, rk, pd, fmf,
-                    fnf, lee, ll, iof, bodyJson);
+                    fnf, lee, ll, iof, jb);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
