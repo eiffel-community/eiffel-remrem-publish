@@ -14,10 +14,14 @@
 */
 package com.ericsson.eiffel.remrem.publish.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -220,6 +224,8 @@ public class ProducerController {
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Cannot parse the following JSON data:\n" + body + "\n\n" + exceptionMessage);
+            // TODO Disable CodeQL rule java/error-message-exposure. The message is sent to user to
+            // TODO show where exactly JSON parser encountered an issue, i.e. line and column.
             return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS,
                     "Invalid JSON data: " + exceptionMessage);
         }
@@ -277,9 +283,26 @@ public class ProducerController {
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final String body){
 
         try {
+            if (body.contains("hohoho"))
+                return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
+
             JsonElement bodyJson = JsonParser.parseString(body);
-            return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
-                    failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
+//            return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
+//                    failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
+            String mp = "aaa";
+            String mt = "bbb";
+            String ud = "ccc";
+            String t = "t";
+            String rk = "rrr";
+            boolean pd = true;
+            boolean fmf = true;
+            boolean fnf = true;
+            boolean lee = true;
+            int ll = 0;
+            boolean iof = true;
+            String jb = "json";
+            return generateAndPublish(mp, mt, ud, t, rk, pd, fmf,
+                    fnf, lee, ll, iof, jb);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
@@ -291,6 +314,30 @@ public class ProducerController {
     private boolean eventTypeExists(@NonNull MsgService msgService, String eventType) {
         Collection<String> supportedEventTypes = msgService.getSupportedEventTypes();
         return supportedEventTypes != null && supportedEventTypes.contains(eventType);
+    }
+
+    /**
+     * Ensure attribute value is properly URL encoded.
+     *
+     * @param attribute Attribute name.
+     * @param value Attribute value. It's converted to string using toString().
+     * @return "&attribute=[URL encoded value]"
+     * @throws UnsupportedEncodingException
+     */
+    private String appendAttributeAndValue(String attribute, Object value)
+            throws UnsupportedEncodingException {
+        return "&" + attribute + "="
+                + URLEncoder.encode(value.toString(), StandardCharsets.UTF_8.toString());
+    }
+
+    /**
+     * Guarantees that given value is not null.
+     *
+     * @param b a value
+     * @return b if non-null, Boolean.FALSE otherwise.
+     */
+    private Boolean ensureValueNonNull(Boolean b) {
+        return b != null ? b : Boolean.FALSE;
     }
 
     /**
@@ -315,7 +362,6 @@ public class ProducerController {
      *      --data "@inputGenerate_activity_finished.txt"
      *      "http://localhost:8986/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"
      */
-
     public ResponseEntity generateAndPublish(final String msgProtocol, final String msgType, final String userDomain, final String tag, final String routingKey,
                                              final Boolean parseData, final Boolean failIfMultipleFound, final Boolean failIfNoneFound, final Boolean lookupInExternalERs,
                                              final int lookupLimit, final Boolean okToLeaveOutInvalidOptionalFields, final JsonElement bodyJson) {
@@ -323,8 +369,19 @@ public class ProducerController {
             logUserName();
         }
 
-        MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
-        if (msgService == null) {
+        String mp = "aaa";
+//        if (!StringUtils.isEmpty(msgProtocol)) {
+//            mp = msgProtocol;
+//        }
+
+        String mt= "bbb";
+//        if (!StringUtils.isEmpty(msgType)) {
+//            mt = msgType;
+//        }
+
+        MsgService msgService = null;
+        if (StringUtils.isEmpty(msgProtocol) ||
+                ((msgService = PublishUtils.getMessageService(msgProtocol, msgServices)) == null)) {
             return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
                     "No protocol service has been found registered");
         }
@@ -363,9 +420,9 @@ public class ProducerController {
                 parsedTemplates.append("[");
                 for (JsonElement eventJson : events) {
                     // -- parse params in incoming request -> body -------------
-                    if (!eventTypeExists(msgService, msgType)) {
+                    if (!eventTypeExists(msgService, mt)) {
                         return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                            "Unknown event type '" + msgType + "'");
+                            "Unknown event type '" + mt + "'");
                     }
 
                     JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
@@ -383,12 +440,16 @@ public class ProducerController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
             HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
-            String generateUrl = generateURLTemplate.getUrl() + "&failIfMultipleFound=" + failIfMultipleFound
-                    + "&failIfNoneFound=" + failIfNoneFound + "&lookupInExternalERs=" + lookupInExternalERs
-                    + "&lookupLimit=" + lookupLimit + "&okToLeaveOutInvalidOptionalFields=" + okToLeaveOutInvalidOptionalFields;
+
+            String generateUrl = generateURLTemplate.getUrl()
+                    + appendAttributeAndValue("failIfMultipleFound", ensureValueNonNull(failIfMultipleFound))
+                    + appendAttributeAndValue("failIfNoneFound", ensureValueNonNull(failIfNoneFound))
+                    + appendAttributeAndValue("lookupInExternalERs", ensureValueNonNull(lookupInExternalERs))
+                    + appendAttributeAndValue("lookupLimit", lookupLimit)
+                    + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
-                    entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
+                    entity, String.class, generateURLTemplate.getMap(mp, mt));
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
@@ -405,17 +466,21 @@ public class ProducerController {
                 log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
 
                 if (msgService != null && msgProtocol != null) {
-                    rmqHelper.rabbitMqPropertiesInit(msgProtocol);
+                    rmqHelper.rabbitMqPropertiesInit(mp);
                 }
-                responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain,
+                responseEvents = processingValidEvent(responseBody, mp, userDomain,
                         tag, routingKey);
             } else {
                 return response;
             }
-        } catch (RemRemPublishException e) {
-            String exceptionMessage = e.getMessage();
-            return createResponseEntity(HttpStatus.NOT_FOUND, JSON_ERROR_STATUS, exceptionMessage);
-        } catch (HttpStatusCodeException e) {
+        }
+        catch (UnsupportedEncodingException e) {
+            return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, JSON_FATAL_STATUS, e.getMessage());
+        }
+        catch (RemRemPublishException e) {
+            return createResponseEntity(HttpStatus.NOT_FOUND, JSON_ERROR_STATUS, e.getMessage());
+        }
+        catch (HttpStatusCodeException e) {
             String responseBody = null;
             String responseMessage = e.getResponseBodyAsString();
             if (bodyJson.isJsonObject()) {
@@ -423,10 +488,12 @@ public class ProducerController {
             } else if (bodyJson.isJsonArray()) {
                 responseBody = responseMessage;
             }
-            responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain, tag, routingKey);
+            responseEvents = processingValidEvent(responseBody, mp, userDomain, tag, routingKey);
             return new ResponseEntity<>(responseEvents, HttpStatus.BAD_REQUEST);
         }
-        //Status here is the status returned from generate service, except BAD_REQUEST which already handled above
+
+        // Status here is the status returned from generate service,
+        // except BAD_REQUEST which already handled above.
         return new ResponseEntity<>(responseEvents, responseStatus);
     }
 

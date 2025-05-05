@@ -30,6 +30,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import static org.apache.catalina.webresources.TomcatURLStreamHandlerFactory.disable;
+
 /**
  * This class is used to enable the ldap authentication based on property
  * activedirectory.publish.enabled = true in properties file.
@@ -111,6 +113,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authenticationEntryPoint(customAuthenticationEntryPoint)
             .and()
             .csrf()
+            // The application uses non-browser clients. Yes, there is swagger interface,
+            // but is's used only for testing/tuning.
+            //
+            // From https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
+            // "If you are creating a service that is used only by non-browser clients,
+            //  you likely want to disable CSRF protection."
             .disable();
     }
 }
