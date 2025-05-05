@@ -284,8 +284,22 @@ public class ProducerController {
 
         try {
             JsonElement bodyJson = JsonParser.parseString(body);
-            return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
-                    failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
+//            return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
+//                    failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
+            String mp = "aaa";
+            String mt = "bbb";
+            String ud = "ccc";
+            String t = "t";
+            String rk = "rrr";
+            boolean pd = true;
+            boolean fmf = true;
+            boolean fnf = true;
+            boolean lee = true;
+            int ll = 0;
+            boolean iof = true;
+            String jb = "json";
+            return generateAndPublish(mp, mt, ud, tag, rk, pd, fmf,
+                    fnf, lee, ll, iof, jb);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
