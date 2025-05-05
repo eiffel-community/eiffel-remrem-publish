@@ -301,7 +301,7 @@ public class ProducerController {
             int ll = 0;
             boolean iof = true;
             String jb = "json";
-            return generateAndPublish(mp, mt, ud, tag, rk, pd, fmf,
+            return generateAndPublish(mp, mt, ud, t, rk, pd, fmf,
                     fnf, lee, ll, iof, bodyJson);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
