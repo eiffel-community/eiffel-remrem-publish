@@ -287,6 +287,13 @@ public class ProducerController {
                 return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
 
             JsonElement bodyJson = JsonParser.parseString(body);
+            if (!bodyJson.isJsonObject()) {
+                return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
+            }
+
+            if (!bodyJson.getAsJsonObject().has("hohoho")) {
+                return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
+            }
 //            return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
 //                    failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
             String mp = "aaa";
@@ -302,7 +309,7 @@ public class ProducerController {
             boolean iof = true;
             String jb = "json";
             return generateAndPublish(mp, mt, ud, t, rk, pd, fmf,
-                    fnf, lee, ll, iof, jb);
+                    fnf, lee, ll, iof, bodyJson);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
