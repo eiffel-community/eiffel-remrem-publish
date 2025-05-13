@@ -22,6 +22,7 @@ import java.util.*;
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
 import org.apache.commons.lang3.StringUtils;
+import org.owasp.encoder.Encode;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -455,10 +456,12 @@ public class ProducerController {
                     + appendAttributeAndValue("lookupLimit", lookupLimit)
                     + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
+            ResponseEntity<String> r = restTemplate.postForEntity(generateUrl,
+                    entity, String.class, generateURLTemplate.getMap(mp, mt));
 //            ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
 //                    entity, String.class, generateURLTemplate.getMap(mp, mt));
-            ResponseEntity<String> response = restTemplate.postForEntity("https://a.b.c/",
-                    entity, String.class, generateURLTemplate.getMap(mp, mt));
+
+            ResponseEntity<String> response = new ResponseEntity<>(Encode.forHtmlContent(r.toString()), r.getStatusCode());
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
