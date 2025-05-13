@@ -445,7 +445,7 @@ public class ProducerController {
                 bodyJsonOut = bodyJson.toString();
             }
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+            headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
 
             String generateUrl = generateURLTemplate.getUrl()
