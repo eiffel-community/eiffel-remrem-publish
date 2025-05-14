@@ -295,22 +295,22 @@ public class ProducerController {
             if (!bodyJson.getAsJsonObject().has("hohoho")) {
                 return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
             }
-//            return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
-//                    failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
-            String mp = "aaa";
-            String mt = "bbb";
-            String ud = "ccc";
-            String t = "t";
-            String rk = "rrr";
-            boolean pd = true;
-            boolean fmf = true;
-            boolean fnf = true;
-            boolean lee = true;
-            int ll = 0;
-            boolean iof = true;
-            String jb = "json";
-            return generateAndPublish(mp, mt, ud, t, rk, pd, fmf,
-                    fnf, lee, ll, iof, bodyJson);
+            return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
+                    failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
+//            String mp = "aaa";
+//            String mt = "bbb";
+//            String ud = "ccc";
+//            String t = "t";
+//            String rk = "rrr";
+//            boolean pd = true;
+//            boolean fmf = true;
+//            boolean fnf = true;
+//            boolean lee = true;
+//            int ll = 0;
+//            boolean iof = true;
+//            String jb = "json";
+//            return generateAndPublish(mp, mt, ud, t, rk, pd, fmf,
+//                    fnf, lee, ll, iof, bodyJson);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
@@ -378,14 +378,14 @@ public class ProducerController {
         }
 
         String mp = "aaa";
-//        if (!StringUtils.isEmpty(msgProtocol)) {
-//            mp = msgProtocol;
-//        }
+        if (!StringUtils.isEmpty(msgProtocol)) {
+            mp = msgProtocol;
+        }
 
         String mt= "bbb";
-//        if (!StringUtils.isEmpty(msgType)) {
-//            mt = msgType;
-//        }
+        if (!StringUtils.isEmpty(msgType)) {
+            mt = msgType;
+        }
 
         MsgService msgService = null;
         if (StringUtils.isEmpty(msgProtocol) ||
@@ -458,8 +458,6 @@ public class ProducerController {
 
             ResponseEntity<String> r = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(mp, mt));
-//            ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
-//                    entity, String.class, generateURLTemplate.getMap(mp, mt));
 
             ResponseEntity<String> response = new ResponseEntity<>(Encode.forHtmlContent(r.toString()), r.getStatusCode());
 
