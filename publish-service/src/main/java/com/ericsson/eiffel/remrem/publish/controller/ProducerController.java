@@ -292,9 +292,6 @@ public class ProducerController {
                 return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
             }
 
-            if (!bodyJson.getAsJsonObject().has("hohoho")) {
-                return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
-            }
             return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
                     failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
 //            String mp = "aaa";
@@ -459,7 +456,8 @@ public class ProducerController {
             ResponseEntity<String> r = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(mp, mt));
 
-            ResponseEntity<String> response = new ResponseEntity<>(Encode.forHtmlContent(r.toString()), r.getStatusCode());
+            //ResponseEntity<String> response = new ResponseEntity<>(Encode.forHtmlContent(r.toString()), r.getStatusCode());
+            ResponseEntity<String> response = new ResponseEntity<>((r.toString()), r.getStatusCode());
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
