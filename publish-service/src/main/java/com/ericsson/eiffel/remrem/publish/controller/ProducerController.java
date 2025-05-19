@@ -453,11 +453,12 @@ public class ProducerController {
                     + appendAttributeAndValue("lookupLimit", lookupLimit)
                     + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
-            ResponseEntity<String> r = restTemplate.postForEntity(generateUrl,
+            ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(mp, mt));
 
             //ResponseEntity<String> response = new ResponseEntity<>(Encode.forHtmlContent(r.toString()), r.getStatusCode());
-            ResponseEntity<String> response = new ResponseEntity<>((r.toString()), r.getStatusCode());
+            //ResponseEntity<String> response = new ResponseEntity<>((r.toString()), r.getStatusCode());
+//            ResponseEntity<String> response = r;
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
