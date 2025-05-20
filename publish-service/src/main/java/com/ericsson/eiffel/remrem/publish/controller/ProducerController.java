@@ -21,6 +21,7 @@ import java.util.*;
 
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
 import org.slf4j.LoggerFactory;
@@ -440,6 +441,7 @@ public class ProducerController {
                 bodyJsonOut = parsedTemplates.toString();
                 log.info("Parsed template: " + bodyJsonOut);
             } else {
+//                bodyJsonOut = StringEscapeUtils.escapeJson(bodyJson.toString());
                 bodyJsonOut = bodyJson.toString();
             }
             HttpHeaders headers = new HttpHeaders();
