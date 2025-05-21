@@ -400,7 +400,7 @@ public class ProducerController {
             if (bodyJsonArray.size() > maxSizeOfInputArray) {
                 return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
                         "The number of events in the input array is too high: " + bodyJsonArray.size() + " > "
-                                + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
+                                + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInpuArray' to increase it.");
             }
             for (JsonElement element : bodyJsonArray) {
                 if (element.isJsonObject()) {
