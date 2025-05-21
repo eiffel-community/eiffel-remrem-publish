@@ -449,18 +449,14 @@ public class ProducerController {
             HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
 
             String generateUrl = generateURLTemplate.getUrl()
-                    + appendAttributeAndValue("failIfMultipleFound", ensureValueNonNull(failIfMultipleFound))
-                    + appendAttributeAndValue("failIfNoneFound", ensureValueNonNull(failIfNoneFound))
-                    + appendAttributeAndValue("lookupInExternalERs", ensureValueNonNull(lookupInExternalERs))
-                    + appendAttributeAndValue("lookupLimit", lookupLimit)
-                    + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
+                + appendAttributeAndValue("failIfMultipleFound", ensureValueNonNull(failIfMultipleFound))
+                + appendAttributeAndValue("failIfNoneFound", ensureValueNonNull(failIfNoneFound))
+                + appendAttributeAndValue("lookupInExternalERs", ensureValueNonNull(lookupInExternalERs))
+                + appendAttributeAndValue("lookupLimit", lookupLimit)
+                + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
             ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
                     entity, String.class, generateURLTemplate.getMap(mp, mt));
-
-            //ResponseEntity<String> response = new ResponseEntity<>(Encode.forHtmlContent(r.toString()), r.getStatusCode());
-            //ResponseEntity<String> response = new ResponseEntity<>((r.toString()), r.getStatusCode());
-//            ResponseEntity<String> response = r;
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
