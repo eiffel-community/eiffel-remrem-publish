@@ -285,14 +285,7 @@ public class ProducerController {
                                              @ApiParam(value = "JSON message", required = true) @RequestBody final String body){
 
         try {
-            if (body.contains("hohoho"))
-                return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
-
             JsonElement bodyJson = JsonParser.parseString(body);
-            if (!bodyJson.isJsonObject()) {
-                return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "hohoho");
-            }
-
             return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
                     failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
 //            String mp = "aaa";
