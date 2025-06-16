@@ -1,3 +1,6 @@
+## 2.1.8
+- Security fixes applied.
+
 ## 2.1.7
 - Ensure Eclipse Temurin is used to build the service
 
