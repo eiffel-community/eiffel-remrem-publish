@@ -21,9 +21,7 @@ import java.util.*;
 
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.owasp.encoder.Encode;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -288,20 +286,6 @@ public class ProducerController {
             JsonElement bodyJson = JsonParser.parseString(body);
             return generateAndPublish(msgProtocol, msgType, userDomain, tag, routingKey, parseData, failIfMultipleFound,
                     failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
-//            String mp = "aaa";
-//            String mt = "bbb";
-//            String ud = "ccc";
-//            String t = "t";
-//            String rk = "rrr";
-//            boolean pd = true;
-//            boolean fmf = true;
-//            boolean fnf = true;
-//            boolean lee = true;
-//            int ll = 0;
-//            boolean iof = true;
-//            String jb = "json";
-//            return generateAndPublish(mp, mt, ud, t, rk, pd, fmf,
-//                    fnf, lee, ll, iof, bodyJson);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
@@ -368,17 +352,15 @@ public class ProducerController {
             logUserName();
         }
 
-        String mp = "aaa";
-        if (!StringUtils.isEmpty(msgProtocol)) {
-            mp = msgProtocol;
+        if (StringUtils.isEmpty(msgProtocol)) {
+            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "Value of parameter 'msgProtocol' is empty");
         }
 
-        String mt= "bbb";
-        if (!StringUtils.isEmpty(msgType)) {
-            mt = msgType;
+        if (StringUtils.isEmpty(msgType)) {
+            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS, "Value of parameter 'msgType' is empty");
         }
 
-        MsgService msgService = null;
+        MsgService msgService;
         if (StringUtils.isEmpty(msgProtocol) ||
                 ((msgService = PublishUtils.getMessageService(msgProtocol, msgServices)) == null)) {
             return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
@@ -419,9 +401,9 @@ public class ProducerController {
                 parsedTemplates.append("[");
                 for (JsonElement eventJson : events) {
                     // -- parse params in incoming request -> body -------------
-                    if (!eventTypeExists(msgService, mt)) {
+                    if (!eventTypeExists(msgService, msgType)) {
                         return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                            "Unknown event type '" + mt + "'");
+                            "Unknown event type '" + msgType + "'");
                     }
 
                     JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
@@ -434,7 +416,6 @@ public class ProducerController {
                 bodyJsonOut = parsedTemplates.toString();
                 log.info("Parsed template: " + bodyJsonOut);
             } else {
-//                bodyJsonOut = StringEscapeUtils.escapeJson(bodyJson.toString());
                 bodyJsonOut = bodyJson.toString();
             }
             HttpHeaders headers = new HttpHeaders();
@@ -448,10 +429,8 @@ public class ProducerController {
                 + appendAttributeAndValue("lookupLimit", lookupLimit)
                 + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
-//            ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
-//                    entity, String.class, generateURLTemplate.getMap(mp, mt));
             ResponseEntity<String> response = restTemplate.postForEntity("https://a.b.c/",
-                    entity, String.class, generateURLTemplate.getMap(mp, mt));
+                    entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
@@ -468,9 +447,9 @@ public class ProducerController {
                 log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
 
                 if (msgService != null && msgProtocol != null) {
-                    rmqHelper.rabbitMqPropertiesInit(mp);
+                    rmqHelper.rabbitMqPropertiesInit(msgProtocol);
                 }
-                responseEvents = processingValidEvent(responseBody, mp, userDomain,
+                responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain,
                         tag, routingKey);
             } else {
                 return response;
@@ -490,7 +469,7 @@ public class ProducerController {
             } else if (bodyJson.isJsonArray()) {
                 responseBody = responseMessage;
             }
-            responseEvents = processingValidEvent(responseBody, mp, userDomain, tag, routingKey);
+            responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain, tag, routingKey);
             return new ResponseEntity<>(responseEvents, HttpStatus.BAD_REQUEST);
         }
 
