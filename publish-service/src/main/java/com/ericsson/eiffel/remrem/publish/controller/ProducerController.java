@@ -422,14 +422,14 @@ public class ProducerController {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
 
-            String generateUrl = generateURLTemplate.getUrl()
+            String generatedUrl = generateURLTemplate.getUrl()
                 + appendAttributeAndValue("failIfMultipleFound", ensureValueNonNull(failIfMultipleFound))
                 + appendAttributeAndValue("failIfNoneFound", ensureValueNonNull(failIfNoneFound))
                 + appendAttributeAndValue("lookupInExternalERs", ensureValueNonNull(lookupInExternalERs))
                 + appendAttributeAndValue("lookupLimit", lookupLimit)
                 + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
 
-            ResponseEntity<String> response = restTemplate.postForEntity("https://a.b.c/",
+            ResponseEntity<String> response = restTemplate.postForEntity(generatedUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
             responseStatus = response.getStatusCode();
