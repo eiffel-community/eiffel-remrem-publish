@@ -28,6 +28,6 @@ public class RemremHomeController {
 
         @RequestMapping(value = "/", method = RequestMethod.GET)
         public String home() {
-                return "redirect:/swagger-ui.html";
+                return "redirect:/swagger-ui/index.html";
         }
 }
