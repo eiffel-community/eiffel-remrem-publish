@@ -179,9 +179,9 @@ public class ProducerController {
         if (events.size() == 1) {
             return HttpStatus.valueOf(events.get(0).getStatusCode());
         }
-        else {
-            return HttpStatus.MULTI_STATUS;
-        }
+        boolean allSuccessFull = events.stream().allMatch(event -> event.getStatusCode() == HttpStatus.OK.value());
+
+        return allSuccessFull ? HttpStatus.OK : HttpStatus.MULTI_STATUS;
     }
 
     /**
