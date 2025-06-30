@@ -1,3 +1,6 @@
+## 2.1.8
+- Tests handled properly.
+
 ## 2.1.7
 - Ensure Eclipse Temurin is used to build the service
 
