@@ -1,3 +1,9 @@
+## 2.1.9
+  com.fasterxml.jackson.core:jackson-core uplifted
+
+## 2.1.8
+  False positive tests fixed
+
 ## 2.1.7
 - Ensure Eclipse Temurin is used to build the service
 
