@@ -1,3 +1,7 @@
+
+## 2.1.9
+  com.fasterxml.jackson.core:jackson-core uplifted
+
 ## 2.1.8
 - Tests handled properly.
 
