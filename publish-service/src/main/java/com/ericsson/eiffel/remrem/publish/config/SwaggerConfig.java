@@ -117,7 +117,7 @@ public class SwaggerConfig {
                 final StringBuilder remremDescription = new StringBuilder();
                 remremDescription.append("REMReM (REST Mailbox for Registered Messages) Publish "
                         + "for publish validated Eiffel messages on a RabbitMQ message bus. ");
-                remremDescription.append("<a href= https://eiffel-community.github.io/eiffel-remrem-publish/index.html>REMReM Publish documentation</a>");
+                remremDescription.append("<a href=https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/wiki/markdown/index.md>REMReM Publish documentation</a>");
 
                 return new ApiInfoBuilder()
                         .title("Eiffel REMReM Publish Service")
