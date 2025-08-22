@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
@@ -29,6 +30,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * This class is used to enable the ldap authentication based on property
@@ -70,7 +72,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public Integer getTimeOut() {
         return ldapTimeOut;
     }
-
+//
+    @Autowired
+    private CustomLdapUserDetailsService customLdapUserDetailsService;
+    
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
@@ -82,11 +87,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
         }
         LOGGER.debug("LDAP server url: " + ldapUrl);
-        auth.ldapAuthentication()
+        auth
+        .userDetailsService(customLdapUserDetailsService)
+        .and()
+        .ldapAuthentication()
             .userSearchFilter(userSearchFilter)
             .contextSource(ldapContextSource());
     }
 
+    
+//      @Override 
+//      protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//      auth.userDetailsService(customLdapUserDetailsService); }
+     
+    
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        return new CustomLdapUserDetailsService();
+//    }
+    
     public BaseLdapPathContextSource ldapContextSource() {
         LdapContextSource ldap = new LdapContextSource();
         ldap.setUrl(ldapUrl);
@@ -112,5 +131,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .csrf()
             .disable();
+//            .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create session if required
+//                .sessionFixation().migrateSession() // Migrate session to prevent fixation attacks
+//                .maximumSessions(1) // Allow only one session per user
+//                .maxSessionsPreventsLogin(false) // Allows multiple logins for the same user
+//                .expiredUrl("/login?expired") // Redirect to this URL on session expiration
+//                .and()
+//                .and()
+//                .logout()
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIONID");
     }
 }
