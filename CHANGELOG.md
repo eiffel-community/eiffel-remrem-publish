@@ -1,4 +1,7 @@
 
+## 2.1.10
+  Message validation generalized for /generateAndPublish
+
 ## 2.1.9
   com.fasterxml.jackson.core:jackson-core uplifted
 
