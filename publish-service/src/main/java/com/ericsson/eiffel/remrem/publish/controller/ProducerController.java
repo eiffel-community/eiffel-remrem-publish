@@ -520,8 +520,8 @@ public class ProducerController {
             eventResponse = new HashMap<>();
             // TODO Could it be null?
             JsonObject jsonResponseEvent = eventArray.get(i).getAsJsonObject();
-            ValidationResult r = msgService.validateMsg(msgType, jsonResponseEvent, okToLeaveOutInvalidOptionalFields);
-            if (r.isValid()) {
+            ValidationResult validationResult = msgService.validateMsg(msgType, jsonResponseEvent, okToLeaveOutInvalidOptionalFields);
+            if (validationResult.isValid()) {
                 String validResponseBody = jsonResponseEvent.toString();
                 SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
                 eventResponse.put(JSON_STATUS_RESULT, result);
