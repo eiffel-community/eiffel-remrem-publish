@@ -542,4 +542,16 @@ public class ProducerController {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         return jsonObject;
     }
+
+    /**
+     * @return this method returns the current version of publish and all loaded
+     *         protocols.
+     */
+    @ApiOperation(value = "To get versions of publish and all loaded protocols", response = String.class)
+    @RequestMapping(value = "/versions", method = RequestMethod.GET)
+    public JsonElement getVersions() {
+        JsonParser parser = new JsonParser();
+        Map<String, Map<String, String>> versions = new VersionService().getMessagingVersions();
+        return parser.parse(versions.toString());
+    }
 }
