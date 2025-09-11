@@ -1,4 +1,7 @@
 
+## 2.1.11
+- Enable to change log level for publish at runtime
+
 ## 2.1.10
   Message validation generalized for /generateAndPublish
 
