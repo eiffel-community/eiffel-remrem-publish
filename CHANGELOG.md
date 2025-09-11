@@ -1,3 +1,6 @@
+## 2.1.11
+- Enable to change log level for generate at runtime
+
 ## 2.1.8
 - Tests handled properly.
 
