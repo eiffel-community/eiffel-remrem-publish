@@ -6,7 +6,7 @@
   "meta.source.name":"LOCALHOST",
   "meta.source.uri":"https://localhost:8080/jenkins/job",
   "data.acknowledgement":"SUCCESSFUL",
-  "data.entity":"eiffeluser"
+  "data.entity":"eiffeluser",
   "data.customData[0]": {"key" : "EIFFELVERSION", "value" : "eiffel2.0"},
   "links[0]": {"type" : "ALERT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48c"},
   "links[1]": {"type" : "CONTEXT", "target" : "e269b37d-17a1-4a10-aafb-c108735ee48d"},

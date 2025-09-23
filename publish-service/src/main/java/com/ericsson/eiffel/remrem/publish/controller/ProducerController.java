@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import com.ericsson.eiffel.remrem.protocol.ValidationResult;
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
 import org.apache.commons.lang3.StringUtils;
@@ -183,9 +184,9 @@ public class ProducerController {
         if (events.size() == 1) {
             return HttpStatus.valueOf(events.get(0).getStatusCode());
         }
-        else {
-            return HttpStatus.MULTI_STATUS;
-        }
+        boolean allSuccessFull = events.stream().allMatch(event -> event.getStatusCode() == HttpStatus.OK.value());
+
+        return allSuccessFull ? HttpStatus.OK : HttpStatus.MULTI_STATUS;
     }
 
     /**
@@ -434,6 +435,8 @@ public class ProducerController {
 
             responseStatus = response.getStatusCode();
             String responseBody = null;
+            // TODO We should not rely on bodyJson (an input string), but rather on given
+            //      result, i.e. response.getBody() and check this for type (object or array).
             if (bodyJson.isJsonObject()) {
                 responseBody = "[" + response.getBody() + "]";
             } else if (bodyJson.isJsonArray()) {
@@ -449,8 +452,8 @@ public class ProducerController {
                 if (msgService != null && msgProtocol != null) {
                     rmqHelper.rabbitMqPropertiesInit(msgProtocol);
                 }
-                responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain,
-                        tag, routingKey);
+                responseEvents = processingValidEvent(responseBody, msgProtocol, msgType, userDomain,
+                        tag, routingKey, okToLeaveOutInvalidOptionalFields);
             } else {
                 return response;
             }
@@ -469,7 +472,8 @@ public class ProducerController {
             } else if (bodyJson.isJsonArray()) {
                 responseBody = responseMessage;
             }
-            responseEvents = processingValidEvent(responseBody, msgProtocol, userDomain, tag, routingKey);
+            responseEvents = processingValidEvent(responseBody, msgProtocol, msgType, userDomain,
+                    tag, routingKey, okToLeaveOutInvalidOptionalFields);
             return new ResponseEntity<>(responseEvents, HttpStatus.BAD_REQUEST);
         }
 
@@ -525,8 +529,8 @@ public class ProducerController {
      * @return list of responses
      */
     // TODO Why public?
-    public List<Map<String, Object>> processingValidEvent(String eventResponseMessage, final String msgProtocol, final String userDomain,
-                                                          final String tag, final String routingKey) {
+    public List<Map<String, Object>> processingValidEvent(String eventResponseMessage, final String msgProtocol, final String msgType,
+                                                          final String userDomain, final String tag, final String routingKey, final Boolean okToLeaveOutInvalidOptionalFields) {
         MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
         List<Map<String, Object>> responseEvent = new ArrayList<>();
         Map<String, Object> eventResponse = null;
@@ -558,16 +562,15 @@ public class ProducerController {
         }
 
         for (int i = 0; i < eventArray.size(); i++) {
+            // TODO Having hash map here is very chaotic: key are sometimes predefined values,
+            //      e.g. JSON_STATUS_RESULT, JSON_EVENT_MESSAGE_FIELD, but also a general string
+            //      as in case of reporting a bad request.
             eventResponse = new HashMap<>();
-            JsonElement jsonResponseEvent = eventArray.get(i);
-            if (isValid(jsonResponseEvent)) {
-                JsonObject validResponse = jsonResponseEvent.getAsJsonObject();
-                if (validResponse == null) {
-                    String errorMessage = "Invalid, array item expected to be in the form of JSON object";
-                    log.error(errorMessage);
-                    eventResponse.put(errorMessage, HttpStatus.BAD_REQUEST);
-                }
-                String validResponseBody = validResponse.toString();
+            // TODO Could it be null?
+            JsonObject jsonResponseEvent = eventArray.get(i).getAsJsonObject();
+            ValidationResult validationResult = msgService.validateMsg(msgType, jsonResponseEvent, okToLeaveOutInvalidOptionalFields);
+            if (validationResult.isValid()) {
+                String validResponseBody = jsonResponseEvent.toString();
                 SendResult result = messageService.send(validResponseBody, msgService, userDomain, tag, routingKey);
                 eventResponse.put(JSON_STATUS_RESULT, result);
             } else {
@@ -589,18 +592,6 @@ public class ProducerController {
     }
 
     /**
-     * This helper method check the json event is valid or not
-     * @param jsonElement An event which need to check
-     * @return boolean type value like it is valid or not
-     */
-    private boolean isValid(JsonElement jsonElement) {
-        JsonObject jsonObject = getAsJsonObject(jsonElement);
-        return jsonObject != null &&
-            jsonObject.has(META) && jsonObject.has(DATA) && jsonObject.has(LINKS) &&
-            !jsonObject.has(JSON_STATUS_CODE);
-    }
-
-    /**
      * @return this method returns the current version of publish and all loaded
      *         protocols.
      */
@@ -611,5 +602,4 @@ public class ProducerController {
         Map<String, Map<String, String>> versions = new VersionService().getMessagingVersions();
         return parser.parse(versions.toString());
     }
-
 }
