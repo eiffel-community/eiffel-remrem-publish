@@ -1,3 +1,5 @@
+## 2.1.12
+- Security fixes applied.
 
 ## 2.1.11
 - Enable to change log level for publish at runtime
