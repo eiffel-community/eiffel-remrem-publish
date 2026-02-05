@@ -14,16 +14,23 @@
 */
 package com.ericsson.eiffel.remrem.publish.config;
 
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
+import java.util.Set;
 
+import com.ericsson.eiffel.remrem.publish.helper.SSLContextReloadListener;
+import com.ericsson.eiffel.remrem.publish.helper.SSLContextReloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -33,7 +40,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.ldap.pool.validation.DefaultDirContextValidator;
+import org.springframework.ldap.core.ContextSource;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.net.ssl.SSLContext;
 
 /**
  * This class is used to enable the ldap authentication based on property
@@ -79,8 +93,11 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    @Bean
-    public AuthenticationProvider ldapAuthenticationProvider() {
+    @Autowired
+    private SSLContextReloader contextReloader;
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
         final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
         if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
             managerPassword = DecryptionUtils.decryptString(
@@ -121,18 +138,67 @@ public class SecurityConfig {
         return ldap;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        LOGGER.debug("LDAP authentication enabled");
-        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-            .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
-            // The application uses non-browser clients. Yes, there is swagger interface,
-            // but is's used only for testing/tuning.
-            //
-            // From https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
-            // "If you are creating a service that is used only by non-browser clients,
-            //  you likely want to disable CSRF protection."
-            .csrf(csrf -> csrf.disable());
-        return http.build();
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        LOGGER.debug("ldap authentication enabled");
+        http.authorizeRequests()
+            .anyRequest()
+            .authenticated()
+            .and()
+            .httpBasic()
+            .authenticationEntryPoint(customAuthenticationEntryPoint)
+            .and()
+            .csrf()
+            .disable();
+
+        contextReloader.addListener(new SSLContextReloadListener() {
+            private DefaultListableBeanFactory beanFactory;
+
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            Set<ObjectName> realms;
+            @Override
+            public void onContextWillReload() {
+                ConfigurableApplicationContext context =
+                    (ConfigurableApplicationContext)SecurityConfig.this.getApplicationContext();
+                // get bean factory
+                beanFactory = (DefaultListableBeanFactory) context.getBeanFactory();
+                // remove old bean
+                beanFactory.destroySingleton("ldapContextSource");
+
+                try {
+                    // find Realm MBeans
+                    ObjectName query = new ObjectName("Catalina:type=Realm,*");
+                    realms = mbs.queryNames(query, null);
+
+                    for (ObjectName realmName : realms) {
+                        mbs.invoke(realmName, "stop", null, null);
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Exception occurred while stopping realm: {}", e.getMessage(), e);
+                }
+            }
+
+            @Override
+            public void onContextReloaded(SSLContext sslContext) {
+                // reload ldapContext;
+                LdapContextSource contextSource = ldapContextSource();
+                // register new bean
+                beanFactory.registerSingleton("ldapContextSource", contextSource);
+
+                try {
+                    for (ObjectName realmName : realms) {
+                        mbs.invoke(realmName, "start", null, null);
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Exception occurred while starting realm: {}", e.getMessage(), e);
+                }
+            }
+        });
     }
+
+    // // This switches authentication off. Useful for some testing.
+    // @Override
+    // protected void configure(HttpSecurity http) throws Exception {
+    //     http.authorizeRequests().anyRequest().permitAll().and().csrf().disable();
+    // }
 }

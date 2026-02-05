@@ -14,12 +14,11 @@
 */
 package com.ericsson.eiffel.remrem.publish.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 
 import com.ericsson.eiffel.remrem.protocol.ValidationResult;
+import com.ericsson.eiffel.remrem.publish.helper.SSLContextReloader;
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
 import io.swagger.v3.core.util.Json;
@@ -66,6 +65,8 @@ import static com.ericsson.eiffel.remrem.publish.constants.RemRemPublishResponse
 import static com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants.*;
 
 
+import javax.annotation.PostConstruct;
+
 @ComponentScan("com.ericsson.eiffel.remrem")
 @RestController
 @RequestMapping("/*")
@@ -110,9 +111,20 @@ public class ProducerController {
         // Check if the user is authenticated
         if (authentication != null && authentication.isAuthenticated()) {
             // Get the UserDetails object, which contains user information
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Object principal = authentication.getPrincipal();
+            String username = "";
+            if (principal == null) {
+                username = "null";
+            }
+            else if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                username = userDetails.getUsername();
+            }
+            else {
+                username = principal.toString();
+            }
+
             // Get the username of the authenticated user
-            String username = userDetails.getUsername();
             log.info("User name: {} ", username);
         }
     }

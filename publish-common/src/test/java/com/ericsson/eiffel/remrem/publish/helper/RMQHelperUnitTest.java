@@ -143,7 +143,7 @@ public class RMQHelperUnitTest {
     @Test
     public void testConnection() throws RemRemPublishException {
         assertNull(rabbitmqProtocolProperties.getRabbitConnection());
-        rabbitmqProtocolProperties.createRabbitMqConnection();
+        rabbitmqProtocolProperties.openConnection();
         assertNotNull(rabbitmqProtocolProperties.getRabbitConnection());
     }
 
