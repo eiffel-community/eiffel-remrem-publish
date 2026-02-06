@@ -51,7 +51,7 @@ public class RabbitMqProperties {
     @Autowired
     ApplicationContext context;
 
-    private RMQBeanConnectionFactory factory;// = new RMQBeanConnectionFactory();
+    private RMQBeanConnectionFactory factory;
     private static final Random random = new Random();
     private boolean usePersitance = true;
 
@@ -262,8 +262,17 @@ public class RabbitMqProperties {
 
     public void init() {
         log.info("RabbitMqProperties init ...");
-        // Instantiate the factory as a spring-boot bean
-        factory = context.getBean(RMQBeanConnectionFactory.class);
+
+        if (context != null) {
+            // Instantiate the factory as a spring-boot bean
+            factory = context.getBean(RMQBeanConnectionFactory.class);
+        }
+        else {
+            // Instantiate the factory as a regular Java object
+            factory = new RMQBeanConnectionFactory();
+            log.warn("RMQBeanConnectionFactory instantiated as a regular Java object; automatic certificate reload may not work properly!");
+        }
+
         if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
             initCli();
         } else {

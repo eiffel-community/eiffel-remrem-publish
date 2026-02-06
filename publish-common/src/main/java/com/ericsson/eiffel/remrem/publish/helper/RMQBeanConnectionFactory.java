@@ -88,6 +88,11 @@ public class RMQBeanConnectionFactory extends ConnectionFactory {
      */
     @PostConstruct
     private void init() {
+        if (contextReloader == null) {
+            log.warn("SSLContextReloader is null; will not be able to handle certificate reloads!");
+            return;
+        }
+
         // Register a listener that will be called when a new SSL context has been loaded.
         contextReloader.addListener(new SSLContextReloadAdapter() {
             @Override

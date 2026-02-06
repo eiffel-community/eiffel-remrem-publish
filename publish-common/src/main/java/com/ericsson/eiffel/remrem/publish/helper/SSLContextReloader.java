@@ -846,7 +846,7 @@ public class SSLContextReloader {
                     long timeToReload = (TRIGGER_RELOAD_CALMNESS_INTERVAL - calmnessInterval) / 1000; // seconds
                     String message = "Certificate reload will be triggered in {} seconds";
                     log.debug(message, timeToReload);
-                    if ((timeToReload % 10_000) == 0) {
+                    if ((timeToReload % 10) == 0) {
                         // For info log level display once per 10 seconds
                         log.info(message, timeToReload);
                     }
