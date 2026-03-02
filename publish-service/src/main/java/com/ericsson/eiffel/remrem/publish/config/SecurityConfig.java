@@ -135,6 +135,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return ldap;
     }
 
+    /**
+     * Configures HTTP security settings for LDAP authentication.
+     * Sets up basic authentication with custom authentication entry point,
+     * disables CSRF protection, and registers SSL context reload listeners
+     * for handling certificate updates.
+     *
+     * @param http the HttpSecurity object to configure
+     * @throws Exception if configuration fails
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         LOGGER.debug("ldap authentication enabled");
@@ -153,6 +162,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             Set<ObjectName> realms;
+
+            /**
+             * Called before SSL context reload. Stops Tomcat realms and removes
+             * the existing LDAP context source bean to prepare for reload.
+             */
             @Override
             public void onContextWillReload() {
                 ConfigurableApplicationContext context =
@@ -175,6 +189,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }
             }
 
+            /**
+             * Called after SSL context reload. Creates a new LDAP context source
+             * with updated SSL settings and restarts the Tomcat realms.
+             *
+             * @param sslContext the new SSL context after reload
+             */
             @Override
             public void onContextReloaded(SSLContext sslContext) {
                 // reload ldapContext;

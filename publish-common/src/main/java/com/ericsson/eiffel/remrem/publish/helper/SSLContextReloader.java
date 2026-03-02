@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.security.*;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.concurrent.locks.StampedLock;
 
@@ -64,6 +63,107 @@ public class SSLContextReloader {
     private Logger log = (Logger) LoggerFactory.getLogger(SSLContextReloader.class);
 
     /**
+     * The interval in milliseconds between polling attempts when waiting for HTTPS connections to close.
+     * This value determines how frequently the system checks if active connections have been terminated
+     * during the graceful shutdown process.
+     */
+    private static long HTTPS_POLL_INTERVAL = 500; // milliseconds
+
+    /**
+     * The maximum time in milliseconds to wait for HTTPS connections to close gracefully before
+     * proceeding with the connector restart. If this timeout is exceeded, the reload process
+     * will continue even if some connections are still active.
+     */
+    // TODO Should be Eiffel property?
+    private static long TIMEOUT_MS = 60_000; // milliseconds
+
+    /**
+     * Maximum number of retry attempts for the certificate observation thread.
+     * When the certificate monitoring process encounters an error (IOException,
+     * GeneralSecurityException, or InterruptedException), it will retry up to
+     * this many times before giving up. This provides resilience against
+     * temporary file system issues or transient security errors.
+     */
+    public static final int OBSERVE_CERTIFICATE_RETRIES = 10;
+
+    /**
+     * Wait time in seconds between retry attempts for certificate observation.
+     * When the certificate monitoring thread encounters an error and needs to
+     * retry, it will wait this amount of time before attempting to restart
+     * the observation process. This prevents rapid retry loops that could
+     * consume excessive system resources.
+     */
+    public static final int OBSERVE_CERTIFICATE_RETRY_WAIT_TIME = 1; // seconds
+
+    /**
+     * Thread responsible for monitoring certificate files for changes.
+     * This daemon thread continuously watches the keystore and truststore files
+     * using the file system's WatchService API. When modifications are detected,
+     * it triggers the certificate reload process after a calmness period to avoid
+     * frequent reloads during multiple file updates.
+     *
+     * The thread is configured as a daemon thread to prevent it from blocking
+     * JVM shutdown. It includes retry logic to handle transient errors and
+     * will attempt to restart the monitoring process up to a configured
+     * number of times before giving up.
+     *
+     * @see #observeCertificates()
+     * @see #OBSERVE_CERTIFICATE_RETRIES
+     * @see #OBSERVE_CERTIFICATE_RETRY_WAIT_TIME
+     */
+    private Thread observeCertificatesThread;
+
+    /**
+     * The calmness interval in milliseconds that must pass after the last certificate file modification
+     * before triggering a certificate reload. This prevents frequent reloads when multiple certificate
+     * files are being updated in sequence or when a single file undergoes multiple rapid changes.
+     * The reload process will only begin after this interval has elapsed since the most recent modification.
+     */
+    // TODO Introduce a new property?
+    public static final long TRIGGER_RELOAD_CALMNESS_INTERVAL = 30_000; // milliseconds
+
+    /**
+     * The frequency in milliseconds at which the certificate reload timer checks whether the calmness
+     * interval has elapsed since the last certificate file modification. This determines how often
+     * the system evaluates whether it's time to trigger a certificate reload.
+     */
+    // TODO Introduce a new property?
+    public static final long TRIGGER_RELOAD_CHECK_PERIOD = 1_000; // milliseconds
+
+    /**
+     * Constant representing an unset timestamp value (0 milliseconds). Used to indicate that
+     * no certificate file modification time has been recorded or that the modification time
+     * should be cleared.
+     */
+    public static final long UNSET = 0; // milliseconds
+
+    /**
+     * Timestamp in milliseconds when a certificate file was last modified. This value is used
+     * to calculate when the calmness interval has elapsed and a certificate reload should be triggered.
+     * Set to UNSET when no modification is pending or after a reload has been completed.
+     */
+    // a time when a certificate file was modified for the last time.
+    private long lastModified = UNSET;
+
+    /**
+     * StampedLock used to provide thread-safe access to the lastModified variable. This lock
+     * ensures that multiple threads can safely read and write the modification timestamp
+     * without race conditions, particularly between the file monitoring thread and the
+     * reload timer thread.
+     */
+    private StampedLock reloadLock = new StampedLock();
+
+    /**
+     * Thread responsible for monitoring the calmness period and triggering certificate reload
+     * when the specified interval has elapsed since the last modification. This daemon thread
+     * periodically checks if enough time has passed since the last certificate file change
+     * and initiates the reload process when appropriate. The thread terminates after triggering
+     * a reload or when interrupted.
+     */
+    private Thread reloadTimer;
+
+
+    /**
      * Helper class to keep information about a keystore/truststore file.
      */
     class StoreInfo {
@@ -102,28 +202,77 @@ public class SSLContextReloader {
 
     }
 
+    /**
+     * The SSL/TLS protocol version to use when creating SSL contexts.
+     * This constant defines the protocol that will be used for all SSL context
+     * initialization and certificate reloading operations.
+     */
     // TODO Should it be fetched from a configuration? It seems we have disabled protocols, not used one(s).
     public static final String PROTOCOL = "TLS";
 
-    // Algorithm used to calculate hash of a store file.
+    /**
+     * The cryptographic hash algorithm used to calculate checksums of keystore and truststore files.
+     * MD5 is used to detect when certificate files have been modified by comparing
+     * hash values before and after potential changes.
+     */
     public static final String HASH_ALGORITHM = "MD5";
 
+    /**
+     * Information about the keystore file including its path, password, type, hash, and last modification time.
+     * The keystore contains the server's private key and certificate chain used for SSL/TLS connections.
+     */
     private StoreInfo keyStore;
+
+    /**
+     * Information about the truststore file including its path, password, type, hash, and last modification time.
+     * The truststore contains trusted certificate authorities and certificates used to validate
+     * client certificates and establish trust relationships.
+     */
     private StoreInfo trustStore;
+
+    /**
+     * Array containing references to both keystore and truststore for convenient iteration
+     * when monitoring multiple certificate stores for changes.
+     */
     private StoreInfo storesToWatch[];
 
-    // Indicates whether certificate has been changed and reload is needed.
+    /**
+     * Flag indicating whether any certificate files have been modified and require reloading.
+     * This is set to true when file system events detect changes to monitored certificate files,
+     * and reset to false after successful certificate reload.
+     */
     private boolean certificateChanged = false;
 
-    // Context created after reload of certificates.
+    /**
+     * The current SSL context created from the loaded certificates.
+     * This context is rebuilt whenever certificate files are modified and successfully reloaded.
+     * It serves as the default SSL context for the JVM and is used by the HTTPS connector.
+     */
     private SSLContext sslContext;
 
-    // Listeners can be hooked to be notified about certificate change(s).
+    /**
+     * List of listeners that will be notified when SSL context reload events occur.
+     * Listeners receive callbacks before the reload process begins and after it completes,
+     * allowing external components to react to certificate changes.
+     */
     private List<SSLContextReloadListener> listeners = new ArrayList<>();
 
+    /**
+     * Spring Environment instance used to access application properties.
+     * Primarily used to retrieve the server port configuration for HTTPS connector management.
+     */
     @Autowired
     Environment environment;
+
+    /**
+     * The HTTPS port number where the SSL connector is listening.
+     * This value is used to identify and manage the correct Tomcat connector
+     * during certificate reload operations.
+     */
     private int httpsPort;
+
+
+
 
     /**
      * Initializes the SSL context reloader by loading keystore and truststore information
@@ -147,7 +296,7 @@ public class SSLContextReloader {
         } catch (SystemPropertyNotFoundException | NumberFormatException e) {
             // Something went wrong report the issue.
             log.error("Cannot initiate SSL context reloader: {}", e.getMessage(), e);
-            log.error("Certificate reload will not work!");
+            log.error("Certificate reload WILL NOT WORK!!!");
 
             return false;
         }
@@ -174,10 +323,6 @@ public class SSLContextReloader {
         listeners.remove(listener);
     }
 
-    public static final int OBSERVE_CERTIFICATE_RETRIES = 10;
-    public static final int OBSERVE_CERTIFICATE_RETRY_WAIT_TIME = 1; // seconds
-    private Thread observeCertificatesThread;
-
     /**
      * Starts the certificate monitoring thread after bean construction.
      * This method is automatically called by Spring after dependency injection.
@@ -198,10 +343,10 @@ public class SSLContextReloader {
                 try {
                     observeCertificates();
                 } catch (IOException e) {
-                    log.error("Error occurred while observing certificate changes: {} ", e.getMessage(), e);
+                    log.error("Observation of certificate files failed: {} ", e.getMessage(), e);
                     // break;
                 } catch (GeneralSecurityException e) {
-                    log.error("Error occurred while reloading certificate(s): {} ", e.getMessage(), e);
+                    log.error("Certificate(s) reload failed: {} ", e.getMessage(), e);
                 } catch (InterruptedException e) {
                     log.error("Thread observing certificate changes has been terminated: {}", e.getMessage(), e);
                 }
@@ -213,7 +358,7 @@ public class SSLContextReloader {
                     // Ignore
                 }
             }
-        }, "Certificate watcher");
+        }, "Certificate watcher" /* thread name */);
 
         // Don't prevent JVM from exiting.
         observeCertificatesThread.setDaemon(true);
@@ -224,7 +369,7 @@ public class SSLContextReloader {
      * Performs the SSL certificate reload process, including reloading the SSL context
      * and resetting modification timestamps.
      */
-    private void doReloadSSLCertificates() {
+    private void reloadSSLCertificates() {
         try {
             log.info("Going to reload '{}' context...", PROTOCOL);
             // Just (re)load certificates and prepare a new SSLContext.
@@ -266,7 +411,7 @@ public class SSLContextReloader {
     }
 
     /**
-     * Checks if any store file is waiting for modification.
+     * Checks if any store file is waiting for a modification.
      *
      * @return true if any store has lastModified set to 0, false otherwise
      */
@@ -339,28 +484,6 @@ public class SSLContextReloader {
             }
         }
     }
-
-//    private static MBeanServer getMBeanServer() {
-//        // Try to find a platform MBeanServer first.
-//        try {
-//            MBeanServer platform = java.lang.management.ManagementFactory.getPlatformMBeanServer();
-//            if (platform != null)
-//                return platform;
-//        } catch (Exception e) {
-//            // Ignore.
-//        }
-//
-//        // Fall back to MBeanServerFactory list.
-//        try {
-//            List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
-//            if (servers != null && !servers.isEmpty()) {
-//                // Prefer the first
-//                return servers.get(0);
-//            }
-//        } catch (Exception ignored) {}
-//
-//        return null;
-//    }
 
     /**
      * Finds the ThreadPool MBean for the specified port.
@@ -441,8 +564,6 @@ public class SSLContextReloader {
         }
     }
 
-    private static long POLL_INTERVAL_MS = 500;
-    private static long TIMEOUT_MS = 60_000;
 
     /**
      * Waits until all active HTTPS connections are closed or timeout is reached.
@@ -454,7 +575,7 @@ public class SSLContextReloader {
      * @throws MBeanException if an error occurs in the MBean
      * @throws InterruptedException if the thread is interrupted
      */
-    private void waitUntilHttpsConnectionsClosed() throws MalformedObjectNameException, ReflectionException, AttributeNotFoundException, InstanceNotFoundException, MBeanException, InterruptedException {
+    private void waitUntilHttpsConnectionsClosed() throws ReflectionException, AttributeNotFoundException, InstanceNotFoundException, MBeanException, InterruptedException {
         // Wait until all existing connection are closed.
         for (MBeanServer server :  MBeanServerFactory.findMBeanServer(null)) {
             ObjectName threadPool = findThreadPoolMBean(server, httpsPort);
@@ -476,7 +597,7 @@ public class SSLContextReloader {
                         break;
                     }
 
-                    Thread.sleep(POLL_INTERVAL_MS);
+                    Thread.sleep(HTTPS_POLL_INTERVAL);
                 }
             }
         }
@@ -518,7 +639,7 @@ public class SSLContextReloader {
                         break;
                     }
 
-                    Thread.sleep(POLL_INTERVAL_MS);
+                    Thread.sleep(HTTPS_POLL_INTERVAL);
                 }
 
 //                    // Polling sleep to reduce delay to safe minimum.
@@ -571,7 +692,7 @@ public class SSLContextReloader {
         }
     }
 
-    private void waitForFile(StoreInfo store) throws InterruptedException, NoSuchAlgorithmException, IOException {
+    private void waitForFile(StoreInfo store) throws InterruptedException {
         // Sometimes keystore.jks becomes unavailable for an unknown reason...
         long waitTime = 100;
         Path path = store.path;
@@ -637,16 +758,18 @@ public class SSLContextReloader {
 
         // Stop HTTPS connector. This step performs two important actions:
         //   1. Prevents the connector from accepting new connections.
-        //   2. Following start of the connector guarantees reload of certificates.
+        //   2. Following start of the connector guarantees reload of certificates
+        //      for HTTPS connections.
         pauseHttpsConnector();
         waitUntilHttpsConnectionsClosed();
         stopHttpsConnector();
 
+        // Notify listeners that the context will be reloaded.
         for (SSLContextReloadListener listener: listeners)
             listener.onContextWillReload();
 
         sslContext = buildSSLContext();
-        // Set it as a default context for JVM.
+        // Set new context as a default context for JVM.
         SSLContext.setDefault(sslContext);
         HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
 
@@ -687,8 +810,6 @@ public class SSLContextReloader {
 
         return store;
     }
-
-//    private X509TrustManager tm;
 
     /**
      * Builds a new SSLContext by loading keystore and truststore and initializing key and trust managers.
@@ -791,30 +912,6 @@ public class SSLContextReloader {
         return (Long) ino;
     }
 
-    // Certificate reload is triggered after modification of a certificate file. Standard certificate files are
-    // keystore and truststore. Their locations are fetched from system properties
-    // javax.net.ssl.keyStore and javax.net.ssl.trustStore, respectively. Whenever one of the files is modified, a time
-    // counter is reset to this value and a countdown starts. When the counter reaches 0, certificate reload is
-    // initiated.
-    // TODO Introduce a new property?
-    public static final long TRIGGER_RELOAD_CALMNESS_INTERVAL = 30_000; // milliseconds
-
-    // How often certificate file modification calmness is checked.
-    // TODO Introduce a new property?
-    public static final long TRIGGER_RELOAD_CHECK_PERIOD = 1_000; // milliseconds
-
-    public static final long UNSET = 0; // milliseconds
-
-    // a time when a certificate file was modified for the last time.
-    private long lastModified = UNSET;
-
-    // Locks access to lastModified variable.
-    private StampedLock reloadLock = new StampedLock();
-
-    // Certificate reload timer thread.
-    private Thread reloadTimer;
-
-
     /**
      * Starts a timer thread that monitors the calmness period and triggers certificate reload
      * when the period expires without further modifications.
@@ -854,7 +951,7 @@ public class SSLContextReloader {
                     if (calmnessInterval > TRIGGER_RELOAD_CALMNESS_INTERVAL) {
                         // Trigger certificate reload and break the loop to terminate the thread.
                         log.debug("Triggering certificate reload...");
-                        doReloadSSLCertificates();
+                        reloadSSLCertificates();
                         break;
                     }
                 }

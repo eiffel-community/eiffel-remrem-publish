@@ -18,10 +18,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
@@ -267,7 +265,8 @@ public class RabbitMqProperties {
             factory = context.getBean(RMQBeanConnectionFactory.class);
         }
         else {
-            // Instantiate the factory as a regular Java object
+            // Instantiate the factory as a regular Java object. This is useful especially during
+            // unit tests where Spring context is not available.
             factory = new RMQBeanConnectionFactory();
             log.warn("RMQBeanConnectionFactory instantiated as a regular Java object; automatic certificate reload may not work properly!");
         }
@@ -326,21 +325,22 @@ public class RabbitMqProperties {
                 log.info("Using standard connection method to RabbitMQ.");
             }
 
-            madatoryParametersCheck();
+            mandatoryParametersCheck();
         } catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
-        catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+//        catch (Exception e) {
+//            log.error(e.getMessage(), e);
+//            throw new RuntimeException(e);
+//        }
 
         try {
-            //The exception can be safely handled here as there is a check for existence of exchange is done before each publish.
+            //The exception can be safely handled here as there is a check for existence of exchange
+            // is done before each publish.
             checkAndCreateExchangeIfNeeded();
         } catch (RemRemPublishException e) {
-            log.error("Error occurred while setting up the RabbitMq Connection: {}", e.getMessage());
+            log.error("Error occurred while setting up the RabbitMQ connection: {}", e.getMessage());
             e.printStackTrace();
         }
 
@@ -348,13 +348,13 @@ public class RabbitMqProperties {
             try {
                 types = new PropertyResourceBundle(new FileInputStream(routingKeyTypeOverrideFilePath));
             } catch (IOException e) {
-                log.error("Cannot find routing key file. "+e.getMessage());
+                log.error("Cannot find routing key file: {}", e.getMessage());
             }
         }
     }
 
     /**
-     * This method is used to create Rabbitmq connection and channels
+     * This method is used to create RabbitMQ connection and channels
      * @throws RemRemPublishException
      */
     public void openConnection() throws RemRemPublishException {
@@ -375,15 +375,15 @@ public class RabbitMqProperties {
                 try {
                     rabbitConnection.close();
                 } catch (AlreadyClosedException | IOException e) {
-                    // This is intentionally added, if we do not call the close function, connection is not closed properly
-                    // and the connections count is getting increased...
+                    // This is intentionally added, if we do not call the close function, connection
+                    // is not closed properly and the connections count is getting increased...
                 }
             });
 
             rabbitConnection.addBlockedListener(new BlockedListener() {
                 public void handleBlocked(String reason) throws IOException {
                     // Connection is now blocked
-                    log.debug("Connection is blocked " + reason);
+                    log.debug("Connection is blocked: {}", reason);
                 }
 
                 public void handleUnblocked() throws IOException {
@@ -402,7 +402,7 @@ public class RabbitMqProperties {
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
-            throw new RemRemPublishException("Failed to create connection for Rabbitmq :: ", factory, e);
+            throw new RemRemPublishException("Failed to create connection to RabbitMQ", factory, e);
         }
     }
 
@@ -423,18 +423,19 @@ public class RabbitMqProperties {
     }
 
     private void closeConnection() {
-        if (rabbitConnection == null || !rabbitConnection.isOpen())
-            return;
-
-        closeChannels();
-
         try {
+            if (rabbitConnection == null || !rabbitConnection.isOpen())
+                return;
+
+            closeChannels();
             rabbitConnection.close();
         } catch (IOException e) {
             log.error("Cannot close RabbitMQ connection '{}': {}", rabbitConnection, e.getMessage(), e);
         }
-        // Remove connection anyway, regardless of result of close() operation.
-        rabbitConnection = null;
+        finally {
+            // Remove connection anyway, regardless of result of close() operation.
+            rabbitConnection = null;
+        }
     }
 
     /**
@@ -460,6 +461,7 @@ public class RabbitMqProperties {
                 }
             }
         });
+
         channel.confirmSelect();
         rabbitChannels.add(channel);
         return channel;
@@ -556,7 +558,7 @@ public class RabbitMqProperties {
     /**
      * This method is used to check mandatory RabbitMQ properties.
      */
-    private void madatoryParametersCheck() {
+    private void mandatoryParametersCheck() {
         if (factory == null) {
             throw new RuntimeException("Missing RabbitMQ factory intialization");
         }
@@ -578,49 +580,50 @@ public class RabbitMqProperties {
      * @throws IOException
      */
     public void checkAndCreateExchangeIfNeeded() throws RemRemPublishException {
-        final boolean exchangeAlreadyExist = hasExchange();
-        if (!exchangeAlreadyExist) {
-            if (isCreateExchangeIfNotExisting()) {
-                Connection connection = null;
-                try {
-                    connection = factory.newConnection();
-                } catch (final IOException | TimeoutException e) {
-                    throw new RemRemPublishException(
-                            "Exception occurred while creating Rabbitmq connection :: ", factory, e);
-                }
-                Channel channel = null;
-                try {
-                    channel = connection.createChannel();
-                } catch (final IOException e) {
-                    throw new RemRemPublishException(
-                            "Exception occurred while creating Channel with Rabbitmq connection ::",
-                            factory, e);
-                }
-                try {
-                    channel.exchangeDeclare(exchangeName, "topic", true);
-                    log.info("Exchange {} is created",exchangeName);
-                    hasExchange = true;
-                } catch (final IOException e) {
-                    log.info(exchangeName + "failed to create an exchange");
-                    throw new RemRemPublishException(
-                            "Unable to create Exchange with Rabbitmq connection " + exchangeName,
-                            factory, e);
-                } finally {
-                    if (channel == null || channel.isOpen()) {
-                        try {
-                            channel.close();
-                            connection.close();
-                        } catch (IOException | TimeoutException e) {
-                            log.warn("Exception occurred while closing the channel" + e.getMessage());
-                        }
+        if (hasExchange())
+            // Nothing to do
+            return;
+
+        if (isCreateExchangeIfNotExisting()) {
+            Connection connection = null;
+            try {
+                connection = factory.newConnection();
+            } catch (final IOException | TimeoutException e) {
+                throw new RemRemPublishException(
+                        "Cannot create a new connection to RabbitMQ", factory, e);
+            }
+
+            Channel channel = null;
+            try {
+                channel = connection.createChannel();
+            } catch (final IOException e) {
+                throw new RemRemPublishException(
+                        "Cannot create a new channel to RabbitMQ", factory, e);
+            }
+
+            try {
+                channel.exchangeDeclare(exchangeName, "topic", true);
+                log.info("Exchange {} is created",exchangeName);
+                hasExchange = true;
+            } catch (final IOException e) {
+                String message = "Failed to create exchange '" + exchangeName + "'";
+                log.error(message);
+                throw new RemRemPublishException(message, factory, e);
+            } finally {
+                if (channel == null || channel.isOpen()) {
+                    try {
+                        channel.close();
+                        connection.close();
+                    } catch (IOException | TimeoutException e) {
+                        log.warn("Cannot close channel or connection: {}", e.getMessage());
                     }
                 }
+            }
+        } else {
+            if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+                throw new RemRemPublishException(exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_SERVICE);
             } else {
-                if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
-                    throw new RemRemPublishException(exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_SERVICE);
-                } else {
-                    throw new RemRemPublishException("Exchange " + exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_CLI);
-                }
+                throw new RemRemPublishException("Exchange " + exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_CLI);
             }
         }
     }
@@ -708,22 +711,22 @@ public class RabbitMqProperties {
             }
             channel.waitForConfirmsOrDie(waitForConfirmsTimeOut);
         } catch (InterruptedException | IOException e) {
-            log.error("Failed to publish message due to " + e.getMessage());
+            log.error("Failed to publish message: {}", e.getMessage());
             throw new NackException("The message is nacked due to " + e.getMessage(), e);
         } catch (TimeoutException e) {
-            log.error("Failed to publish message due to " + e.getMessage());
+            log.error("Failed to publish message: {}", e.getMessage());
             throw new TimeoutException("Timeout waiting for ACK " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("Failed to publish message due to " + e.getMessage());
+            log.error("Failed to publish message: {}", e.getMessage());
             // TODO How do we know it's a domain id issue?
             throw new IllegalArgumentException("DomainId limit exceeded " + e.getMessage(), e);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            if(!channel.isOpen() && rabbitConnection.isOpen()){
-                throw new RemRemPublishException("Channel was closed for Rabbitmq connection :: ",
-                        factory, e);
-            }
-            throw new IOException("Failed to publish message due to " + e.getMessage(), e);
+//        } catch (Exception e) {
+//            log.error(e.getMessage(), e);
+//            if(!channel.isOpen() && rabbitConnection.isOpen()){
+//                throw new RemRemPublishException("Channel was closed for Rabbitmq connection :: ",
+//                        factory, e);
+//            }
+//            throw new IOException("Failed to publish message due to " + e.getMessage(), e);
         }
     }
 
@@ -773,10 +776,10 @@ public class RabbitMqProperties {
                 if (!routingKey.isBlank()) {
                     return routingKey;
                 }else {
-                    log.warn("Routing key from configuration is empty for :"+ key);
+                    log.warn("Routing key from configuration is empty for :{}", key);
                 }
             } catch (MissingResourceException e) {
-		        log.warn("Routing key from configuration is null for :"+ key);
+                log.warn("Routing key from configuration is null for :{}", key);
                 return null;
             }
         }else {
