@@ -46,8 +46,14 @@ import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfiguration.Constants;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import springfox.documentation.swagger.web.DocExpansion;
+import springfox.documentation.swagger.web.ModelRendering;
+import springfox.documentation.swagger.web.OperationsSorter;
+import springfox.documentation.swagger.web.TagsSorter;
+import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfigurationBuilder;
+
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
 
         @Bean
@@ -63,8 +69,23 @@ public class SwaggerConfig {
 
         @Bean
         public UiConfiguration uiConfig() {
-        	return new UiConfiguration(null, "list", "alpha", "schema", Constants.DEFAULT_SUBMIT_METHODS, false, true,
-    				null);
+
+            return UiConfigurationBuilder.builder()
+                .deepLinking(true)
+                .displayOperationId(false)
+                .defaultModelsExpandDepth(-1)
+                .defaultModelExpandDepth(1)
+                .defaultModelRendering(ModelRendering.EXAMPLE)
+                .displayRequestDuration(false)
+                .docExpansion(DocExpansion.NONE)
+                .filter(false)
+                .maxDisplayedTags(null)
+                .operationsSorter(OperationsSorter.ALPHA)
+                .showExtensions(false)
+                .tagsSorter(TagsSorter.ALPHA)
+                .supportedSubmitMethods(UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS)
+                .validatorUrl(null)
+                .build();
         }
 
         @Bean
@@ -96,7 +117,7 @@ public class SwaggerConfig {
                 final StringBuilder remremDescription = new StringBuilder();
                 remremDescription.append("REMReM (REST Mailbox for Registered Messages) Publish "
                         + "for publish validated Eiffel messages on a RabbitMQ message bus. ");
-                remremDescription.append("<a href= https://eiffel-community.github.io/eiffel-remrem-publish/index.html>REMReM Publish documentation</a>");
+                remremDescription.append("<a href=https://github.com/eiffel-community/eiffel-remrem-publish/blob/master/wiki/markdown/index.md>REMReM Publish documentation</a>");
 
                 return new ApiInfoBuilder()
                         .title("Eiffel REMReM Publish Service")

@@ -17,6 +17,7 @@
   },
   "eventParams": {
     "data": {
+      "identity" : "required",
       "fileInformation": [
         {
           "name": "debug/launch",

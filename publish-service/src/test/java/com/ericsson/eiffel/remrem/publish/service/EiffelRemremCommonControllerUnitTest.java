@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ericsson.eiffel.remrem.protocol.ValidationResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -111,6 +112,7 @@ public class EiffelRemremCommonControllerUnitTest {
 
         when(service.getServiceName()).thenReturn("eiffelsemantics");
         when(service2.getServiceName()).thenReturn("eiffelsemantics");
+        when(service.validateMsg(ArgumentMatchers.anyString(), ArgumentMatchers.any(JsonObject.class), ArgumentMatchers.anyBoolean())).thenReturn(new ValidationResult(true, "OK"));
         // TODO remove in a future
         // 'getHttpStatus' is no more available in MessageService as it required a status value
         // preventing parallel correct publishing of events.

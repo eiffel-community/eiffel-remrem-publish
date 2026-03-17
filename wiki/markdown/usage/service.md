@@ -212,7 +212,8 @@ This endpoint is used to get versions of publish service and all loaded protocol
 GET
 
 ### `/producer/msg`
-This endpoint is used to publish already generated Eiffel event to message bus.
+This endpoint is used to publish already generated Eiffel event or their array to message bus.
+
 
 Note: 
 1. This endpoint will not validate the message. It will check only if the message contains eventId and eventType.
@@ -244,6 +245,31 @@ POST
     # Matches the links object
   }
 }
+```
+Alternatively an array of events can be passed
+```
+[{
+  "meta": {
+    # Matches the meta object
+  },
+  "data": {
+    # Matches the data object
+  },
+  "links": {
+    # Matches the links object
+  }
+},
+{
+  "meta": {
+    # Matches the meta object
+  },
+  "data": {
+    # Matches the data object
+  },
+  "links": {
+    # Matches the links object
+  }
+}]
 ```
 
 ### `/generateAndPublish`
@@ -286,6 +312,39 @@ POST
     }
   }
 }
+```
+Alternatively an array of events can be sent
+```
+[{
+  "msgParams": {
+    "meta": {
+      # Matches the meta object
+    }
+  },
+  "eventParams": {
+    "data": {
+      # Matches the data object
+    },
+    "links": {
+      # Matches the links object
+    }
+  }
+},
+{
+  "msgParams": {
+    "meta": {
+      # Matches the meta object
+    }
+  },
+  "eventParams": {
+    "data": {
+      # Matches the data object
+    },
+    "links": {
+      # Matches the links object
+    }
+  }
+}]
 ```
 
 ## Examples

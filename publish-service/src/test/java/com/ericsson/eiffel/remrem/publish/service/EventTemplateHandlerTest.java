@@ -17,6 +17,7 @@ package com.ericsson.eiffel.remrem.publish.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
+import java.io.IOException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class EventTemplateHandlerTest {
@@ -36,343 +38,216 @@ public class EventTemplateHandlerTest {
 
 
     @Test
-    public void testEventParserWithEventEiffelActivityFinishedEvent() {
-        try {
+    public void testEventParserWithEventEiffelActivityFinishedEvent() throws Exception {
             testParser("EiffelActivityFinishedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelSourceChangeCreatedEvent() {
-        try {
+    public void testEventParserWithEventEiffelSourceChangeCreatedEvent() throws Exception {
             testParser("EiffelSourceChangeCreatedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelSourceChangeSubmittedEvent() {
-        try {
-            testParser("EiffelSourceChangeSubmittedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelSourceChangeSubmittedEvent() throws Exception {
+        testParser("EiffelSourceChangeSubmittedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelActivityTriggeredEvent() {
-        try {
-            testParser("EiffelActivityTriggeredEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelActivityTriggeredEvent() throws Exception {
+        testParser("EiffelActivityTriggeredEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelActivityStartedEvent() {
-        try {
-            testParser("EiffelActivityStartedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelActivityStartedEvent() throws Exception {
+        testParser("EiffelActivityStartedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelActivityCanceledEvent() {
-        try {
-            testParser("EiffelActivityCanceledEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelActivityCanceledEvent() throws Exception {
+        testParser("EiffelActivityCanceledEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelArtifactCreatedEvent() {
-        try {
-            testParser("EiffelArtifactCreatedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelArtifactCreatedEvent() throws Exception {
+        testParser("EiffelArtifactCreatedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelTestCaseTriggeredEvent() {
-        try {
-            testParser("EiffelTestCaseTriggeredEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelTestCaseTriggeredEvent() throws Exception {
+        testParser("EiffelTestCaseTriggeredEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelTestCaseStartedEvent() {
-        try {
-            testParser("EiffelTestCaseStartedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelTestCaseStartedEvent() throws Exception {
+        testParser("EiffelTestCaseStartedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelTestCaseFinishedEvent() {
-        try {
-            testParser("EiffelTestCaseFinishedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelTestCaseFinishedEvent() throws Exception {
+        testParser("EiffelTestCaseFinishedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelConfidenceLevelModifiedEvent() {
-        try {
-            testParser("EiffelConfidenceLevelModifiedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelConfidenceLevelModifiedEvent() throws Exception {
+        testParser("EiffelConfidenceLevelModifiedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelAnnouncementPublishedEvent() {
-        try {
-            testParser("EiffelAnnouncementPublishedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelAnnouncementPublishedEvent() throws Exception {
+        testParser("EiffelAnnouncementPublishedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelCompositionDefinedEvent() {
-        try {
-            testParser("EiffelCompositionDefinedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelCompositionDefinedEvent() throws Exception {
+        testParser("EiffelCompositionDefinedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelArtifactReusedEvent() {
-        try {
-            testParser("EiffelArtifactReusedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelArtifactReusedEvent() throws Exception {
+        testParser("EiffelArtifactReusedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelEnvironmentDefinedEvent() {
-        try {
-            testParser("EiffelEnvironmentDefinedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelEnvironmentDefinedEvent() throws Exception {
+        testParser("EiffelEnvironmentDefinedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelFlowContextDefinedEvent() {
-        try {
-            testParser("EiffelFlowContextDefinedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelFlowContextDefinedEvent() throws Exception {
+        testParser("EiffelFlowContextDefinedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelIssueVerifiedEvent() {
-        try {
-            testParser("EiffelIssueVerifiedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelIssueVerifiedEvent() throws Exception {
+        testParser("EiffelIssueVerifiedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelServiceAllocatedEvent() {
-        try {
-            testParser("EiffelServiceAllocatedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelServiceAllocatedEvent() throws Exception {
+        testParser("EiffelServiceAllocatedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelTestCaseCanceledEvent() {
-        try {
-            testParser("EiffelTestCaseCanceledEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelTestCaseCanceledEvent() throws Exception {
+        testParser("EiffelTestCaseCanceledEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelTestExecutionRecipeCollectionCreatedEvent() {
-        try {
-            testParser("EiffelTestExecutionRecipeCollectionCreatedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelTestExecutionRecipeCollectionCreatedEvent() throws Exception {
+        testParser("EiffelTestExecutionRecipeCollectionCreatedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelTestSuiteFinishedEvent() {
-        try {
-            testParser("EiffelTestSuiteFinishedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelTestSuiteFinishedEvent() throws Exception {
+        testParser("EiffelTestSuiteFinishedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelTestSuiteStartedEvent() {
-        try {
-            testParser("EiffelTestSuiteStartedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelTestSuiteStartedEvent() throws Exception {
+        testParser("EiffelTestSuiteStartedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelAlertAcknowledgedEvent() {
-        try {
-            testParser("EiffelAlertAcknowledgedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelAlertAcknowledgedEvent() throws Exception {
+        testParser("EiffelAlertAcknowledgedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelAlertCeasedEvent() {
-        try {
-            testParser("EiffelAlertCeasedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelAlertCeasedEvent() throws Exception {
+        testParser("EiffelAlertCeasedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelAlertRaisedEvent() {
-        try {
-            testParser("EiffelAlertRaisedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelAlertRaisedEvent() throws Exception {
+        testParser("EiffelAlertRaisedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelArtifactDeployedEvent() {
-        try {
-            testParser("EiffelArtifactDeployedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelArtifactDeployedEvent() throws Exception {
+        testParser("EiffelArtifactDeployedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelServiceDeployedEvent() {
-        try {
-            testParser("EiffelServiceDeployedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelServiceDeployedEvent() throws Exception {
+        testParser("EiffelServiceDeployedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelServiceDiscontinuedEvent() {
-        try {
-            testParser("EiffelServiceDiscontinuedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelServiceDiscontinuedEvent() throws Exception {
+        testParser("EiffelServiceDiscontinuedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelServiceReturnedEvent() {
-        try {
-            testParser("EiffelServiceReturnedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelServiceReturnedEvent() throws Exception {
+        testParser("EiffelServiceReturnedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelServiceStartedEvent() {
-        try {
-            testParser("EiffelServiceStartedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelServiceStartedEvent() throws Exception {
+        testParser("EiffelServiceStartedEvent");
     }
 
 
     @Test
-    public void testEventParserWithEventEiffelServiceStoppedEvent() {
-        try {
-            testParser("EiffelServiceStoppedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelServiceStoppedEvent() throws Exception {
+        testParser("EiffelServiceStoppedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelArtifactPublishedEvent() {
-        try {
-            testParser("EiffelArtifactPublishedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelArtifactPublishedEvent() throws Exception {
+        testParser("EiffelArtifactPublishedEvent");
     }
 
     @Test
-    public void testEventParserWithEventEiffelIssueDefinedEvent() {
-        try {
-            testParser("EiffelIssueDefinedEvent");
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
+    public void testEventParserWithEventEiffelIssueDefinedEvent() throws Exception {
+        testParser("EiffelIssueDefinedEvent");
     }
 
-    private void testParser(String EventName) {
-        try {
-            EventTemplateHandler eventTemplateHandler = new EventTemplateHandler();
-            String dataToBeParsed = FileUtils.readFileToString(new File(INPUT_FILE_PATH_DATA + "test_data_for_parsing_" + EventName + ".json"), "UTF-8");
-            String expectedDocument = FileUtils.readFileToString(new File(INPUT_FILE_PATH_EXPECTED_DATA + "expected_parsed_" + EventName + ".json"), "UTF-8");
+    private void testParser(String EventName) throws Exception {
+        EventTemplateHandler eventTemplateHandler = new EventTemplateHandler();
+        String dataToBeParsed = FileUtils.readFileToString(new File(INPUT_FILE_PATH_DATA + "test_data_for_parsing_" + EventName + ".json"), "UTF-8");
+        String expectedDocument = FileUtils.readFileToString(new File(INPUT_FILE_PATH_EXPECTED_DATA + "expected_parsed_" + EventName + ".json"), "UTF-8");
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode expectedJson = mapper.readTree(expectedDocument);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode expectedJson = mapper.readTree(expectedDocument);
+        try {
             JsonNode actualParsedEventJson = eventTemplateHandler.eventTemplateParser(dataToBeParsed, EventName);
-
-            LOG.info("expectedJsonString:    " + expectedJson.toString());
-            LOG.info("actualParsedEventJson: " + actualParsedEventJson.toString());
-
-            JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), JSONCompareMode.NON_EXTENSIBLE);
-            JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), true);
-
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
         }
+        catch (Throwable e) {
+            java.io.StringWriter sw = new java.io.StringWriter();
+            java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+            e.printStackTrace(pw);
+            String sStackTrace = sw.toString(); // stack trace as a string
+            System.err.println(sStackTrace);
+            System.err.flush();
+        }
+        JsonNode actualParsedEventJson = eventTemplateHandler.eventTemplateParser(dataToBeParsed, EventName);
 
+        LOG.info("expectedJsonString:    " + expectedJson.toString());
+        LOG.info("actualParsedEventJson: " + actualParsedEventJson.toString());
+
+        JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals(expectedJson.toString(), actualParsedEventJson.toString(), true);
     }
 }
 

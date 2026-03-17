@@ -1,3 +1,16 @@
+
+## 2.1.11
+- Enable to change log level for publish at runtime
+
+## 2.1.10
+  Message validation generalized for /generateAndPublish
+
+## 2.1.9
+  com.fasterxml.jackson.core:jackson-core uplifted
+
+## 2.1.8
+- Tests handled properly.
+
 ## 2.1.7
 - Ensure Eclipse Temurin is used to build the service
 
