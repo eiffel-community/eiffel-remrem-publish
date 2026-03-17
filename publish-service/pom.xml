@@ -219,6 +219,11 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${springboot.version}</version>
                 <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
                     <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
                     <skip>false</skip>
                 </configuration>
@@ -267,6 +272,7 @@
                             <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
                         </manifest>
                         <manifestEntries>
+                            <Implementation-Version>${project.version}</Implementation-Version>
                             <serviceVersion>${project.version}</serviceVersion>
                             <remremVersionKey>serviceVersion</remremVersionKey>
                             <Class-Path>.</Class-Path>

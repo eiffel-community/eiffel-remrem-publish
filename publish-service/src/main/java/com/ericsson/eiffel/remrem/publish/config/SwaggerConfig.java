@@ -17,18 +17,18 @@ package com.ericsson.eiffel.remrem.publish.config;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import org.springdoc.core.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
 
+    @Value("${app.version:Unknown}")
+    private String appVersion;
 
     @Bean
     public OpenAPI customOpenAPI() {
-        // TODO get the application version somehow both from when spring-boot:run goal is executed and when executed from jar/war artifact.
-        String appVersion = "x.x.x";
-
         final StringBuilder remremDescription = new StringBuilder();
         remremDescription.append("REMReM (REST Mailbox for Registered Messages) Publish "
                         + "for publish validated Eiffel messages on a RabbitMQ message bus.");
