@@ -49,16 +49,16 @@ import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import ch.qos.logback.classic.Logger;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @ComponentScan("com.ericsson.eiffel.remrem")
 @RestController
 @RequestMapping("/*")
-@Api(value = "REMReM Publish Service", description = "REST API for publishing Eiffel messages to message bus")
+@Tag(name = "REMReM Publish Service", description = "REST API for publishing Eiffel messages to message bus")
 public class ProducerController {
 
     @Autowired
@@ -201,20 +201,20 @@ public class ProducerController {
      * @return A response entity which contains http status and result
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @ApiOperation(value = "To publish eiffel event to message bus", response = String.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Event sent successfully"),
-            @ApiResponse(code = 400, message = "Invalid event content"),
-            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
-            @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 503, message = "Service Unavailable")})
+    @Operation(summary = "To publish eiffel event to message bus")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Event sent successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid event content"),
+            @ApiResponse(responseCode = "404", description = "RabbitMq properties not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+            @ApiResponse(responseCode = "503", description = "Service Unavailable")})
     @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity send(
-            @ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
-            @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
-            @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
-            @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
-            @ApiParam(value = "eiffel event", required = true) @RequestBody final String body) {
+            @Parameter(description = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
+            @Parameter(description = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
+            @Parameter(description = "tag") @RequestParam(value = "tag", required = false) final String tag,
+            @Parameter(description = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
+            @Parameter(description = "eiffel event", required = true) @RequestBody final String body) {
         try {
             JsonElement inputBody = JsonParser.parseString(body);
             return send(msgProtocol, userDomain, tag, routingKey, inputBody);
@@ -252,30 +252,30 @@ public class ProducerController {
      */
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @ApiOperation(value = "To generate and publish eiffel event to message bus", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Event sent successfully"),
-            @ApiResponse(code = 400, message = "Invalid event content"),
-            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
-            @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 503, message = "Message protocol is invalid") })
+    @Operation(summary = "To generate and publish eiffel event to message bus")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Event sent successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid event content"),
+            @ApiResponse(responseCode = "404", description = "RabbitMq properties not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error"),
+            @ApiResponse(responseCode = "503", description = "Message protocol is invalid") })
     @RequestMapping(value = "/generateAndPublish", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity generateAndPublish(@ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
-                                             @ApiParam(value = "message type", required = true) @RequestParam("msgType") final String msgType,
-                                             @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
-                                             @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
-                                             @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
-                                             @ApiParam(value = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
-                                             @ApiParam(value = "ER lookup result multiple found, Generate will fail") @RequestParam(value = "failIfMultipleFound", required = false, defaultValue = "false") final Boolean failIfMultipleFound,
-                                             @ApiParam(value = "ER lookup result none found, Generate will fail") @RequestParam(value = "failIfNoneFound", required = false, defaultValue = "false") final Boolean failIfNoneFound,
-                                             @ApiParam(value = "Determines if external ER's should be used to compile the results of query.Use true to use External ER's.") @RequestParam(value = "lookupInExternalERs", required = false, defaultValue = "false") final Boolean lookupInExternalERs,
-                                             @ApiParam(value = "The maximum number of events returned from a lookup. If more events are found "
+    public ResponseEntity generateAndPublish(@Parameter(description = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
+                                             @Parameter(description = "message type", required = true) @RequestParam("msgType") final String msgType,
+                                             @Parameter(description = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
+                                             @Parameter(description = "tag") @RequestParam(value = "tag", required = false) final String tag,
+                                             @Parameter(description = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
+                                             @Parameter(description = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
+                                             @Parameter(description = "ER lookup result multiple found, Generate will fail") @RequestParam(value = "failIfMultipleFound", required = false, defaultValue = "false") final Boolean failIfMultipleFound,
+                                             @Parameter(description = "ER lookup result none found, Generate will fail") @RequestParam(value = "failIfNoneFound", required = false, defaultValue = "false") final Boolean failIfNoneFound,
+                                             @Parameter(description = "Determines if external ER's should be used to compile the results of query.Use true to use External ER's.") @RequestParam(value = "lookupInExternalERs", required = false, defaultValue = "false") final Boolean lookupInExternalERs,
+                                             @Parameter(description = "The maximum number of events returned from a lookup. If more events are found "
                                                      + "they will be disregarded. The order of the events is undefined, which means that what events are "
                                                      + "disregarded is also undefined.") @RequestParam(value = "lookupLimit", required = false, defaultValue = "1") final int lookupLimit,
-                                             @ApiParam(value = "okToLeaveOutInvalidOptionalFields true will remove the optional "
+                                             @Parameter(description = "okToLeaveOutInvalidOptionalFields true will remove the optional "
                                                      + "event fields from the input event data that does not validate successfully, "
                                                      + "and add those removed field information into customData/remremGenerateFailures") @RequestParam(value = "okToLeaveOutInvalidOptionalFields", required = false, defaultValue = "false")  final Boolean okToLeaveOutInvalidOptionalFields,
-                                             @ApiParam(value = "JSON message", required = true) @RequestBody final String body){
+                                             @Parameter(description = "JSON message", required = true) @RequestBody final String body){
 
         try {
             JsonElement bodyJson = JsonParser.parseString(body);
@@ -547,7 +547,7 @@ public class ProducerController {
      * @return this method returns the current version of publish and all loaded
      *         protocols.
      */
-    @ApiOperation(value = "To get versions of publish and all loaded protocols", response = String.class)
+    @Operation(summary = "To get versions of publish and all loaded protocols")
     @RequestMapping(value = "/versions", method = RequestMethod.GET)
     public JsonElement getVersions() {
         JsonParser parser = new JsonParser();
