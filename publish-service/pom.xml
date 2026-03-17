@@ -11,6 +11,7 @@
     </parent>
     <properties>
         <start-class>com.ericsson.eiffel.remrem.publish</start-class>
+        <swagger-ui.version>5.32.0</swagger-ui.version>
     </properties>
     <artifactId>publish-service</artifactId>
     <packaging>war</packaging>
@@ -167,7 +168,7 @@
                             <!--Change this url to the desired Swagger-UI version to use.
                             Official Swagger-UI version releases: https://github.com/swagger-api/swagger-ui/releases
                             Example of an Swagger-UI tarball artifact: https://github.com/swagger-api/swagger-ui/archive/refs/tags/v5.32.0.tar.gz-->
-                            <url>https://github.com/swagger-api/swagger-ui/archive/refs/tags/v5.32.0.tar.gz</url>
+                            <url>https://github.com/swagger-api/swagger-ui/archive/refs/tags/v${swagger-ui.version}.tar.gz</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/swagger-ui</outputDirectory>
                         </configuration>
@@ -187,7 +188,7 @@
                             <outputDirectory>${project.build.outputDirectory}/static/swagger-ui</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.build.directory}/swagger-ui/swagger-ui-5.32.0/dist</directory>
+                                    <directory>${project.build.directory}/swagger-ui/swagger-ui-${swagger-ui.version}/dist</directory>
                                 </resource>
                             </resources>
                         </configuration>
