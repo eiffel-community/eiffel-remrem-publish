@@ -17,8 +17,6 @@ package com.ericsson.eiffel.remrem.publish.service;
 
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
-
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.google.gson.JsonElement;
 
