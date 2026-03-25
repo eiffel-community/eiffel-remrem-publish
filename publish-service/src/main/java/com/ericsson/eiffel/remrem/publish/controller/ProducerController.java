@@ -210,13 +210,12 @@ public class ProducerController {
                 mediaType = "application/json",
                 examples = {
                     @ExampleObject(name = "Event validation failure", value = PRODUCER_RESPONSE_400_VALIDATION_EXAMPLE),
-                    @ExampleObject(name= "Input contains invalid JSON", value = PRODUCER_RESPONSE_400_INVALID_JSON_EXAMPLE),
+                    @ExampleObject(name = "Input contains invalid JSON", value = PRODUCER_RESPONSE_400_INVALID_JSON_EXAMPLE),
                     @ExampleObject(name = "Invalid protocol", value = PRODUCER_RESPONSE_400_INVALID_PROTOCOL_EXAMPLE)
                 }
             )
         ),
         @ApiResponse(responseCode = "404", description = "RabbitMq properties not found"),
-        @ApiResponse(responseCode = "415", description = "Unsupported Media Type"),
         @ApiResponse(responseCode = "500", description = "Internal server error",
             content = @Content(
                 mediaType = "application/json",
@@ -248,6 +247,8 @@ public class ProducerController {
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Cannot parse the following JSON data:\n" + body + "\n\n" + exceptionMessage);
+            // TODO Disable CodeQL rule java/error-message-exposure. The message is sent to user to
+            // TODO show where exactly JSON parser encountered an issue, i.e. line and column.
             return createResponseEntity(HttpStatus.BAD_REQUEST,
                     "Invalid JSON data: " + exceptionMessage, ResultStatus.FATAL);
         }
@@ -298,7 +299,6 @@ public class ProducerController {
             )
         ),
         @ApiResponse(responseCode = "404", description = "REMReM Generate not found"),
-        @ApiResponse(responseCode = "422", description = "Unprocessable Entity"),
         @ApiResponse(responseCode = "500", description = "Internal server error",
             content = @Content(
                 mediaType = "application/json",
@@ -418,7 +418,7 @@ public class ProducerController {
         if (StringUtils.isEmpty(msgProtocol) ||
                 ((msgService = PublishUtils.getMessageService(msgProtocol, msgServices)) == null)) {
             return createResponseEntity(HttpStatus.BAD_REQUEST,
-                    "No protocol service has been found registered", ResultStatus.FATAL);
+                    "No protocol service has been found registered", ResultStatus.FAIL);
 
         }
         List<JsonObject> events = new ArrayList<>();
@@ -515,9 +515,9 @@ public class ProducerController {
             } else {
                 return response;
             }
-        } 
+        }
         catch (UnsupportedEncodingException e) {
-            return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), ResultStatus.FAIL);
+            return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), ResultStatus.FATAL);
         }
         catch (RemRemPublishException e) {
             return createResponseEntity(HttpStatus.NOT_FOUND, e.getMessage(), ResultStatus.FAIL);

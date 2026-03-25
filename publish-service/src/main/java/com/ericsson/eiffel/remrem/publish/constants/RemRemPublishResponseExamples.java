@@ -49,7 +49,7 @@ public final class RemRemPublishResponseExamples {
         }
     """;
 
-    public static final String PRODUCER_RESPONSE_400_INVALID_JSON_EXAMPLE = """ 
+    public static final String PRODUCER_RESPONSE_400_INVALID_JSON_EXAMPLE = """
         {
           "status code": 400,
           "result": "Invalid JSON data: com.google.gson.stream.MalformedJsonException: Expected name at line 20 column 6 path $[0].links[0].type",

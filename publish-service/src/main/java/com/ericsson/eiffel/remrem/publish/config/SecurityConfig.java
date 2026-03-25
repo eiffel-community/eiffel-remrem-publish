@@ -31,11 +31,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-<<<<<<< HEAD
-=======
-
-import static org.apache.catalina.webresources.TomcatURLStreamHandlerFactory.disable;
->>>>>>> master
 
 /**
  * This class is used to enable the ldap authentication based on property
