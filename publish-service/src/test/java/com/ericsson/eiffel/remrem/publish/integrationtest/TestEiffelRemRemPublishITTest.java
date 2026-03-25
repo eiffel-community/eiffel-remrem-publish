@@ -53,7 +53,7 @@ import io.restassured.RestAssured;
 @ActiveProfiles("integration-test")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-public class EiffelRemRemPublishIT {
+public class TestEiffelRemRemPublishITTest {
     @Value("${local.server.port}")
     int port;
     @Autowired
@@ -63,6 +63,8 @@ public class EiffelRemRemPublishIT {
     private String domainId= "True";
     private String exchangeName= "EN1";
     private String host= "HostA";
+    private String username= "myuser";
+    private String password= "myuser";
     private String protocol = "eiffelsemantics";
     @Autowired
     RMQHelper rmqHelper;
@@ -75,6 +77,8 @@ public class EiffelRemRemPublishIT {
         rabbitmqProtocolProperties.setHost(host);
         rabbitmqProtocolProperties.setExchangeName(exchangeName);
         rabbitmqProtocolProperties.setDomainId(domainId);
+        rabbitmqProtocolProperties.setUsername(username);
+        rabbitmqProtocolProperties.setPassword(password);
     }
 
     @Test
@@ -91,7 +95,7 @@ public class EiffelRemRemPublishIT {
             assertEquals(jsonArray, jarray.toString());
         }
     }
-    
+
     @Test
     public void testFailSingleEvent() throws Exception {
         String body = FileUtils.readFileToString(new File("src/test/resources/Invalid_EiffelActivityFinishedEvent.json"));
