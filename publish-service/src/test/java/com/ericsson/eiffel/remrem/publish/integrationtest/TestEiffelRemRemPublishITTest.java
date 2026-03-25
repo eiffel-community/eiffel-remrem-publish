@@ -63,8 +63,6 @@ public class TestEiffelRemRemPublishITTest {
     private String domainId= "True";
     private String exchangeName= "EN1";
     private String host= "HostA";
-    private String username= "myuser";
-    private String password= "myuser";
     private String protocol = "eiffelsemantics";
     @Autowired
     RMQHelper rmqHelper;
@@ -77,8 +75,6 @@ public class TestEiffelRemRemPublishITTest {
         rabbitmqProtocolProperties.setHost(host);
         rabbitmqProtocolProperties.setExchangeName(exchangeName);
         rabbitmqProtocolProperties.setDomainId(domainId);
-        rabbitmqProtocolProperties.setUsername(username);
-        rabbitmqProtocolProperties.setPassword(password);
     }
 
     @Test
