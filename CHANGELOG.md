@@ -1,6 +1,7 @@
 ## NEXT VERSION
 - Uplifted OpenAPI Spec and Swagger-UI to latest version
 - Add input and response examples in OpenAPI specification
+- Remove REMReM Generate API examples from wiki, link to REMReM Generate documentation instead
 
 ## 2.1.12
 - Security fixes applied.

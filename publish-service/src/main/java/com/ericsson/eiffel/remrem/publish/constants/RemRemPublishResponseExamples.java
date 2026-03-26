@@ -65,6 +65,13 @@ public final class RemRemPublishResponseExamples {
         }
     """;
 
+    public static final String PRODUCER_RESPONSE_404_EXAMPLE = """
+        {
+          "status code": 404,
+          "result": "FAIL",
+          "status message": "RabbitMQ properties not found"
+        }
+    """;
 
     public static final String PRODUCER_RESPONSE_500_EXAMPLE = """
         {
@@ -72,6 +79,18 @@ public final class RemRemPublishResponseExamples {
           "status": 500,
           "error": "Internal Server Error",
           "path": "/producer/msg"
+        }
+    """;
+
+    public static final String PRODUCER_RESPONSE_500_INVALID_EVENT_TYPE_EXAMPLE = """
+        {
+          "events": [
+            {
+              "status_code": 500,
+              "result": "Internal Server Error",
+              "message": "Could not prepare Routing key to publish message"
+            }
+          ]
         }
     """;
 
@@ -161,6 +180,14 @@ public final class RemRemPublishResponseExamples {
         ]
     """;
 
+    public static final String GENERATE_PUBLISH_RESPONSE_404_EXAMPLE = """
+        {
+          "status code": 404,
+          "result": "FAIL",
+          "status message": "Not found"
+        }
+    """;
+
     public static final String GENERATE_PUBLISH_RESPONSE_500_EXAMPLE = """
         {
           "timestamp": "Mar 25, 2026, 1:30:35 PM",
@@ -179,6 +206,19 @@ public final class RemRemPublishResponseExamples {
                 "data": {"outcome": {"conclusion": "SUCCESSFUL"}},
                 "links": [{"type":"ACTIVITY_EXECUTION", "target": "aaaaaaaa-bbbb-5ccc-8ddd-eeeeeeeeeee1"}]
             }
+        }
+    """;
+
+    // Response examples for /versions API endpoint
+
+    public static final String VERSIONS_RESPONSE_200_EXAMPLE = """
+        {
+          "serviceVersion": {
+            "serviceVersion": "0.0.1"
+          },
+          "endpointVersions": {
+            "semanticsVersion": "0.0.1"
+          }
         }
     """;
 

@@ -55,7 +55,7 @@ Events are having different internal status codes.
     },
     {
      "status_code": 400,
-     "result": "Bad Request",
+     "result": "FAIL",
      "message": "Invalid event content, client need to fix problem in event before submitting again"
     }
 ]
@@ -69,7 +69,7 @@ The input JSON is malformed.
 [
     {
      "status_code": 400,
-     "result": "Bad Request",
+     "result": "FAIL",
      "message": "Invalid event content, client need to fix problem in event before submitting again"
     }
 ]
@@ -83,7 +83,7 @@ RabbitMQ properties not configured in tomcat/conf/config.properties file for the
 [
     {
      "status_code": 404,
-     "result": "RabbitMQ properties not found",
+     "result": "FAIL",
      "message": "RabbitMQ properties not configured for the protocol <protocol>"
     }
 ]
@@ -94,13 +94,15 @@ RabbitMQ properties not configured in tomcat/conf/config.properties file for the
 Cannot prepare routing key.
 
 ```
-[
     {
-     "status_code": 500,
-     "result": "Internal Server Error",
-     "message": "Could not prepare Routing key to publish message"
+      "events": [
+        {
+          "status_code": 500,
+          "result": "Internal Server Error",
+          "message": "Could not prepare Routing key to publish message"
+        }
+      ]
     }
-]
 ```
 
 Event is failed to send because of internal server error.

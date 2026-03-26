@@ -215,12 +215,18 @@ public class ProducerController {
                 }
             )
         ),
-        @ApiResponse(responseCode = "404", description = "RabbitMq properties not found"),
+        @ApiResponse(responseCode = "404", description = "RabbitMQ properties not found",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {@ExampleObject(value = PRODUCER_RESPONSE_404_EXAMPLE)}
+            )
+        ),
         @ApiResponse(responseCode = "500", description = "Internal server error",
             content = @Content(
                 mediaType = "application/json",
                 examples = {
-                    @ExampleObject(value = PRODUCER_RESPONSE_500_EXAMPLE),
+                    @ExampleObject(name= "Internal server error", value = PRODUCER_RESPONSE_500_EXAMPLE),
+                    @ExampleObject(name = "Invalid event type", value = PRODUCER_RESPONSE_500_INVALID_EVENT_TYPE_EXAMPLE)
                 }
             )
         ),
@@ -298,7 +304,12 @@ public class ProducerController {
                 }
             )
         ),
-        @ApiResponse(responseCode = "404", description = "REMReM Generate not found"),
+        @ApiResponse(responseCode = "404", description = "REMReM Generate not found",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {@ExampleObject(value = GENERATE_PUBLISH_RESPONSE_404_EXAMPLE)}
+            )
+        ),
         @ApiResponse(responseCode = "500", description = "Internal server error",
             content = @Content(
                 mediaType = "application/json",
@@ -450,8 +461,6 @@ public class ProducerController {
         }
         List<Map<String, Object>> responseEvents;
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-        EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED,
-                HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
         try {
             String bodyJsonOut;
             if (parseData) {
@@ -513,6 +522,8 @@ public class ProducerController {
                 responseEvents = processingValidEvent(responseBody, msgProtocol, msgType, userDomain,
                         tag, routingKey, okToLeaveOutInvalidOptionalFields);
             } else {
+                // TODO: Is this block ever reached?
+                // Non 200 codes are caught when the HttpStatusCodeException is thrown
                 return response;
             }
         }
@@ -659,6 +670,14 @@ public class ProducerController {
      *         protocols.
      */
     @Operation(summary = "To get versions of publish and all loaded protocols")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Versions retrieved",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {@ExampleObject(value = VERSIONS_RESPONSE_200_EXAMPLE)}
+            )
+        )
+    })
     @RequestMapping(value = "/versions", method = RequestMethod.GET)
     public JsonElement getVersions() {
         JsonParser parser = new JsonParser();
