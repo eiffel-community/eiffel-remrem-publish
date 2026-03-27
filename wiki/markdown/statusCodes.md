@@ -167,15 +167,16 @@ In this case we should skip sending **E4** and **E5** and have status code **503
 
 These response can be generated only when `/generateAndPublish` endpoint is used.
 
-| Status code | Result                | Message                                                                     | Comment                                                                                                                |
-|-------------|-----------------------|-----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| 400         | Bad Request           | Malformed JSON or incorrect type of event                                   | Is returned if the request body JSON is malformed or entered incorrect type of event.                                  |
-| 401         | Unauthorized          | Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled | Is returned if LDAP for REMReM Generate service is enabled and REMReM Generate Publish does not have access to it.     |
-| 406         | Not Acceptable        | No event id found with ERLookup properties                                  | Is returned if no event id was found when REMReM Generate tries to look up an event in Event Repository.               |
-| 415         | Unsupported Media Type| Content type `<content-type>` not supported                                 | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.        |
-| 417         | Expectation Failed    | Multiple event ids found with ERLookup properties                           | Is returned if multiple event ids were found when REMReM Generate tried to look up an event in Event Repository.       |
-| 500         | Internal Server Error | Internal server error in Generate Service                                   | Is returned if REMReM Generate service is not started or in case of others internal errors in REMReM Generate service. |
-| 503         | Service Unavailable   | No protocol service has been found registered                               | Is returned if there is no such message protocol loaded.                                                               |
+| Status code | Result                 | Message                                                                     | Comment                                                                                                                       |
+|-------------|------------------------|-----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| 400         | Bad Request            | Malformed JSON or incorrect type of event                                   | Is returned if the request body JSON is malformed or entered incorrect type of event.                                         |
+| 401         | Unauthorized           | Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled | Is returned if LDAP for REMReM Generate service is enabled and REMReM Generate Publish does not have access to it.            |
+| 404         | Not Found              | REMReM Generate was not found                                               | Is returned if the REMReM Generate service was not found. This is likely due to a misconfiguration of the uri or contextpath. |
+| 406         | Not Acceptable         | No event id found with ERLookup properties                                  | Is returned if no event id was found when REMReM Generate tries to look up an event in Event Repository.                      |
+| 415         | Unsupported Media Type | Content type `<content-type>` not supported                                 | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.               |
+| 417         | Expectation Failed     | Multiple event ids found with ERLookup properties                           | Is returned if multiple event ids were found when REMReM Generate tried to look up an event in Event Repository.              |
+| 500         | Internal Server Error  | Internal server error in Generate Service                                   | Is returned if REMReM Generate service is not started or in case of others internal errors in REMReM Generate service.        |
+| 503         | Service Unavailable    | No protocol service has been found registered                               | Is returned if there is no such message protocol loaded.                                                                      |
 
 
 For detailed information about the API responses REMReM Generate returns, refer to the
