@@ -435,7 +435,11 @@ curl -H "Content-Type: application/json" -X POST -d '[{Message}]' "http://localh
 Result:
 
 ```
-{"timestamp":"Dec 2, 2021 7:44:31 PM","status":400,"error":"Bad Request","message":"Could not read JSON: ..."}
+{
+  "status code": 400,
+  "result": "FATAL",
+  "status message": "Invalid JSON data: com.google.gson.stream.MalformedJsonException: Expected name at line 11 column 5 path $.meta"
+}
 ```
 
 ### Examples for ``/generateAndPublish`` endpoint
