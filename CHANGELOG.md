@@ -1,11 +1,9 @@
+
+## 2.1.13
+- Uplifted OpenApi Spec and Swagger-UI to latest version
+
 ## 2.1.12
 - Security fixes applied.
-
-## NEXT VERSION
-- Uplifted OpenApi Spec and Swagger-UI to latest version
-
-## NEXT VERSION
-- Uplifted OpenApi Spec and Swagger-UI to latest version
 
 ## 2.1.11
 - Enable to change log level for publish at runtime
