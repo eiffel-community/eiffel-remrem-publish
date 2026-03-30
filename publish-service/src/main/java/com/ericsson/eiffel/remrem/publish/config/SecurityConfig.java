@@ -32,8 +32,6 @@ import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 
-import static org.apache.catalina.webresources.TomcatURLStreamHandlerFactory.disable;
-
 /**
  * This class is used to enable the ldap authentication based on property
  * activedirectory.publish.enabled = true in properties file.

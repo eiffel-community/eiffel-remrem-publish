@@ -14,7 +14,6 @@ Note, that status codes of operation `/generateAndPublish` are listed [below](#s
 | 207         | Multi-Status                  |                                                                                     | Is returned if we have a mix of internal status codes.  Eg: publish of few events was successful and few events was a failure.  In case of multiple events in the body JSON, if a event is given internal status code of 400 or 500 rest events will not be published and will be given a internal status code of 503, which will result in overall HTTP response code of 207. |
 | 400         | Bad Request                   | Invalid event content, client need to fix problem in event before submitting again. | Is returned if the request body JSON is malformed. Eg: unable to parse the body JSON.                                                                                                                                                                                                                                                                                         |
 | 404         | RabbitMQ properties not found | RabbitMQ properties not configured for the protocol <protocol>                      | Is returned if RabbitMQ message broker properties are not found for the protocol used by event.                                                                                                                                                                                                                                                                               |
-| 415         | Unsupported Media Type        | Content type `<content-type>` not supported                                         | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.                                                                                                                                                                                                                                                                                                                                                                             |
 | 500         | Internal Server Error         | RabbitMQ is down. Please try later                                                  | Is returned if RabbitMQ is down.                                                                                                                                                                                                                                                                                                                                              |
 |             |                               | Could not prepare Routing key to publish message.                                   | Is returned if could not prepare routing key to publish the eiffel event.                                                                                                                                                                                                                                                                                                     |
 | 503         | Service Unavailable           | Please check previous event and try again later                                     | Is returned if there is a failure in publishing previous event with status code 400, 404 or 500.                                                                                                                                                                                                                                                                              |
@@ -56,7 +55,7 @@ Events are having different internal status codes.
     },
     {
      "status_code": 400,
-     "result": "Bad Request",
+     "result": "FAIL",
      "message": "Invalid event content, client need to fix problem in event before submitting again"
     }
 ]
@@ -70,7 +69,7 @@ The input JSON is malformed.
 [
     {
      "status_code": 400,
-     "result": "Bad Request",
+     "result": "FAIL",
      "message": "Invalid event content, client need to fix problem in event before submitting again"
     }
 ]
@@ -84,24 +83,10 @@ RabbitMQ properties not configured in tomcat/conf/config.properties file for the
 [
     {
      "status_code": 404,
-     "result": "RabbitMQ properties not found",
+     "result": "FAIL",
      "message": "RabbitMQ properties not configured for the protocol <protocol>"
     }
 ]
-```
-
-**415 Unsupported Media Type**
-
-Server refuses to accept the request because the payload format is in an unsupported format.
-
-```
-{
-  "timestamp": "Sep 9, 2022 2:56:07 PM",
-  "status": 415,
-  "error": "Unsupported Media Type",
-  "message": "Content type \u0027unsupported;charset\u003dUTF-8\u0027 not supported",
-  "path": "/publish/producer/msg"
-}
 ```
 
 **500 Internal Server Error**
@@ -109,13 +94,15 @@ Server refuses to accept the request because the payload format is in an unsuppo
 Cannot prepare routing key.
 
 ```
-[
     {
-     "status_code": 500,
-     "result": "Internal Server Error",
-     "message": "Could not prepare Routing key to publish message"
+      "events": [
+        {
+          "status_code": 500,
+          "result": "Internal Server Error",
+          "message": "Could not prepare Routing key to publish message"
+        }
+      ]
     }
-]
 ```
 
 Event is failed to send because of internal server error.
@@ -180,128 +167,17 @@ In this case we should skip sending **E4** and **E5** and have status code **503
 
 These response can be generated only when `/generateAndPublish` endpoint is used.
 
-| Status code | Result                | Message                                                                     | Comment                                                                                                                |
-|-------------|-----------------------|-----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| 400         | Bad Request           | Malformed JSON or incorrect type of event                                   | Is returned if the request body JSON is malformed or entered incorrect type of event.                                  |
-| 401         | Unauthorized          | Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled | Is returned if LDAP for REMReM Generate Service is enabled and REMReM Generate Publish have not access to it.          |
-| 406         | Not Acceptable        | No event id found with ERLookup properties                                  | Is returned if no event id fetched from configured event repository in REMReM generate.                                |
-| 415         | Unsupported Media Type| Content type `<content-type>` not supported                                         | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.                                                                                                                                                                                                                                                                                                                                                                             |
-| 417         | Expectation Failed    | Multiple event ids found with ERLookup properties                           | Is returned if multiple event ids fetched from configured event repository in REMReM generate.                         |
-| 422         | Unprocessable Entity  | Link specific lookup options could not be fulfilled                         | Is returned if Link specific lookup options could not be matched with failIfMultipleFound and failIfNoneFound.         |
-| 500         | Internal Server Error | Internal server error in Generate Service                                   | Is returned if REMReM Generate Service is not started or in case of others internal errors in REMReM Generate Service. |
-| 503         | Service Unavailable   | No protocol service has been found registered                               | Is returned if there is no such message protocol loaded.                                                               |
-
-### Status codes explanation
-
-**400 Bad Request**
-
-The input JSON is malformed or entered incorrect type of event.
-
-```
-[
-    {
-     "status_code": 400,
-     "result": "FAIL",
-     "message": "Malformed JSON or incorrect type of event"
-    }
-]
-```
-
-**401 Unauthorized**
-
-LDAP for REMReM Generate Service is enabled and REMReM Generate Publish have not access to it.
-
-```
-[
-    {
-     "status_code": 401,
-     "result": "FAIL",
-     "message": "Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled"
-    }
-]
-```
-
-**406 Not Acceptable**
-
-The Lookup properties with no event id fetched from configured event repository in generate , REMReM fails to generate.
-
-```
-[
-    {
-     "status_code": 406,
-     "result": "FAIL",
-     "message": "No event id found with ERLookup properties"
-    }
-]
-```
-
-**415 Unsupported Media Type**
-
-Server refuses to accept the request because the payload format is in an unsupported format.
-
-```
-{
-  "timestamp": "Sep 9, 2022 2:56:07 PM",
-  "status": 415,
-  "error": "Unsupported Media Type",
-  "message": "Content type \u0027unsupported;charset\u003dUTF-8\u0027 not supported",
-  "path": "/publish/producer/msg"
-}
-```
+| Status code | Result                 | Message                                                                     | Comment                                                                                                                       |
+|-------------|------------------------|-----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| 400         | Bad Request            | Malformed JSON or incorrect type of event                                   | Is returned if the request body JSON is malformed or entered incorrect type of event.                                         |
+| 401         | Unauthorized           | Unauthorized. Please, check if LDAP for REMReM Generate Service is disabled | Is returned if LDAP for REMReM Generate service is enabled and REMReM Generate Publish does not have access to it.            |
+| 404         | Not Found              | REMReM Generate was not found                                               | Is returned if the REMReM Generate service was not found. This is likely due to a misconfiguration of the uri or contextpath. |
+| 406         | Not Acceptable         | No event id found with ERLookup properties                                  | Is returned if no event id was found when REMReM Generate tries to look up an event in Event Repository.                      |
+| 415         | Unsupported Media Type | Content type `<content-type>` not supported                                 | Indicates that the server refuses to accept the request because the payload format is in an unsupported format.               |
+| 417         | Expectation Failed     | Multiple event ids found with ERLookup properties                           | Is returned if multiple event ids were found when REMReM Generate tried to look up an event in Event Repository.              |
+| 500         | Internal Server Error  | Internal server error in Generate Service                                   | Is returned if REMReM Generate service is not started or in case of others internal errors in REMReM Generate service.        |
+| 503         | Service Unavailable    | No protocol service has been found registered                               | Is returned if there is no such message protocol loaded.                                                                      |
 
 
-**417 Expectation Failed**
-
-The Lookup properties with multiple event ids fetched from configured event repository in generate , REMReM fails to generate.
-
-```
-[
-    {
-     "status_code": 417,
-     "result": "FAIL",
-     "message": "Multiple event ids found with ERLookup properties"
-    }
-]
-```
-
-**422 Unprocessable Entity**
-
-The link specific lookup options could not be matched with failIfMultipleFound and failIfNoneFound in generate , REMReM fails to generate.
-
-```
-[
-    {
-     "status_code": 422,
-     "result": "FAIL",
-     "message": "Link specific lookup options could not be fulfilled"
-    }
-]
-```
-
-**500 Internal Server Error**
-
-REMReM Generate Service is not started or in case of others internal errors in REMReM Generate Service.
-
-```
-[
-    {
-     "status_code": 500,
-     "result": "FAIL",
-     "message": "Internal server error in Generate Service"
-    }
-]
-```
-
-**503 Service Unavailable**
-
-There is no such message protocol loaded..
-
-```
-[
-     {
-      "status_code": 503,
-      "result": "FAIL",
-      "message": "No protocol service has been found registered"
-     }
-]
-```
+For detailed information about the API responses REMReM Generate returns, refer to the
+[REMReM Generate API documentation](https://github.com/eiffel-community/eiffel-remrem-generate/blob/master/wiki/markdown/usage/service.md).
