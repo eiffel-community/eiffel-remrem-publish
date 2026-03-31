@@ -65,7 +65,7 @@
         <dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap-core</artifactId>
-            <version>2.3.8.RELEASE</version>
+            <version>3.2.14</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -122,8 +122,9 @@
             <version>2.18.6</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>

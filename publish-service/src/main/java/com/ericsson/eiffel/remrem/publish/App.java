@@ -20,6 +20,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +29,7 @@ import org.springframework.context.annotation.ComponentScan;
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
 @SpringBootApplication(scanBasePackages = {"com.ericsson.eiffel.remrem"})
-@EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class, LdapAutoConfiguration.class})
 public class App extends SpringBootServletInitializer {
  
     public static void main(String[] args) {

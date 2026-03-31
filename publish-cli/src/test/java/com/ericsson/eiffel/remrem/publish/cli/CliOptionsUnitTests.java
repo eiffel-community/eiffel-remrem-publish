@@ -14,15 +14,15 @@
 */
 package com.ericsson.eiffel.remrem.publish.cli;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.cli.CliOptions;;
@@ -31,7 +31,7 @@ public class CliOptionsUnitTests {
     private PrintStream console;
     private ByteArrayOutputStream bytes;
 
-    @Before public void setUp() throws Exception {
+    @BeforeEach public void setUp() throws Exception {
         String key = PropertiesConfig.TEST_MODE;
         System.setProperty(key, "true");
         //Switch std out to another stream
@@ -40,7 +40,7 @@ public class CliOptionsUnitTests {
         System.setOut(new PrintStream(bytes));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         System.clearProperty(PropertiesConfig.TEST_MODE);
         System.setOut(console);
@@ -81,7 +81,7 @@ public class CliOptionsUnitTests {
     }
 
     @Test
-    @Ignore // Why TLS 1.3 should not be accepted? Ignoring the test...
+    @Disabled // Why TLS 1.3 should not be accepted? Ignoring the test...
     public void testTlsVer13OptionFails() throws Exception {
         String[] args = {"-f", "/a/b/c/test.file",  "test", "-tls", "1.3"};
         CliOptions.parse(args);

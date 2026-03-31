@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -27,19 +27,14 @@ import ch.qos.logback.classic.Logger;
 
 public class SpringLoggingInitializer implements ApplicationContextInitializer {
 
-	/* (non-Javadoc)
-	 * @see org.springframework.context.ApplicationContextInitializer#initialize(org.springframework.context.ConfigurableApplicationContext)
-	 * 
-	 * We need to turn off Spring logging since we want write the generated message to console. 
-	 */
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		Class[] loggers = {SpringApplication.class, /*App.class,*/ ConfigFileApplicationListener.class, EndpointMBean.class,
+		Class[] loggers = {SpringApplication.class, ConfigDataEnvironmentPostProcessor.class, EndpointMBean.class,
 		        ConditionEvaluationReportLoggingListener.class};
-		Logger log = (Logger) LoggerFactory.getLogger("ROOT");
+		ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("ROOT");
 		log.setLevel(Level.ERROR);
 		for (Class logger : loggers) {
-			log = (Logger) LoggerFactory.getLogger(logger);
+			log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(logger);
 			log.setLevel(Level.ERROR);
 		}
 	}

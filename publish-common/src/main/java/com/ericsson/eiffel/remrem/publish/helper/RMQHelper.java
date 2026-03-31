@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +36,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component("rmqHelper") public class RMQHelper {
 
@@ -49,7 +49,7 @@ import ch.qos.logback.classic.Logger;
 
     Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
-    Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
+    Logger log = LoggerFactory.getLogger(RMQHelper.class);
 
     public Map<String, RabbitMqProperties> getRabbitMqPropertiesMap() {
         return rabbitMqPropertiesMap;
@@ -132,10 +132,8 @@ import ch.qos.logback.classic.Logger;
     @PostConstruct
     private void handleLogging() {
         String debug = System.getProperty(PropertiesConfig.DEBUG);
-        log.setLevel(Level.ALL);
         if (FALSE.equals(debug)) {
             System.setProperty("logging.level.root", "OFF");
-            log.setLevel(Level.OFF);
         }
     }
 

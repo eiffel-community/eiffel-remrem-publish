@@ -33,12 +33,13 @@ import com.ericsson.eiffel.remrem.publish.service.GenerateURLTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class RabbitMqPropertiesConfig {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(RabbitMqPropertiesConfig.class);
+    static Logger log = LoggerFactory.getLogger(RabbitMqPropertiesConfig.class);
 
     @Autowired
     Environment env;
