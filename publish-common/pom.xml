@@ -65,12 +65,12 @@
         <dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap-core</artifactId>
-            <version>3.2.14</version>
+            <version>4.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.8.0</version>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
@@ -124,7 +124,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.2</version>
+            <version>6.0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>

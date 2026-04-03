@@ -444,7 +444,7 @@ public class ProducerController {
             }
 
             if (responseStatus == HttpStatus.OK || responseStatus == HttpStatus.MULTI_STATUS) {
-                log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
+                log.info("The result from REMReM Generate is: " + response.getStatusCode().value());
                 log.debug("mp: " + msgProtocol);
                 log.debug("body: " + responseBody);
                 log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
