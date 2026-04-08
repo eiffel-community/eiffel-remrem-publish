@@ -88,11 +88,13 @@ public class SecurityConfig {
         }
         LOGGER.debug("LDAP server url: " + ldapUrl);
 
+        // Initialize and configure the LdapContextSource
         LdapContextSource contextSource = ldapContextSource();
 
+        // Configure BindAuthenticator with the context source and user search filter
         BindAuthenticator bindAuthenticator = new BindAuthenticator(contextSource);
         bindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch(
-                "",
+                "", // Empty base indicates search starts at root DN provided in contextSource
                 userSearchFilter,
                 contextSource));
 
@@ -124,6 +126,12 @@ public class SecurityConfig {
         LOGGER.debug("LDAP authentication enabled");
         http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
             .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
+            // The application uses non-browser clients. Yes, there is swagger interface,
+            // but is's used only for testing/tuning.
+            //
+            // From https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
+            // "If you are creating a service that is used only by non-browser clients,
+            //  you likely want to disable CSRF protection."
             .csrf(csrf -> csrf.disable());
         return http.build();
     }

@@ -27,6 +27,11 @@ import ch.qos.logback.classic.Logger;
 
 public class SpringLoggingInitializer implements ApplicationContextInitializer {
 
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextInitializer#initialize(org.springframework.context.ConfigurableApplicationContext)
+     *
+     * We need to turn off Spring logging since we want write the generated message to console.
+     */
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		Class[] loggers = {SpringApplication.class, ConfigDataEnvironmentPostProcessor.class, EndpointMBean.class,
