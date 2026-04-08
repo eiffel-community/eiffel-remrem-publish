@@ -73,8 +73,7 @@
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.8.0</version>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
@@ -126,12 +125,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <version>${springboot.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -143,10 +141,6 @@
                 <exclusion>
                     <artifactId>json-path</artifactId>
                     <groupId>com.jayway.jsonpath</groupId>
-                </exclusion>
-                <exclusion>
-                	<groupId>org.junit.jupiter</groupId>
-                	<artifactId>junit-jupiter</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -243,11 +237,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <!-- Allow JUnit to access the test classes -->
-                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
-                    <argLine>--add-opens java.base/jdk.internal.reflect=ALL-UNNAMED</argLine>
+                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>

@@ -21,11 +21,11 @@ import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.google.gson.JsonObject;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
 
 public class PublishUtils {
 
-    static Logger log = (Logger) LoggerFactory.getLogger(PublishUtils.class);
+    static Logger log = LoggerFactory.getLogger(PublishUtils.class);
     /**
      * Method returns the MsgService based on the mp(message protocol) from the list of MsgService beans. 
      * @param mp(message protocol) Specifies which service we consider from the list of MsgService beans

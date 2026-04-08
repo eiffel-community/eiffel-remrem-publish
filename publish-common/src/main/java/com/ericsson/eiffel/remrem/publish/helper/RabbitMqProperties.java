@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
@@ -38,8 +39,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.MessageProperties;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
-
-import ch.qos.logback.classic.Logger;
 
 public class RabbitMqProperties {
 
@@ -81,7 +80,7 @@ public class RabbitMqProperties {
     private final String TYPE = "type";
     private final String DOT = ".";
 
-    Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
+    Logger log = LoggerFactory.getLogger(RabbitMqProperties.class);
 
     static {
         PERSISTENT_BASIC_APPLICATION_JSON =

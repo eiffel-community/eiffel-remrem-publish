@@ -54,7 +54,7 @@ import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import ch.qos.logback.classic.Logger;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -94,7 +94,7 @@ public class ProducerController {
 
     private JsonParser parser = new JsonParser();
 
-    private Logger log = (Logger) LoggerFactory.getLogger(ProducerController.class);
+    private org.slf4j.Logger log = LoggerFactory.getLogger(ProducerController.class);
 
     public void setMsgServices(MsgService[] msgServices) {
         this.msgServices = msgServices;
@@ -500,7 +500,7 @@ public class ProducerController {
             ResponseEntity<String> response = restTemplate.postForEntity(generatedUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
-            responseStatus = response.getStatusCode();
+            responseStatus = HttpStatus.valueOf(response.getStatusCode().value());
             String responseBody = null;
             // TODO We should not rely on bodyJson (an input string), but rather on given
             //      result, i.e. response.getBody() and check this for type (object or array).
@@ -511,7 +511,7 @@ public class ProducerController {
             }
 
             if (responseStatus == HttpStatus.OK || responseStatus == HttpStatus.MULTI_STATUS) {
-                log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
+                log.info("The result from REMReM Generate is: " + response.getStatusCode().value());
                 log.debug("mp: " + msgProtocol);
                 log.debug("body: " + responseBody);
                 log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);

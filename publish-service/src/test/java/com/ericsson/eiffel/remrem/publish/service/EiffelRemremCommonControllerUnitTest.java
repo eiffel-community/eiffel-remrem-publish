@@ -14,8 +14,8 @@
 */
 package com.ericsson.eiffel.remrem.publish.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.ArrayList;
 
 import com.ericsson.eiffel.remrem.protocol.ValidationResult;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -38,7 +38,9 @@ import org.mockito.Spy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.web.client.RestTemplate;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
@@ -49,7 +51,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class EiffelRemremCommonControllerUnitTest {
 
     @Mock
@@ -105,7 +108,7 @@ public class EiffelRemremCommonControllerUnitTest {
 
     private MsgService[] msgServices = new MsgService[2];
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         unit.setRestTemplate(restTemplate);
@@ -144,7 +147,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 null, null, true, 1, false, body.getAsJsonObject());
 
         // REMReM Publish converts the response from REMReM Generate before returning it
-        assertTrue("API response type is wrong", elem.getBody() instanceof ArrayList);
+        assertTrue(elem.getBody() instanceof ArrayList, "API response type is wrong");
         assertEquals(elem.getStatusCode(), HttpStatus.OK);
 
     }
@@ -161,7 +164,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 null, null, true, 1, false, body.getAsJsonObject());
 
         // REMReM Publish converts the response from REMReM Generate before returning it
-        assertTrue("API response type is wrong", elem.getBody() instanceof JsonObject);
+        assertTrue(elem.getBody() instanceof JsonObject, "API response type is wrong");
         assertEquals(elem.getStatusCode(), HttpStatus.BAD_REQUEST);
 
     }
@@ -200,7 +203,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 false, false, true, 1, false, body.getAsJsonObject());
 
         // REMReM Publish returns the response as it came from REMReM Generate (without modifying it)
-        assertTrue("API response type is wrong", elem.getBody() instanceof String);
+        assertTrue(elem.getBody() instanceof String, "API response type is wrong");
         assertEquals(elem.getStatusCode(), HttpStatus.UNPROCESSABLE_ENTITY);
 
     }
@@ -216,7 +219,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 false, false, true, 1, false, body.getAsJsonObject());
 
         // REMReM Publish returns the response as it came from REMReM Generate (without modifying it)
-        assertTrue("API response type is wrong", elem.getBody() instanceof String);
+        assertTrue(elem.getBody() instanceof String, "API response type is wrong");
         assertEquals(elem.getStatusCode(), HttpStatus.EXPECTATION_FAILED);
 
     }
@@ -232,7 +235,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 false, false, true, 1, false, body.getAsJsonObject());
 
         // REMReM Publish returns the response as it came from REMReM Generate (without modifying it)
-        assertTrue("API response type is wrong", elem.getBody() instanceof String);
+        assertTrue(elem.getBody() instanceof String, "API response type is wrong");
         assertEquals(elem.getStatusCode(), HttpStatus.NOT_ACCEPTABLE);
 
     }
