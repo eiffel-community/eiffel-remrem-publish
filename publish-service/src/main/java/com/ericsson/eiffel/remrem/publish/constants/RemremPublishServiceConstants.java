@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Ericsson AB.
+    Copyright 2026 Ericsson AB.
     For a full list of individual contributors, please see the commit history.
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -12,21 +12,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.ericsson.eiffel.remrem.publish.config;
+package com.ericsson.eiffel.remrem.publish.constants;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import springfox.documentation.spring.web.json.Json;
+public final class RemremPublishServiceConstants {
+    public static final String JSON_STATUS_RESULT = "result";
 
-import java.lang.reflect.Type;
+    public static final String JSON_EVENT_MESSAGE_FIELD = "status message";
 
-public class SpringfoxJsonToGsonAdapter implements JsonSerializer<Json> {
+    public static final String JSON_STATUS_CODE = "status code";
 
-        @Override
-        public JsonElement serialize(Json json, Type type, JsonSerializationContext context) {
-                final JsonParser parser = new JsonParser();
-                return parser.parse(json.value());
-        }
+    public enum ResultStatus {
+        FAIL,
+        FATAL
+    }
 }

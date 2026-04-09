@@ -15,6 +15,7 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 import com.ericsson.eiffel.remrem.protocol.ValidationResult;
 import org.junit.Before;
@@ -81,16 +83,22 @@ public class EiffelRemremCommonControllerUnitTest {
     ResponseEntity responseOK = new ResponseEntity("{\"meta\": {\"id\": \"545a709b-9c46-44dc-9f74-9593ac8fb745\"}}", HttpStatus.OK);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    ResponseEntity responseBad = new ResponseEntity("{\"status code\": \"400\", \"message\": \"FAIL\"}", HttpStatus.BAD_REQUEST);
+    ResponseEntity responseBad = new ResponseEntity("{\"status_code\": \"400\", \"message\": \"Something went wrong\", \"result\": \"FAIL\"}", HttpStatus.BAD_REQUEST);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    ResponseEntity responseOptionsFailed = new ResponseEntity("Link specific options could not be fulfilled", HttpStatus.UNPROCESSABLE_ENTITY);
+    ResponseEntity responseOptionsFailed = new ResponseEntity(
+            "{\"status code\": 422, \"message\": {\"status_code\": 422,\"result\": \"FAIL\",\"message\": \"Link specific lookup options could not be fulfilled\"},\"result\": \"FAIL\"}",
+            HttpStatus.UNPROCESSABLE_ENTITY);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    ResponseEntity responseMultipleFound = new ResponseEntity("Muliple event ids found with ERLookup properties", HttpStatus.EXPECTATION_FAILED);
+    ResponseEntity responseMultipleFound = new ResponseEntity(
+            "{\"status code\": 417, \"message\": {\"status_code\": 417,\"result\": \"FAIL\",\"message\": \"Multiple event IDs found with ERLookup properties\"},\"result\": \"FAIL\"}",
+            HttpStatus.EXPECTATION_FAILED);
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    ResponseEntity responseNoneFound = new ResponseEntity("No event id found with ERLookup properties", HttpStatus.NOT_ACCEPTABLE);
+    ResponseEntity responseNoneFound = new ResponseEntity(
+            "{\"status code\": 406, \"message\": {\"status_code\": 406,\"result\": \"FAIL\",\"message\": \"No event ID found with ERLookup properties\"},\"result\": \"FAIL\"}",
+            HttpStatus.NOT_ACCEPTABLE);
 
     @Mock
     JsonElement body;
@@ -127,20 +135,23 @@ public class EiffelRemremCommonControllerUnitTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testRestTemplateCallSuccess() throws Exception {
+    public void testRestTemplateCallSuccess() {
         String correctURL = "/{mp}?msgType={msgType}";
         when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>>any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOK);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "",false,
                 null, null, true, 1, false, body.getAsJsonObject());
+
+        // REMReM Publish converts the response from REMReM Generate before returning it
+        assertTrue("API response type is wrong", elem.getBody() instanceof ArrayList);
         assertEquals(elem.getStatusCode(), HttpStatus.OK);
 
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testRestTemplateCallFail() throws Exception {
+    public void testRestTemplateCallFail() {
 
         String inCorrectURL = "/{mp}?msgType={msgType}";
         when(restTemplate.postForEntity(Mockito.contains(inCorrectURL), Mockito.<HttpEntity<String>>any(),
@@ -148,12 +159,15 @@ public class EiffelRemremCommonControllerUnitTest {
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffel3", "eiffelactivityfinished", "", "", "",false,
                 null, null, true, 1, false, body.getAsJsonObject());
+
+        // REMReM Publish converts the response from REMReM Generate before returning it
+        assertTrue("API response type is wrong", elem.getBody() instanceof JsonObject);
         assertEquals(elem.getStatusCode(), HttpStatus.BAD_REQUEST);
 
     }
 
     @Test
-    public void testGenerateURLTemplate() throws Exception {
+    public void testGenerateURLTemplate() {
         String mp = "eiffelsemantics";
         String msgType = "eiffelactivityfinished";
         String generateServerUri = null;
@@ -177,39 +191,48 @@ public class EiffelRemremCommonControllerUnitTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testErLookupFailedWithOptions() throws Exception {
+    public void testErLookupFailedWithOptions() {
         String correctURL = "/{mp}?msgType={msgType}";
         when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseOptionsFailed);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
                 false, false, true, 1, false, body.getAsJsonObject());
+
+        // REMReM Publish returns the response as it came from REMReM Generate (without modifying it)
+        assertTrue("API response type is wrong", elem.getBody() instanceof String);
         assertEquals(elem.getStatusCode(), HttpStatus.UNPROCESSABLE_ENTITY);
 
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testErLookupFailedWithMultipleFound() throws Exception {
+    public void testErLookupFailedWithMultipleFound() {
         String correctURL = "/{mp}?msgType={msgType}";
         when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseMultipleFound);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
                 false, false, true, 1, false, body.getAsJsonObject());
+
+        // REMReM Publish returns the response as it came from REMReM Generate (without modifying it)
+        assertTrue("API response type is wrong", elem.getBody() instanceof String);
         assertEquals(elem.getStatusCode(), HttpStatus.EXPECTATION_FAILED);
 
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testErLookupFailedWithNoneFound() throws Exception {
+    public void testErLookupFailedWithNoneFound() {
         String correctURL = "/{mp}?msgType={msgType}";
         when(restTemplate.postForEntity(Mockito.contains(correctURL), Mockito.<HttpEntity<String>> any(),
                 Mockito.eq(String.class), Mockito.anyMap())).thenReturn(responseNoneFound);
 
         ResponseEntity<?> elem = unit.generateAndPublish("eiffelsemantics", "eiffelactivityfinished", "", "", "", false,
                 false, false, true, 1, false, body.getAsJsonObject());
+
+        // REMReM Publish returns the response as it came from REMReM Generate (without modifying it)
+        assertTrue("API response type is wrong", elem.getBody() instanceof String);
         assertEquals(elem.getStatusCode(), HttpStatus.NOT_ACCEPTABLE);
 
     }

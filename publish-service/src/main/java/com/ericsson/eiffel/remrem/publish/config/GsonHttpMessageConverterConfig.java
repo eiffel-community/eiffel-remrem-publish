@@ -19,21 +19,18 @@ import com.google.gson.GsonBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import springfox.documentation.spring.web.json.Json;
 
 @Configuration
 public class GsonHttpMessageConverterConfig {
 
         @Bean
         public GsonHttpMessageConverter gsonHttpMessageConverter() {
-                GsonHttpMessageConverter converter = new GsonHttpMessageConverterWithValidate();
+                GsonHttpMessageConverterWithValidate converter = new GsonHttpMessageConverterWithValidate();
                 converter.setGson(gson());
                 return converter;
         }
 
         private Gson gson() {
-                final GsonBuilder builder = new GsonBuilder();
-                builder.registerTypeAdapter(Json.class, new SpringfoxJsonToGsonAdapter());
-                return builder.create();
+                return new GsonBuilder().create();
         }
 }

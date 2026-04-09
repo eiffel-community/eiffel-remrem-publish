@@ -35,7 +35,6 @@ import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
