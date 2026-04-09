@@ -384,13 +384,11 @@ public class SSLContextReloader {
             }
 
             log.info("Reload of {} context done", PROTOCOL);
-//            log.info(caCert);
         } catch (GeneralSecurityException | IOException | InterruptedException |
                  ReflectionException | MalformedObjectNameException | AttributeNotFoundException |
                  InstanceNotFoundException | MBeanException e) {
             log.error("Certificate reload failed: {}", e.getMessage(), e);
         }
-
     }
 
     /**
@@ -641,29 +639,6 @@ public class SSLContextReloader {
 
                     Thread.sleep(HTTPS_POLL_INTERVAL);
                 }
-
-//                    // Polling sleep to reduce delay to safe minimum.
-//                    // Use currentTimeMillis() over nanoTime() to avoid issues
-//                    // with migrating threads across sleep() calls.
-//                    long start = System.currentTimeMillis();
-//                    // Maximum of 6 seconds, 3x time required on an idle system.
-//                    long max_duration = 6000L;
-//                    long duration = 0L;
-//                    do {
-//                        try {
-//                            sleep(100);
-//                        } catch (InterruptedException e) {
-//                            Thread.currentThread().interrupt();
-//                        }
-//
-//                        long now = System.currentTimeMillis();
-//                        duration = (now - start);
-//                    } while (duration < max_duration &&
-//                            server.queryNames(httpsConnectorName, null).size() > 0);
-
-                // Use below to get more accurate metrics.
-//                    String message = "HTTPS connector stop took " + duration + "milliseconds";
-//                    log.info(message);
             }
         }
     }
@@ -711,10 +686,6 @@ public class SSLContextReloader {
         else {
             log.debug("{} exist", store.path);
         }
-
-//        byte[] hash = computeHash(path);
-//        log.debug("{}: MD5 {}", path, HexFormat.of().formatHex(hash));
-//        log.debug("{}: inode {}", path, getFileInode(path));
     }
 
     /**
@@ -830,57 +801,11 @@ public class SSLContextReloader {
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         trustManagerFactory.init(trustStore);
 
-//        tm = new X509TrustManager() {
-//            X509TrustManager delegate = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
-//            @Override
-//            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-//                delegate.checkClientTrusted(chain, authType);
-//            }
-//
-//            @Override
-//            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-//                try {
-//                    delegate.checkServerTrusted(chain, authType);
-//                } catch (CertificateException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//
-//            @Override
-//            public X509Certificate[] getAcceptedIssuers() {
-//                X509Certificate[] cert = delegate.getAcceptedIssuers();
-//                return cert;
-//            }
-//        };
-
         SSLContext context = SSLContext.getInstance(PROTOCOL);
         context.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-//        context.init(keyManagerFactory.getKeyManagers(), new TrustManager[] {tm}, null);
-
-//        showCAStarCert(tm);
 
         return context;
     }
-
-    private String caCert;
-
-//    /**
-//     * Logs information about CA_star certificates from the trust manager.
-//     *
-//     * @param trustManager the X509TrustManager containing certificates
-//     */
-//    private void showCAStarCert(X509TrustManager trustManager) {
-//        for (X509Certificate cert : trustManager.getAcceptedIssuers()) {
-//            String subject = cert.getSubjectDN().getName();
-//            String issuer = cert.getIssuerDN().getName();
-//            if (subject.contains("CA_star")) {
-//                caCert = "CA certificate: subject '" + subject + "', issuer '" + issuer + "', not before '" + cert.getNotBefore() + "', not after '" + cert.getNotAfter() + "'";
-//                log.debug(caCert);
-//            }
-//        }
-//
-//
-//    }
 
     /**
      * Calculates the MD5 hash of a file.
