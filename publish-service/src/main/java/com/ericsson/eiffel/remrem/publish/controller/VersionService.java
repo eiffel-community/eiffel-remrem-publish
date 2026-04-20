@@ -111,9 +111,21 @@ public class VersionService {
      * @return map containing the version of current project.
      */
     public Map<String, String> getServiceVersion() {
-        String resourcesPath = this.getClass().getClassLoader().getResource("").getPath();
-        String manifestPath = resourcesPath.substring(0, resourcesPath.lastIndexOf(WEB_INF)).concat(META_INF_MANIFEST_MF);
+
         try {
+            URL resourceUrl = this.getClass().getClassLoader().getResource("");
+            if (resourceUrl == null) {
+                return serviceVersion;
+            }
+
+            String resourcesPath = resourceUrl.getPath();
+            int webInfIndex = resourcesPath.lastIndexOf(WEB_INF);
+
+            if (webInfIndex == -1) {
+                return serviceVersion;
+            }
+
+            String manifestPath = resourcesPath.substring(0, webInfIndex).concat(META_INF_MANIFEST_MF);
             Manifest manifest = new Manifest(new FileInputStream(manifestPath));
             Attributes mainAttribs = manifest.getMainAttributes();
             String versionKey = mainAttribs.getValue(REMREM_VERSION_KEY);
@@ -123,7 +135,8 @@ public class VersionService {
                     serviceVersion.put(VERSION, version);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            log.debug("Could not read service version from manifest: " + e.getMessage());
             e.printStackTrace();
         }
         return serviceVersion;

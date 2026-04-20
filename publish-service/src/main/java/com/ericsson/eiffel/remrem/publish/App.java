@@ -43,6 +43,7 @@ public class App extends SpringBootServletInitializer {
         application.setWebApplicationType(WebApplicationType.SERVLET);
 		application.setDefaultProperties(java.util.Map.of(
 			"springdoc.swagger-ui.enabled", "false",
+            "springdoc.api-docs.path", "/openapi.json",
 			"app.version", appVersion
 		));
         ApplicationContext ctx = application.run(args); 
