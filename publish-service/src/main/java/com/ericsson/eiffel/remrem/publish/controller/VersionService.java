@@ -135,8 +135,8 @@ public class VersionService {
                     serviceVersion.put(VERSION, version);
                 }
             }
-        } catch (Exception e) {
-            log.debug("Could not read service version from manifest: " + e.getMessage());
+        } catch (IOException e) {
+            log.error("Could not read service version from manifest: " + e.getMessage());
             e.printStackTrace();
         }
         return serviceVersion;
