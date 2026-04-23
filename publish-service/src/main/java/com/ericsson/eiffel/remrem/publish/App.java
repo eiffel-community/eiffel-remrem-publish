@@ -23,9 +23,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-
 
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
@@ -37,14 +35,10 @@ public class App extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder application) {
         return application.sources(App.class)
                 .properties("springdoc.swagger-ui.enabled=false",
-                            "springdoc.api-docs.path=/openapi.json");  // For loading default config with external Tomcat instance
+                            "springdoc.api-docs.path=/openapi.json");
     }
 
     public static void main(String[] args) {
-		String appVersion = App.class.getPackage().getImplementationVersion();
-		if (appVersion == null) {
-			appVersion = "Unknown";
-		}
         SpringApplication application = new SpringApplication(App.class);
         application.addInitializers(new SpringLoggingInitializer());
         application.setBannerMode(Banner.Mode.OFF);
@@ -52,9 +46,8 @@ public class App extends SpringBootServletInitializer {
         application.setWebApplicationType(WebApplicationType.SERVLET);
 		application.setDefaultProperties(java.util.Map.of(
 			"springdoc.swagger-ui.enabled", "false",
-            "springdoc.api-docs.path", "/openapi.json",
-			"app.version", appVersion
+            "springdoc.api-docs.path", "/openapi.json"
 		));
-        ApplicationContext ctx = application.run(args); 
+        ApplicationContext ctx = application.run(args);
     }
 }
