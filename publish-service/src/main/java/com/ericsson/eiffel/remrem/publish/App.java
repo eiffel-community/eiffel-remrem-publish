@@ -31,6 +31,13 @@ import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
 public class App extends SpringBootServletInitializer {
  
+    @Override
+    protected SpringApplicationBuilder configure(final SpringApplicationBuilder application) {
+        return application.sources(App.class)
+                .properties("springdoc.swagger-ui.enabled=false",
+                            "springdoc.api-docs.path=/openapi.json");  // For loading default config with external Tomcat instance
+    }
+
     public static void main(String[] args) {
 		String appVersion = App.class.getPackage().getImplementationVersion();
 		if (appVersion == null) {
