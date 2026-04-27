@@ -17,18 +17,20 @@ package com.ericsson.eiffel.remrem.publish.config;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import org.springdoc.core.GroupedOpenApi;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
 
-    @Value("${app.version:Unknown}")
-    private String appVersion;
+    @Autowired
+    private BuildProperties buildProperties;
 
     @Bean
     public OpenAPI customOpenAPI() {
+
         final StringBuilder remremDescription = new StringBuilder();
         remremDescription.append("REMReM (REST Mailbox for Registered Messages) Publish "
                         + "for publish validated Eiffel messages on a RabbitMQ message bus.");
@@ -38,7 +40,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Eiffel REMReM Publish Service")
                         .description(remremDescription.toString())
-                        .version(appVersion))
+                        .version(buildProperties.getVersion()))
                 .openapi("3.1.0");
     }
 
@@ -49,4 +51,5 @@ public class SwaggerConfig {
                 .pathsToMatch("/**")
                 .build();
     }
+
 }
