@@ -43,7 +43,8 @@ import com.google.gson.JsonSyntaxException;
 
 import ch.qos.logback.classic.Logger;
 
-@Service("messageServiceRMQImpl") public class MessageServiceRMQImpl
+@Service("messageServiceRMQImpl")
+public class MessageServiceRMQImpl
     implements MessageService {
 
     @Autowired @Qualifier("rmqHelper") RMQHelper rmqHelper;

@@ -39,7 +39,8 @@ import com.google.gson.JsonObject;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
-@Component("rmqHelper") public class RMQHelper {
+@Component("rmqHelper")
+public class RMQHelper {
 
     private static final String FALSE = "false";
 
@@ -47,7 +48,7 @@ import ch.qos.logback.classic.Logger;
     @Autowired
     RabbitMqPropertiesConfig rabbitMqPropertiesConfig;
 
-    Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
+    Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<>();
 
     Logger log = (Logger) LoggerFactory.getLogger(RMQHelper.class);
 
@@ -138,5 +139,4 @@ import ch.qos.logback.classic.Logger;
             log.setLevel(Level.OFF);
         }
     }
-
 }

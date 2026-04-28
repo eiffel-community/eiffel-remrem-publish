@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
+import com.rabbitmq.client.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -31,19 +32,23 @@ import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.AMQP.BasicProperties;
-import com.rabbitmq.client.AlreadyClosedException;
-import com.rabbitmq.client.BlockedListener;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.MessageProperties;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
 
 import ch.qos.logback.classic.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.net.ssl.SSLContext;
+
+@Component
+@Scope("prototype")
 public class RabbitMqProperties {
 
-    private RMQBeanConnectionFactory factory = new RMQBeanConnectionFactory();
+    @Autowired
+    ApplicationContext context;
+
+    private RMQBeanConnectionFactory factory;
     private static final Random random = new Random();
     private boolean usePersitance = true;
 
@@ -207,7 +212,7 @@ public class RabbitMqProperties {
     }
 
     public void setRoutingKeyTypeOverrideFilePath(String routingKeyTypeOverrideFilePath) {
-	this.routingKeyTypeOverrideFilePath = routingKeyTypeOverrideFilePath;
+        this.routingKeyTypeOverrideFilePath = routingKeyTypeOverrideFilePath;
     }
 
     public Integer getChannelsCount() {
@@ -250,8 +255,22 @@ public class RabbitMqProperties {
         this.rabbitConnection = rabbitConnection;
     }
 
+    private boolean validSSLContext = true;
+
     public void init() {
         log.info("RabbitMqProperties init ...");
+
+        if (context != null) {
+            // Instantiate the factory as a spring-boot bean
+            factory = context.getBean(RMQBeanConnectionFactory.class);
+        }
+        else {
+            // Instantiate the factory as a regular Java object. This is useful especially during
+            // unit tests where Spring context is not available.
+            factory = new RMQBeanConnectionFactory();
+            log.warn("RMQBeanConnectionFactory instantiated as a regular Java object; automatic certificate reload may not work properly!");
+        }
+
         if (Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
             initCli();
         } else {
@@ -265,12 +284,12 @@ public class RabbitMqProperties {
 
             if (host != null) {
                 factory.setHost(host);
-                log.info("Host address: " + host);
+                log.info("Host address: {}", host);
             }
 
             if (port != null) {
                 factory.setPort(port);
-                log.info("Port is: " + port);
+                log.info("Port is: {}", port);
             } else {
                 log.info("Using default rabbit mq port.");
             }
@@ -282,7 +301,7 @@ public class RabbitMqProperties {
                 log.info("Using default virtual host");
             }
 
-            log.info("Exchange is: " + exchangeName);
+            log.info("Exchange is: {}", exchangeName);
 
             if((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
                 factory.setUsername(username);
@@ -291,34 +310,37 @@ public class RabbitMqProperties {
 
             if (tlsVer != null && !tlsVer.isEmpty()) {
                 if (tlsVer.contains("default")) {
-                    log.info("Using default TLS version connection to RabbitMQ.");
-                    factory.useSslProtocol();
+                    String version = ConnectionFactory.computeDefaultTlsProtocol(SSLContext.getDefault()
+                            .getSupportedSSLParameters().getProtocols());
+                    log.info("No TLS version specified, using default TLS version {} connection to RabbitMQ.", version);
+                    tlsVer = version;
                 }
-                else {
-                    log.info("Using TLS version " + tlsVer + " connection to RabbitMQ.");
-                    factory.useSslProtocol("TLSv" + tlsVer);
-                }
+
+                SSLContext context = SSLContext.getInstance(tlsVer);
+                context.init(null, null, null);
+                factory.useSslProtocol(context);
+                factory.enableHostnameVerification();
             }
             else{
                 log.info("Using standard connection method to RabbitMQ.");
             }
 
-            madatoryParametersCheck();
-        } catch (KeyManagementException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
+            mandatoryParametersCheck();
+        } catch (KeyManagementException | NoSuchAlgorithmException | URISyntaxException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
+//        catch (Exception e) {
+//            log.error(e.getMessage(), e);
+//            throw new RuntimeException(e);
+//        }
+
         try {
-            //The exception can be safely handled here as there is a check for existence of exchange is done before each publish.
+            //The exception can be safely handled here as there is a check for existence of exchange
+            // is done before each publish.
             checkAndCreateExchangeIfNeeded();
         } catch (RemRemPublishException e) {
-            log.error("Error occurred while setting up the RabbitMq Connection. "+e.getMessage());
+            log.error("Error occurred while setting up the RabbitMQ connection: {}", e.getMessage());
             e.printStackTrace();
         }
 
@@ -326,39 +348,42 @@ public class RabbitMqProperties {
             try {
                 types = new PropertyResourceBundle(new FileInputStream(routingKeyTypeOverrideFilePath));
             } catch (IOException e) {
-                log.error("Cannot find routing key file. "+e.getMessage());
+                log.error("Cannot find routing key file: {}", e.getMessage());
             }
         }
     }
 
     /**
-     * This method is used to create Rabbitmq connection and channels
+     * This method is used to create RabbitMQ connection and channels
      * @throws RemRemPublishException
      */
-    public void createRabbitMqConnection() throws RemRemPublishException {
+    public void openConnection() throws RemRemPublishException {
+        if (rabbitConnection != null && rabbitConnection.isOpen())
+            throw new RemRemPublishException("RabbitMQ connection already open: " + rabbitConnection.toString());
+
         try {
             if (tcpTimeOut == null || tcpTimeOut == 0) {
                 tcpTimeOut = DEFAULT_TCP_TIMEOUT;
             }
             factory.setConnectionTimeout(tcpTimeOut);
+
             rabbitConnection = factory.newConnection();
-            rabbitConnection.addShutdownListener(new ShutdownListener() {
-                @Override
-                public void shutdownCompleted(ShutdownSignalException cause) {
-                    log.debug("Connection Shutdown completed " + cause.getMessage());
-                    try {
-                        rabbitConnection.close();
-                    } catch (AlreadyClosedException | IOException e) {
-                        // This is intentionally added, if we do not call the close function, connection is not closed properly
-                        // and the connections count is getting increased..
-                    }
+            validSSLContext = true;
+
+            rabbitConnection.addShutdownListener(cause -> {
+                log.warn("Connection Shutdown completed: {}", cause.getMessage());
+                try {
+                    rabbitConnection.close();
+                } catch (AlreadyClosedException | IOException e) {
+                    // This is intentionally added, if we do not call the close function, connection
+                    // is not closed properly and the connections count is getting increased...
                 }
             });
 
             rabbitConnection.addBlockedListener(new BlockedListener() {
                 public void handleBlocked(String reason) throws IOException {
                     // Connection is now blocked
-                    log.debug("Connection is blocked " + reason);
+                    log.debug("Connection is blocked: {}", reason);
                 }
 
                 public void handleUnblocked() throws IOException {
@@ -366,17 +391,50 @@ public class RabbitMqProperties {
                 }
             });
             log.info("Connected to RabbitMQ.");
+
+            // TODO Why several channels are supported when only one is always created?
             rabbitChannels = new ArrayList<>();
             if(channelsCount == null || channelsCount == 0 ) {
                 channelsCount = DEFAULT_CHANNEL_COUNT;
             }
             for (int i = 0; i < channelsCount; i++) {
-                createNewChannel();
+                openChannel();
             }
         } catch (IOException | TimeoutException e) {
             log.error(e.getMessage(), e);
-            throw new RemRemPublishException("Failed to create connection for Rabbitmq :: ", factory,
-                    e);
+            throw new RemRemPublishException("Failed to create connection to RabbitMQ", factory, e);
+        }
+    }
+
+    private void closeChannels() {
+        if (rabbitChannels == null)
+            return;
+
+        for (Channel channel : rabbitChannels) {
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (IOException | TimeoutException e) {
+                    log.error("Cannot close RabbitMQ channel '{}': {}", channel, e.getMessage(), e);
+                }
+            }
+        }
+        rabbitChannels.clear();
+    }
+
+    private void closeConnection() {
+        try {
+            if (rabbitConnection == null || !rabbitConnection.isOpen())
+                return;
+
+            closeChannels();
+            rabbitConnection.close();
+        } catch (IOException e) {
+            log.error("Cannot close RabbitMQ connection '{}': {}", rabbitConnection, e.getMessage(), e);
+        }
+        finally {
+            // Remove connection anyway, regardless of result of close() operation.
+            rabbitConnection = null;
         }
     }
 
@@ -384,24 +442,26 @@ public class RabbitMqProperties {
      * This method is used to create Rabbitmq channels
      * @throws IOException
      */
-    private Channel createNewChannel() throws IOException {
+    private Channel openChannel() throws IOException {
         Channel channel = rabbitConnection.createChannel();
-        channel.addShutdownListener(new ShutdownListener() {
-            public void shutdownCompleted(ShutdownSignalException cause) {
-                // Beware that proper synchronization is needed here
-                if (cause.isInitiatedByApplication()) {
-                    log.info("Shutdown of MB channel is initiated by application; ignoring it: "
-                            + cause.getMessage());
-                } else {
-                    log.error("Shutdown of MB channel is NOT initiated by application: "
-                            + cause.getMessage());
-                    boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
-                    if (cliMode) {
-                        System.exit(-3);
-                    }
+        if (channel == null) {
+            log.error("com.rabbitmq.client.Connection.createChannel() returned null");
+            return null;
+        }
+
+        channel.addShutdownListener(cause -> {
+            // Beware that proper synchronization is needed here
+            if (cause.isInitiatedByApplication()) {
+                log.info("Shutdown of MB channel is initiated by application; ignoring it: {}", cause.getMessage());
+            } else {
+                log.error("Shutdown of MB channel is NOT initiated by application: {}", cause.getMessage());
+                boolean cliMode = Boolean.getBoolean(PropertiesConfig.CLI_MODE);
+                if (cliMode) {
+                    System.exit(-3);
                 }
             }
         });
+
         channel.confirmSelect();
         rabbitChannels.add(channel);
         return channel;
@@ -498,7 +558,7 @@ public class RabbitMqProperties {
     /**
      * This method is used to check mandatory RabbitMQ properties.
      */
-    private void madatoryParametersCheck() {
+    private void mandatoryParametersCheck() {
         if (factory == null) {
             throw new RuntimeException("Missing RabbitMQ factory intialization");
         }
@@ -520,49 +580,50 @@ public class RabbitMqProperties {
      * @throws IOException
      */
     public void checkAndCreateExchangeIfNeeded() throws RemRemPublishException {
-        final boolean exchangeAlreadyExist = hasExchange();
-        if (!exchangeAlreadyExist) {
-            if (isCreateExchangeIfNotExisting()) {
-                Connection connection = null;
-                try {
-                    connection = factory.newConnection();
-                } catch (final IOException | TimeoutException e) {
-                    throw new RemRemPublishException(
-                            "Exception occurred while creating Rabbitmq connection :: ", factory, e);
-                }
-                Channel channel = null;
-                try {
-                    channel = connection.createChannel();
-                } catch (final IOException e) {
-                    throw new RemRemPublishException(
-                            "Exception occurred while creating Channel with Rabbitmq connection ::",
-                            factory, e);
-                }
-                try {
-                    channel.exchangeDeclare(exchangeName, "topic", true);
-                    log.info("Exchange {} is created",exchangeName);
-                    hasExchange = true;
-                } catch (final IOException e) {
-                    log.info(exchangeName + "failed to create an exchange");
-                    throw new RemRemPublishException(
-                            "Unable to create Exchange with Rabbitmq connection " + exchangeName,
-                            factory, e);
-                } finally {
-                    if (channel == null || channel.isOpen()) {
-                        try {
-                            channel.close();
-                            connection.close();
-                        } catch (IOException | TimeoutException e) {
-                            log.warn("Exception occurred while closing the channel" + e.getMessage());
-                        }
+        if (hasExchange())
+            // Nothing to do
+            return;
+
+        if (isCreateExchangeIfNotExisting()) {
+            Connection connection = null;
+            try {
+                connection = factory.newConnection();
+            } catch (final IOException | TimeoutException e) {
+                throw new RemRemPublishException(
+                        "Cannot create a new connection to RabbitMQ", factory, e);
+            }
+
+            Channel channel = null;
+            try {
+                channel = connection.createChannel();
+            } catch (final IOException e) {
+                throw new RemRemPublishException(
+                        "Cannot create a new channel to RabbitMQ", factory, e);
+            }
+
+            try {
+                channel.exchangeDeclare(exchangeName, "topic", true);
+                log.info("Exchange {} is created",exchangeName);
+                hasExchange = true;
+            } catch (final IOException e) {
+                String message = "Failed to create exchange '" + exchangeName + "'";
+                log.error(message);
+                throw new RemRemPublishException(message, factory, e);
+            } finally {
+                if (channel == null || channel.isOpen()) {
+                    try {
+                        channel.close();
+                        connection.close();
+                    } catch (IOException | TimeoutException e) {
+                        log.warn("Cannot close channel or connection: {}", e.getMessage());
                     }
                 }
+            }
+        } else {
+            if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
+                throw new RemRemPublishException(exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_SERVICE);
             } else {
-                if (!Boolean.getBoolean(PropertiesConfig.CLI_MODE)) {
-                    throw new RemRemPublishException(exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_SERVICE);
-                } else {
-                    throw new RemRemPublishException("Exchange " + exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_CLI);
-                }
+                throw new RemRemPublishException("Exchange " + exchangeName + PropertiesConfig.INVALID_EXCHANGE_MESSAGE_CLI);
             }
         }
     }
@@ -576,6 +637,7 @@ public class RabbitMqProperties {
      */
     private boolean hasExchange() throws RemRemPublishException {
         if(hasExchange) {
+            // TODO Should we report it every time?
            log.info("Exchange is: {}", exchangeName);
            return true;
         }
@@ -614,7 +676,6 @@ public class RabbitMqProperties {
         }
     }
 
-
 	/**
      * This method is used to publish the message to RabbitMQ
      * @param routingKey
@@ -626,10 +687,10 @@ public class RabbitMqProperties {
      */
     public void send(String routingKey, String msg, String eventId)
             throws IOException, NackException, TimeoutException, RemRemPublishException, IllegalArgumentException {
-            Channel channel = giveMeRandomChannel();
-            checkAndCreateExchangeIfNeeded();
+        Channel channel = giveMeRandomChannel();
+        checkAndCreateExchangeIfNeeded();
 
-            BasicProperties msgProps = usePersitance ? PERSISTENT_BASIC_APPLICATION_JSON
+        BasicProperties msgProps = usePersitance ? PERSISTENT_BASIC_APPLICATION_JSON
                     : MessageProperties.BASIC;
 
         try {
@@ -650,21 +711,22 @@ public class RabbitMqProperties {
             }
             channel.waitForConfirmsOrDie(waitForConfirmsTimeOut);
         } catch (InterruptedException | IOException e) {
-            log.error("Failed to publish message due to " + e.getMessage());
+            log.error("Failed to publish message: {}", e.getMessage());
             throw new NackException("The message is nacked due to " + e.getMessage(), e);
         } catch (TimeoutException e) {
-            log.error("Failed to publish message due to " + e.getMessage());
+            log.error("Failed to publish message: {}", e.getMessage());
             throw new TimeoutException("Timeout waiting for ACK " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("Failed to publish message due to " + e.getMessage());
+            log.error("Failed to publish message: {}", e.getMessage());
+            // TODO How do we know it's a domain id issue?
             throw new IllegalArgumentException("DomainId limit exceeded " + e.getMessage(), e);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            if(!channel.isOpen()&& rabbitConnection.isOpen()){
-                throw new RemRemPublishException("Channel was closed for Rabbitmq connection :: ",
-                        factory, e);
-            }
-            throw new IOException("Failed to publish message due to " + e.getMessage(), e);
+//        } catch (Exception e) {
+//            log.error(e.getMessage(), e);
+//            if(!channel.isOpen() && rabbitConnection.isOpen()){
+//                throw new RemRemPublishException("Channel was closed for Rabbitmq connection :: ",
+//                        factory, e);
+//            }
+//            throw new IOException("Failed to publish message due to " + e.getMessage(), e);
         }
     }
 
@@ -674,16 +736,22 @@ public class RabbitMqProperties {
      * @throws RemRemPublishException
      */
     private Channel giveMeRandomChannel() throws RemRemPublishException {
-        if ((rabbitConnection == null || !rabbitConnection.isOpen())) {
-            createRabbitMqConnection();
+        if (rabbitConnection != null) {
+            if (rabbitConnection.isOpen() && !factory.isLatestContextUsed())
+                closeConnection();
         }
+
+        if (rabbitConnection == null || !rabbitConnection.isOpen())
+            openConnection();
+
         for (Channel channel : rabbitChannels) {
             if (channel.isOpen()) {
                 return channel;
             }
         }
+
         try {
-            Channel channel = createNewChannel();
+            Channel channel = openChannel();
             return channel;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -708,10 +776,10 @@ public class RabbitMqProperties {
                 if (!routingKey.isBlank()) {
                     return routingKey;
                 }else {
-                    log.warn("Routing key from configuration is empty for :"+ key);
+                    log.warn("Routing key from configuration is empty for :{}", key);
                 }
             } catch (MissingResourceException e) {
-		        log.warn("Routing key from configuration is null for :"+ key);
+                log.warn("Routing key from configuration is null for :{}", key);
                 return null;
             }
         }else {
@@ -720,6 +788,4 @@ public class RabbitMqProperties {
         
 		return null;
     }
-
-
 }

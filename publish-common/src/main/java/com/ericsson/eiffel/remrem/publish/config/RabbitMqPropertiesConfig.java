@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +42,7 @@ public class RabbitMqPropertiesConfig {
     static Logger log = (Logger) LoggerFactory.getLogger(RabbitMqPropertiesConfig.class);
 
     @Autowired
-    Environment env;
+    ApplicationContext context;
 
     @Value("${rabbitmq.instances.jsonlist:#{null}}")
     private String rabbitmqInstancesJsonListContent;
@@ -127,7 +128,7 @@ public class RabbitMqPropertiesConfig {
                 String protocol = getPropertyAsText(rabbitmqInstanceObject, PROPERTY_MP);
                 log.info("Configuring RabbitMq instance for Eiffel message protocol: " + protocol);
 
-                RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
+                RabbitMqProperties rabbitMqProperties = context.getBean(RabbitMqProperties.class);
                 rabbitMqProperties.setHost(getPropertyAsText(rabbitmqInstanceObject, PROPERTY_HOST));
                 rabbitMqProperties.setPort(Integer.parseInt(getPropertyAsText(rabbitmqInstanceObject, PROPERTY_PORT)));
                 String virtualHost = getPropertyAsText(rabbitmqInstanceObject, PROPERTY_VIRTUAL_HOST);
