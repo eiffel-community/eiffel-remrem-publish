@@ -14,11 +14,18 @@
 */
 package com.ericsson.eiffel.remrem.publish.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import com.ericsson.eiffel.remrem.protocol.ValidationResult;
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,7 +44,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -49,16 +55,20 @@ import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import ch.qos.logback.classic.Logger;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import static com.ericsson.eiffel.remrem.publish.constants.RemRemPublishResponseExamples.*;
+import static com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants.*;
+
 
 @ComponentScan("com.ericsson.eiffel.remrem")
 @RestController
 @RequestMapping("/*")
-@Api(value = "REMReM Publish Service", description = "REST API for publishing Eiffel messages to message bus")
+@Tag(name = "REMReM Publish Service", description = "REST API for publishing Eiffel messages to message bus")
 public class ProducerController {
 
     @Autowired
@@ -85,22 +95,6 @@ public class ProducerController {
     private JsonParser parser = new JsonParser();
 
     private Logger log = (Logger) LoggerFactory.getLogger(ProducerController.class);
-
-    public final String JSON_STATUS_RESULT = "result";
-
-    public final String JSON_EVENT_MESSAGE_FIELD = "status message";
-
-    public final String JSON_STATUS_CODE = "status code";
-
-    public static final String META = "meta";
-
-    public static final String DATA = "data";
-
-    public static final String LINKS = "links";
-
-    public static final String JSON_FATAL_STATUS = "FATAL";
-
-    public static final String JSON_ERROR_STATUS = "FAIL";
 
     public void setMsgServices(MsgService[] msgServices) {
         this.msgServices = msgServices;
@@ -152,15 +146,16 @@ public class ProducerController {
             try {
                 rmqHelper.rabbitMqPropertiesInit(msgProtocol);
             } catch (RemRemPublishException e) {
-                return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
+                return createResponseEntity(HttpStatus.NOT_FOUND, e.getMessage(), ResultStatus.FAIL);
             }
         }
 
         //here add check for limitation for events in array is fetched from REMReM property and checked during publishing.
         if (body.isJsonArray() && (body.getAsJsonArray().size() > maxSizeOfInputArray)) {
-            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+            return createResponseEntity(HttpStatus.BAD_REQUEST,
                 "The number of events in the input array is too high: " + body.getAsJsonArray().size() + " > "
-                        + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
+                        + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.",
+                    ResultStatus.FAIL);
         }
 
         SendResult result = messageService.send(body, msgService, userDomain, tag, routingKey);
@@ -201,28 +196,67 @@ public class ProducerController {
      * @return A response entity which contains http status and result
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @ApiOperation(value = "To publish eiffel event to message bus", response = String.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Event sent successfully"),
-            @ApiResponse(code = 400, message = "Invalid event content"),
-            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
-            @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 503, message = "Service Unavailable")})
+    @Operation(summary = "To publish Eiffel event to message bus")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Event sent successfully",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {
+                    @ExampleObject(value = PRODUCER_RESPONSE_200_EXAMPLE)}
+            )
+        ),
+        @ApiResponse(responseCode = "400", description = "Invalid event content",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {
+                    @ExampleObject(name = "Event validation failure", value = PRODUCER_RESPONSE_400_VALIDATION_EXAMPLE),
+                    @ExampleObject(name = "Input contains invalid JSON", value = PRODUCER_RESPONSE_400_INVALID_JSON_EXAMPLE),
+                    @ExampleObject(name = "Invalid protocol", value = PRODUCER_RESPONSE_400_INVALID_PROTOCOL_EXAMPLE)
+                }
+            )
+        ),
+        @ApiResponse(responseCode = "404", description = "RabbitMQ properties not found",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {@ExampleObject(value = PRODUCER_RESPONSE_404_EXAMPLE)}
+            )
+        ),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {
+                    @ExampleObject(name= "Internal server error", value = PRODUCER_RESPONSE_500_EXAMPLE),
+                    @ExampleObject(name = "Invalid event type", value = PRODUCER_RESPONSE_500_INVALID_EVENT_TYPE_EXAMPLE)
+                }
+            )
+        ),
+        @ApiResponse(responseCode = "503", description = "Service Unavailable")
+    })
     @RequestMapping(value = "/producer/msg", method = RequestMethod.POST)
-    @ResponseBody
     public ResponseEntity send(
-            @ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
-            @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
-            @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
-            @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
-            @ApiParam(value = "eiffel event", required = true) @RequestBody final String body) {
+        @Parameter(description = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
+        @Parameter(description = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
+        @Parameter(description = "tag") @RequestParam(value = "tag", required = false) final String tag,
+        @Parameter(description = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Eiffel event",
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                examples = {@ExampleObject(name = "Example event", value = PRODUCER_REQUEST_INPUT_EXAMPLE)}
+            )
+        ) @RequestBody String body
+    ) {
         try {
             JsonElement inputBody = JsonParser.parseString(body);
             return send(msgProtocol, userDomain, tag, routingKey, inputBody);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
             log.error("Cannot parse the following JSON data:\n" + body + "\n\n" + exceptionMessage);
-            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS,
-                    "Invalid JSON data: " + exceptionMessage);
+            // TODO Disable CodeQL rule java/error-message-exposure. The message is sent to user to
+            // TODO show where exactly JSON parser encountered an issue, i.e. line and column.
+            return createResponseEntity(HttpStatus.BAD_REQUEST,
+                    "Invalid JSON data: " + exceptionMessage, ResultStatus.FATAL);
         }
     }
 
@@ -252,30 +286,66 @@ public class ProducerController {
      */
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @ApiOperation(value = "To generate and publish eiffel event to message bus", response = String.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Event sent successfully"),
-            @ApiResponse(code = 400, message = "Invalid event content"),
-            @ApiResponse(code = 404, message = "RabbitMq properties not found"),
-            @ApiResponse(code = 500, message = "Internal server error"),
-            @ApiResponse(code = 503, message = "Message protocol is invalid") })
+    @Operation(summary = "To generate and publish Eiffel event to message bus")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Event sent successfully",
+            content = @Content(
+            mediaType = "application/json",
+            examples = {
+                @ExampleObject(value = GENERATE_PUBLISH_RESPONSE_200_EXAMPLE)}
+            )
+        ),
+        @ApiResponse(responseCode = "400", description = "Invalid event content",
+            content = @Content(mediaType = "application/json",
+                examples = {
+                    @ExampleObject(name = "Event validation failure", value = GENERATE_PUBLISH_RESPONSE_400_VALIDATION_EXAMPLE),
+                    @ExampleObject(name = "Invalid protocol", value = GENERATE_PUBLISH_RESPONSE_400_INVALID_PROTOCOL_EXAMPLE),
+                    @ExampleObject(name = "Request to REMReM Generate failed", value = GENERATE_PUBLISH_RESPONSE_400_BAD_REQUEST_EXAMPLE)
+                }
+            )
+        ),
+        @ApiResponse(responseCode = "404", description = "REMReM Generate not found",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {@ExampleObject(value = GENERATE_PUBLISH_RESPONSE_404_EXAMPLE)}
+            )
+        ),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {
+                    @ExampleObject(value = GENERATE_PUBLISH_RESPONSE_500_EXAMPLE)
+                }
+            )
+        ),
+        @ApiResponse(responseCode = "503", description = "Message protocol is invalid")
+    })
     @RequestMapping(value = "/generateAndPublish", method = RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity generateAndPublish(@ApiParam(value = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
-                                             @ApiParam(value = "message type", required = true) @RequestParam("msgType") final String msgType,
-                                             @ApiParam(value = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
-                                             @ApiParam(value = "tag") @RequestParam(value = "tag", required = false) final String tag,
-                                             @ApiParam(value = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
-                                             @ApiParam(value = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
-                                             @ApiParam(value = "ER lookup result multiple found, Generate will fail") @RequestParam(value = "failIfMultipleFound", required = false, defaultValue = "false") final Boolean failIfMultipleFound,
-                                             @ApiParam(value = "ER lookup result none found, Generate will fail") @RequestParam(value = "failIfNoneFound", required = false, defaultValue = "false") final Boolean failIfNoneFound,
-                                             @ApiParam(value = "Determines if external ER's should be used to compile the results of query.Use true to use External ER's.") @RequestParam(value = "lookupInExternalERs", required = false, defaultValue = "false") final Boolean lookupInExternalERs,
-                                             @ApiParam(value = "The maximum number of events returned from a lookup. If more events are found "
-                                                     + "they will be disregarded. The order of the events is undefined, which means that what events are "
-                                                     + "disregarded is also undefined.") @RequestParam(value = "lookupLimit", required = false, defaultValue = "1") final int lookupLimit,
-                                             @ApiParam(value = "okToLeaveOutInvalidOptionalFields true will remove the optional "
-                                                     + "event fields from the input event data that does not validate successfully, "
-                                                     + "and add those removed field information into customData/remremGenerateFailures") @RequestParam(value = "okToLeaveOutInvalidOptionalFields", required = false, defaultValue = "false")  final Boolean okToLeaveOutInvalidOptionalFields,
-                                             @ApiParam(value = "JSON message", required = true) @RequestBody final String body){
+    public ResponseEntity generateAndPublish(
+        @Parameter(description = "message protocol", required = true) @RequestParam(value = "mp") final String msgProtocol,
+        @Parameter(description = "message type", required = true) @RequestParam("msgType") final String msgType,
+        @Parameter(description = "user domain") @RequestParam(value = "ud", required = false) final String userDomain,
+        @Parameter(description = "tag") @RequestParam(value = "tag", required = false) final String tag,
+        @Parameter(description = "routing key") @RequestParam(value = "rk", required = false) final String routingKey,
+        @Parameter(description = "parse data") @RequestParam(value = "parseData", required = false, defaultValue = "false") final Boolean parseData,
+        @Parameter(description = "ER lookup result multiple found, Generate will fail") @RequestParam(value = "failIfMultipleFound", required = false, defaultValue = "false") final Boolean failIfMultipleFound,
+        @Parameter(description = "ER lookup result none found, Generate will fail") @RequestParam(value = "failIfNoneFound", required = false, defaultValue = "false") final Boolean failIfNoneFound,
+        @Parameter(description = "Determines if external ER's should be used to compile the results of query.Use true to use External ER's.") @RequestParam(value = "lookupInExternalERs", required = false, defaultValue = "false") final Boolean lookupInExternalERs,
+        @Parameter(description = "The maximum number of events returned from a lookup. If more events are found "
+             + "they will be disregarded. The order of the events is undefined, which means that what events are "
+             + "disregarded is also undefined.") @RequestParam(value = "lookupLimit", required = false, defaultValue = "1") final int lookupLimit,
+        @Parameter(description = "okToLeaveOutInvalidOptionalFields true will remove the optional "
+             + "event fields from the input event data that does not validate successfully, "
+             + "and add those removed field information into customData/remremGenerateFailures") @RequestParam(value = "okToLeaveOutInvalidOptionalFields", required = false, defaultValue = "false")  final Boolean okToLeaveOutInvalidOptionalFields,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+             description = "JSON message",
+             required = true,
+             content = @Content(
+                 mediaType = "application/json",
+                 examples = {@ExampleObject(name = "Example event", value = GENERATE_PUBLISH_REQUEST_INPUT_EXAMPLE)}
+             )
+        ) @RequestBody String body
+    ){
 
         try {
             JsonElement bodyJson = JsonParser.parseString(body);
@@ -283,15 +353,39 @@ public class ProducerController {
                     failIfNoneFound, lookupInExternalERs, lookupLimit, okToLeaveOutInvalidOptionalFields, bodyJson);
         } catch (JsonSyntaxException e) {
             String exceptionMessage = e.getMessage();
-            log.error("Unexpected exception caught due to parsed json data", exceptionMessage);
-            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_FATAL_STATUS,
-                    "Invalid JSON parse data format due to: " + exceptionMessage);
+            log.error("Unexpected exception caught due to parsed json data {}", exceptionMessage);
+            return createResponseEntity(HttpStatus.BAD_REQUEST,
+                    "Invalid JSON parse data format due to: " + exceptionMessage, ResultStatus.FATAL);
         }
     }
 
     private boolean eventTypeExists(@NonNull MsgService msgService, String eventType) {
         Collection<String> supportedEventTypes = msgService.getSupportedEventTypes();
         return supportedEventTypes != null && supportedEventTypes.contains(eventType);
+    }
+
+    /**
+     * Ensure attribute value is properly URL encoded.
+     *
+     * @param attribute Attribute name.
+     * @param value Attribute value. It's converted to string using toString().
+     * @return "&attribute=[URL encoded value]"
+     * @throws UnsupportedEncodingException
+     */
+    private String appendAttributeAndValue(String attribute, Object value)
+            throws UnsupportedEncodingException {
+        return "&" + attribute + "="
+                + URLEncoder.encode(value.toString(), StandardCharsets.UTF_8.toString());
+    }
+
+    /**
+     * Guarantees that given value is not null.
+     *
+     * @param b a value
+     * @return b if non-null, Boolean.FALSE otherwise.
+     */
+    private Boolean ensureValueNonNull(Boolean b) {
+        return b != null ? b : Boolean.FALSE;
     }
 
     /**
@@ -316,7 +410,6 @@ public class ProducerController {
      *      --data "@inputGenerate_activity_finished.txt"
      *      "http://localhost:8986/generateAndPublish/?mp=eiffelsemantics&msgType=EiffelActivityFinished"
      */
-
     public ResponseEntity generateAndPublish(final String msgProtocol, final String msgType, final String userDomain, final String tag, final String routingKey,
                                              final Boolean parseData, final Boolean failIfMultipleFound, final Boolean failIfNoneFound, final Boolean lookupInExternalERs,
                                              final int lookupLimit, final Boolean okToLeaveOutInvalidOptionalFields, final JsonElement bodyJson) {
@@ -324,10 +417,20 @@ public class ProducerController {
             logUserName();
         }
 
-        MsgService msgService = PublishUtils.getMessageService(msgProtocol, msgServices);
-        if (msgService == null) {
-            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                    "No protocol service has been found registered");
+        if (StringUtils.isEmpty(msgProtocol)) {
+            return createResponseEntity(HttpStatus.BAD_REQUEST, "Value of parameter 'msgProtocol' is empty", ResultStatus.FATAL);
+        }
+
+        if (StringUtils.isEmpty(msgType)) {
+            return createResponseEntity(HttpStatus.BAD_REQUEST, "Value of parameter 'msgType' is empty", ResultStatus.FATAL);
+        }
+
+        MsgService msgService;
+        if (StringUtils.isEmpty(msgProtocol) ||
+                ((msgService = PublishUtils.getMessageService(msgProtocol, msgServices)) == null)) {
+            return createResponseEntity(HttpStatus.BAD_REQUEST,
+                    "No protocol service has been found registered", ResultStatus.FAIL);
+
         }
         List<JsonObject> events = new ArrayList<>();
         if (bodyJson.isJsonObject()) {
@@ -336,26 +439,28 @@ public class ProducerController {
             JsonArray bodyJsonArray = bodyJson.getAsJsonArray();
             //here add check for limitation for events in array is fetched from REMReM property and checked during publishing.
             if (bodyJsonArray.size() > maxSizeOfInputArray) {
-                return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
+                return createResponseEntity(
+                        HttpStatus.BAD_REQUEST,
                         "The number of events in the input array is too high: " + bodyJsonArray.size() + " > "
-                                + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.");
+                        + maxSizeOfInputArray + "; you can modify the property 'maxSizeOfInputArray' to increase it.",
+                        ResultStatus.FAIL);
             }
             for (JsonElement element : bodyJsonArray) {
                 if (element.isJsonObject()) {
                     events.add(getAsJsonObject(element));
                 } else {
-                    return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                            "Invalid, array events must be a JSON object");
+                    return createResponseEntity(HttpStatus.BAD_REQUEST,
+                            "Invalid, array events must be a JSON object", ResultStatus.FAIL);
                 }
             }
         } else {
-            return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                    "Invalid, event is neither in the form of JSON object nor in the JSON array");
+            return createResponseEntity(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid, event is neither in the form of JSON object nor in the JSON array",
+                    ResultStatus.FAIL);
         }
         List<Map<String, Object>> responseEvents;
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-        EnumSet<HttpStatus> getStatus = EnumSet.of(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.UNAUTHORIZED,
-                HttpStatus.NOT_ACCEPTABLE, HttpStatus.EXPECTATION_FAILED, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.UNPROCESSABLE_ENTITY);
         try {
             String bodyJsonOut;
             if (parseData) {
@@ -365,8 +470,8 @@ public class ProducerController {
                 for (JsonElement eventJson : events) {
                     // -- parse params in incoming request -> body -------------
                     if (!eventTypeExists(msgService, msgType)) {
-                        return createResponseEntity(HttpStatus.BAD_REQUEST, JSON_ERROR_STATUS,
-                            "Unknown event type '" + msgType + "'");
+                        return createResponseEntity(HttpStatus.BAD_REQUEST,
+                            "Unknown event type '" + msgType + "'", ResultStatus.FAIL);
                     }
 
                     JsonNode parsedTemplate = eventTemplateHandler.eventTemplateParser(eventJson.toString(), msgType);
@@ -382,13 +487,17 @@ public class ProducerController {
                 bodyJsonOut = bodyJson.toString();
             }
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+            headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> entity = new HttpEntity<>(bodyJsonOut, headers);
-            String generateUrl = generateURLTemplate.getUrl() + "&failIfMultipleFound=" + failIfMultipleFound
-                    + "&failIfNoneFound=" + failIfNoneFound + "&lookupInExternalERs=" + lookupInExternalERs
-                    + "&lookupLimit=" + lookupLimit + "&okToLeaveOutInvalidOptionalFields=" + okToLeaveOutInvalidOptionalFields;
 
-            ResponseEntity<String> response = restTemplate.postForEntity(generateUrl,
+            String generatedUrl = generateURLTemplate.getUrl()
+                + appendAttributeAndValue("failIfMultipleFound", ensureValueNonNull(failIfMultipleFound))
+                + appendAttributeAndValue("failIfNoneFound", ensureValueNonNull(failIfNoneFound))
+                + appendAttributeAndValue("lookupInExternalERs", ensureValueNonNull(lookupInExternalERs))
+                + appendAttributeAndValue("lookupLimit", lookupLimit)
+                + appendAttributeAndValue("okToLeaveOutInvalidOptionalFields", ensureValueNonNull(okToLeaveOutInvalidOptionalFields));
+
+            ResponseEntity<String> response = restTemplate.postForEntity(generatedUrl,
                     entity, String.class, generateURLTemplate.getMap(msgProtocol, msgType));
 
             responseStatus = response.getStatusCode();
@@ -413,12 +522,18 @@ public class ProducerController {
                 responseEvents = processingValidEvent(responseBody, msgProtocol, msgType, userDomain,
                         tag, routingKey, okToLeaveOutInvalidOptionalFields);
             } else {
+                // TODO: Is this block ever reached?
+                // Non 200 codes are caught when the HttpStatusCodeException is thrown
                 return response;
             }
-        } catch (RemRemPublishException e) {
-            String exceptionMessage = e.getMessage();
-            return createResponseEntity(HttpStatus.NOT_FOUND, JSON_ERROR_STATUS, exceptionMessage);
-        } catch (HttpStatusCodeException e) {
+        }
+        catch (UnsupportedEncodingException e) {
+            return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), ResultStatus.FATAL);
+        }
+        catch (RemRemPublishException e) {
+            return createResponseEntity(HttpStatus.NOT_FOUND, e.getMessage(), ResultStatus.FAIL);
+        }
+        catch (HttpStatusCodeException e) {
             String responseBody = null;
             String responseMessage = e.getResponseBodyAsString();
             if (bodyJson.isJsonObject()) {
@@ -430,44 +545,51 @@ public class ProducerController {
                     tag, routingKey, okToLeaveOutInvalidOptionalFields);
             return new ResponseEntity<>(responseEvents, HttpStatus.BAD_REQUEST);
         }
-        //Status here is the status returned from generate service, except BAD_REQUEST which already handled above
+
+        // Status here is the status returned from generate service,
+        // except BAD_REQUEST which already handled above.
         return new ResponseEntity<>(responseEvents, responseStatus);
     }
 
     /**
-     * To display response in browser or application
-     * @param status response code for the HTTP request
-     * @param responseMessage the message according to response
-     * @param resultMessage whatever the result this message gives you idea about that
-     * @param errorResponse is to collect all the responses here.
+     * Creates a ResponseEntity containing an error response with the given status, message, and result.
+     *
+     *  @param status status code for the HTTP request
+     *  @param responseMessage the message with more details about the response
+     *  @param result the result for the HTTP request
+     *  @param errorResponse the existing response object to update
      * @return ResponseEntity
      */
-    public ResponseEntity<JsonObject> createResponseEntity(HttpStatus status, String responseMessage, String resultMessage,
+    public ResponseEntity<JsonObject> createResponseEntity(HttpStatus status, String responseMessage, ResultStatus result,
                                                            JsonObject errorResponse) {
-        initializeResponse(status, responseMessage, resultMessage, errorResponse);
+        initializeResponse(status, responseMessage, result, errorResponse);
         return new ResponseEntity<>(errorResponse, status);
     }
 
     /**
-     * To display response in browser or application
-     * @param status response code for the HTTP request
-     * @param responseMessage the message according to response
-     * @param resultMessage whatever the result this message gives you idea about that
+     * Creates a ResponseEntity with the given status, message, and result.
+     *
+     * @param status status code for the HTTP request
+     * @param responseMessage the message with more details about the response
+     * @param result the result for the HTTP request
      * @return ResponseEntity
      */
-    public ResponseEntity<JsonObject> createResponseEntity(HttpStatus status, String responseMessage, String resultMessage) {
-        return createResponseEntity(status, responseMessage, resultMessage, new JsonObject());
+    public ResponseEntity<JsonObject> createResponseEntity(HttpStatus status, String responseMessage, ResultStatus result) {
+        return createResponseEntity(status, responseMessage, result, new JsonObject());
     }
 
     /**
-     * To initialize in the @{createResponseEntity} method
-     * @param status response code for the HTTP request
-     * @param resultMessage whatever the result this message gives you idea about that
-     * @param errorResponse is to collect all the responses here.
+     * Update the given JSON object with the provided values for
+     * result and message.
+     *
+     * @param status the status code to put in the response
+     * @param result the result to put in the response
+     * @param errorMessage the error message to put in the response
+     * @param errorResponse the error response object to update
      */
-    public void initializeResponse(HttpStatus status, String errorMessage, String resultMessage, JsonObject errorResponse) {
+    public void initializeResponse(HttpStatus status, String errorMessage, ResultStatus result, JsonObject errorResponse) {
         errorResponse.addProperty(JSON_STATUS_CODE, status.value());
-        errorResponse.addProperty(JSON_STATUS_RESULT, resultMessage);
+        errorResponse.addProperty(JSON_STATUS_RESULT, result.toString());
         errorResponse.addProperty(JSON_EVENT_MESSAGE_FIELD, errorMessage);
     }
 
@@ -547,7 +669,15 @@ public class ProducerController {
      * @return this method returns the current version of publish and all loaded
      *         protocols.
      */
-    @ApiOperation(value = "To get versions of publish and all loaded protocols", response = String.class)
+    @Operation(summary = "To get versions of publish and all loaded protocols")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Versions retrieved",
+            content = @Content(
+                mediaType = "application/json",
+                examples = {@ExampleObject(value = VERSIONS_RESPONSE_200_EXAMPLE)}
+            )
+        )
+    })
     @RequestMapping(value = "/versions", method = RequestMethod.GET)
     public JsonElement getVersions() {
         JsonParser parser = new JsonParser();

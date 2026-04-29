@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -31,10 +30,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
-import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-import org.springframework.ldap.pool.validation.DefaultDirContextValidator;
-import org.springframework.ldap.core.ContextSource;
 
 /**
  * This class is used to enable the ldap authentication based on property
@@ -130,6 +126,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authenticationEntryPoint(customAuthenticationEntryPoint)
             .and()
             .csrf()
+            // The application uses non-browser clients. Yes, there is swagger interface,
+            // but is's used only for testing/tuning.
+            //
+            // From https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
+            // "If you are creating a service that is used only by non-browser clients,
+            //  you likely want to disable CSRF protection."
             .disable();
     }
 }

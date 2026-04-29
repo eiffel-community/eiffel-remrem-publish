@@ -11,6 +11,7 @@
     </parent>
     <properties>
         <start-class>com.ericsson.eiffel.remrem.publish</start-class>
+        <swagger-ui.version>5.32.0</swagger-ui.version>
     </properties>
     <artifactId>publish-service</artifactId>
     <packaging>war</packaging>
@@ -71,10 +72,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-            <version>${springfox-boot-starter.version}</version>
-            <scope>compile</scope>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.8.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
@@ -150,18 +150,95 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.13.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.13.0</version>
+                <executions>
+                    <execution>
+                        <id>download-swagger-ui</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <!--Change this url to the desired Swagger-UI version to use.
+                            Official Swagger-UI version releases: https://github.com/swagger-api/swagger-ui/releases
+                            Example of an Swagger-UI tarball artifact: https://github.com/swagger-api/swagger-ui/archive/refs/tags/v5.32.0.tar.gz-->
+                            <url>https://github.com/swagger-api/swagger-ui/archive/refs/tags/v${swagger-ui.version}.tar.gz</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.directory}/swagger-ui</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-swagger-ui</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/static/swagger-ui</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/swagger-ui/swagger-ui-${swagger-ui.version}/dist</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-custom-swagger-initializer</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/static/swagger-ui</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/static</directory>
+                                    <includes>
+                                        <include>swagger-initializer.js</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${springboot.version}</version>
                 <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
                     <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
                     <skip>false</skip>
                 </configuration>
                 <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <goals>
                             <goal>repackage</goal>
@@ -206,6 +283,7 @@
                             <mainClass>com.ericsson.eiffel.remrem.publish.App</mainClass>
                         </manifest>
                         <manifestEntries>
+                            <Implementation-Version>${project.version}</Implementation-Version>
                             <serviceVersion>${project.version}</serviceVersion>
                             <remremVersionKey>serviceVersion</remremVersionKey>
                             <Class-Path>.</Class-Path>

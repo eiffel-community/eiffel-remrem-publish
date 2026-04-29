@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
@@ -31,12 +31,23 @@ import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
 public class App extends SpringBootServletInitializer {
  
+    @Override
+    protected SpringApplicationBuilder configure(final SpringApplicationBuilder application) {
+        return application.sources(App.class)
+                .properties("springdoc.swagger-ui.enabled=false",
+                            "springdoc.api-docs.path=/openapi.json");
+    }
+
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App.class);
         application.addInitializers(new SpringLoggingInitializer());
         application.setBannerMode(Banner.Mode.OFF);
         application.setLogStartupInfo(false);
-        application.setWebApplicationType(WebApplicationType.SERVLET); 
-        ApplicationContext ctx = application.run(args); 
+        application.setWebApplicationType(WebApplicationType.SERVLET);
+		application.setDefaultProperties(java.util.Map.of(
+			"springdoc.swagger-ui.enabled", "false",
+            "springdoc.api-docs.path", "/openapi.json"
+		));
+        ApplicationContext ctx = application.run(args);
     }
 }

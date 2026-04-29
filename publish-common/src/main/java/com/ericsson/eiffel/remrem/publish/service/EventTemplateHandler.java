@@ -15,12 +15,9 @@
 package com.ericsson.eiffel.remrem.publish.service;
 
 import ch.qos.logback.classic.Logger;
+import com.ericsson.eiffel.remrem.semantics.EiffelEventType;
+import com.ericsson.eiffel.semantics.events.Event;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
@@ -31,6 +28,8 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -58,6 +57,13 @@ public class EventTemplateHandler {
         .mappingProvider(new JacksonMappingProvider(mapper))
         .build();
 
+    // Ensure event name doesn't contain any path-special character or path separator.
+    private void validateEventName(String eventName) {
+        if (eventName.contains("..") || eventName.contains(File.separator)) {
+            throw new IllegalArgumentException("Invalid event name: '" + eventName + "'");
+        }
+    }
+
     // eventTemplateParser
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public JsonNode eventTemplateParser(String jsonData , String eventName){
@@ -65,6 +71,7 @@ public class EventTemplateHandler {
 
         JsonNode rootNode = null;
         try {
+            validateEventName(eventName);
             String eventTemplate = accessFileInSemanticJar(EVENT_TEMPLATE_PATH + eventName.toLowerCase() + ".json");
 
             rootNode = mapper.readTree(jsonData);

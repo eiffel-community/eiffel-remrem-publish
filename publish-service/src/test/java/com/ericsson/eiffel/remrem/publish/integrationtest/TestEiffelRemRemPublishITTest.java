@@ -53,7 +53,7 @@ import io.restassured.RestAssured;
 @ActiveProfiles("integration-test")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-public class EiffelRemRemPublishIT {
+public class TestEiffelRemRemPublishITTest {
     @Value("${local.server.port}")
     int port;
     @Autowired
@@ -91,7 +91,7 @@ public class EiffelRemRemPublishIT {
             assertEquals(jsonArray, jarray.toString());
         }
     }
-    
+
     @Test
     public void testFailSingleEvent() throws Exception {
         String body = FileUtils.readFileToString(new File("src/test/resources/Invalid_EiffelActivityFinishedEvent.json"));
