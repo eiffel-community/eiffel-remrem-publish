@@ -505,7 +505,9 @@ public class ProducerController {
             // TODO We should not rely on bodyJson (an input string), but rather on given
             //      result, i.e. response.getBody() and check this for type (object or array).
             if (bodyJson.isJsonObject()) {
-                // TODO Why array is created from a single object?
+                // Add brackets to make it a JSON array temporarily to ensure processing
+                // by processingValidEvent. The one-item array will be transformed into
+                // a single object in the response.
                 responseBody = "[" + response.getBody() + "]";
             } else if (bodyJson.isJsonArray()) {
                 responseBody = response.getBody();
