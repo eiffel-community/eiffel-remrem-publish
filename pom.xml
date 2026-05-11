@@ -9,7 +9,7 @@
         <version>2.0.19</version>
     </parent>
     <properties>
-        <eiffel-remrem-publish.version>2.1.14</eiffel-remrem-publish.version>
+        <eiffel-remrem-publish.version>2.1.15</eiffel-remrem-publish.version>
         <eiffel-remrem-semantics.version>2.4.4</eiffel-remrem-semantics.version>
     </properties>
     <artifactId>eiffel-remrem-publish</artifactId>
@@ -78,10 +78,10 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <!-- Sets the path to the file which contains 
+                            <!-- Sets the path to the file which contains
                                 the execution data. -->
                             <dataFile>target/jacoco.exec</dataFile>
-                            <!-- Sets the output directory for the code coverage 
+                            <!-- Sets the output directory for the code coverage
                                 report. -->
                             <outputDirectory>target/jacoco-ut</outputDirectory>
                         </configuration>

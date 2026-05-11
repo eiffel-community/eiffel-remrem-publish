@@ -1,3 +1,6 @@
+## 2.1.15
+- Disable OpenAPI validation that relies on online validation tool
+
 ## 2.1.14
 - Fix configuration issue when executed with external Tomcat instance
 
