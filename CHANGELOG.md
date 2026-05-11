@@ -1,3 +1,9 @@
+## 2.1.14
+- Fix configuration issue when executed with external Tomcat instance
+
+## 2.1.13
+- Align openapi specification filename and fix some contextpath handling for Openapi and Swagger-UI.
+
 ## 2.1.12
 - Uplifted OpenAPI Spec and Swagger-UI to latest version
 - Add input and response examples for all API endpoints in the Web UI
