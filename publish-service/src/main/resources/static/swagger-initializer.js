@@ -26,6 +26,6 @@ window.onload = function() {
       SwaggerUIBundle.plugins.DownloadUrl
     ],
     layout: "StandaloneLayout",
-    "validatorUrl" : ""
+    validatorUrl : null
   });
 };
