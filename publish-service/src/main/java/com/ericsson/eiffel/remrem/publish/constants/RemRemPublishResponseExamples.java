@@ -126,13 +126,40 @@ public final class RemRemPublishResponseExamples {
 
     // Response examples for /generateAndPublish API endpoint
 
-    public static final String GENERATE_PUBLISH_RESPONSE_200_EXAMPLE = """
+    public static final String GENERATE_PUBLISH_RESPONSE_200_SINGLE_EXAMPLE = """
+    {
+      "result": {
+        "events": [
+          {
+            "id": "52b495b3-b2c2-4439-81a2-79d2c2ed8e08",
+            "status_code": 200,
+            "result": "SUCCESS",
+            "message": "Event sent successfully"
+          }
+        ]
+      }
+    }
+    """;
+
+    public static final String GENERATE_PUBLISH_RESPONSE_200_ARRAY_EXAMPLE = """
     [
       {
         "result": {
           "events": [
             {
               "id": "52b495b3-b2c2-4439-81a2-79d2c2ed8e08",
+              "status_code": 200,
+              "result": "SUCCESS",
+              "message": "Event sent successfully"
+            }
+          ]
+        }
+      },
+      {
+        "result": {
+          "events": [
+            {
+              "id": "42a495b3-b2c2-4439-81a2-79d2c2ed5ea1",
               "status_code": 200,
               "result": "SUCCESS",
               "message": "Event sent successfully"

@@ -144,7 +144,7 @@ public class EiffelRemremCommonControllerUnitTest {
                 null, null, true, 1, false, body.getAsJsonObject());
 
         // REMReM Publish converts the response from REMReM Generate before returning it
-        assertTrue("API response type is wrong", elem.getBody() instanceof ArrayList);
+        assertTrue("API response type is wrong", elem.getBody() instanceof HashMap);
         assertEquals(elem.getStatusCode(), HttpStatus.OK);
 
     }
