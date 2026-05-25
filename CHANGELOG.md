@@ -1,4 +1,7 @@
 ## 2.1.14
+- Fix of return value provided by /generateAndPublish endpoint
+
+## 2.1.14
 - Fix configuration issue when executed with external Tomcat instance
 
 ## 2.1.13

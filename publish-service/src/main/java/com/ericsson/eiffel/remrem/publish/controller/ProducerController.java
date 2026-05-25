@@ -22,6 +22,7 @@ import java.util.*;
 import com.ericsson.eiffel.remrem.protocol.ValidationResult;
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 
@@ -552,8 +553,11 @@ public class ProducerController {
         // Status here is the status returned from generate service,
         // except BAD_REQUEST which already handled above.
 
-        if (responseEvents.size() == 1) {
+        if (responseEvents.size() == 1 && bodyJson instanceof JsonObject) {
             // If one event, return its content directly instead of an array with one element.
+            // Do that however only in case input data is a single object. So, if input
+            // is a JSON array (even containing only one item), the response should also
+            // be an array.
             // This guarantees backward compatibility.
             return new ResponseEntity<>(responseEvents.get(0), responseStatus);
         }
