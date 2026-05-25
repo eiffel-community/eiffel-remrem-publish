@@ -1,4 +1,4 @@
-## 2.1.14
+## 2.1.15
 - Fix of return value provided by /generateAndPublish endpoint
 
 ## 2.1.14

@@ -291,9 +291,11 @@ public class ProducerController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Event sent successfully",
             content = @Content(
-            mediaType = "application/json",
-            examples = {
-                @ExampleObject(value = GENERATE_PUBLISH_RESPONSE_200_EXAMPLE)}
+                mediaType = "application/json",
+                examples = {
+                    @ExampleObject(name = "Single object response", value = GENERATE_PUBLISH_RESPONSE_200_SINGLE_EXAMPLE),
+                    @ExampleObject(name = "Array response", value = GENERATE_PUBLISH_RESPONSE_200_ARRAY_EXAMPLE)
+                }
             )
         ),
         @ApiResponse(responseCode = "400", description = "Invalid event content",
