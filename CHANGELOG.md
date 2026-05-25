@@ -1,5 +1,8 @@
-## 2.1.15
+## 2.1.16
 - Fix of return value provided by /generateAndPublish endpoint
+
+## 2.1.15
+- Disable OpenAPI validation that relies on online validation tool
 
 ## 2.1.14
 - Fix configuration issue when executed with external Tomcat instance
