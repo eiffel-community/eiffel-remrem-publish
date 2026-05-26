@@ -22,6 +22,7 @@ import java.util.*;
 import com.ericsson.eiffel.remrem.protocol.ValidationResult;
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 
@@ -290,9 +291,11 @@ public class ProducerController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Event sent successfully",
             content = @Content(
-            mediaType = "application/json",
-            examples = {
-                @ExampleObject(value = GENERATE_PUBLISH_RESPONSE_200_EXAMPLE)}
+                mediaType = "application/json",
+                examples = {
+                    @ExampleObject(name = "Single object response", value = GENERATE_PUBLISH_RESPONSE_200_SINGLE_EXAMPLE),
+                    @ExampleObject(name = "Array response", value = GENERATE_PUBLISH_RESPONSE_200_ARRAY_EXAMPLE)
+                }
             )
         ),
         @ApiResponse(responseCode = "400", description = "Invalid event content",
@@ -505,6 +508,9 @@ public class ProducerController {
             // TODO We should not rely on bodyJson (an input string), but rather on given
             //      result, i.e. response.getBody() and check this for type (object or array).
             if (bodyJson.isJsonObject()) {
+                // Add brackets to make it a JSON array temporarily to ensure processing
+                // by processingValidEvent. The one-item array will be transformed into
+                // a single object in the response.
                 responseBody = "[" + response.getBody() + "]";
             } else if (bodyJson.isJsonArray()) {
                 responseBody = response.getBody();
@@ -548,6 +554,17 @@ public class ProducerController {
 
         // Status here is the status returned from generate service,
         // except BAD_REQUEST which already handled above.
+
+        if (responseEvents.size() == 1 && bodyJson instanceof JsonObject) {
+            // If one event, return its content directly instead of an array with one element.
+            // Do that however only in case input data is a single object. So, if input
+            // is a JSON array (even containing only one item), the response should also
+            // be an array.
+            // This guarantees backward compatibility.
+            return new ResponseEntity<>(responseEvents.get(0), responseStatus);
+        }
+
+        // Return list of events as a response.
         return new ResponseEntity<>(responseEvents, responseStatus);
     }
 
