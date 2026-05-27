@@ -21,16 +21,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * This class is used to enable the ldap authentication based on property
@@ -41,7 +44,7 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 @Configuration
 @ConditionalOnProperty(value = "activedirectory.publish.enabled")
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
 
@@ -76,8 +79,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    @Bean
+    public AuthenticationProvider ldapAuthenticationProvider() {
         final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
         if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
             managerPassword = DecryptionUtils.decryptString(
@@ -91,15 +94,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Configure BindAuthenticator with the context source and user search filter
         BindAuthenticator bindAuthenticator = new BindAuthenticator(contextSource);
         bindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch(
-                "",  // Empty base indicates search starts at root DN provided in contextSource
+                "", // Empty base indicates search starts at root DN provided in contextSource
                 userSearchFilter,
                 contextSource));
 
-        // Setup LdapAuthenticationProvider
-        LdapAuthenticationProvider ldapAuthProvider = new LdapAuthenticationProvider(bindAuthenticator);
+        return new LdapAuthenticationProvider(bindAuthenticator);
+    }
 
-        // Configure the authentication provider
-        auth.authenticationProvider(ldapAuthProvider);
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        builder.authenticationProvider(ldapAuthenticationProvider());
+        return builder.build();
     }
 
     public LdapContextSource ldapContextSource() {
@@ -115,23 +121,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return ldap;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         LOGGER.debug("LDAP authentication enabled");
-        http.authorizeRequests()
-            .anyRequest()
-            .authenticated()
-            .and()
-            .httpBasic()
-            .authenticationEntryPoint(customAuthenticationEntryPoint)
-            .and()
-            .csrf()
+        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+            .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
             // The application uses non-browser clients. Yes, there is swagger interface,
             // but is's used only for testing/tuning.
             //
             // From https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
             // "If you are creating a service that is used only by non-browser clients,
             //  you likely want to disable CSRF protection."
-            .disable();
+            .csrf(csrf -> csrf.disable());
+        return http.build();
     }
 }

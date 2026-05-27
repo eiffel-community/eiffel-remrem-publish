@@ -14,20 +14,20 @@
 */
 package com.ericsson.eiffel.remrem.publish.cli;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.io.File;
 import java.util.List;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
@@ -37,9 +37,9 @@ import com.ericsson.eiffel.remrem.publish.service.PublishResultItem;
 import com.ericsson.eiffel.remrem.publish.service.SendResult;
 import com.google.gson.JsonArray;
 import org.mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CliUnitTests {
     private PrintStream console;
     private ByteArrayOutputStream bytes;
@@ -64,7 +64,7 @@ public class CliUnitTests {
 
     private MockedStatic<PublishUtils> publishUtils;
 
-    @Before public void setUp() throws Exception {
+    @BeforeEach public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         String key = PropertiesConfig.TEST_MODE;
         System.setProperty(key, "true");
@@ -78,7 +78,7 @@ public class CliUnitTests {
                 .thenReturn(eiffelsemanticsMsgService);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         System.clearProperty(PropertiesConfig.TEST_MODE);
         System.setOut(console);

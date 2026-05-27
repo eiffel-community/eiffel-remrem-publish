@@ -55,7 +55,7 @@ public class GsonHttpMessageConverterWithValidate extends GsonHttpMessageConvert
             mapper.readTree(json);
             return this.gson.fromJson(json, resolvedType);
         } catch (JsonParseException ex) {
-            throw new HttpMessageNotReadableException("Could not read JSON: " + ex.getMessage(), ex);
+            throw new HttpMessageNotReadableException("Could not read JSON: " + ex.getMessage(), ex, null);
         }
         
     }
