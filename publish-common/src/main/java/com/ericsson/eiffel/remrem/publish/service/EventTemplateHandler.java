@@ -14,9 +14,9 @@
 */
 package com.ericsson.eiffel.remrem.publish.service;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.ericsson.eiffel.remrem.semantics.EiffelEventType;
-import com.ericsson.eiffel.semantics.events.Event;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EventTemplateHandler {
-    private static final Logger log = (Logger) LoggerFactory.getLogger(EventTemplateHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(EventTemplateHandler.class);
 
     // Paths in Semantics JAR
     private static final String EVENT_TEMPLATE_PATH = "templates/";

@@ -26,7 +26,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import com.google.gson.JsonParser;
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -42,7 +42,7 @@ public class VersionService {
     private static final String IS_ENDPOINT_VERSION = "isEndpointVersion";
     private static final String ENDPOINT_VERSION = "endpointVersions";
     private static final String SERVICE_VERSION = "serviceVersion";
-    private Logger log = (Logger) LoggerFactory.getLogger(VersionService.class);
+    private Logger log = LoggerFactory.getLogger(VersionService.class);
     JsonParser parser = new JsonParser();
     Map<String, Map<String, String>> versions = new HashMap<>();
     Map<String, String> endpointVersions = new HashMap<String, String>();

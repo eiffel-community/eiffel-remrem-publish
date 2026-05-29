@@ -41,14 +41,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service("messageServiceRMQImpl") public class MessageServiceRMQImpl
     implements MessageService {
 
     @Autowired @Qualifier("rmqHelper") RMQHelper rmqHelper;
     
-    Logger log = (Logger) LoggerFactory.getLogger(MessageServiceRMQImpl.class);
+    Logger log = LoggerFactory.getLogger(MessageServiceRMQImpl.class);
     
     /*
      * (non-Javadoc)
