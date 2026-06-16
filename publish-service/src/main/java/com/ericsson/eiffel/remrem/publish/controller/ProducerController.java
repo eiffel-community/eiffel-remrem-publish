@@ -106,13 +106,18 @@ public class ProducerController {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * Initializes the available {@link MsgService} implementations by combining
+     * Spring-autowired instances with those discovered via the {@link ServiceLoader} SPI mechanism.
+     * Duplicate services (by name) are excluded. The resulting set is stored in {@link #msgServices}.
+     */
     @PostConstruct
     private void loadMsgServices() {
         List<MsgService> msgServices = new ArrayList<>();
         if (this.msgServices != null) {
             msgServices.addAll(Arrays.asList(this.msgServices));
         }
-
+        
         if (!msgServices.isEmpty()) {
             StringBuffer services = new StringBuffer();
             for (MsgService msgService : msgServices) {
@@ -137,8 +142,8 @@ public class ProducerController {
         for (MsgService msgService : msgServices) {
             log.info("    {}, {}", msgService.getServiceName(), msgService.getProtocolEdition());
         }
-
-        if (this.msgServices == null || msgServices.size() > this.msgServices.length) {
+        
+        if (this.msgServices != null || msgServices.size() > this.msgServices.length) {
             this.msgServices = msgServices.toArray(new MsgService[msgServices.size()]);
         }
     }
