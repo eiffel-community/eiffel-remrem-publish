@@ -1,4 +1,4 @@
-## 2.1.19
+## 2.1.20
 - Use SPI to detect messaging services
 
 ## 2.1.16
