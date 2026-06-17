@@ -1,3 +1,6 @@
+## 2.1.20
+- Use SPI to detect messaging services
+
 ## 2.1.16
 - Fix of return value provided by /generateAndPublish endpoint
 
