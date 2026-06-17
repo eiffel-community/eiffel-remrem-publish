@@ -6,9 +6,9 @@ Eiffel REMReM Publish is a tool that can be used to publish Eiffel messages on a
 
 ## Pre-requisites
 
-*   JDK 8
-*   Tomcat 8
-*   RabbitMQ Server 3.6.x
+*   JDK 21
+*   Tomcat 11
+*   RabbitMQ Server 3.6.x or later
 
 For supporting latest features, Eiffel REMReM Publish should use the latest version of [Eiffel REMReM Semantics](https://github.com/eiffel-community/eiffel-remrem-semantics).
 
