@@ -26,32 +26,19 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.*;
 
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.config.RabbitMqPropertiesConfig;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.rabbitmq.client.Connection;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.annotation.PostConstruct;
-
-@SpringBootConfiguration
-class Config {
-
-}
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RMQHelperUnitTest {
 
     private static final String mBusHost= "HostA";
@@ -75,9 +62,17 @@ public class RMQHelperUnitTest {
     RMQHelper rmqHelper;
     RabbitMqProperties rabbitmqProtocolProperties;
     @Mock RMQBeanConnectionFactory factory;
+    @Mock Connection mockConnection;
+    @Mock com.rabbitmq.client.Channel mockChannel;
+    @Mock RabbitMqPropertiesConfig rabbitMqPropertiesConfig;
     RabbitMqProperties rabbitMqProperties = new RabbitMqProperties();
 
-    @Before public void setUp() throws Exception {
+    Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
+
+    @BeforeEach public void setUp() throws Exception {
+        Mockito.when(factory.newConnection()).thenReturn(mockConnection);
+        Mockito.when(mockConnection.createChannel()).thenReturn(mockChannel);
+
         try (MockedConstruction<RabbitMqProperties> construction = mockConstruction(RabbitMqProperties.class,
                 // Redirect all requests coming to any mock instance of RabbitMqProperties to
                 // pre-initialized rabbitMqProperties instance.

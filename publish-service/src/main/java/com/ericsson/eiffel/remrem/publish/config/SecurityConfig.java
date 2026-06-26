@@ -31,12 +31,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.ldap.pool.validation.DefaultDirContextValidator;
@@ -82,7 +83,6 @@ public class SecurityConfig {
     @Value("${activedirectory.connectionTimeOut:#{127000}}")
     private Integer ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
 
-//  built in connection timeout value for ldap if the network issue happens
     public static final Integer DEFAULT_LDAP_CONNECTION_TIMEOUT = 127000;
 
     public Integer getTimeOut() {
@@ -93,21 +93,22 @@ public class SecurityConfig {
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Autowired
+    private ConfigurableApplicationContext applicationContext;
+
+    @Autowired
     private SSLContextReloader contextReloader;
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    @Bean
+    public LdapAuthenticationProvider ldapAuthenticationProvider() throws Exception {
         final String jasyptKey = RabbitMqPropertiesConfig.readJasyptKeyFile(jasyptKeyFilePath);
+        String decryptedPassword = managerPassword;
         if (managerPassword.startsWith("{ENC(") && managerPassword.endsWith("}")) {
-            managerPassword = DecryptionUtils.decryptString(
+            decryptedPassword = DecryptionUtils.decryptString(
                     managerPassword.substring(1, managerPassword.length() - 1), jasyptKey);
         }
         LOGGER.debug("LDAP server url: " + ldapUrl);
 
-        // Initialize and configure the LdapContextSource
-        LdapContextSource contextSource = ldapContextSource();
-
-        // Configure BindAuthenticator with the context source and user search filter
+        LdapContextSource contextSource = ldapContextSource(decryptedPassword);
         BindAuthenticator bindAuthenticator = new BindAuthenticator(contextSource);
         bindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch(
                 "", // Empty base indicates search starts at root DN provided in contextSource
@@ -115,13 +116,6 @@ public class SecurityConfig {
                 contextSource));
 
         return new LdapAuthenticationProvider(bindAuthenticator);
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        builder.authenticationProvider(ldapAuthenticationProvider());
-        return builder.build();
     }
 
     public LdapContextSource ldapContextSource() {
@@ -137,27 +131,30 @@ public class SecurityConfig {
         return ldap;
     }
 
-    /**
-     * Configures HTTP security settings for LDAP authentication.
-     * Sets up basic authentication with custom authentication entry point,
-     * disables CSRF protection, and registers SSL context reload listeners
-     * for handling certificate updates.
-     *
-     * @param http the HttpSecurity object to configure
-     * @throws Exception if configuration fails
-     */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    private LdapContextSource ldapContextSource(String password) {
+        LdapContextSource ldap = new LdapContextSource();
+        ldap.setUrl(ldapUrl);
+        ldap.setBase(rootDn);
+        ldap.setUserDn(managerDn);
+        ldap.setPassword(password);
+        HashMap<String, Object> environment = new HashMap<>();
+        environment.put("com.sun.jndi.ldap.connect.timeout", Integer.toString(getTimeOut()));
+        ldap.setBaseEnvironmentProperties(environment);
+        ldap.afterPropertiesSet();
+        return ldap;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         LOGGER.debug("ldap authentication enabled");
-        http.authorizeRequests()
-            .anyRequest()
-            .authenticated()
-            .and()
-            .httpBasic()
-            .authenticationEntryPoint(customAuthenticationEntryPoint)
-            .and()
-            .csrf()
-            .disable();
+        http
+            .authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests.anyRequest().authenticated()
+            )
+            .httpBasic(httpBasic ->
+                httpBasic.authenticationEntryPoint(customAuthenticationEntryPoint)
+            )
+            .csrf(csrf -> csrf.disable());
 
         contextReloader.addListener(new SSLContextReloadListener() {
             private DefaultListableBeanFactory beanFactory;
@@ -165,21 +162,12 @@ public class SecurityConfig {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             Set<ObjectName> realms;
 
-            /**
-             * Called before SSL context reload. Stops Tomcat realms and removes
-             * the existing LDAP context source bean to prepare for reload.
-             */
             @Override
             public void onContextWillReload() {
-                ConfigurableApplicationContext context =
-                    (ConfigurableApplicationContext)SecurityConfig.this.getApplicationContext();
-                // get bean factory
-                beanFactory = (DefaultListableBeanFactory) context.getBeanFactory();
-                // remove old bean
+                beanFactory = (DefaultListableBeanFactory) applicationContext.getBeanFactory();
                 beanFactory.destroySingleton("ldapContextSource");
 
                 try {
-                    // find Realm MBeans
                     ObjectName query = new ObjectName("Catalina:type=Realm,*");
                     realms = mbs.queryNames(query, null);
 
@@ -191,17 +179,9 @@ public class SecurityConfig {
                 }
             }
 
-            /**
-             * Called after SSL context reload. Creates a new LDAP context source
-             * with updated SSL settings and restarts the Tomcat realms.
-             *
-             * @param sslContext the new SSL context after reload
-             */
             @Override
             public void onContextReloaded(SSLContext sslContext) {
-                // reload ldapContext;
                 LdapContextSource contextSource = ldapContextSource();
-                // register new bean
                 beanFactory.registerSingleton("ldapContextSource", contextSource);
 
                 try {
@@ -213,11 +193,7 @@ public class SecurityConfig {
                 }
             }
         });
-    }
 
-    // // This switches authentication off. Useful for some testing.
-    // @Override
-    // protected void configure(HttpSecurity http) throws Exception {
-    //     http.authorizeRequests().anyRequest().permitAll().and().csrf().disable();
-    // }
+        return http.build();
+    }
 }

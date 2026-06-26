@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.rabbitmq.client.ConnectionFactory;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.nio.file.Path;
