@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nonnull;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.PostConstruct;
 import javax.net.ssl.*;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -667,6 +667,29 @@ public class SSLContextReloader {
         }
     }
 
+    /**
+     * Instructs Tomcat to reload SSL certificates from disk by invoking
+     * reloadSslHostConfigs on the ProtocolHandler MBean.
+     * This is required in Spring Boot 3.x+/Tomcat 10+ where stop/start
+     * no longer forces certificate re-read.
+     *
+     * @throws MalformedObjectNameException if the object name is malformed
+     * @throws ReflectionException if an error occurs during reflection
+     * @throws InstanceNotFoundException if the MBean instance is not found
+     * @throws MBeanException if an error occurs in the MBean
+     */
+    private void reloadSslHostConfigs() throws MalformedObjectNameException, ReflectionException, InstanceNotFoundException, MBeanException {
+        String protocolHandlerName = "Catalina:type=ProtocolHandler,port=" + httpsPort;
+        ObjectName objectNameQuery = new ObjectName(protocolHandlerName);
+        for (MBeanServer server : MBeanServerFactory.findMBeanServer(null)) {
+            for (ObjectName objectName : server.queryNames(objectNameQuery, null)) {
+                log.info("Reloading SSL host configs on '{}'...", objectName);
+                server.invoke(objectName, "reloadSslHostConfigs", null, null);
+                log.info("SSL host configs reloaded on '{}'", objectName);
+            }
+        }
+    }
+
     private void waitForFile(StoreInfo store) throws InterruptedException {
         // Sometimes keystore.jks becomes unavailable for an unknown reason...
         long waitTime = 100;
@@ -727,14 +750,6 @@ public class SSLContextReloader {
 
         log.debug("Going to reload {} context...", PROTOCOL);
 
-        // Stop HTTPS connector. This step performs two important actions:
-        //   1. Prevents the connector from accepting new connections.
-        //   2. Following start of the connector guarantees reload of certificates
-        //      for HTTPS connections.
-        pauseHttpsConnector();
-        waitUntilHttpsConnectionsClosed();
-        stopHttpsConnector();
-
         // Notify listeners that the context will be reloaded.
         for (SSLContextReloadListener listener: listeners)
             listener.onContextWillReload();
@@ -744,7 +759,10 @@ public class SSLContextReloader {
         SSLContext.setDefault(sslContext);
         HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
 
-        startHttpsConnector();
+        // Tell Tomcat to re-read SSL certificates from disk.
+        // In Spring Boot 3.x+/Tomcat 10+, stop/start no longer forces certificate reload;
+        // reloadSslHostConfigs() is the proper way.
+        reloadSslHostConfigs();
 
         String protocol = sslContext.getProtocol();
         log.debug("Certificates reloaded; a new {} context has been created.", protocol);

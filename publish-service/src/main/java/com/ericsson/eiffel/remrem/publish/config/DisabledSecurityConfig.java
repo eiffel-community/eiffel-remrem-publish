@@ -15,11 +15,12 @@
 package com.ericsson.eiffel.remrem.publish.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * This class is used to disable the ldap authentication based on property
@@ -31,9 +32,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @ConditionalOnProperty(value = "activedirectory.publish.enabled", havingValue = "false", matchIfMissing = true)
 @Configuration
 @EnableWebSecurity
-public class DisabledSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().permitAll().and().csrf().disable();
+public class DisabledSecurityConfig {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests.anyRequest().permitAll()
+            )
+            .csrf(csrf -> csrf.disable());
+        return http.build();
     }
 }

@@ -66,7 +66,7 @@ import static com.ericsson.eiffel.remrem.publish.constants.RemRemPublishResponse
 import static com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants.*;
 
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 @ComponentScan("com.ericsson.eiffel.remrem")
 @RestController
@@ -474,7 +474,7 @@ public class ProducerController {
                     ResultStatus.FAIL);
         }
         List<Map<String, Object>> responseEvents;
-        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+        org.springframework.http.HttpStatusCode responseStatus = HttpStatus.BAD_REQUEST;
         try {
             String bodyJsonOut;
             if (parseData) {
@@ -524,8 +524,8 @@ public class ProducerController {
                 responseBody = response.getBody();
             }
 
-            if (responseStatus == HttpStatus.OK || responseStatus == HttpStatus.MULTI_STATUS) {
-                log.info("The result from REMReM Generate is: " + response.getStatusCodeValue());
+            if (responseStatus.equals(HttpStatus.OK) || responseStatus.equals(HttpStatus.MULTI_STATUS)) {
+                log.info("The result from REMReM Generate is: " + responseStatus.value());
                 log.debug("mp: " + msgProtocol);
                 log.debug("body: " + responseBody);
                 log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);
