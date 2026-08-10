@@ -111,7 +111,7 @@ public class SecurityConfig {
         LdapContextSource contextSource = ldapContextSource(decryptedPassword);
         BindAuthenticator bindAuthenticator = new BindAuthenticator(contextSource);
         bindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch(
-                "", // Empty base indicates search starts at root DN provided in contextSource
+                "", 
                 userSearchFilter,
                 contextSource));
 
