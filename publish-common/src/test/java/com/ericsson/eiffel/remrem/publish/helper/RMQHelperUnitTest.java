@@ -70,8 +70,8 @@ public class RMQHelperUnitTest {
     Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
 
     @BeforeEach public void setUp() throws Exception {
-        Mockito.when(factory.newConnection()).thenReturn(mockConnection);
-        Mockito.when(mockConnection.createChannel()).thenReturn(mockChannel);
+        Mockito.lenient().when(factory.newConnection()).thenReturn(mockConnection);
+        Mockito.lenient().when(mockConnection.createChannel()).thenReturn(mockChannel);
 
         try (MockedConstruction<RabbitMqProperties> construction = mockConstruction(RabbitMqProperties.class,
                 // Redirect all requests coming to any mock instance of RabbitMqProperties to

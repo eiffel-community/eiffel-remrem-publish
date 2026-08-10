@@ -15,6 +15,9 @@
 package com.ericsson.eiffel.remrem.publish.controller;
 
 import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import com.ericsson.eiffel.remrem.protocol.ValidationResult;
