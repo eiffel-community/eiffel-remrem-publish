@@ -24,8 +24,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import jakarta.annotation.PostConstruct;
@@ -39,7 +37,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import com.ericsson.eiffel.remrem.protocol.MsgService;
 import com.ericsson.eiffel.remrem.publish.config.PropertiesConfig;
-import com.ericsson.eiffel.remrem.publish.exception.NackException;
 import com.ericsson.eiffel.remrem.publish.exception.RemRemPublishException;
 import com.ericsson.eiffel.remrem.publish.helper.PublishUtils;
 import com.ericsson.eiffel.remrem.publish.helper.RMQHelper;
@@ -195,7 +192,7 @@ public class MessageServiceRMQImplUnitTest {
         String body = FileUtils.readFileToString(new File("src/test/resources/EiffelActivityFinishedEvent.json"));
         try {
             if(rabbitmqProtocolProperties != null) {
-                rabbitmqProtocolProperties.createRabbitMqConnection();
+                rabbitmqProtocolProperties.openConnection();
                 MsgService msgService = PublishUtils.getMessageService(protocol, msgServices);
                 rmqHelper.send("eiffelxxx", body, msgService);
                 assertTrue(rabbitmqProtocolProperties.getRabbitConnection().isOpen());

@@ -46,18 +46,16 @@ public class GsonHttpMessageConverterWithValidate extends GsonHttpMessageConvert
         }
 
     @Override
-    protected Object readInternal(Type resolvedType, Reader reader) throws Exception {
+    protected Object readInternal(java.lang.reflect.Type resolvedType, Reader reader) throws Exception {
         try {
             final String json = IOUtils.toString(reader);
-            // do the actual validation
             final ObjectMapper mapper = new ObjectMapper();
             mapper.enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY);
             mapper.readTree(json);
             return this.gson.fromJson(json, resolvedType);
-        } catch (JsonParseException ex) {
+        } catch (Exception ex) {
             throw new HttpMessageNotReadableException("Could not read JSON: " + ex.getMessage(), ex, null);
         }
-        
     }
 
 }

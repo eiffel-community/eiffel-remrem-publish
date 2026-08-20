@@ -17,18 +17,14 @@ package com.ericsson.eiffel.remrem.publish;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import com.ericsson.eiffel.remrem.publish.config.SpringLoggingInitializer;
 
 @SpringBootApplication(scanBasePackages = {"com.ericsson.eiffel.remrem"})
-@EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
 public class App extends SpringBootServletInitializer {
  
     @Override

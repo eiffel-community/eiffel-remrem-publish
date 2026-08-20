@@ -39,7 +39,8 @@ import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component("rmqHelper") public class RMQHelper {
+@Component("rmqHelper")
+public class RMQHelper {
 
     private static final String FALSE = "false";
 
@@ -47,7 +48,7 @@ import org.slf4j.LoggerFactory;
     @Autowired
     RabbitMqPropertiesConfig rabbitMqPropertiesConfig;
 
-    Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<String, RabbitMqProperties>();
+    Map<String, RabbitMqProperties> rabbitMqPropertiesMap = new HashMap<>();
 
     Logger log = LoggerFactory.getLogger(RMQHelper.class);
 
@@ -136,5 +137,4 @@ import org.slf4j.LoggerFactory;
             System.setProperty("logging.level.root", "OFF");
         }
     }
-
 }

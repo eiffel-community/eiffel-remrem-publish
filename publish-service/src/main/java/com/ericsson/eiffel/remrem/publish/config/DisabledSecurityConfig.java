@@ -35,13 +35,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class DisabledSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-             // The application uses non-browser clients. Yes, there is swagger interface,
-             // but is's used only for testing/tuning.
-             //
-             // From https://docs.spring.io/spring-security/reference/features/exploits/csrf.html
-             // "If you are creating a service that is used only by non-browser clients,
-             //  you likely want to disable CSRF protection."
+        http
+            .authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests.anyRequest().permitAll()
+            )
             .csrf(csrf -> csrf.disable());
         return http.build();
     }
