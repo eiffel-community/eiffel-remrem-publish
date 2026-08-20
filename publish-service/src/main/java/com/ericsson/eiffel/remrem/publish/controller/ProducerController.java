@@ -28,6 +28,7 @@ import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +108,48 @@ public class ProducerController {
 
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    /**
+     * Initializes the available {@link MsgService} implementations by combining
+     * Spring-autowired instances with those discovered via the {@link ServiceLoader} SPI mechanism.
+     * Duplicate services (by name) are excluded. The resulting set is stored in {@link #msgServices}.
+     */
+    @PostConstruct
+    private void loadMsgServices() {
+        List<MsgService> msgServices = new ArrayList<>();
+        if (this.msgServices != null) {
+            msgServices.addAll(Arrays.asList(this.msgServices));
+        }
+        
+        if (!msgServices.isEmpty()) {
+            StringBuffer services = new StringBuffer();
+            for (MsgService msgService : msgServices) {
+                services.append("'");
+                services.append(msgService.getServiceName());
+                services.append("', ");
+            }
+            int length = services.length();
+            services.setLength(length - 2);
+            log.debug("The following services has been loaded using @Autowired: {}", services);
+        }
+
+        log.info("Loading SPIs for {}", MsgService.class.getCanonicalName());
+        ServiceLoader<MsgService> loader = ServiceLoader.load(MsgService.class, MsgService.class.getClassLoader());
+        loader.forEach(service -> {
+            if (msgServices.stream().noneMatch(s -> s.getServiceName().equals(service.getServiceName()))) {
+                log.debug("Adding service; {}, {}", service.getServiceName(), service.getProtocolEdition());
+                msgServices.add(service);
+            }
+        });
+        log.info("{} implementations of MsgService loaded", msgServices.size());
+        for (MsgService msgService : msgServices) {
+            log.info("    {}, {}", msgService.getServiceName(), msgService.getProtocolEdition());
+        }
+        
+        if (this.msgServices != null || msgServices.size() > this.msgServices.length) {
+            this.msgServices = msgServices.toArray(new MsgService[msgServices.size()]);
+        }
     }
 
     public void logUserName() {
