@@ -30,7 +30,7 @@ public class RemRemPublishException extends Exception {
 
     public RemRemPublishException(String message, RMQBeanConnectionFactory factory,
             Throwable cause) {
-        super(message + factory.getHost() + ":" + factory.getPort(), cause);
+        super(message + " (" + factory.getHost() + ":" + factory.getPort() + ")", cause);
     }
 
     @Override

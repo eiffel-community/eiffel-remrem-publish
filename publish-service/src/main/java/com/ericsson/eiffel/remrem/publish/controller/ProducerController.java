@@ -14,12 +14,14 @@
 */
 package com.ericsson.eiffel.remrem.publish.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import com.ericsson.eiffel.remrem.protocol.ValidationResult;
+import com.ericsson.eiffel.remrem.publish.helper.SSLContextReloader;
 import com.ericsson.eiffel.remrem.publish.service.*;
 import com.google.gson.*;
 import io.swagger.v3.core.util.Json;
@@ -66,6 +68,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import static com.ericsson.eiffel.remrem.publish.constants.RemRemPublishResponseExamples.*;
 import static com.ericsson.eiffel.remrem.publish.constants.RemremPublishServiceConstants.*;
 
+
+import jakarta.annotation.PostConstruct;
 
 @ComponentScan("com.ericsson.eiffel.remrem")
 @RestController
@@ -153,9 +157,20 @@ public class ProducerController {
         // Check if the user is authenticated
         if (authentication != null && authentication.isAuthenticated()) {
             // Get the UserDetails object, which contains user information
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Object principal = authentication.getPrincipal();
+            String username = "";
+            if (principal == null) {
+                username = "null";
+            }
+            else if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                username = userDetails.getUsername();
+            }
+            else {
+                username = principal.toString();
+            }
+
             // Get the username of the authenticated user
-            String username = userDetails.getUsername();
             log.info("User name: {} ", username);
         }
     }
@@ -506,7 +521,7 @@ public class ProducerController {
                     ResultStatus.FAIL);
         }
         List<Map<String, Object>> responseEvents;
-        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+        org.springframework.http.HttpStatusCode responseStatus = HttpStatus.BAD_REQUEST;
         try {
             String bodyJsonOut;
             if (parseData) {
@@ -559,8 +574,8 @@ public class ProducerController {
                 responseBody = response.getBody();
             }
 
-            if (responseStatus == HttpStatus.OK || responseStatus == HttpStatus.MULTI_STATUS) {
-                log.info("The result from REMReM Generate is: " + response.getStatusCode().value());
+            if (responseStatus.equals(HttpStatus.OK) || responseStatus.equals(HttpStatus.MULTI_STATUS)) {
+                log.info("The result from REMReM Generate is: " + responseStatus.value());
                 log.debug("mp: " + msgProtocol);
                 log.debug("body: " + responseBody);
                 log.debug("user domain suffix: " + userDomain + " tag: " + tag + " routing key: " + routingKey);

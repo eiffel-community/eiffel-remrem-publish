@@ -44,7 +44,8 @@ import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Service("messageServiceRMQImpl") public class MessageServiceRMQImpl
+@Service("messageServiceRMQImpl")
+public class MessageServiceRMQImpl
     implements MessageService {
 
     @Autowired @Qualifier("rmqHelper") RMQHelper rmqHelper;
