@@ -16,6 +16,7 @@ package com.ericsson.eiffel.remrem.publish.config;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import com.ericsson.eiffel.remrem.publish.helper.SSLContextReloadListener;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.CommunicationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -42,6 +44,9 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.ldap.pool.validation.DefaultDirContextValidator;
 import org.springframework.ldap.core.ContextSource;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.management.MBeanServer;
@@ -83,6 +88,12 @@ public class SecurityConfig {
     @Value("${activedirectory.connectionTimeOut:#{127000}}")
     private Integer ldapTimeOut = DEFAULT_LDAP_CONNECTION_TIMEOUT;
 
+    @Value("${activedirectory.ldap.bind.maxRetries:#{2}}")
+    private int ldapBindMaxRetries;
+
+    @Value("#{${activedirectory.ldap.bind.retryDelay:1} * 1000}")
+    private long ldapBindRetryDelayMs;
+
     public static final Integer DEFAULT_LDAP_CONNECTION_TIMEOUT = 127000;
 
     public Integer getTimeOut() {
@@ -115,7 +126,26 @@ public class SecurityConfig {
                 userSearchFilter,
                 contextSource));
 
-        return new LdapAuthenticationProvider(bindAuthenticator);
+        RetryTemplate retryTemplate = buildLdapBindRetryTemplate();
+        RetryingBindAuthenticator retryingAuthenticator =
+                new RetryingBindAuthenticator(contextSource, bindAuthenticator, retryTemplate);
+
+        return new LdapAuthenticationProvider(retryingAuthenticator);
+    }
+
+    private RetryTemplate buildLdapBindRetryTemplate() {
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(
+                ldapBindMaxRetries + 1,
+                Map.of(CommunicationException.class, true),
+                true);
+
+        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        backOffPolicy.setBackOffPeriod(ldapBindRetryDelayMs);
+
+        RetryTemplate template = new RetryTemplate();
+        template.setRetryPolicy(retryPolicy);
+        template.setBackOffPolicy(backOffPolicy);
+        return template;
     }
 
     public LdapContextSource ldapContextSource() {
