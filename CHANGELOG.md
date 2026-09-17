@@ -1,3 +1,12 @@
+## 2.1.22
+- LDAP authentication timeout and retry number introduced.
+  They can be configured by properties
+  ```
+  activedirectory.ldap.bind.maxRetries: 3
+  # Number of seconds
+  activedirectory.ldap.bind.retryDelay: 1
+  ```
+
 ## 2.1.20
 - Use SPI to detect messaging services
 
